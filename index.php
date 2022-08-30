@@ -187,9 +187,9 @@ $date1 = str_replace('-', '/', $date);
 
                         <h2 class="ts-section-title">WHO WE ARE</h2>
 
-                        <p class="ts-section-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                        <p class="ts-section-description">We built on this strong foundation aims to provide great customer satisfaction and an exemplary holiday experience. Planning a once to travel with us and get the great experience. Our experts can get you what you want and in the minimal time. We're one of the best travel management companies across the world, it has the experience and infrastructure to handle any customer demand. In addition, we provide customize tours, hotels, flights, visa, transfer, bus, train  & activities world wide, We also plans corporate tours, incentive trips, college/school excursions, business travel and much, much more.</p>
                         
-                        <p class="ts-section-description">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p>
+                        <p class="ts-section-description">Our aim is to create for our guests; an Experience of a Lifetime!! Take a tour of our happy clients. Enjoy with our exclusive experience.</p>
 
                     </div>
 
@@ -232,9 +232,9 @@ $date1 = str_replace('-', '/', $date);
 
                         <div class="ts-vision-card-body">
 
-                            <h3 class="ts-vision-title">Our Vision</h3>
+                            <h3 class="ts-vision-title">Our Mission</h3>
 
-                            <p class="ts-vision-description">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p>
+                            <p class="ts-vision-description">We're professionally managed travel service providing company. Committed to total customer satisfaction & enhancing value of money.</p>
 
                         </div>
 
@@ -263,7 +263,7 @@ $date1 = str_replace('-', '/', $date);
 
                             <h3 class="ts-vision-title">Our Vision & Values</h3>
 
-                            <p class="ts-vision-description">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</p>
+                            <p class="ts-vision-description">Our team shall be an innovative & empowered by technology, constantly creating value & attaining new benchmarks.</p>
 
                         </div>
 
@@ -292,10 +292,10 @@ $date1 = str_replace('-', '/', $date);
     <div class="container">
 
         <h2 class="ta-section-title">EXPERIENCED THE COLOURFUL WORLD!</h2><br>
-        <h6>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy</h6>
+        <h6>Get the Premium International Destinations, Personalized Tailor Made Tours with us and explore yourself.</h6>
         
         <ul>
-        <li style="padding-left: 50%;">
+        <li style="padding-left: 40%;">
                     <a class="btn header-btn-cta" href="<?= BASE_URL_B2C . 'offers.php' ?>">View More</a>
                   </li>
         </ul>
@@ -661,9 +661,9 @@ if (sizeof($group_tour_data) != 0) { ?>
 
                 <div class="ts-rate-content">
 
-                    <h2 class="ts-section-title">BEST TRAVEL SERVICES</h2>
+                    <h2 class="ts-section-title">Choose your next service</h2>
 
-                    <p class="ts-section-description">Get the best available price for every Packages, Hotel, Flight, Visa or Vehicle booking.<br /> No hidden charges.</p>
+                    <p class="ts-section-description">We understand our guests needs to perfection and thus provide them with flexible customized holiday packages according to their needs are requirements. We give proper alternatives with accurate guidance, to make our guests as comfortable as possible.</p>
 
                     <ul class="ts-available-rate-list">
 
@@ -795,7 +795,7 @@ if (sizeof($b2c_testmtest) != 0) {
 
                                         <h3 class="ts-testimonial-name"><?= $name ?></h3>
 
-                                        <p class="ts-testimonial-description"><?= substr($testm[$testm_count]->testm, 0, 400) . '[¡K]' ?></p>
+                                        <p class="ts-testimonial-description"><?= substr($testm[$testm_count]->testm, 0, 400) . '[ï¿½K]' ?></p>
 
                                         <a target='_blank' href="testimonials.php" class="ts-readmore-link">
 
@@ -952,7 +952,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                                     <div class="custom_texteditor">
 
-                                        <?= substr($blog[$blog_count]->description, 0, 500) . '[¡K]' ?>
+                                        <?= substr($blog[$blog_count]->description, 0, 500) . '[ï¿½K]' ?>
 
                                     </div>
                                     </p>
@@ -1024,7 +1024,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                         </span>
 
-                        <a href="#" class="ts-contact-info-link"><?= $cached_array[0]->company_profile_data[0]->address ?></a>
+                        <a class="ts-contact-info-link"><?= $cached_array[0]->company_profile_data[0]->address ?></a>
 
                     </li>
 
@@ -1036,7 +1036,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                         </span>
 
-                        <a href="tel: <?= $cached_array[0]->company_profile_data[0]->contact_no ?>" class="ts-contact-info-link"><?= $cached_array[0]->company_profile_data[0]->contact_no ?></a>
+                        <a <?= $cached_array[0]->company_profile_data[0]->contact_no ?>" class="ts-contact-info-link"><?= $cached_array[0]->company_profile_data[0]->contact_no ?></a>
 
                     </li>
 
@@ -1060,7 +1060,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                         </span>
 
-                        <a href="#" class="ts-contact-info-link"><?= $cached_array[0]->cms_data[0]->header_strip_note ?></a>
+                        <a class="ts-contact-info-link"><?= $cached_array[0]->cms_data[0]->header_strip_note ?></a>
 
                     </li>
 
