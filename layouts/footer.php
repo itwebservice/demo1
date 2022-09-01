@@ -18,7 +18,7 @@
 
               <?php if($cached_array[0]->company_profile_data[0]->contact_no!='') { ?><p> <span class="strong">Phone: </span> <span class="highlighted"><?= $cached_array[0]->company_profile_data[0]->contact_no ?></span> </p> <?php } ?>
 
-              <?php if($cached_array[0]->company_profile_data[0]->email_id!='') { ?><p> <span class="strong">Email ID: </span> <span class="highlighted"><?= $cached_array[0]->company_profile_data[0]->email_id ?></span> </p><?php } ?>
+              <?php if($cached_array[0]->company_profile_data[0]->email_id!='') { ?><p> <span class="strong">Email ID: </span> <span class="highlighted"><a href="mailto:<?= $cached_array[0]->company_profile_data[0]->email_id ?>" style="color: #838383;"><?= $cached_array[0]->company_profile_data[0]->email_id ?></span> </p><?php } ?>
 
           </div>
 
@@ -225,7 +225,7 @@
 
       <div class="container">
 
-          <p class="ts-site-info-text">© 2022 <?= $cached_array[0]->company_profile_data[0]->company_name ?>. All Rights Reserved.</p>
+          <p class="ts-site-info-text">© 2022<?= $cached_array[0]->company_profile_data[0]->company_name ?>. All Rights Reserved.</p>
 
       </div>
 

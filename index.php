@@ -296,7 +296,7 @@ $date1 = str_replace('-', '/', $date);
         
         <ul>
         <li style="padding-left: 40%;">
-                    <a class="btn header-btn-cta" href="<?= BASE_URL_B2C . 'offers.php' ?>">View More</a>
+                    <a class="btn header-btn-cta" href="<?= BASE_URL_B2C . 'offers.php' ?>">VIEW MORE</a>
                   </li>
         </ul>
 
@@ -980,7 +980,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
             <div class="text-center">
 
-                <a href="blog.php" target="_blank" class="btn btn-primary">Read more blogs here</a>
+                <a href="blog.php" target="_blank" class="btn btn-primary">VIEW MORE BLOGS</a>
 
             </div>
 
