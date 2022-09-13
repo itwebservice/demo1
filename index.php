@@ -3,6 +3,9 @@
 include 'config.php';
 
 
+$_SESSION['page_type'] = 'index';
+   
+
 
 $service = $_GET['service'];
 
@@ -50,7 +53,7 @@ $date1 = str_replace('-', '/', $date);
 
             <div class="item">
 
-                <img src="<?php echo $download_url ?>" alt="<?= $app_name ?>" style="border: none;"/>
+                <img src="<?php echo $download_url ?>" alt="<?= $app_name ?>" style="border: none;" />
 
             </div>
 
@@ -187,8 +190,8 @@ $date1 = str_replace('-', '/', $date);
 
                         <h2 class="ts-section-title">WHO WE ARE</h2>
 
-                        <p class="ts-section-description">We built on this strong foundation aims to provide great customer satisfaction and an exemplary holiday experience. Planning a once to travel with us and get the great experience. Our experts can get you what you want and in the minimal time. We're one of the best travel management companies across the world, it has the experience and infrastructure to handle any customer demand. In addition, we provide customize tours, hotels, flights, visa, transfer, bus, train  & activities world wide, We also plans corporate tours, incentive trips, college/school excursions, business travel and much, much more.</p>
-                        
+                        <p class="ts-section-description">We built on this strong foundation aims to provide great customer satisfaction and an exemplary holiday experience. Planning a once to travel with us and get the great experience. Our experts can get you what you want and in the minimal time. We're one of the best travel management companies across the world, it has the experience and infrastructure to handle any customer demand. In addition, we provide customize tours, hotels, flights, visa, transfer, bus, train & activities world wide, We also plans corporate tours, incentive trips, college/school excursions, business travel and much, much more.</p>
+
                         <p class="ts-section-description">Our aim is to create for our guests; an Experience of a Lifetime!! Take a tour of our happy clients. Enjoy with our exclusive experience.</p>
 
                     </div>
@@ -293,11 +296,11 @@ $date1 = str_replace('-', '/', $date);
 
         <h2 class="ta-section-title">EXPERIENCED THE COLOURFUL WORLD!</h2><br>
         <h6>Get the Premium International Destinations, Personalized Tailor Made Tours with us and explore yourself.</h6>
-        
+
         <ul>
-        <li style="padding-left: 40%;">
-                    <a class="btn header-btn-cta" href="<?= BASE_URL_B2C . 'offers.php' ?>">VIEW MORE</a>
-                  </li>
+            <li style="padding-left: 40%;">
+                <a class="btn header-btn-cta" href="<?= BASE_URL_B2C . 'offers.php' ?>">VIEW MORE</a>
+            </li>
         </ul>
 
     </div>
@@ -456,6 +459,202 @@ if (sizeof($package_tour_data) != 0) { ?>
 
 <?php } ?>
 
+
+<!-- hotel -->
+<section class="ts-destinations-section">
+
+    <div class="container">
+
+        <div class="ts-section-subtitle-content">
+
+            <h2 class="ts-section-subtitle">PACK AND GO</h2>
+
+            <span class="ts-section-subtitle-icon"><img src="images/traveler.png" alt="traveler" classimg-fluid></span>
+
+        </div>
+
+        <h2 class="ts-section-title">DREAM HOTELS</h2>
+
+
+        <div class="ts-blog-content dream-destinations">
+
+            <div class="row">
+
+                <?php
+
+                $cms_popular_hotels = json_decode($cached_array[0]->cms_data[0]->popular_hotels);
+                $hotels = $cached_array[0]->hotels_data;
+                $filter_hotels = array();
+                foreach ($hotels as $hotel) {
+                    foreach ($cms_popular_hotels as $popular_hotel) {
+                        if ($popular_hotel->hotel_id == $hotel->hotel_id) {
+                            array_push($filter_hotels, $hotel);
+                        }
+                    }
+                }
+                // var_dump($filter_hotels);
+
+                if (!empty($filter_hotels)) {
+                    foreach ($filter_hotels as $hotel) {
+                        $imgUrl = 'crm/' . substr(json_decode($hotel->hotel_images_array)[0]->pic_url, 11);
+                ?>
+
+                        <div class="col col-12 col-md-6 col-lg-4">
+
+                            <div class="ts-blog-card">
+
+                                <div class="ts-blog-card-img">
+
+                                    <a href="#" class="ts-blog-card-img-link">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7c-12.23-91.55-87.28-166-178.9-177.6c-136.2-17.24-250.7 97.28-233.4 233.4c11.6 91.64 86.07 166.7 177.6 178.9c53.81 7.191 104.3-6.235 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 .0003C515.9 484.7 515.9 459.3 500.3 443.7zM288 232H231.1V288c0 13.26-10.74 24-23.1 24C194.7 312 184 301.3 184 288V232H127.1C114.7 232 104 221.3 104 208s10.74-24 23.1-24H184V128c0-13.26 10.74-24 23.1-24S231.1 114.7 231.1 128v56h56C301.3 184 312 194.7 312 208S301.3 232 288 232z" fill="#ffffff" />
+                                        </svg>
+
+                                    </a>
+
+                                    <img src="<?= file_exists($imgUrl) ? $imgUrl : 'images/hotel_image.png' ?>" alt="Package Image" class="img-fluid ">
+
+                                </div>
+
+                                <div class="ts-blog-card-body">
+
+                                    <a href="#" class="ts-blog-card-title"><?= $hotel->hotel_name ?></a>
+
+                                    <p class="ts-blog-time">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z" fill="#f68c34" />
+                                        </svg>
+
+                                        <span><?= $hotel->city_name ?> </span>
+
+                                    </p>
+
+                                    <p class="ts-blog-card-description"><?= substr($hotel->amenities, 0, 100) ?> </p>
+
+                                </div>
+
+                                <div class="ts-blog-card-footer">
+
+                                    <a href="<?= $file_name ?>" target="_blank" class="ts-blog-card-link"> READ MORE</a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                <?php  }
+                } ?>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- hotel end -->
+
+
+
+<!-- Activity -->
+<section class="ts-destinations-section">
+
+    <div class="container">
+
+        <div class="ts-section-subtitle-content">
+
+            <h2 class="ts-section-subtitle">PACK AND GO</h2>
+
+            <span class="ts-section-subtitle-icon"><img src="images/traveler.png" alt="traveler" classimg-fluid></span>
+
+        </div>
+
+        <h2 class="ts-section-title">ACTIVITIES</h2>
+
+
+        <div class="ts-blog-content dream-destinations">
+
+            <div class="row">
+
+                <?php
+
+                $cms_popular_activities = json_decode($cached_array[0]->cms_data[0]->popular_activities);
+                $activities = $cached_array[0]->activity_data;
+                $filter_activities = array();
+                foreach ($activities as $activity) {
+                    foreach ($cms_popular_activities as $Pactivity) {
+                        if ($Pactivity->exc_id == $activity->activity_id) {
+                            array_push($filter_activities, $activity);
+                        }
+                    }
+                }
+              
+
+                if (!empty($filter_activities)) {
+                    foreach ($filter_activities as $act) {
+                        $imgUrl = 'crm/' . substr(json_decode($act->images_array)[0]->image_url, 11);
+                ?>
+
+                        <div class="col col-12 col-md-6 col-lg-4">
+
+                            <div class="ts-blog-card">
+
+                                <div class="ts-blog-card-img">
+
+                                    <a href="#" class="ts-blog-card-img-link">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7c-12.23-91.55-87.28-166-178.9-177.6c-136.2-17.24-250.7 97.28-233.4 233.4c11.6 91.64 86.07 166.7 177.6 178.9c53.81 7.191 104.3-6.235 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 .0003C515.9 484.7 515.9 459.3 500.3 443.7zM288 232H231.1V288c0 13.26-10.74 24-23.1 24C194.7 312 184 301.3 184 288V232H127.1C114.7 232 104 221.3 104 208s10.74-24 23.1-24H184V128c0-13.26 10.74-24 23.1-24S231.1 114.7 231.1 128v56h56C301.3 184 312 194.7 312 208S301.3 232 288 232z" fill="#ffffff" />
+                                        </svg>
+
+                                    </a>
+
+                                    <img src="<?= file_exists($imgUrl) ? $imgUrl : 'images/activity_default.png' ?>" alt="Package Image" class="img-fluid ">
+
+                                </div>
+
+                                <div class="ts-blog-card-body">
+
+                                    <a href="#" class="ts-blog-card-title"><?= $act->activity_name ?></a>
+
+                                    <p class="ts-blog-time">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z" fill="#f68c34" />
+                                        </svg>
+
+                                        <span><?= $act->city_name ?> </span>
+
+                                    </p>
+
+                                    <p class="ts-blog-card-description"><?= substr($act->description, 0, 100) ?> </p>
+
+                                </div>
+
+                                <div class="ts-blog-card-footer">
+
+                                    <a href="<?= $file_name ?>" target="_blank" class="ts-blog-card-link"> READ MORE</a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                <?php  }
+                } ?>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- Activity end -->
 <?php
 
 $group_tour_data = ($cached_array[0]->cms_data[0]->popular_tours != '' && $cached_array[0]->cms_data[0]->popular_tours != 'null') ? json_decode($cached_array[0]->cms_data[0]->popular_tours) : [];
@@ -783,7 +982,7 @@ if (sizeof($b2c_testmtest) != 0) {
 
                                     <div class="ts-testimonial-img">
 
-                                        <img src="<?= $newUrl1 ?>" alt="Customer Image" class="img-fluid">
+                                        <img src="<?= file_exists($newUrl1) ? $newUrl1 : 'images/traveler.png'  ?>" alt="Customer Image" class="img-fluid">
 
                                     </div>
 
@@ -900,7 +1099,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                                 <div class="ts-update-img">
 
-                                    <img src="<?= $newUrl1 ?>" alt="Blog Image" class="img-fluid">
+                                    <img src="<?= file_exists($newUrl1) ? $newUrl1 : 'images/activity_default.png' ?>" alt="Blog Image" class="img-fluid">
 
                                 </div>
 
@@ -1122,59 +1321,59 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                         </li>
 
-                        <?php }
+                    <?php }
 
-                        if ($social_media[0]->tw != '') { ?>
+                    if ($social_media[0]->tw != '') { ?>
 
-                            <li class="ts-social-media-item">
+                        <li class="ts-social-media-item">
 
-                                <a target="_blank" href="<?= $social_media[0]->tw ?>" class="ts-social-media-link">
+                            <a target="_blank" href="<?= $social_media[0]->tw ?>" class="ts-social-media-link">
 
-                                    <span class="ts-contact-info-icon">
+                                <span class="ts-contact-info-icon">
 
-                                        <i class="fa fa-twitter"></i>
+                                    <i class="fa fa-twitter"></i>
 
-                                    </span>
+                                </span>
 
-                                </a>
+                            </a>
 
-                            </li> 
+                        </li>
 
-                        <?php }
+                    <?php }
 
-                        if ($social_media[0]->yu != '') { ?>
+                    if ($social_media[0]->yu != '') { ?>
 
-                            <li class="ts-social-media-item">
+                        <li class="ts-social-media-item">
 
-                                <a target="_blank" href="<?= $social_media[0]->yu ?>" class="ts-social-media-link">
+                            <a target="_blank" href="<?= $social_media[0]->yu ?>" class="ts-social-media-link">
 
-                                    <span class="ts-contact-info-icon">
+                                <span class="ts-contact-info-icon">
 
-                                        <i class="fa fa-youtube"></i>
+                                    <i class="fa fa-youtube"></i>
 
-                                    </span>
+                                </span>
 
-                                </a>
+                            </a>
 
-                            </li>
-                            
-                        <?php }
+                        </li>
 
-                        if ($social_media[0]->li != '') { ?>
+                    <?php }
 
-                            <li class="ts-social-media-item">
+                    if ($social_media[0]->li != '') { ?>
 
-                                <a target="_blank" href="<?= $social_media[0]->li ?>" class="ts-social-media-link">
+                        <li class="ts-social-media-item">
 
-                                    <span class="ts-contact-info-icon">
+                            <a target="_blank" href="<?= $social_media[0]->li ?>" class="ts-social-media-link">
 
-                                        <i class="fa fa-linkedin"></i>
+                                <span class="ts-contact-info-icon">
 
-                                    </span>
+                                    <i class="fa fa-linkedin"></i>
 
-                                </a>
+                                </span>
 
-                            </li>
+                            </a>
+
+                        </li>
 
                     <?php } ?>
 

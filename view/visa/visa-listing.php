@@ -5,7 +5,8 @@ include '../../layouts/header.php';
 
 $visa_array = json_decode($_SESSION['visa_array']);
 $country_id = ($visa_array[0]->country_id);
-
+$_SESSION['page_type'] = 'Visa';
+   
 if($country_id==''){
   $query = "select * from country_list_master where 1 ";
 }

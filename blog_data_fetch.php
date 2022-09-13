@@ -1,7 +1,11 @@
 <?php
 include 'config.php';
+
 $b2c_blogs = ($_POST['data']!='')?$_POST['data']:[];
 $blog = (sizeof($b2c_blogs)!=0) ? $b2c_blogs : [];
+
+$_SESSION['page_type'] = 'blog-inner';
+
 ?>
 <!-- Contact Section Start -->
 <section class="ts-contact-section">

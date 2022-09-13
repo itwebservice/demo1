@@ -3,6 +3,7 @@
 include 'config.php';
 
 //Include header
+$_SESSION['page_type'] = 'privacy-policy';
 
 include 'layouts/header.php';
 

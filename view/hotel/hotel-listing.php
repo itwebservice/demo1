@@ -6,6 +6,8 @@ include BASE_URL.'model/model.php';
 
 include '../../layouts/header.php';
 
+$_SESSION['page_type'] = 'hotels-list';
+   
 
 
 $hotel_array = json_decode($_SESSION['hotel_array']);

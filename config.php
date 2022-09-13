@@ -19,14 +19,14 @@ $localIP = getHostByName(getHostName());
 
 // Create connection
 $servername = "localhost";
-$username = "itourscloud_demo1_u";
-$password = "B$%^X;[i?!M";
-$db_name = "itourscloud_demo1";
+$username = "root";
+$password = "";
+$db_name = "itours_demo_8";
 global $connection;
 $connection = new mysqli($servername, $username, $password, $db_name);
 
-define('BASE_URL', 'http://localhost/demo1/crm/');
-define('BASE_URL_B2C', 'http://localhost/demo1/');
+define('BASE_URL', 'http://localhost/itours_git/demo1/crm/');
+define('BASE_URL_B2C', 'http://localhost/itours_git/demo1/');
 mysqli_query($connection,"SET SESSION sql_mode = ''");
 // mysqli_set_charset($connection,'utf8');
 //**********Global Variables start**************//

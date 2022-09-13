@@ -1724,5 +1724,32 @@ function checkout_currency_converter(){
 
 
 </script>
+<script>
+    
+   
 
+   <?php
+  foreach($meta_tags as $meta)
+  {
+    if($meta->page == $_SESSION['page_type'])
+    {
+      
+  ?> 
+      var meta = document.createElement('meta');
+   
+meta.setAttribute('name', 'keywords');
+meta.setAttribute('content', '<?= $meta->keywords ?>');
+var meta2 = document.createElement('meta');
+meta2.setAttribute('name', 'description');
+meta2.setAttribute('content', '<?= $meta->description ?>');
+document.title = '<?= $meta->title ?>' ;
+document.getElementsByTagName('head')[0].appendChild(meta);
+document.getElementsByTagName('head')[0].appendChild(meta2);
+<?php 
+
+}}
+$_SESSION['page_type'] = '';
+?>
+
+</script>
 <!-- <script type="text/javascript" src="<?php echo BASE_URL_B2C ?>js/scripts.js"></script> -->

@@ -3,6 +3,7 @@
 include 'config.php';
 
 $service = $_GET['service'];
+$_SESSION['page_type'] = 'career';
 
 //Include header
 

@@ -7,6 +7,8 @@ include 'config.php';
 include 'layouts/header.php';
 
 $service = $_GET['service'];
+$_SESSION['page_type'] = 'contact';
+   
 
 global $app_contact_no;
 

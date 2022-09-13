@@ -5,6 +5,7 @@ include 'config.php';
 //Include header
 
 include 'layouts/header.php';
+$_SESSION['page_type'] = 'terms';
 
 $terms_cond = $cached_array[0]->cms_data[0]->terms_of_use;
 

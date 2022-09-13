@@ -2,6 +2,8 @@
 include 'config.php';
 //Include header
 include 'layouts/header.php';
+$_SESSION['page_type'] = 'cancellations-policy';
+
 $cancellation_policy = $cached_array[0]->cms_data[0]->cancellation_policy;
 ?>
 <div class="c-pageTitleSect">

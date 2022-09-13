@@ -7,8 +7,14 @@ include "get_cache_currencies.php";
 include "array_column.php";
 
 // LIVE Cache file reading
-$file_get_c = get_content('https://' . $_SERVER['SERVER_NAME'] . '/crm/view/b2c_cache.php');
+//$file_get_c = get_content('https://' . $_SERVER['SERVER_NAME'] . '/crm/view/b2c_cache.php');
+//$cached_array = json_decode($file_get_c);
+
+//local
+// 
+$file_get_c = get_content('http://localhost/itours_git/demo1/crm/view/b2c_cache.php');
 $cached_array = json_decode($file_get_c);
+
 
 function get_content($URL){
   $ch = curl_init();
@@ -179,20 +185,17 @@ foreach ($int_dest_id_arr as $int_id) {
 
   <!-- Page Title -->
 
-  <title><?= $app_name ?></title>
-
+ 
 
 
   <!-- Meta Tags -->
-
+  <?php
+    $meta_tags =$cached_array[0]->cms_data[2]->b2c_meta_tags; 
+    
+    ?>
   <meta charset="utf-8" />
 
-  <meta name="keywords" content="HTML5 Template" />
-
-  <meta name="description" content="iTours - Travel, Tour Booking HTML5 Template" />
-
-  <meta name="author" content="SoapTheme" />
-
+ 
 
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />

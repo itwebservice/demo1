@@ -5,6 +5,7 @@ include 'config.php';
 //Include header
 
 include 'layouts/header.php';
+$_SESSION['page_type'] = 'about';
 
 ?>
 

@@ -7,6 +7,7 @@ include BASE_URL.'model/model.php';
 //Include header
 
 include 'layouts/header.php';
+$_SESSION['page_type'] = 'blog';
 
 $blog_id = $_GET['blog_id'];
 
