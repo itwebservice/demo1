@@ -916,6 +916,22 @@ if (sizeof($group_tour_data) != 0) { ?>
 
 <!-- Rate Section End -->
 
+
+<!-- Partner Slider-->
+<div class="container">
+        <h1 class="text-center">Our Partners</h1>
+        <div class="logo-slider">
+            <div class="item"><a href="#"><img src="images/logo1.png" alt=""></a></div>
+            <div class="item"><a href="#"><img src="images/logo2_2.png" alt=""></a></div>
+            <div class="item"><a href="#"><img src="images/logo3.png" alt=""></a></div>
+            <div class="item"><a href="#"><img src="images/logo4.png" alt=""></a></div>
+            <div class="item"><a href="#"><img src="images/logo5.png" alt=""></a></div>
+            <div class="item"><a href="#"><img src="images/logo6.png" alt=""></a></div>
+        </div>
+</div>
+
+<!-- End Partner Slider-->
+
 <?php
 
 $b2c_testm = ($cached_array[0]->cms_data[4] != '') ? $cached_array[0]->cms_data[4] : [];
@@ -1542,6 +1558,23 @@ include 'layouts/footer.php';
 <script type="text/javascript" src="view/group_tours/js/index.js"></script>
 
 <script type="text/javascript" src="js/scripts.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
+
+ <!--partner slider script-->
+<script>
+        $('.logo-slider').slick({
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            dots: true,
+            arrows: true,
+            autoplayspeed: 2000,
+            infiniite: true
+        });
+</script>
+<!--End partner slider script-->
 
 <script>
     $(document).ready(function() {
