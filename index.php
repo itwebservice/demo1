@@ -4,7 +4,7 @@ include 'config.php';
 
 
 $_SESSION['page_type'] = 'index';
-   
+
 
 
 $service = $_GET['service'];
@@ -591,7 +591,7 @@ if (sizeof($package_tour_data) != 0) { ?>
                         }
                     }
                 }
-              
+
 
                 if (!empty($filter_activities)) {
                     foreach ($filter_activities as $act) {
@@ -918,16 +918,24 @@ if (sizeof($group_tour_data) != 0) { ?>
 
 
 <!-- Partner Slider-->
-<div class="container">
-        <h1 class="text-center">Our Partners</h1>
-        <div class="logo-slider">
-            <div class="item"><a href="#"><img src="images/logo1.png" alt=""></a></div>
-            <div class="item"><a href="#"><img src="images/logo2_2.png" alt=""></a></div>
+<div class="container mt-5 mb-5 pt-5 pb-5">
+    <h1 class="text-center mt-5 mb-5">Our Partners
+
+        <?php
+        $logos = json_decode($cached_array[0]->cms_data[0]->assoc_logos);
+        ?>
+
+    </h1>
+    <div class="logo-slider">
+        <?php foreach ($logos as $logo) { ?>
+            <div class="item"><a href="#"><img src="https://itourscloud.com/destination_gallery/association-logo/<?= $logo ?>.png" width="200" alt=""></a></div>
+        <?php } ?>
+        <!-- <div class="item"><a href="#"><img src="images/logo2_2.png" alt=""></a></div>
             <div class="item"><a href="#"><img src="images/logo3.png" alt=""></a></div>
             <div class="item"><a href="#"><img src="images/logo4.png" alt=""></a></div>
             <div class="item"><a href="#"><img src="images/logo5.png" alt=""></a></div>
-            <div class="item"><a href="#"><img src="images/logo6.png" alt=""></a></div>
-        </div>
+            <div class="item"><a href="#"><img src="images/logo6.png" alt=""></a></div> -->
+    </div>
 </div>
 
 <!-- End Partner Slider-->
@@ -1563,16 +1571,16 @@ include 'layouts/footer.php';
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js"></script>
 
- <!--partner slider script-->
+<!--partner slider script-->
 <script>
-        $('.logo-slider').slick({
-            slidesToShow: 4,
-            slidesToScroll: 1,
-            dots: true,
-            arrows: true,
-            autoplayspeed: 2000,
-            infiniite: true
-        });
+    $('.logo-slider').slick({
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        dots: true,
+        arrows: true,
+        autoplayspeed: 2000,
+        infiniite: true
+    });
 </script>
 <!--End partner slider script-->
 
