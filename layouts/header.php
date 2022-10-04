@@ -14,17 +14,17 @@ include "array_column.php";
 // 
 /*$file_get_c = get_content('http://localhost/itours_git/demo1/crm/view/b2c_cache.php');
 $cached_array = json_decode($file_get_c);
+*/
 
-
-function get_content($URL){
+/*function get_content($URL){
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_URL, $URL);
   $data = curl_exec($ch);
   curl_close($ch);
   return $data;
-} 
-*/
+} */
+
 // LOCAL Cache file readingc
 
 $cached_array = json_decode(file_get_contents('http://'.$_SERVER['SERVER_NAME'] . '/demo1/crm/view/b2c_cache.php'));
@@ -235,7 +235,7 @@ foreach ($int_dest_id_arr as $int_id) {
     <!-- COMMON CSS -->
 
     <link id="main-style" rel="stylesheet/less" type="text/css"
-        href="<?php echo BASE_URL_B2C; ?>css/LESS/itours-styles.less" />
+        href="<?php echo BASE_URL_B2C; ?>css/LESS/itours-styles.php" />
 
     <script src="<?php echo BASE_URL_B2C; ?>js/less.js"></script>
 
