@@ -129,7 +129,7 @@ if($country_id!=''){
             while(($row_query  = mysqli_fetch_assoc($sq_query))){
               $visa_info_arr = array();
               $country_name = addslashes($row_query['country_name']);
-              $q1 = "SELECT * FROM `visa_crm_master` WHERE `country_id`='$country_name'";
+              $q1 = "SELECT * FROM `visa_crm_master` WHERE `country_id`='$country_name' and status='1' ";
               $sq_visa = mysqlQuery($q1);
               while($row_visa = mysqli_fetch_assoc($sq_visa)){
                 
