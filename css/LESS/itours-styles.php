@@ -1891,11 +1891,11 @@ flex-wrap: wrap;
 }
 
 .ts-social-media-item {
-margin-right: 30px;
+margin-right: 20px;
 }
 
 /***************** Partner slider *******************/
-img {
+.logo-slider img {
 width: 100%;
 }
 
@@ -1927,6 +1927,48 @@ transform: scale(1.1) translateY(-5px);
 }
 
 /***************** End Partner slider *******************/
+
+/***************** Sticky social media *******************/
+.s-icons {
+top: 30%;
+left: 0;
+transform: translateY(50%);
+position: fixed;
+z-index: 100;
+}
+
+.s-icons ul {
+padding: initial;
+}
+
+.s-icons ul li {
+height: 40px;
+width: 40px;
+list-style: none;
+padding-left: 15px;
+padding-top: 6px;
+margin-top: 5px;
+color: #fff;
+}
+.fb {
+background: #4267b2;
+}
+.twit {
+background: #1da1f2;
+}
+.wapp {
+background: #25d366;
+}
+.insta {
+background: rgb(225, 48, 108);
+}
+.link {
+background: #0e76a8;
+}
+.yt {
+background: #ff0000;
+}
+/***************** End Sticky social media *******************/
 
 /***************** Home Page End *******************/
 
