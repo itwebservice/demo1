@@ -1659,14 +1659,15 @@ position: relative;
 }
 .c-cardListTable .cardList-image img {
 display: block;
-width: 270px;
-height: 160px;
+width: 250px;
+height: 130px;
 }
 
-.c-cardListTable .cardList-image span {
+.c-cardListTable .cardList-image .flag span {
 display: block;
-width: 270px;
-height: 160px;
+margin-top: 15px;
+width: 250px;
+height: 130px;
 }
 
 .c-cardListTable .cardList-image .hotelType {
