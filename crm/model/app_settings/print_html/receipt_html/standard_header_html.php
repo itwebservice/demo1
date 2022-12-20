@@ -43,7 +43,7 @@ else { $emp_name = $sq_emp['first_name'].' '.$sq_emp['last_name']; }
           <li><p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p></li>
           <li><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
             $branch_details['contact_no'] : $app_contact_no ?></li>
-          <li><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></li>
+          <li><i class="fa fa-envelope" style="margin-right: 5px;"></i><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></li>
           <li><span class="font_5">TAX NO : </span><?php echo ($branch_status=='yes' && $role!='Admin') ? strtoupper($branch_details['branch_tax']) : strtoupper($service_tax_no); ?></li>
         </ul>
       </div>

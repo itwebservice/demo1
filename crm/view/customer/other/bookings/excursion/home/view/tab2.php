@@ -78,7 +78,9 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 						$bg = '';
 						if($row_exc_payment['clearance_status']=="Pending"){ $bg="warning";}
 					    else if($row_exc_payment['clearance_status']=="Cancelled"){ $bg="danger";} 
-					    else { $bg = 'success';}
+						else if ($row_exc_payment['clearance_status'] == "Cleared") {
+							$bg = "success";
+						}
 						$pay_amount = currency_conversion($currency,$sq_exc_info['currency_code'],$row_exc_payment['payment_amount'] + $row_exc_payment['credit_charges']);
 						?>
 

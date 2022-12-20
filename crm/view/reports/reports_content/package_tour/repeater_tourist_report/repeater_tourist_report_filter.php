@@ -32,8 +32,8 @@ while($row = mysqli_fetch_assoc($sq))
 	}
 
 	//Package
-	$package_count = (int)mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where tour_status='' and customer_id = ".$row['customer_id']));
-	$package_tours = mysqlQuery('select * from package_tour_booking_master where tour_status="" and customer_id = "'.$row['customer_id'].'"');
+	$package_count = (int)mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where tour_status='' and delete_status='0' and customer_id = ".$row['customer_id']));
+	$package_tours = mysqlQuery('select * from package_tour_booking_master where tour_status="" and delete_status="0" and customer_id = "'.$row['customer_id'].'"');
 	while($row2 = mysqli_fetch_assoc($package_tours)){
 		array_push($package_collection,$row2['booking_id']);
 	}

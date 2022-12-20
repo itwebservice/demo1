@@ -3,7 +3,7 @@ include "../../../model/model.php";
 ?>
 <div class="row text-right mg_tp_20">
 	<div class="col-md-12">
-		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()" id="btn_save_modal"><i class="fa fa-plus"></i>&nbsp;&nbsp;References</button>
+		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()" id="btn_save_modal"><i class="fa fa-plus"></i>&nbsp;&nbsp;Reference</button>
 	</div>
 </div>
 

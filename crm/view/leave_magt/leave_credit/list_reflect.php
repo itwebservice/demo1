@@ -56,7 +56,7 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role!='Hr' && $role_id!='7'){
 		        <td><?= ($row_credit['paternity']<0)?0:$row_credit['paternity']?></td> 
 				<td><?= ($row_credit['leave_without_pay']<0)?0:$row_credit['leave_without_pay'] ?></td>				
 				<?php if($role_id=="1" || $role_id=="5" || $role_id=="6"){ ?><td>
-					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_credit['emp_id'] ?>)" title="Edit customer"><i class="fa fa-pencil-square-o"></i></button>
+					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_credit['emp_id'] ?>)" title="Edit Leave"><i class="fa fa-pencil-square-o"></i></button>
 				</td><?php } ?>
 			</tr>
 			<?php
@@ -69,7 +69,8 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role!='Hr' && $role_id!='7'){
 <div id="div_customer_update_modal"></div>
 <script>
 $('#tbl_customer_list').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 
 </script>

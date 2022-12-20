@@ -57,7 +57,7 @@ include "../../../model/model.php";
                     <tr>
                       <td><input class="css-checkbox" id="chk_offer" type="checkbox"><label class="css-label" for="chk_offer"> </label></td>
                       <td><input maxlength="15" value="1" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
-                      <td><select name="offer_type" id="offer_type" style="width: 125px" title="Select Type" class="form-control app_select2">
+                      <td><select name="offer_type" id="offer_type" style="width: 140px" title="Select Type" class="form-control app_select2">
                         <option value=''>*Select Type</option>
                         <option value='Offer'>Offer</option>
                         <option value='Coupon'>Coupon</option></td>
@@ -70,7 +70,7 @@ include "../../../model/model.php";
                       <td><input type='text' id="coupon_code" name="coupon_code" placeholder="Coupon Code" title="Coupon Code" style="width: 130px;"/></td>
                       <td><input type='number' id="amount" name="amount" placeholder="*Amount" class="form-control" title="Amount" style="width: 100px;"/></td>
                       <td><select name="agent_type" id="agent_type" title="Agent Type" style="width: 135px" class="form-control app_select2" multiple>
-                        <option value=''>Agent Type</option>
+                        <option value=''disabled>Agent Type</option>
                         <option value='Platinum'>Platinum</option>
                         <option value='Gold'>Gold</option>
                         <option value='Silver'>Silver</option></select></td>

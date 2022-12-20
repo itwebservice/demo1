@@ -3,7 +3,7 @@ include_once "../../../../../../model/model.php";
 $booking_id = $_POST['booking_id'];
 
 $sq_count = mysqli_num_rows(mysqlQuery("select * from package_tour_estimate_expense where booking_id='$booking_id' "));
-$sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel'"));
+$sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'"));
 ?>
  
 <div class="modal fade" id="other_p_expense_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
@@ -31,7 +31,7 @@ $sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where est
                     <tbody>
                     <?php 
                     $count = 1;
-                    $sq_query = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel'");
+                    $sq_query = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'");
                     while($row_query = mysqli_fetch_assoc($sq_query)){
                         $vendor_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
                         if($row_query['net_total'] != '0'){

@@ -40,7 +40,8 @@ $today_date = date('Y-m-d');
 		}else{
 			$sq_update = mysqlQuery("update supplier_packages set active_flag='Active' where package_id='$row_ser[package_id]'");
 		}
-		if($row_ser['active_flag']=='Inactive'){
+		$sq_updateq = mysqli_fetch_assoc(mysqlQuery("select active_flag from supplier_packages where package_id='$row_ser[package_id]'"));
+		if($sq_updateq['active_flag']=='Inactive'){
 			$bg ='danger';
 		}
 		$sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_ser[city_id]'"));

@@ -48,13 +48,13 @@ else{
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Customer Name</label> : <?= $enquiryDetails['customer_name'] ?> </div>
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Email Id</label> : <?= $enquiryDetails['email_id'] ?> </div>
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>WhatsApp Number</label> : <?= $enquiryDetails['country_code'].$enquiryDetails['whatsapp_no'] ?> </div>
-		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total Adult</label> : <?= $enquiryDetails['total_adult'] ?> </div>
+		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total Adult(s)</label> : <?= $enquiryDetails['total_adult'] ?> </div>
 	</div>
     <div class="row">
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Child Without Bed</label> : <?= $enquiryDetails['children_without_bed'] ?> </div>
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Child With Bed</label> : <?= $enquiryDetails['children_with_bed'] ?> </div>
-		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total Infant</label> : <?= $enquiryDetails['total_infant'] ?> </div>
-		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total Members</label> : <?= $enquiryDetails['total_members'] ?> </div>
+		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total Infant(s)</label> : <?= $enquiryDetails['total_infant'] ?> </div>
+		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total Guest(s)</label> : <?= $enquiryDetails['total_members'] ?> </div>
 	</div>
     <div class="row">
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Quotation Date</label> : <?= date('d/m/Y', strtotime($sq_quotation['quotation_date'])) ?> </div>
@@ -62,8 +62,8 @@ else{
 		<div class="col-md-3" style="border-right: 1px solid #ddd;"> <div class="highlighted_cost"><label>Created By</label> : <?= $emp_name ?> </div></div>
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label class="highlighted_cost">Quotation ID : <?= get_quotation_id($sq_quotation['quotation_id'],$year) ?> </label></div>
 	</div>
-	<div class="row">
-		<div class="col-md-12 mg_bt_10" style="border-right: 1px solid #ddd"><label>Hotel Requirements</label>: <?= $enquiryDetails['hotel_requirements'] ?></div>
+	<div class="row mg_tp_20">
+		<div class="col-md-12 mg_bt_10"><legend>Hotel Requirements :</legend> <?= $sq_quotation['hotel_req'] ?></div>
 	</div>
 	
 </div>
@@ -76,11 +76,11 @@ else{
 			<th>S_No.</th>
 			<th>City_Name</th>
 			<th>Hotel_Name</th>
-			<th>Room_Category</th>
+			<th>R_Category</th>
 			<th>Meal_plan</th>
-			<th>H_Check_In</th>
-            <th>H_Check_Out</th>
-            <th>H_Category</th>
+			<th>Check_In</th>
+            <th>Check_Out</th>
+            <th>Category</th>
             <th>NIGHTS</th>
             <th>Rooms</th>
             <th>Extra_Bed</th>

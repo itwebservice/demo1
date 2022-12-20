@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="booking_id_filter1" id="booking_id_filter1" style="width:100%" onchange="payment_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_booking = mysqlQuery("select * from hotel_booking_master where customer_id='$customer_id'");
+			        $sq_booking = mysqlQuery("select * from hotel_booking_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 						$date = $row_booking['created_at'];

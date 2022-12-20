@@ -55,7 +55,7 @@ include "../../../../../model/app_settings/generic_sale_widget.php";
 				<tbody>
 				<?php 
 					$count = 0;
-					$query = "select * from hotel_booking_payment where booking_id='$booking_id' ";
+					$query = "select * from hotel_booking_payment where booking_id='$booking_id' and delete_status='0' ";
 					$sq_payment = mysqlQuery($query);
 					while($row_payment = mysqli_fetch_assoc($sq_payment))
 					{
@@ -72,7 +72,10 @@ include "../../../../../model/app_settings/generic_sale_widget.php";
 							else if($row_payment['clearance_status']=="Cancelled"){ 
 								$bg='danger';
 							}
-							else{ $bg = 'success';}
+							else if($row_payment['clearance_status']=="Cleared"){ 
+								$bg='success';
+							}
+							else{ $bg = '';}
 				
 
 						?>

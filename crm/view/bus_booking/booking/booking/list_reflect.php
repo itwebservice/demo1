@@ -23,7 +23,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
 
-$query = "select * from bus_booking_master where financial_year_id='$financial_year_id' ";
+$query = "select * from bus_booking_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 
 if($booking_id!=""){
 
@@ -83,14 +83,16 @@ $query .= " order by booking_id desc";
 
 			$pass_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id='$row_booking[booking_id]'"));
 			$cancel_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id='$row_booking[booking_id]' and status='Cancel'"));
-		 	if($pass_count==$cancel_count){
-   				$bg="danger";
+			if($pass_count==$cancel_count){
+				$bg="danger";
 				$update_btn = '';
-   			}
-   			else{
-   				$bg="#fff";
+				$delete_btn = '';
+			}
+			else{
+				$bg="";
 				$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="update_modal('.$row_booking['booking_id'].')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
-   			}
+				$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['booking_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
+			}
 
 			$date = $row_booking['created_at'];
 			$yr = explode("-", $date);
@@ -103,16 +105,14 @@ $query .= " order by booking_id desc";
 				$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 			}
 
-
 			$sq_bus = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_entries where booking_id='$row_booking[booking_id]'"));
 			$sq_total_seates = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_entries where booking_id='$row_booking[booking_id]'")); 
 			$sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(`credit_charges`) as sumc from bus_booking_payment_master where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 			$credit_card_charges = $sq_paid_amount['sumc'];
 
-			$paid_amount = $sq_paid_amount['sum'];
-			$paid_amount = ($paid_amount == '')?0:$paid_amount;
-			$sale_amount = $row_booking['net_total']-$row_booking['cancel_amount'] + $credit_card_charges;
-			$bal_amount = $sale_amount - $paid_amount;
+			$paid_amount = $sq_paid_amount['sum'] + $credit_card_charge;
+			$paid_amount = ($paid_amount == '') ? 0 : $paid_amount;
+			$sale_amount = $row_booking['net_total'] + $credit_card_charge;
 			
 			$cancel_amt = $row_booking['cancel_amount'];
 			if($cancel_amt == ""){ $cancel_amt = 0;}
@@ -120,6 +120,12 @@ $query .= " order by booking_id desc";
 			$total_sale = $total_sale+$row_booking['net_total'] + $credit_card_charges;
 			$total_cancelation_amount = $total_cancelation_amount+$cancel_amt;
 			$total_balance = $total_balance+$sale_amount;
+
+			if($bg != ''){
+				$bal_amount = ($paid_amount > $cancel_amt) ? 0 : floatval($cancel_amt) - floatval($paid_amount);
+			}else{
+				$bal_amount = floatval($sale_amount) - floatval($paid_amount) - $credit_card_charge;
+			}
 
 			$invoice_no = get_bus_booking_id($row_booking['booking_id'],$year);
 			$booking_id = $row_booking['booking_id'];
@@ -134,15 +140,15 @@ $query .= " order by booking_id desc";
 			$service_tax = $row_booking['service_tax_subtotal'];
 
 			//**Basic Cost
-			$basic_cost = $row_booking['basic_cost']-$row_booking['cancel_amount'];			
-			$net_amount = $row_booking['net_total']-$row_booking['cancel_amount'];
+			$basic_cost = $row_booking['basic_cost'];			
+			$net_amount = $row_booking['net_total'];
 			$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='Bus'"));   
 			$sac_code = $sq_sac['hsn_sac_code'];
 
 			if($app_invoice_format == 4)
 			$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/tax_invoice_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$paid_amount&balance_amount=$bal_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&pass_count=$pass_count&credit_card_charges=$credit_card_charges";
 			else
-			$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/bus_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$paid_amount&balance_amount=$bal_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges";
+			$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/bus_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$paid_amount&balance_amount=$bal_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges&canc_amount=$cancel_amt&bg=$bg";
 			$temp_arr = array( "data" => array(
 				$row_booking['invoice_pr_id'],
 				get_bus_booking_id($row_booking['booking_id'],$year),
@@ -158,9 +164,9 @@ $query .= " order by booking_id desc";
 				
 				<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="view_modal('.$row_booking['booking_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
 
-				'.$update_btn
-			  ), "bg" =>$bg );
-			  array_push($array_s,$temp_arr); 
+				'.$update_btn.$delete_btn
+				), "bg" =>$bg );
+				array_push($array_s,$temp_arr); 
 			}
 			$footer_data = array("footer_data" => array(
 				'total_footers' => 4,

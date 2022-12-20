@@ -9,7 +9,7 @@ $refund_amount = $sq_refund['refund_amount'];
 $tourwise_traveler_id = $sq_refund['tourwise_traveler_id'];
 
 
-$sq = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id'"));
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id' and delete_status='0'"));
 $traveler_group_id = $sq['traveler_group_id'];
 
 

@@ -141,7 +141,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray); 
 
-$query = "select * from vendor_payment_master where payment_amount!='0' ";
+$query = "select * from vendor_payment_master where payment_amount!='0' and delete_status='0' ";
 if($financial_year_id!=""){
     $query .= " and financial_year_id='$financial_year_id'";
 }

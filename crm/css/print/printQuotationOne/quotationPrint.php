@@ -208,7 +208,7 @@ li.print_acco_hotel_star {
 section.print_single_itinenary {
     list-style-type: none;
     position: relative;
-    margin: 45px 0 0px 30px;
+    margin: 50px 0 0px 30px;
     padding: 10px 0 0px 58px;
     border-left: 1px solid <?= $theme_color ?>;
 }

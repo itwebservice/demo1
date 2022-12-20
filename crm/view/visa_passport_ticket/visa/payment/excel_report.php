@@ -85,7 +85,7 @@ $payment_mode = $_GET['payment_mode'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 $financial_year_id = $_SESSION['financial_year_id'];
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$visa_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$visa_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -198,7 +198,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 
         $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('B'.$row_count, "Sr. No")
-            ->setCellValue('C'.$row_count, "Visa ID")
+            ->setCellValue('C'.$row_count, "Booking ID")
             ->setCellValue('D'.$row_count, "Customer Name")
             ->setCellValue('E'.$row_count, "Receipt Date")
             ->setCellValue('F'.$row_count, "Mode")

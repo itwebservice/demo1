@@ -16,7 +16,7 @@ $branch_id = $_POST['branch_id'];
 
 $array_s = array();
 $temp_arr = array();
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($customer_id!=""){
 $query .= " and customer_id='$customer_id'";
 }
@@ -42,7 +42,7 @@ if($branch_id!=""){
 $query .= " and emp_id in(select emp_id from emp_master where branch_id = '$branch_id')";
 }
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by ticket_id desc";
+// $query .= " order by ticket_id desc";
 
 $count = 0;
 $total_balance=0;
@@ -67,7 +67,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
 	$contact_no = $encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
 	$email_id = $encrypt_decrypt->fnDecrypt($sq_customer_info['email_id'], $secret_key);
-	if($sq_customer_info['type']=='Corporate'){
+	if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type']=='B2B'){
 		$customer_name = $sq_customer_info['company_name'];
 	}else{
 		$customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
@@ -79,7 +79,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
 	$sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
 	$branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-	$sq_total_member = mysqli_num_rows(mysqlQuery("select ticket_id from ticket_master_entries where ticket_id = '$row_ticket[ticket_id]' AND status!='Cancel'"));
+	$sq_total_member = mysqli_num_rows(mysqlQuery("select ticket_id from ticket_master_entries where ticket_id = '$row_ticket[ticket_id]'"));
 
 	$due_date = ($row_ticket['due_date'] == '1970-01-01') ? 'NA' : get_date_user($row_ticket['due_date']);
 	$sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum, sum(credit_charges) as sumc from ticket_payment_master where ticket_id='$row_ticket[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
@@ -94,7 +94,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	
 	if($cancel_amount=="") {$cancel_amount = 0;  }
 
-	if($pass_count == $cancel_count){
+	if($row_ticket['cancel_type'] == '1'){
 		if($paid_amount > 0){
 			if($cancel_amount >0){
 				if($paid_amount > $cancel_amount){
@@ -109,6 +109,9 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 		else{
 			$bal = $cancel_amount;
 		}
+	}else if($row_ticket['cancel_type'] == '2'||$row_ticket['cancel_type'] == '3'){
+		$cancel_estimate = json_decode($row_ticket['cancel_estimate']);
+		$bal = (($total_sale - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_amount) - $paid_amount;
 	}
 	else{
 		$bal = $total_sale - $paid_amount;
@@ -132,14 +135,14 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	$purchase_amt = 0;
 	$i=0;
 	$p_due_date = '';
-	$sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]'"));
+	$sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]' and delete_status='0'"));
 	if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-	$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]'");
+	$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]' and delete_status='0'");
 	while($row_purchase = mysqli_fetch_assoc($sq_purchase)){		
 		$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 		$total_purchase = $total_purchase + $purchase_amt;
 	}
-	$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]'"));		
+	$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]' and delete_status='0'"));		
 	$vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
 	if($vendor_name == ''){ $vendor_name1 = 'NA';  }
 	else{ $vendor_name1 = $vendor_name; }
@@ -205,6 +208,13 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	$E_Ticket_url = BASE_URL."model/app_settings/print_html/booking_form_html/flightTicket.php?ticket_id=$ticket_id&invoice_date=$invoice_date";
 
 	$sq_incentive = mysqli_fetch_assoc(mysqlQuery("select * from booker_sales_incentive where booking_id='$row_ticket[ticket_id]' and service_type='Ticket Booking'"));
+
+	if($row_ticket['cancel_type'] == 2 || $row_ticket['cancel_type'] == 3){
+		$bg="warning";
+	}
+	$cancel_estimate = json_decode($row_ticket['cancel_estimate']);
+	$sales_return = ($row_ticket['cancel_type'] == 1 || $row_ticket['cancel_type'] == 2 || $row_ticket['cancel_type'] == 3) ? number_format(floatval($cancel_estimate[0]->ticket_total_cost),2) : 'NA';
+
 	$temp_arr = array( "data" => array(
 
 	(int)(++$count),
@@ -214,9 +224,8 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	$email_id,
 	$sq_total_member,
 	$row_ticket['tour_type'],
-	$row_ticket['type_of_tour'],
 	get_date_user($row_ticket['created_at']),
-	'<button class="btn btn-info btn-sm" onclick="ticket_view_modal('. $row_ticket['ticket_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" onclick="ticket_view_modal('. $row_ticket['ticket_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($row_ticket['basic_cost'],2),
 	number_format($other_charges,2),
 	number_format($row_ticket['service_charge']+$row_ticket['markup'],2),
@@ -227,11 +236,12 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	number_format($cancel_amount, 2),
 	number_format($total_bal, 2),
 	number_format($paid_amount, 2),
-	'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_ticket['ticket_id'] .')"  data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_ticket['ticket_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	$sales_return,
 	number_format($bal, 2),
 	$due_date,
 	number_format($total_purchase,2),
-	'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_ticket['ticket_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_ticket['ticket_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	$branch_name,
 	$emp_name,
 	number_format($sq_incentive['incentive_amount'],2)

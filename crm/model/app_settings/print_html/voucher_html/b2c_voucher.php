@@ -3,6 +3,13 @@
 include "../../../model.php"; 
 include "../print_functions.php";
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2c/sales/index.php'"));
+$branch_status = $sq['branch_status'];
+
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $booking_id = $_GET['booking_id'];
 $sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from b2c_sale where booking_id='$booking_id' "));
 
@@ -74,11 +81,11 @@ while($sq_accomodation = mysqli_fetch_assoc( $sq_accomodation1_hotel)){
                       <?= ($total_days).'N'?><br>
                     </div>
                   </li>
-                  <li class="col-md-3 mg_tp_10 mg_bt_10">
+                  <li class="col-md-6 mg_tp_10 mg_bt_10">
                     <div class="print_quo_detail_block">
                       <i class="fa fa-users" aria-hidden="true"></i><br>
                       <span>TOTAL GUEST(s)</span><br>
-                      <?= $adults ?> A, <?= $children ?> C, <?= $extra_bed ?> E, <?= $infants ?> I<br>
+                      <?= $adults ?> Adult(s), <?= $children ?> Child(ren), <?= $extra_bed ?> Extra Bed(s), <?= $infants ?> Infant(s)<br>
                     </div>
                   </li>
                   <li class="col-md-3 mg_tp_10 mg_bt_10">
@@ -187,9 +194,10 @@ $total_days = round($total_days1 / 86400);
       <div class="col-md-6 no-pad">
         <div class="print_header_contact text-right">
           <span class="title"><?php echo $app_name; ?></span><br>
-          <p><?php echo $app_address; ?></p>
-          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo $app_contact_no; ?></p>
-          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></p>
+          <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p>
+          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
+          $branch_details['contact_no'] : $app_contact_no ?></p>
+          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
         </div>
       </div>
     </section>
@@ -213,11 +221,11 @@ $total_days = round($total_days1 / 86400);
                   <?php echo ($total_days).' Days'; ?><br>
                 </div>
               </li>
-              <li class="col-md-3 mg_tp_10 mg_bt_10">
+              <li class="col-md-6 mg_tp_10 mg_bt_10">
                 <div class="print_quo_detail_block">
                   <i class="fa fa-users" aria-hidden="true"></i><br>
                   <span>TOTAL GUEST(s)</span><br>
-                  <?= $adults ?> A, <?= $children ?> C, <?= $extra_bed ?> E, <?= $infants ?> I<br>
+                  <?= $adults ?> Adult(s), <?= $children ?> Child(ren), <?= $extra_bed ?> Extra Bed(s), <?= $infants ?> Infant(s)<br>
                 </div>
               </li>
               <li class="col-md-3 mg_tp_10 mg_bt_10">
@@ -361,7 +369,7 @@ $total_days = round($total_days1 / 86400);
     ?>
     <section class="print_sec main_block">
       <div class="section_heding">
-        <h2>HOTEL DETAILs</h2>
+        <h2>HOTEL DETAILS</h2>
         <div class="section_heding_img">
           <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
         </div>

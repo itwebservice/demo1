@@ -29,7 +29,6 @@ while($rows = mysqli_fetch_assoc($pnr)){
         '<input type="hidden" name="entryId" value="'.$rows['entry_id'].'">',
         ), $bg = "");
         array_push($array_s,$temp_arr); 
-   
 }
 echo json_encode($array_s);	
 ?>

@@ -108,7 +108,7 @@ $sq_asset = mysqli_fetch_assoc(mysqlQuery("select * from fixed_asset_entries whe
           </div>    
           <div class="row text-center mg_bt_10">
             <div class="col-md-12">
-              <button id="btn_update" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>
+              <button id="btn_update" class="btn btn-sm btn-success"><i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;Update</button>
             </div>
           </div>
         </div>   

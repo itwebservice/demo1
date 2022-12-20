@@ -13,7 +13,7 @@ include_once('../../inc/vendor_generic_functions.php');
 			<select id="estimate_id_filter" name="estimate_id_filter" style="width:100%" title="Supplier Costing">
 		        <option value="">Supplier Costing</option>
 		        <?php 
-		        $sq_estimate = mysqlQuery("select * from vendor_estimate where status='Cancel' order by estimate_id desc");
+		        $sq_estimate = mysqlQuery("select * from vendor_estimate where status='Cancel' and delete_status='0' order by estimate_id desc");
 		        while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
 							$date = $row_estimate['purchase_date'];
 							$yr = explode("-", $date);

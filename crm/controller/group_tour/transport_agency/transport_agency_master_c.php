@@ -14,7 +14,7 @@ $landline_no = $_POST["landline_no"];
 $email_id = $_POST["email_id"];
 $contact_person_name = $_POST["contact_person_name"];
 $immergency_contact_no = $_POST['immergency_contact_no'];
-$country = $_POST['country'];
+// $country = $_POST['country'];
 $website = $_POST['website'];
 $transport_agency_address = $_POST["transport_agency_address"];
 $opening_balance = $_POST['opening_balance'];
@@ -30,6 +30,6 @@ $side = $_POST['side'];
 $supp_pan = $_POST['supp_pan'];
 $as_of_date = $_POST['as_of_date'];
 $transport_agency = new transport_agency();
-$transport_agency->transport_agency_master_save( $city_id, $transport_agency_name, $mobile_no, $landline_no, $email_id, $contact_person_name, $immergency_contact_no, $transport_agency_address, $country, $website, $opening_balance, $active_flag, $service_tax_no, $bank_name,$account_name, $account_no, $branch, $ifsc_code, $state,$side,$supp_pan,$as_of_date);
+$transport_agency->transport_agency_master_save( $city_id, $transport_agency_name, $mobile_no, $landline_no, $email_id, $contact_person_name, $immergency_contact_no, $transport_agency_address, $website, $opening_balance, $active_flag, $service_tax_no, $bank_name,$account_name, $account_no, $branch, $ifsc_code, $state,$side,$supp_pan,$as_of_date);
 
 ?>

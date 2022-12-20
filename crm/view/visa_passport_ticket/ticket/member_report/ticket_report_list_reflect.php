@@ -11,7 +11,7 @@ $ticket_id = $_POST['ticket_id'];
 $cust_type = $_POST['cust_type'];
 $company_name = $_POST['company_name'];
 
-$query = "select * from ticket_master where financial_year_id='$financial_year_id' ";
+$query = "select * from ticket_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";
 }
@@ -28,7 +28,6 @@ if($role == "B2b"){
 	$query .= " and emp_id='$emp_id'";
 }
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by ticket_id desc ";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
 
@@ -41,8 +40,9 @@ $query .= " order by ticket_id desc ";
 			<th>Passenger_Name</th>
 			<th>Adolescence</th>
 			<th>Ticket_No</th>
-			<th>Main_Ticket_No</th>
-			<th>Baggage</th>
+			<th>Airline_Pnr</th>
+			<th>Main_Ticket_Number</th>
+			<th>Check_In&Cabin_Baggage</th>
 			<th>Seat_No</th>
 			<th>Meal_plan</th>
 	    </tr>
@@ -63,53 +63,59 @@ $query .= " order by ticket_id desc ";
             $yr = explode("-", $date);
         	$year = $yr[0];
 
-            $from_city_arr = array();
-            $to_city_arr = array();
-            $sq_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE ticket_id='$row_ticket[ticket_id]'");
-            while($row_trip = mysqli_fetch_assoc($sq_trip)){
-
-				$dep_city = explode('(',$row_trip['departure_city']);
-				$arr_city = explode('(',$row_trip['arrival_city']);
-
-				$dep_city1 = explode(')',$dep_city[1]);
-				$arr_city1 = explode(')',$arr_city[1]);
-				array_push($from_city_arr,$dep_city1[0]);
-				array_push($to_city_arr,$arr_city1[0]);
-            }
-
 			$sq_entry = mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]'");
-			while($row_entry = mysqli_fetch_assoc($sq_entry)){
-
+			while($row_passenger1 = mysqli_fetch_assoc($sq_entry)){
+				
+				$trip_seat_arr = array();
+				$trip_meal_arr = array();
+				$from_city_arr = array();
+				$to_city_arr = array();
+				$seat_nos = explode('/',$row_passenger1['seat_no']);
+				$meal_plans = explode('/',$row_passenger1['meal_plan']);
+				$i = 0;
+				$sq_ticket_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE passenger_id='$row_passenger1[entry_id]'");
+				while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
+					if($row_trip['status'] != 'Cancel'){
+						array_push($trip_seat_arr,$seat_nos[$i]);
+						array_push($trip_meal_arr,$meal_plans[$i]);
+						$dep_city = explode('(',$row_trip['departure_city']);
+						$arr_city = explode('(',$row_trip['arrival_city']);
+		
+						$dep_city1 = explode(')',$dep_city[1]);
+						$arr_city1 = explode(')',$arr_city[1]);
+						array_push($from_city_arr,$dep_city1[0]);
+						array_push($to_city_arr,$arr_city1[0]);
+					}
+					$i++;
+				}
 				$seat_no_string = '';
 				$meal_plan_string = '';
-				$seat_nos = explode('/',$row_entry['seat_no']);
-				for($i = 0; $i < sizeof($seat_nos); $i++){
-					$seat_no_string .= $seat_nos[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')';
-					if($i != (sizeof($seat_nos)-1)){
-						$seat_no_string .= ', ';
+				for($i = 0; $i < sizeof($trip_seat_arr); $i++){
+					$seat_no_string .= ($trip_seat_arr[$i]!='' && $from_city_arr[$i]) ? $trip_seat_arr[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')' : '';
+					if($i != (sizeof($trip_seat_arr)-1)){
+						$seat_no_string .= ($from_city_arr[$i]!='') ? ', ' : '';
 					}
 				}
-				$meal_plans = explode('/',$row_entry['meal_plan']);
-				for($i = 0; $i < sizeof($meal_plans); $i++){
-					$meal_plan_string .= $meal_plans[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')';
-					if($i != (sizeof($meal_plans)-1)){
-						$meal_plan_string .= ', ';
+				for($i = 0; $i < sizeof($trip_meal_arr); $i++){
+					$meal_plan_string .= ($trip_meal_arr[$i]!='' && $from_city_arr[$i]) ? $trip_meal_arr[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')' : '';
+					if($i != (sizeof($trip_meal_arr)-1)){
+						$meal_plan_string .= ($from_city_arr[$i]!='') ? ', ' : '';
 					}
 				}
-
-				$bg = ($row_entry['status']=='Cancel') ? 'danger' : '';
+				$bg = ($row_passenger1['status']=='Cancel') ? 'danger' : '';
 				?>
 				<tr class="<?= $bg ?>">
 					<td><?= ++$count ?></td>
 					<td><?= get_ticket_booking_id($row_ticket['ticket_id'],$year) ?></td>
 					<td><?= $cust_name ?></td>
-					<td><?= $row_entry['first_name']." ".$row_entry['last_name'] ?></td>
-					<td><?= $row_entry['adolescence'] ?></td>
-					<td><?php echo ($row_entry['ticket_no']!='') ? $row_entry['ticket_no'] : 'NA' ?></td>
-                    <td><?php echo ($row_entry['main_ticket']!='') ? $row_entry['main_ticket'] : 'NA'; ?></td>
-                    <td><?php echo ($row_entry['baggage_info']!='') ? $row_entry['baggage_info'] : 'NA'; ?></td>
-                    <td><?php echo ($row_entry['seat_no'] != '' ) ? $seat_no_string : 'NA'; ?></td>
-                    <td><?php echo ($row_entry['meal_plan'] != '' ) ? $meal_plan_string : 'NA'; ?></td>
+					<td><?= $row_passenger1['first_name']." ".$row_passenger1['last_name'] ?></td>
+					<td><?= $row_passenger1['adolescence'] ?></td>
+					<td><?php echo ($row_passenger1['ticket_no'] != '') ? strtoupper($row_passenger1['ticket_no']) : 'NA' ?></td>
+					<td><?php echo ($row_passenger1['gds_pnr'] != '') ? strtoupper($row_passenger1['gds_pnr']) : 'NA'; ?></td>
+                    <td><?php echo ($row_ticket['ticket_reissue']) ? strtoupper($row_passenger1['main_ticket']) : 'NA'; ?></td>
+                    <td><?php echo ($row_passenger1['baggage_info'] != '') ? $row_passenger1['baggage_info'] : 'NA'; ?></td>
+                    <td><?php echo ($seat_no_string != '' ) ? $seat_no_string : 'NA'; ?></td>
+                    <td><?php echo ($meal_plan_string != '' ) ? $meal_plan_string : 'NA'; ?></td>
 				</tr>
 				<?php
 			}
@@ -122,6 +128,7 @@ $query .= " order by ticket_id desc ";
 
 <script>
 	$('#tbl_ticket_report').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>

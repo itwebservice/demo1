@@ -162,11 +162,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
 
               </div> 
 
-              <div class="col-md-3 col-sm-6 mg_bt_10">
-
-                  <input type="text" id="employer_pf1" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="validate_balance(this.id);calculate_total_payable('1')"  >
-
-              </div> 
+             
 
               <div class="col-md-3 col-sm-6 mg_bt_10">
 
@@ -200,6 +196,11 @@ $financial_year_id = $_SESSION['financial_year_id'];
               <div class="col-md-3 col-sm-6 mg_bt_10">
                   <input class="form-control" id="txt_deduction1" name="txt_deduction" type="text" placeholder="Total Deductions" title="Total Deductions"  disabled/>
               </div>
+              <div class="col-md-3 col-sm-6 mg_bt_10">
+
+<input type="text" id="employer_pf1" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="validate_balance(this.id);calculate_total_payable('1')"  >
+
+</div> 
             </div>
           </div> 
           <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_10">

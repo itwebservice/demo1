@@ -1,6 +1,8 @@
 
 
-
+<div class="col-md-12 text-right">
+		<button class="btn btn-excel btn-sm" onclick="exportToExcel('itinerary_report')" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>
+	</div>
 <div class="app_panel_content Filter-panel">
 		<div class="row">
 			<div class="col-md-3 col-sm-4 mg_bt_10_sm_xs">
@@ -16,7 +18,7 @@
 
 <div id="div_list" class="main_block mg_tp_20">
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
-<table id="gpd_tour_report" class="table table-hover" style="margin: 20px 0 !important;">         
+<table id="itinerary_report" class="table table-hover" style="margin: 20px 0 !important;">         
 </table>
 </div></div></div>
 </div>
@@ -46,7 +48,7 @@ $( "#from_date, #to_date" ).datetimepicker({ timepicker:false, format:'d-m-Y' })
 	{ title : "Booking Id"},
 	{ title : "Customer Name"},
 	{ title : "Special Attraction"},
-	{ title : "Program Details"},
+	{ title : "Day Wise Program Details"},
 	{ title : "Overnight Stay"},
 	{ title : "Meal Plan"}
 	
@@ -54,7 +56,7 @@ $( "#from_date, #to_date" ).datetimepicker({ timepicker:false, format:'d-m-Y' })
 ];
 		$.post('report_reflect/itenary report/get_report.php', { date : fromdate}, function(data){
 		// $('#div_list').html(data);
-		pagination_load(data, column, true, true, 20, 'gpd_tour_report');
+		pagination_load(data, column, true, true, 20, 'itinerary_report');
 	});
 	}
 	

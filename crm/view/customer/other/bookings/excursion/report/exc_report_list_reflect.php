@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $exc_id = $_POST['exc_id'];
 $customer_id = $_SESSION['customer_id'];
 
-$query = "select * from excursion_master where 1 ";
+$query = "select * from excursion_master where 1 and delete_status='0' ";
 $query .=" and customer_id='$customer_id'";
 if($exc_id!=""){
 	$query .=" and exc_id='$exc_id'";

@@ -45,7 +45,16 @@ function get_source_enq_strong($id,$type){
  $count = mysqli_num_rows($res);
  while($db = mysqli_fetch_assoc($res)) {
     $decodeec = json_decode($db['enquiry_content'],true);
-   foreach($decodeec as $dc)
+   
+    if($db['enquiry_type'] == 'Flight Ticket')
+        {
+        $tourdetail  = json_decode($db['enquiry_content'],true);
+            foreach($tourdetail as $detail)
+            {
+                $budget += (int)$detail['budget'];
+            }
+        }
+    foreach($decodeec as $dc)
    {
         if($dc['name'] == 'budget')
         {
@@ -198,7 +207,7 @@ function get_enq_etr_budget($id,$type){
    }
 }
 
-$total_budget =0;
+$total_budget_convert =0;
 function get_enq_etr_convert($id,$type){
     $query1 = "SELECT * FROM `references_master` INNER JOIN enquiry_master on references_master.reference_id = enquiry_master.reference_id
         INNER JOIN enquiry_master_entries ON enquiry_master.enquiry_id = enquiry_master_entries.enquiry_id where references_master.reference_id='".$id."'and enquiry_master_entries.status != 'False' and enquiry_master_entries.followup_status = 'Converted' ".$_SESSION['dateqry'];
@@ -232,17 +241,17 @@ function get_enq_etr_convert($id,$type){
             }
         }
      }
-   global $total_budget;
+   global $$total_budget_convert;
 
    if($type == 'display')
    {
-       $total_budget += $budget;     
+       $$total_budget_convert += $budget;     
 
        return ' ('.$budget .')';
    }
    elseif($type == 'total')
    {
-       return '('. $total_budget.')';
+       return '('. $$total_budget_convert.')';
    }
 }
 if(!empty($fromdate) && !empty($todate))
@@ -283,28 +292,31 @@ $count = 1;
         
    
     $footer_data = array("footer_data" => array(
-        'total_footers' => 7,
+        'total_footers' => 8,
         
         'foot0' => "",
-        'class0' => "text-center info",
+        'class0' => "text-left info",
 
         'foot1' => "Total :",
-        'class1' => "text-center info",
+        'class1' => "text-left info",
     
         'foot2' => get_source_enq($id,'total'),
-        'class2' => "text-center success",
+        'class2' => "text-left success",
     
         'foot3' => get_source_enq_strong($id,'total'),
-        'class3' => "text-center success",
+        'class3' => "text-left success",
     
         'foot4' => get_source_enq_hot($id,'total'),
-        'class4' => "text-center success",
+        'class4' => "text-left success",
     
         'foot5' => get_source_enq_cold($id,'total'),
-        'class5' => "text-center success",
+        'class5' => "text-left success",
 
         'foot6' => get_enq_etr_budget($id,'total'),
-        'class6' => "text-center success",
+        'class6' => "text-left success",
+        
+        'foot7' => get_enq_etr_convert($id,'total'),
+        'class7' => "text-left success",
         )
     );
     array_push($array_s, $footer_data);

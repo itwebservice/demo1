@@ -4,11 +4,11 @@ include_once('../../inc/vendor_generic_functions.php');
 
 $estimate_id = $_POST['estimate_id'];
 
-$query = "select * from vendor_estimate where status='Cancel' ";
+$query = "select * from vendor_estimate where status='Cancel' and delete_status='0' ";
 if($estimate_id!=""){
 	$query .=" and estimate_id='$estimate_id'";
 }
-$query .=" order by estimate_id desc ";
+// $query .=" order by estimate_id desc ";
 ?>
 
 
@@ -72,6 +72,7 @@ $query .=" order by estimate_id desc ";
 
 <script>
 $('#tbl_list').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>

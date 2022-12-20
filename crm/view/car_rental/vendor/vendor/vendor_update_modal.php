@@ -19,7 +19,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Vehicle information</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Vehicle Supplier Details</h4>
       </div>
       <div class="modal-body">
       <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_10">
@@ -57,7 +57,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
         </div>
         <div class="row">
           <div class="col-sm-3 col-xs-6 mg_bt_10">
-            <select name="cust_state1" id="cust_state1" title="Select State" style="width:100%" required>
+            <select name="cust_state1" id="cust_state1" title="Select State/Country Name" style="width:100%" required>
               <?php if($sq_vendor['state_id']!='0'){
                 $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_vendor[state_id]'"));
               
@@ -67,18 +67,25 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
               <?php get_states_dropdown() ?>
             </select>
           </div>
-          <div class="col-sm-3 col-sm-6 mg_bt_10">
+          <!-- <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="country1" name="country1" placeholder="Country" title="Country" value="<?= $sq_vendor['country'] ?>">
+          </div> -->
+          <div class="col-sm-3 col-sm-6 mg_bt_10">
+            <input type="text" name="website1" id="website1" placeholder="Website" title="Website" value="<?= $sq_vendor['website']?>">
           </div>
           <div class="col-sm-3 col-sm-6 mg_bt_10">
-             <input type="text" name="website1" id="website1" placeholder="Website" title="Website" value="<?= $sq_vendor['website']?>">
+            <select name="active_flag1" id="active_flag1" title="Status">
+                <option value="<?= $sq_vendor['active_flag'] ?>"><?= $sq_vendor['active_flag'] ?></option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
           </div>
         </div>
       </div>
       <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_30">
         <legend>Bank Information</legend> 
         <div class="row">
-           <div class="col-sm-3 col-sm-6 mg_bt_10">
+          <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="bank_name1" name="bank_name1" class="bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_vendor['bank_name'] ?>">
           </div>
           <div class="col-sm-3 col-sm-6 mg_bt_10">
@@ -99,32 +106,25 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
             <input type="text" id="service_tax_no1" name="service_tax_no1"  placeholder="Tax No" title="Tax No" value="<?= strtoupper($sq_vendor['service_tax_no']) ?>" onchange="validate_alphanumeric(this.id)" style="text-transform: uppercase;">
           </div> 
           <div class="col-md-3 col-sm-6 mg_bt_10">
-              <input type="text" id="supp_pan" onchange="validate_alphanumeric(this.id)" name="supp_pan" value="<?= $sq_vendor['pan_no']?>"" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+              <input type="text" id="supp_pan" onchange="validate_alphanumeric(this.id)" name="supp_pan" value="<?= $sq_vendor['pan_no']?>" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
           </div>
           <div class="col-sm-3 col-sm-6 mg_bt_10">
-           <input type="hidden" id="opening_balance1" name="opening_balance1" placeholder="Opening Balance1" title="Opening Balance" value="<?= $sq_vendor['opening_balance'] ?>" <?= $value ?> onchange="validate_balance(this.id)">
+            <input type="number" id="opening_balance1" name="opening_balance1" placeholder="*Opening Balance" title="Opening Balance" value="<?= $sq_vendor['opening_balance'] ?>">
           </div>
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <select class="form-control" name="side1" id="side1" title="Balance Side" data-toggle="tooltip">
+              <option value="<?= $sq_vendor['side'] ?>"><?= $sq_vendor['side'] ?></option>
+              <?php if($sq_vendor['side'] != 'Debit'){ ?>
+                <option value="Debit">Debit</option>
+              <?php }
+              if($sq_vendor['side'] != 'Credit'){ ?>
+              <option value="Credit">Credit</option>
+              <?php } ?>
+            </select>
+          </div> 
           <div class="col-sm-3 mg_bt_10">
             <input type="hidden" id="as_of_date1" name="as_of_date1" placeholder="*As of Date" title="As of Date" value="<?= get_date_user($sq_vendor['as_of_date']) ?>">
           </div>
-          <div class="col-md-3 col-sm-6 mg_bt_10">
-            <select class="hidden" name="side1" id="side1" title="Select side" disabled>
-              <option value="<?= $sq_vendor['side'] ?>"><?= $sq_vendor['side'] ?></option>
-              <option value="">*Select Side</option>
-              <option value="Credit">Credit</option>
-              <option value="Debit">Debit</option>
-            </select>
-          </div> 
-        </div>
-      </div>
-      <div class="row mg_bt_20">
-        
-        <div class="col-sm-3 col-sm-6 mg_bt_10">
-           <select name="active_flag1" id="active_flag1" title="Status">
-              <option value="<?= $sq_vendor['active_flag'] ?>"><?= $sq_vendor['active_flag'] ?></option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
         </div>
       </div>
 
@@ -205,6 +205,7 @@ $(function(){
               vendor_name1: { required: true },
               side1 : { required : true },
 			        as_of_date1 : { required : true },
+              opening_balance1 : { required : true },
       },
 
       submitHandler:function(form){
@@ -218,11 +219,12 @@ $(function(){
               var active_flag = $('#active_flag1').val();
               var service_tax_no1 = $('#service_tax_no1').val();
               var email_id1 = $('#email_id1').val();
-              var country = $("#country1").val();
+              // var country = $("#country1").val();
               var website = $("#website1").val();
               var bank_name = $("#bank_name1").val();
               var branch = $("#branch1").val();
-              var ifsc_code = $("#ifsc_code1").val();
+              var ifsc_code1 = $("#ifsc_code1").val();
+              var ifsc_code = ifsc_code1.toUpperCase();
               var account_name = $("#account_name1").val();
               var account_no = $("#account_no1").val();
               var contact_person_name = $("#contact_person_name1").val();
@@ -231,7 +233,8 @@ $(function(){
               var city_id = $("#cmb_city_id1").val();
               var state = $("#cust_state1").val();
               var side = $('#side1').val();
-              var supp_pan = $('#supp_pan').val();
+              var supp_pan1 = $('#supp_pan').val();
+              var supp_pan = supp_pan1.toUpperCase();
               var as_of_date = $('#as_of_date1').val();
               var add = validate_address('address1');
               if(!add){
@@ -305,7 +308,7 @@ $(function(){
 
                 url: base_url+'controller/car_rental/vendor/vendor_update.php',
 
-                data:{ vendor_id : vendor_id, vendor_login_id : vendor_login_id, city_id : city_id, vendor_name : vendor_name, mobile_no : mobile_no, landline_no : landline_no, address : address, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, country : country, website : website, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, opening_balance : opening_balance, active_flag : active_flag, vehicle_name_arr : vehicle_name_arr, vehicle_no_arr : vehicle_no_arr, vehicle_type_arr : vehicle_type_arr,vehicle_driver_name_arr : vehicle_driver_name_arr, vehicle_mobile_no_arr : vehicle_mobile_no_arr, vehicle_year_of_purchase_arr : vehicle_year_of_purchase_arr, vehicle_rate_arr : vehicle_rate_arr,  vehicle_id_arr : vehicle_id_arr, service_tax_no1 : service_tax_no1, email_id1 : email_id1, state : state,side:side,account_name:account_name,supp_pan : supp_pan,as_of_date : as_of_date},
+                data:{ vendor_id : vendor_id, vendor_login_id : vendor_login_id, city_id : city_id, vendor_name : vendor_name, mobile_no : mobile_no, landline_no : landline_no, address : address, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, website : website, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, opening_balance : opening_balance, active_flag : active_flag, vehicle_name_arr : vehicle_name_arr, vehicle_no_arr : vehicle_no_arr, vehicle_type_arr : vehicle_type_arr,vehicle_driver_name_arr : vehicle_driver_name_arr, vehicle_mobile_no_arr : vehicle_mobile_no_arr, vehicle_year_of_purchase_arr : vehicle_year_of_purchase_arr, vehicle_rate_arr : vehicle_rate_arr,  vehicle_id_arr : vehicle_id_arr, service_tax_no1 : service_tax_no1, email_id1 : email_id1, state : state,side:side,account_name:account_name,supp_pan : supp_pan,as_of_date : as_of_date},
 
                 success:function(result){
                   

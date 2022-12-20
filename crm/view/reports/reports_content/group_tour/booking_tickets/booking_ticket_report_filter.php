@@ -8,7 +8,7 @@ $group_id = $_POST['group_id'];
 $booking_id = $_POST['booking_id'];
 $array_s = array();
 $temp_arr = array();
-$query = "select * from tourwise_traveler_details where 1";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0'";
 
 if(isset($_SESSION['booker_id']))
 {

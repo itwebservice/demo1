@@ -7,6 +7,10 @@
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>Bank Name <em>:</em></label> ".$query['bank_name']; ?>
 		            </span>
+					<span class="main_block">
+		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+		                  <?php echo "<label>Bank Account Name <em>:</em></label> ".$query['account_name']; ?>
+		            </span>
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>A/C No. <em>:</em></label> ".$query['account_no']; ?>
@@ -24,7 +28,7 @@
 		                  <?php echo "<label>Account Type <em>:</em></label> ".$query['account_type']; ?>
 		            </span>
 		        </div>
-        	 	<div class="col-md-6">		        
+        	 	<div class="col-md-6">  
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>Branch Name <em>:</em></label> ".$query['branch_name']; ?>
@@ -32,6 +36,14 @@
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>Mobile No <em>:</em></label> ".$query['mobile_no']; ?>
+		            </span>
+		            <span class="main_block">
+		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+		                  <?php echo "<label>Opening Balance <em>:</em></label> ".$query['op_balance']; ?>
+		            </span>
+		            <span class="main_block">
+		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+		                  <?php echo "<label>Balance Side <em>:</em></label> ".$query['balance_side']; ?>
 		            </span>
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>

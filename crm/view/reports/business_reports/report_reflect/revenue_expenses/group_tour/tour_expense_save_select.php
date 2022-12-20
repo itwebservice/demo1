@@ -52,7 +52,7 @@ function excel_report1(){
 }
 var column = [
 	{ title : "S_No."},
-	{ title:"Booking_ID"},
+	{ title : "Booking_ID"},
 	{ title : "Booking_date"},
 	{ title : "Sale_Amount"},
 	{ title : "User_Name"},

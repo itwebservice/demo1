@@ -16,20 +16,21 @@ $sq_setting = mysqli_fetch_assoc(mysqlQuery("select * from app_settings where se
 $sq_supply = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_setting[state_id]'"));
 
 //GIT Booking
-$query = "select * from tourwise_traveler_details where 1 ";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and DATE(form_date) between '$from_date' and '$to_date' ";
 }
+$query .= " order by id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
 	//Total count
-	$sq_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as booking_count from travelers_details where traveler_group_id ='$row_query[id]'"));
+	$sq_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as booking_count from travelers_details where traveler_group_id ='$row_query[traveler_group_id]'"));
 
 	//Cancelled count
-	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as cancel_count from travelers_details where traveler_group_id ='$row_query[id]' and status ='Cancel'"));
+	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as cancel_count from travelers_details where traveler_group_id ='$row_query[traveler_group_id]' and status ='Cancel'"));
 	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_query[customer_id]'"));
 	if($sq_cust['type'] == 'Corporate'||$sq_cust['type'] == 'B2B'){
 		$cust_name = $sq_cust['company_name'];
@@ -93,12 +94,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //FIT Booking
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and booking_date between '$from_date' and '$to_date' ";
 }
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -170,12 +172,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //Visa Booking
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by visa_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -254,12 +257,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //Bus Booking
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -339,12 +343,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //Activity Booking
-$query = "select * from excursion_master where 1 ";
+$query = "select * from excursion_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by exc_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -424,12 +429,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Hotel Booking
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }	
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -510,12 +516,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Car Rental Booking
-$query = "select * from car_rental_booking where status != 'Cancel' ";
+$query = "select * from car_rental_booking where status != 'Cancel' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -587,19 +594,19 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	array_push($array_s,$temp_arr);
 } 
 //Flight Booking
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by ticket_id desc";
 
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
 	//Total count
 	$sq_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as booking_count from ticket_master_entries where ticket_id ='$row_query[ticket_id]'"));
-
 	//Cancelled count
 	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as cancel_count from ticket_master_entries where ticket_id ='$row_query[ticket_id]' and status ='Cancel'"));
 	if($sq_count['booking_count'] != $sq_cancel_count['cancel_count'])
@@ -612,7 +619,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 		}
 		$hsn_code = get_service_info('Flight');
 		$sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_cust[state_id]'"));
-			
+
+		$cancel_type = $row_query['cancel_type'];
+		if($cancel_type == 2 || $cancel_type == 3){
+			$bg="warning";
+		} else{
+			$bg = '';
+		}
 		//Service tax
 		$tax_per = 0;
 		$service_tax_amount = 0;
@@ -673,13 +686,14 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 } 
 //Train Booking
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and created_at between '$from_date' and '$to_date' ";
 }
-
+$query .= " order by train_ticket_id desc";
+$bg = '';
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -750,12 +764,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 } 
 //Miscellaneous Booking
-$query = "select * from miscellaneous_master where 1 ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 $from_date = get_date_db($from_date);
 $to_date = get_date_db($to_date);
 $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by misc_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -763,7 +778,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	$sq_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as booking_count from miscellaneous_master_entries where misc_id ='$row_query[misc_id]'"));
 
 	//Cancelled count
-	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as cancel_count from miscellaneous_master_entries where misc_id	 ='$row_query[misc_id]' and status ='Cancel'"));
+	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as cancel_count from miscellaneous_master_entries where misc_id ='$row_query[misc_id]' and status ='Cancel'"));
 	if($sq_count['booking_count'] != $sq_cancel_count['cancel_count'])
 	{
 		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_query[customer_id]'"));
@@ -835,12 +850,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	} 
 }
 //Income Booking
-$query = "select * from other_income_master where 1 ";
+$query = "select * from other_income_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 $from_date = get_date_db($from_date);
 $to_date = get_date_db($to_date);
 $query .= " and receipt_date between '$from_date' and '$to_date' ";
 }
+$query .= " order by income_id desc";
 
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
@@ -891,7 +907,7 @@ $footer_data = array("footer_data" => array(
 	
 	'foot0' => 'Total TAX :'.number_format($tax_total,2),
 	'col0' => 14,
-	'class0' =>"info text-left",
+	'class0' =>"info text-right",
 
 	'foot1' => '',
 	'col1' => 1,
@@ -909,4 +925,3 @@ $footer_data = array("footer_data" => array(
 array_push($array_s, $footer_data);
 echo json_encode($array_s);
 ?>
-	

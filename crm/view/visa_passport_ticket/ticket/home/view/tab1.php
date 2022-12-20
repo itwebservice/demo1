@@ -43,25 +43,15 @@
 				<i class="fa fa-user-o" aria-hidden="true"></i>
 				    <?php echo 'Guest Name & Contact No: '.$sq_visa_info['guest_name']; ?>
 				</span>		
-			 </div>
+			</div>
 		</div>
 	</div>
 	<div class="col-md-6 col-sm-12 col-xs-12">
 		<div class="profile_box main_block">
 			<h3>Booking Details</h3>
-				<?php $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'")); ?>
-			  <div class="row">
-			  <div class="col-sm-6 col-xs-12">
-				<span class="main_block">
-					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-					<?php echo "<label>Trip Type <em>:</em></label> ".$sq_ticket['type_of_tour'];?>
-				</span>
-				<span class="main_block">
-                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-                  <?php echo "<label>Booking Date <em>:</em></label> ".get_date_user($sq_ticket['created_at']); ?>
-                </span>
-			  </div>
-			  <div class="col-sm-6 col-xs-12">
+				<?php $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'")); ?>
+			<div class="row">
+			<div class="col-sm-12 col-xs-12">
 				<span class="main_block">
 					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 					<?php echo "<label>Adult(s) <em>:</em></label> ".$sq_ticket['adults'];?>
@@ -74,8 +64,8 @@
 					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 					<?php echo "<label>Infant(s) <em>:</em></label> ".$sq_ticket['infant'];?>
 				</span>	
-			  </div>	
-			  </div>		
+			</div>	
+			</div>		
 		</div>	
 	</div>
 </div> 
@@ -175,7 +165,7 @@
   	<div class="col-xs-12">
   		<div class="profile_box main_block" style="margin-top: 25px">
            	<h3 class="editor_title">Passenger Details</h3>
-           	<?php  	$query = "select * from ticket_master where 1 ";
+           	<?php  	$query = "select * from ticket_master where 1 and delete_status='0' ";
            	$query .=" and ticket_id='$ticket_id'";
 			   $mainTicket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where ticket_id = '$ticket_id'"));  
 			   ?>
@@ -187,25 +177,25 @@
 							<th>Name</th>
 							<th>Adolescence</th>
 							<th>Ticket_No.</th>
-							<?php if($mainTicket['main_ticket']) echo  '<th>Main Ticket Number</th>'; ?> 
-							<th>Baggage</th>
-							<th>Gds_Pnr</th>
+							<?php if($sq_visa_info['ticket_reissue']) echo  '<th>Main Ticket Number</th>'; ?> 
+							<th>Airline_Pnr</th>
+							<th>Check_In&Cabin_Baggage</th>
 							<th>Seat_No</th>
 							<th>Meal_plan</th>
+							<th>Trip_Type</th>
 						</tr>
 						
 					</thead>
 					<tbody>
 						<?php 
 						$count = 0;
-						$sq_ticket = mysqlQuery($query);
-						while($row_ticket =mysqli_fetch_assoc($sq_ticket)){
+						$sq_ticket1 = mysqlQuery($query);
+						while($row_ticket =mysqli_fetch_assoc($sq_ticket1)){
 
 							$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
 
 							$sq_entry = mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]'");
 							while($row_entry = mysqli_fetch_assoc($sq_entry)){
-
 
 								$bg = ($row_entry['status']=='Cancel') ? 'danger' : '';
 								?>
@@ -213,12 +203,13 @@
 									<td><?= ++$count ?></td>
 									<td><?= $row_entry['first_name']." ".$row_entry['last_name'] ?></td>
 									<td><?= $row_entry['adolescence'] ?></td>
-									<td><?= $row_entry['ticket_no'] ?></td>
-									<?php if($row_entry['main_ticket']) echo  '<td>'.$row_entry['main_ticket'].'</td>';?>
+									<td><?= strtoupper($row_entry['ticket_no']) ?></td>
+									<?php if($sq_visa_info['ticket_reissue']) echo '<td>'.strtoupper($row_entry['main_ticket']).'</td>';?>
+									<td><?= strtoupper($row_entry['gds_pnr']) ?></td>
                     				<td><?php echo $row_entry['baggage_info']; ?></td>
-									<td><?= $row_entry['gds_pnr'] ?></td>
 									<td><?= $row_entry['seat_no'] ?></td>
 									<td><?= $row_entry['meal_plan'] ?></td>
+									<td><?= $row_entry['type_of_tour'] ?></td>
 								</tr>
 								<?php
 							}
@@ -231,5 +222,3 @@
         </div>  
     </div>
     </div>
-   
-           

@@ -20,12 +20,12 @@ if($customer_id!=""){
 				$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 			} 
 
-      $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_booking[booking_id]'"));
+      $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_booking[booking_id]' and delete_status='0'"));
       $date = $sq_booking['booking_date'];
       $yr = explode("-", $date);
       $year =$yr[0];
-       ?>
-       <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$customer_name; ?></option>
-       <?php    
+      ?>
+      <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$customer_name; ?></option>
+      <?php    
   }    
 ?>

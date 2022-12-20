@@ -10,7 +10,7 @@ include "../../../../model/model.php";
                     $sq=mysqlQuery("select tour_id,tour_name from tour_master order by tour_name");
                     while($row=mysqli_fetch_assoc($sq))
                     {
-                      echo "<option value='$row[tour_id]'>".$row['tour_name']."</option>";
+                        echo "<option value='$row[tour_id]'>".$row['tour_name']."</option>";
                     }    
                 ?>
             </select>

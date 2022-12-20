@@ -15,7 +15,7 @@ include "../../model/model.php";
 	<tbody>
 		<?php 
 		$count = 0;
-		$sq_flyer = mysqlQuery("select * from flyers where active_flag='Active' order by iid desc");
+		$sq_flyer = mysqlQuery("select * from flyers where active_flag='Active'");
 		while($row_flyer = mysqli_fetch_assoc($sq_flyer)){
 			?>
 			<tr>
@@ -38,6 +38,7 @@ include "../../model/model.php";
 
 <script>
 $('#tbl_list').dataTable({
-	"pagingType": "full_numbers"
+	"pagingType": "full_numbers",
+	order: [[0, 'desc']],
 });
 </script>

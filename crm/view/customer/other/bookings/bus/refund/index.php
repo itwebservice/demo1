@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="booking_idb" id="booking_idb" style="width:100%" onchange="list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_booking = mysqlQuery("select * from bus_booking_master where customer_id='$customer_id' and booking_id in(select booking_id from bus_booking_entries where status='Cancel')  order by booking_id desc");
+			        $sq_booking = mysqlQuery("select * from bus_booking_master where customer_id='$customer_id' and booking_id in(select booking_id from bus_booking_entries where status='Cancel') and delete_status='0' order by booking_id desc");
 			        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 					  $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
 					  $date = $row_booking['created_at'];

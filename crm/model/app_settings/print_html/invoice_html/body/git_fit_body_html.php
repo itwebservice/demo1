@@ -1,4 +1,4 @@
-<?php  
+<?php
 //Generic Files
 include "../../../../model.php"; 
 include "../../print_functions.php";
@@ -19,6 +19,14 @@ $cruise_expense = $_GET['cruise_expense'];
 $visa_amount = $_GET['visa_amount'];
 $insuarance_amount = $_GET['insuarance_amount'];
 $tour_subtotal = $_GET['tour_subtotal'];
+$tour_date = $_GET['tour_date'];
+$tour_to_date = $_GET['tour_to_date'];
+$adults = $_GET['adults'];
+$child = $_GET['child'];
+$infants = $_GET['infants'];
+$flights = $_GET['flights'];
+$trains = $_GET['trains'];
+$cruises = $_GET['cruises'];
 
 $train_service_charge = $_GET['train_service_charge'];
 $plane_service_charge = $_GET['plane_service_charge'];
@@ -43,13 +51,14 @@ $sac_code = $_GET['sac_code'];
 $credit_card_charges = $_GET['credit_card_charges'];
 $tcs_tax = $_GET['tcs_tax'];
 $tcs_per = $_GET['tcs_per'];
-
+$bg = $_GET['bg'];
+$canc_amount = floatval($_GET['canc_amount']);
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 
 if($service_name =='Package Invoice'){
-  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 }else{
-  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'"));
+  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'"));
 }
 $total_discount = $sq_booking['total_discount'];
 $roundoff = $sq_booking['roundoff'];
@@ -106,6 +115,18 @@ $total_balance = $net_total - $total_paid;
 $total_paid += $charge;
 $net_total1 = currency_conversion($currency,$sq_booking['currency_code'],$net_total);
 $amount_in_word = $amount_to_word->convert_number_to_words($net_total1,$sq_booking['currency_code']);
+// Passengers string
+$passengers = 'Guest(s) : ';
+$passengers .= 
+(intval($adults)!=0) ? $adults.' Adult(s)':'';
+$passengers .= 
+(intval($adults)!=0&&intval($child)!=0) ? ', ' : '';
+$passengers .= 
+(intval($child)!=0) ? $child.' Child(ren)':'';
+$passengers .= 
+(intval($adults)!=0&&intval($infants)!=0||intval($child)!=0&&intval($infants)!=0) ? ', ' : '';
+$passengers .= 
+(intval($infants)!=0) ? $infants.' Infant(s)' : '';
 
 //Header
 if($app_invoice_format == "Standard"){include "../headers/standard_header_html.php"; }
@@ -113,7 +134,6 @@ if($app_invoice_format == "Regular"){include "../headers/regular_header_html.php
 if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php"; }
 ?>
 <section class="no-pad main_block">
-<div class="col-md-12 mg_tp_10"><p class="border_lt"><span class="font_5">Tour Name : <?= $tour_name?> </span></p></div>
   <!-- invoice_receipt_body_table-->
   <div class="main_block inv_rece_table">
     <div class="row">
@@ -122,43 +142,46 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
         <table class="table table-bordered no-marg" id="tbl_emp_list" style="padding: 0 !important;">
           <thead>
             <tr class="table-heading-row">
-              <th>Services</th>
+              <th>Description</th>
               <th class="text-right">Basic_Amount</th>
             </tr>
           </thead>
-          <tbody> 
-          <?php 
-          if($train_expense != '0'){ 
-            $train_expense1 = currency_conversion($currency,$sq_booking['currency_code'],$train_expense);
-            ?>  
-            <tr>
-              <td><strong class="font_5">Train</strong></td>
-              <td class="text-right"><?php echo $train_expense1; ?></td>
-            </tr>
-            <?php } 
+          <tbody>
+          <?php
+          if($tour_subtotal != '0'){
+            $tour_subtotal1 = currency_conversion($currency,$sq_booking['currency_code'],$tour_subtotal);
+            ?>
+          <tr>
+            <td><strong class="font_5"><?php echo 'Tour Name: '.$tour_name.'<br/>'.'
+                From '.$tour_date.' To '.$tour_to_date.','. '<br/>'.$passengers; ?></strong></td>
+            <td class="text-right"><?php echo $tour_subtotal1; ?></td>
+          </tr>
+          <?php }
             if($plane_expense != '0'){
               $plane_expense1 = currency_conversion($currency,$sq_booking['currency_code'],$plane_expense);
               ?>
             <tr>
-              <td><strong class="font_5">Flight</strong></td>
+              <td><strong class="font_5"><?= 'Flight: '.$flights .'<br/>'.$passengers ?></strong></td>
               <td class="text-right"><?php echo $plane_expense1; ?></td>
             </tr>
             <?php }
+          if($train_expense != '0'){ 
+            $train_expense1 = currency_conversion($currency,$sq_booking['currency_code'],$train_expense);
+            ?>  
+            <tr>
+              <td><strong class="font_5"><?= 'Train: '.$trains .'<br/>'.$passengers ?></strong></td>
+              <td class="text-right"><?php echo $train_expense1; ?></td>
+            </tr>
+            <?php } 
             if($cruise_expense != '0'){
               $cruise_expense1 = currency_conversion($currency,$sq_booking['currency_code'],$cruise_expense);
             ?>
             <tr>
-              <td><strong class="font_5">Cruise</strong></td>
+              <td><strong class="font_5"><?= 'Cruise: '.$cruises .'<br/>'.$passengers ?></strong></td>
               <td class="text-right"><?php echo $cruise_expense1; ?></td>
             </tr>
-            <?php } 
-            if($tour_subtotal != '0'){
-              $tour_subtotal1 = currency_conversion($currency,$sq_booking['currency_code'],$tour_subtotal); ?>
-            <tr>
-              <td><strong class="font_5">Tour</strong></td>
-              <td class="text-right"><?php echo $tour_subtotal1; ?></td>
-            </tr>
-            <?php } ?>
+            <?php }
+            ?>
           </tbody>
         </table>
         </div>
@@ -169,24 +192,32 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
 
 <section class="print_sec main_block">
 <?php
-  $newBasic1 = currency_conversion($currency,$sq_booking['currency_code'],$newBasic+$newSC);
-  $newBasicd1 = currency_conversion($currency,$sq_booking['currency_code'],$newBasic);
-  $newSC1 = currency_conversion($currency,$sq_booking['currency_code'],$newSC);
-  $total_discount1 = currency_conversion($currency,$sq_booking['currency_code'],$total_discount);
-  $charge1 = currency_conversion($currency,$sq_booking['currency_code'],$charge);
-  $total_paid1 = currency_conversion($currency,$sq_booking['currency_code'],$total_paid);
-  $total_balance1 = currency_conversion($currency,$sq_booking['currency_code'],$total_balance);
-  $roundoff1 = currency_conversion($currency,$sq_booking['currency_code'],$roundoff);
-  $tcs_tax = currency_conversion($currency,$sq_booking['currency_code'],$tcs_tax);
+if($bg != ''){
+  $balance = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid);
+}else{
+  $balance = floatval($net_total) - floatval($total_paid) + floatval($charge);
+}
+
+$newBasic1 = currency_conversion($currency,$sq_booking['currency_code'],$newBasic+$newSC);
+$newBasicd1 = currency_conversion($currency,$sq_booking['currency_code'],$newBasic);
+$newSC1 = currency_conversion($currency,$sq_booking['currency_code'],$newSC);
+$total_discount1 = currency_conversion($currency,$sq_booking['currency_code'],$total_discount);
+$charge1 = currency_conversion($currency,$sq_booking['currency_code'],$charge);
+$total_paid1 = currency_conversion($currency,$sq_booking['currency_code'],$total_paid);
+$roundoff1 = currency_conversion($currency,$sq_booking['currency_code'],$roundoff);
+$tcs_tax = currency_conversion($currency,$sq_booking['currency_code'],$tcs_tax);
+
+$total_balance1 = currency_conversion($currency,$sq_booking['currency_code'],$balance);
+$canc_amount = currency_conversion($currency,$sq_booking['currency_code'],$canc_amount);
 ?>
 <!-- invoice_receipt_body_calculation -->
   <div class="row">
     <div class="col-md-12">
       <div class="main_block inv_rece_calculation border_block">
       <?php if($service_name =='Package Invoice'){ ?>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?= $newBasic1 ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?= $newBasic1 ?></span></p></div>
         <?php }else{ ?>
-          <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?= $newBasicd1 ?></span></p></div>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?= $newBasicd1 ?></span></p></div>
         <?php } ?>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $net_total1 ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= str_replace(',','',$name).$service_tax_amount_show ?></span></p></div>
@@ -194,6 +225,11 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TCS<?= '('.$tcs_per.'%)'?> </span><span class="font_5 float_r"><?= $tcs_tax ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $total_paid1 ?></span></p></div> 
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUNDOFF</span><span class="float_r"><?= $roundoff1 ?></span></p></div>
+        <?php
+        if($bg != ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">CANCELLATION CHARGES</span><span class="float_r"><?= $canc_amount ?></span></p></div>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5"></span><span class="float_r"></span></p></div>
+        <?php } ?>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $total_balance1 ?></span></p></div>
       </div>
     </div>

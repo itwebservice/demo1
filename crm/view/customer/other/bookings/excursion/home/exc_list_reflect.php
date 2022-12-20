@@ -12,15 +12,15 @@ $customer_id = $_SESSION['customer_id'];
 			<th>S_No.</th>
 			<th>Booking_ID</th>
 			<th>View</th>
-			<th class="text-right info">Total Amount</th>
-			<th class="text-right success">Paid Amount</th>
-			<th class="text-right danger">Cancellation Charges</th> 
-			<th class="text-right warning">Balance</th>
+			<th class="info">Total Amount</th>
+			<th class="success">Paid Amount</th>
+			<th class="danger">CNCEL_AMOUNT</th> 
+			<th class="warning">Balance</th>
 		</tr>
 	</thead>
 	<tbody>
 		<?php 
-		$query = "select * from excursion_master where 1 ";
+		$query = "select * from excursion_master where 1 and delete_status='0'";
 		$query .= " and customer_id='$customer_id'";
 		if($exc_id != ''){
 			$query .= " and exc_id='$exc_id'";
@@ -100,12 +100,12 @@ $customer_id = $_SESSION['customer_id'];
 				<td><?= ++$count ?></td>
 				<td><?= get_exc_booking_id($row_exc['exc_id'],$year) ?></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="exc_display_modal(<?= $row_exc['exc_id'] ?>)" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
+					<button class="btn btn-info btn-sm" onclick="exc_display_modal(<?= $row_exc['exc_id'] ?>)" title="View Details" id="exc-<?= $row_exc['exc_id'] ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
 				</td>
-				<td class="info text-right"><?php echo $sale_total_amount1; ?></td>
-				<td class="success text-right"><?= $paid_amount1 ?></td>
-				<td class="danger text-right"><?php echo $cancel_amount1; ?></td>
-				<td class="warning text-right"><?php echo $balance_amount1; ?></td>
+				<td class="info"><?php echo $sale_total_amount1; ?></td>
+				<td class="success"><?= $paid_amount1 ?></td>
+				<td class="danger"><?php echo $cancel_amount1; ?></td>
+				<td class="warning"><?php echo $balance_amount1; ?></td>
 			</tr>
 			<?php
 		}

@@ -10,7 +10,7 @@ $branch_status = $sq['branch_status'];
 <div class="row text-right mg_bt_20">
 	<div class="col-xs-12">
 		<button class="btn btn-excel btn-sm" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>
-		<button class="btn btn-info ico_left btn-sm" id="btn_new_cash" onclick="cash_deposit_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Deposit</button>
+		<button class="btn btn-info ico_left btn-sm" id="btn_new_cash" onclick="cash_deposit_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Cash Deposit</button>
 	</div>
 </div>
 
@@ -18,7 +18,7 @@ $branch_status = $sq['branch_status'];
 	<div class="row">
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<select id="bank_id_filter" name="bank_id_filter" style="width:100%" title="Bank" class="form-control">
-				  <?php get_bank_dropdown('Debitor Bank'); ?>
+				<?php get_bank_dropdown('Debitor Bank'); ?>
 			</select>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
@@ -77,14 +77,30 @@ function update_deposit_modal(deposit_id)
 	});
 }
 
-function excel_report()
-  {
+function delete_entry(deposit_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/bank_vouchers/cash_deposit_delete.php',{ deposit_id : deposit_id }, function(data){
+					success_msg_alert(data);
+					list_reflect();
+				});
+			}
+		}
+	});
+}
+
+function excel_report(){
+
     var from_date = $('#from_date_filter').val();
 	var to_date = $('#to_date_filter').val();
 	var bank_id = $('#bank_id_filter').val();
 	var financial_year_id = $('#financial_year_id_filter').val();
     var branch_status = $('#branch_status').val();
     window.location = 'cash_deposit/excel_report.php?bank_id='+bank_id+'&from_date='+from_date+'&to_date='+to_date+'&financial_year_id='+financial_year_id+'&branch_status='+branch_status;
-  }
+}
 
 </script>

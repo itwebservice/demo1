@@ -10,7 +10,7 @@ if($ticket_id!=""){
 }
 $query .=" and ticket_id in ( select ticket_id from ticket_master where customer_id='$customer_id' )";
 
-$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
 
 $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from ticket_payment_master where ticket_id='$sq_ticket_info[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -35,7 +35,7 @@ $bal_amount= $sq_paid_amount['sum'] - $sale_amount;
 			<th>Mode</th>
 			<th>Bank Name</th>
 			<th>Cheque_No/ID</th>
-			<th class="text-right success">Amount</th>
+			<th class="success">Amount</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -87,7 +87,7 @@ $bal_amount= $sq_paid_amount['sum'] - $sale_amount;
 				<td><?= $row_refund['refund_mode'] ?></td>
 				<td><?= $row_refund['bank_name'] ?></td>
 				<td><?= $row_refund['transaction_id'] ?></td>
-				<td class="text-right success"><?= $row_refund['refund_amount'] ?></td>
+				<td class="success"><?= $row_refund['refund_amount'] ?></td>
 			</tr>
 			<?php
 		}

@@ -1,11 +1,7 @@
 <?php
-
- include "../../model/model.php";
-
- $entry_id = $_POST['entry_id'];
-
- $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_crm_master where entry_id='$entry_id'"));
-
+include "../../model/model.php";
+$entry_id = $_POST['entry_id'];
+$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_crm_master where entry_id='$entry_id'"));
 ?>
 
 <div class="modal fade" id="update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
@@ -33,28 +29,17 @@
               <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
                   <select name="visa_country_name" id="visa_country_name" class="form-control" title="Visa Country Name" style="width:100%">
-
                     <option value="<?= $sq_visa['country_id'] ?>"><?= $sq_visa['country_id'] ?></option>
-
                     <option value="">Visa Country</option>
-
-                    <?php 
-
+                    <?php
                     $sq_country = mysqlQuery("select * from country_list_master");
-
                     while($row_country = mysqli_fetch_assoc($sq_country)){
-
-                        ?>
-
-                        <option value="<?= $row_country['country_name'] ?>"><?= $row_country['country_name'] ?></option>
-
-                        <?php
-
+                      ?>
+                      <option value="<?= $row_country['country_name'] ?>"><?= $row_country['country_name'] ?></option>
+                      <?php
                     }
-
                     ?>
-
-                 </select>
+                </select>
 
               </div>
 
@@ -107,6 +92,16 @@
                   <input type="text" name="time_taken1" class="form-control" onchange="validate_specialChar(this.id);" title="Time Taken" placeholder="Time Taken" value="<?= $sq_visa['time_taken'] ?>" id="time_taken1">
 
               </div>
+              <div class="col-md-3 col-sm-6">
+                <?php
+                $status = ($sq_visa['status'] == '1') ? 'Active' : 'Inactive';
+                ?>
+                <select class="<?= $active_inactive_flag ?>" name="active_flag1" id="active_flag1" title="Status">
+                <option  value="<?php echo $sq_visa['status']; ?>"><?php echo $status; ?></option>
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+                </select>
+              </div>
               <div class="col-md-3 col-sm-6 col-xs-12 text-left">          
 
                 <div class="div-upload">
@@ -138,14 +133,11 @@
 
               </div> 
 
-               
-
           </div>
           <div class="row mg_tp_20">
             <div class="col-xs-12 mg_bt_10">
-                  <h3 class="editor_title">List of documents</h3>
-                  <textarea placeholder="List of documents" id="doc_list" title="Documents" name="doc_list" class="feature_editor form-control" rows="2"><?= $sq_visa['list_of_documents'] ?></textarea>
-
+              <h3 class="editor_title">List of documents</h3>
+              <textarea placeholder="List of documents" id="doc_list" title="Documents" name="doc_list" class="feature_editor form-control" rows="2"><?= $sq_visa['list_of_documents'] ?></textarea>
             </div> 
           </div>
 
@@ -259,13 +251,14 @@ $(function(){
         var photo_upload_url = $('#photo_upload_url1').val();
         var photo_upload_url2 = $('#photo_upload_url2').val();
         var doc_list = $('#doc_list').val();
+        var active_flag = $('#active_flag1').val();
 
         $('#btn_update').button('loading');
         $.post( 
 
               base_url+"controller/visa_master/visa_master_update.php",
 
-              { entry_id : entry_id, visa_country_name : visa_country_name, visa_type : visa_type, fees : fees, markup : markup, time_taken : time_taken, photo_upload_url : photo_upload_url,photo_upload_url2:photo_upload_url2,doc_list : doc_list},
+              { entry_id : entry_id, visa_country_name : visa_country_name, visa_type : visa_type, fees : fees, markup : markup, time_taken : time_taken, photo_upload_url : photo_upload_url,photo_upload_url2:photo_upload_url2,doc_list : doc_list,active_flag:active_flag},
 
               function(data) {
 

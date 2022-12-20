@@ -20,7 +20,7 @@ if($branch_status=='yes'){
 		$query .= " and emp_id='$emp_id' and emp_id in(select emp_id from emp_master where branch_id = '$branch_admin_id')";
 	}
 }
-$query .=" order by request_id desc";
+// $query .=" order by request_id desc";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad mg_tp_20"> <div class="table-responsive">
 
@@ -64,6 +64,7 @@ $query .=" order by request_id desc";
 </div> </div> </div>
 <script>
 $('#tbl_lreq').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>

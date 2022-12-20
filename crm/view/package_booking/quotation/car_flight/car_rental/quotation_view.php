@@ -51,8 +51,8 @@ else{
 	</div>
 	<div class="row">
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Vehicle Name</label> : <?= $sq_quotation['vehicle_name'] ?> </div>
-		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Travel D/T From</label> : <?= get_date_user($sq_quotation['from_date']) ?> </div>
-		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Travel D/T To</label> : <?= get_date_user($sq_quotation['to_date']) ?> </div>
+		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Travel From Date</label> : <?= get_date_user($sq_quotation['from_date']) ?> </div>
+		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Travel To Date</label> : <?= get_date_user($sq_quotation['to_date']) ?> </div>
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Total KM</label> : <?= ($sq_quotation['travel_type']=='Local')?$sq_quotation['total_km']:$sq_quotation['total_max_km'] ?> </div>
 	</div>
 	<div class="row">
@@ -84,7 +84,7 @@ else{
 					<th>Markup_TAX</th>
 					<?php if($sq_quotation['travel_type'] == 'Outstation'){ ?>
 					<th>Permit</th>
-					<th>Toll_Parking</th>
+					<th>Toll&Parking</th>
 					<th>Driver_Allowance</th>
 					<th>State_Entry</th>
 					<th>Other_Charges</th>

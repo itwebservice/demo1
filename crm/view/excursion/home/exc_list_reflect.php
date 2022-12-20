@@ -14,7 +14,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
-$query = "select * from excursion_master where financial_year_id='$financial_year_id' ";
+$query = "select * from excursion_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -54,17 +54,20 @@ while($row_exc = mysqli_fetch_assoc($sq_exc)){
 	if($pass_count==$cancel_count){
 		$bg="danger";
 		$update_btn = '';
+		$delete_btn = '';
+		$voucher_btn = '';
 	}
 	else {
-		$bg="#fff";
+		$bg="";
 		$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="exc_update_modal('. $row_exc['exc_id'] .')" title="Update Details" id="update_btn-'. $row_exc['exc_id'] .'"><i class="fa fa-pencil-square-o"></i></button>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_exc['exc_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
+		$voucher_btn = '<button data-toggle="tooltip" title="Download Service Voucher" onclick="voucher_display('.$row_exc['exc_id'].')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></button>';
 	}
 	$date = $row_exc['created_at'];
-		$yr = explode("-", $date);
-		$year =$yr[0];
-		$customer_info_name1 = "select * from customer_master where customer_id = '$row_exc[customer_id]'";
-		
-	$customer_info_name = mysqli_fetch_assoc(mysqlQuery($customer_info_name1));
+	$yr = explode("-", $date);
+	$year =$yr[0];
+
+	$customer_info_name = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id = '$row_exc[customer_id]'"));
 	$contact_no = $encrypt_decrypt->fnDecrypt($customer_info_name['contact_no'], $secret_key);
 	$email_id = $encrypt_decrypt->fnDecrypt($customer_info_name['email_id'], $secret_key); 
 	if($customer_info_name['type']=='Corporate'||$customer_info_name['type'] == 'B2B'){
@@ -105,16 +108,22 @@ while($row_exc = mysqli_fetch_assoc($sq_exc)){
 	$service_charge = $row_exc['service_charge'];
 	$service_tax = $row_exc['service_tax_subtotal'];
 	//**Basic Cost
-	$basic_cost = $row_exc['exc_issue_amount'] - $row_exc['cancel_amount'];
-	$net_amount = $row_exc['exc_total_cost']- $row_exc['cancel_amount'];
-	$balance_amount = $net_amount - $total_paid + $credit_card_charges;
+	$basic_cost = $row_exc['exc_issue_amount'];
+	$net_amount = $row_exc['exc_total_cost'];
+	// $balance_amount = $net_amount - $total_paid + $credit_card_charges;
+	if($bg != ''){
+		$balance_amount = ($total_paid > $cancel_amount) ? 0 : floatval($cancel_amount) - floatval($total_paid);
+	}else{
+	
+		$balance_amount = floatval($net_amount) - floatval($total_paid) + floatval($credit_card_charges);
+	}
 
 	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='Excursion'"));   
 	$sac_code = $sq_sac['hsn_sac_code'];
 	if($app_invoice_format == 4)
 	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/tax_invoice_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$total_paid&balance_amount=$balance_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&pass_count=$pass_count&credit_card_charges=$credit_card_charges";
 	else
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/excursion_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$total_paid&balance_amount=$balance_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges&currency_code=$row_exc[currency_code]";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/excursion_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$total_paid&balance_amount=$balance_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges&currency_code=$row_exc[currency_code]&canc_amount=$cancel_amount&bg=$bg";
 
 	//Currency conversion
 	$currency_amount1 = currency_conversion($currency,$row_exc['currency_code'],$total_exc_amount);
@@ -134,12 +143,8 @@ while($row_exc = mysqli_fetch_assoc($sq_exc)){
 		number_format($total_exc_amount, 2).'<br/>'.$currency_amount,
 		$emp_name,
 		'<a onclick="loadOtherPage(\''.$url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></a>
-
-		<button data-toggle="tooltip" title="Download Service Voucher" onclick="voucher_display('.$row_exc['exc_id'].')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></button>
-		
-		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="exc_display_modal('. $row_exc['exc_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
-
-		'.$update_btn.''
+		'.$voucher_btn.'
+		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="exc_display_modal('. $row_exc['exc_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>'.$update_btn.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr); 
 }

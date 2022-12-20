@@ -83,7 +83,7 @@ else{
 // Add some data
 $objPHPExcel->setActiveSheetIndex(0)
           ->setCellValue('B2', 'Report Name')
-          ->setCellValue('C2', 'Tax On Sale')
+          ->setCellValue('C2', 'GST-R1 Report')
           ->setCellValue('B3', 'From-To-Date')
           ->setCellValue('C3', $date_str);
 
@@ -129,12 +129,13 @@ $sq_setting = mysqli_fetch_assoc(mysqlQuery("select * from app_settings where se
 $sq_supply = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_setting[state_id]'"));
 
 //GIT Booking
-$query = "select * from tourwise_traveler_details where 1 ";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and DATE(form_date) between '$from_date' and '$to_date' ";
 }
+$query .= " order by id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -211,12 +212,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //FIT Booking
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 	$query .= " and booking_date between '$from_date' and '$to_date' ";
 }
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -290,94 +292,14 @@ while($row_query = mysqli_fetch_assoc($sq_query))
     $row_count++;
   }
 }
-//Passport Booking
-$query = "select * from passport_master where 1 ";
-if($from_date !='' && $to_date != ''){
-  $from_date = get_date_db($from_date);
-  $to_date = get_date_db($to_date);
-  $query .= " and created_at between '$from_date' and '$to_date' ";
-}
-$sq_query = mysqlQuery($query);
-while($row_query = mysqli_fetch_assoc($sq_query))
-  {
-    //Total count
-    $sq_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as booking_count from passport_master_entries where passport_id ='$row_query[passport_id]'"));
-
-    //Cancelled count
-    $sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(entry_id) as cancel_count from passport_master_entries where passport_id ='$row_query[passport_id]' and status ='Cancel'"));
-    if($sq_count['booking_count'] != $sq_cancel_count['cancel_count'])
-    {
-        $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_query[customer_id]'"));
-        if($sq_cust['type'] == 'Corporate'||$sq_cust['type'] == 'B2B'){
-          $cust_name = $sq_cust['company_name'];
-        }else{
-          $cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
-        }
-        $hsn_code = get_service_info('Passport');
-        $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_cust[state_id]'"));
-		
-        //Service tax
-        $tax_per = 0;
-        $service_tax_amount = 0;
-        $tax_name = 'NA';
-        if($row_query['service_tax_subtotal'] !== 0.00 && ($row_query['service_tax_subtotal']) !== ''){
-          $service_tax_subtotal1 = explode(',',$row_query['service_tax_subtotal']);
-          $tax_name = '';
-          for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
-            $service_tax = explode(':',$service_tax_subtotal1[$i]);
-            $service_tax_amount +=  $service_tax[2];
-            $tax_name .= $service_tax[0] . $service_tax[1].' ';
-            $tax_per += str_replace( array('(',')', '%'),'', $service_tax[1]);
-          }
-        }
-        //Markup Tax
-        $markup_tax_amount = 0;
-        $markup_tax_name = 'NA';
-        $markup = ($row_query['markup'] == '' || $row_query['markup'] == '0') ? 'NA' : number_format($row_query['markup'],2);
-        //Taxable amount
-        $taxable_amount = ($tax_per!=0)?($service_tax_amount / $tax_per) * 100:0;
-        $tax_total += $service_tax_amount;
-        $markup_tax_total += $markup_tax_amount;
-        $yr = explode("-",$row_query['created_at']);
-
-        $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('B'.$row_count, $count++)
-            ->setCellValue('C'.$row_count, "Passport Booking")
-            ->setCellValue('D'.$row_count, $hsn_code)
-            ->setCellValue('E'.$row_count, $cust_name)
-            ->setCellValue('F'.$row_count, ($sq_cust['service_tax_no'] == '') ? 'NA' : $sq_cust['service_tax_no'])
-            ->setCellValue('G'.$row_count, ($sq_supply['state_name'] == '') ? 'NA' : $sq_supply['state_name'])
-            ->setCellValue('H'.$row_count, get_passport_booking_id($row_query['passport_id'],$yr[0]))
-            ->setCellValue('I'.$row_count, get_date_user($row_query['created_at']))
-            ->setCellValue('J'.$row_count, ($sq_cust['service_tax_no'] == '') ? 'Unregistered' : 'Registered')
-            ->setCellValue('K'.$row_count, ($sq_state['state_name'] == '') ? 'NA' : $sq_state['state_name'])
-            ->setCellValue('L'.$row_count, $row_query['passport_total_cost'])
-            ->setCellValue('M'.$row_count, number_format($taxable_amount,2))
-            ->setCellValue('N'.$row_count, $tax_name)
-            ->setCellValue('O'.$row_count, number_format($service_tax_amount,2))
-            ->setCellValue('P'.$row_count, $markup)
-            ->setCellValue('Q'.$row_count, $markup_tax_name)
-            ->setCellValue('R'.$row_count, number_format($markup_tax_amount,2))
-            ->setCellValue('S'.$row_count,'0.00')
-            ->setCellValue('T'.$row_count,'0.00')
-            ->setCellValue('U'.$row_count, '')
-            ->setCellValue('V'.$row_count, '');
-
-
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($content_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($borderArray);    
-
-      $row_count++;   
-     }
-  }
-
 //Visa Booking
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by visa_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -462,12 +384,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Bus Booking
-    $query = "select * from bus_booking_master where 1 ";
+    $query = "select * from bus_booking_master where 1 and delete_status='0' ";
     if($from_date !='' && $to_date != ''){
       $from_date = get_date_db($from_date);
       $to_date = get_date_db($to_date);
       $query .= " and created_at between '$from_date' and '$to_date' ";
     }
+    $query .= " order by booking_id desc";
     $sq_query = mysqlQuery($query);
       while($row_query = mysqli_fetch_assoc($sq_query))
       {
@@ -551,12 +474,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Activity Booking
-$query = "select * from excursion_master where 1 ";
+$query = "select * from excursion_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by exc_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -642,12 +566,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Hotel Booking
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -733,12 +658,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
   }
 
 //Car Rental Booking
-$query = "select * from car_rental_booking where status != 'Cancel' ";
+$query = "select * from car_rental_booking where status != 'Cancel' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by booking_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -815,12 +741,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
  }
 
 //Flight Booking
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by ticket_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -904,12 +831,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
   
 //Train Booking
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
   $query .= " and created_at between '$from_date' and '$to_date' ";
 }
+$query .= " order by train_ticket_id desc";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
@@ -985,12 +913,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
     //Miscellaneous Booking
-    $query = "select * from miscellaneous_master where 1 ";
+    $query = "select * from miscellaneous_master where 1 and delete_status='0' ";
     if($from_date !='' && $to_date != ''){
       $from_date = get_date_db($from_date);
       $to_date = get_date_db($to_date);
       $query .= " and created_at between '$from_date' and '$to_date' ";
     }
+    $query .= " order by misc_id desc";
     $sq_query = mysqlQuery($query);
       while($row_query = mysqli_fetch_assoc($sq_query))
       {
@@ -1074,12 +1003,13 @@ while($row_query = mysqli_fetch_assoc($sq_query))
   }
 }
 //Income Booking
-$query = "select * from other_income_master where 1 ";
+$query = "select * from other_income_master where 1 and delete_status='0'";
         if($from_date !='' && $to_date != ''){
           $from_date = get_date_db($from_date);
           $to_date = get_date_db($to_date);
           $query .= " and receipt_date between '$from_date' and '$to_date' ";
         }
+        $query .= " order by income_id desc";
         $sq_query = mysqlQuery($query);
           while($row_query = mysqli_fetch_assoc($sq_query))
           {
@@ -1171,7 +1101,7 @@ $objPHPExcel->setActiveSheetIndex(0);
 
 // Redirect output to a client’s web browser (Excel5)
 header('Content-Type: application/vnd.ms-excel');
-header('Content-Disposition: attachment;filename="Tax On Sale Report('.date('d-m-Y H:i').').xls"');
+header('Content-Disposition: attachment;filename="GST-R1 Report('.date('d-m-Y H:i').').xls"');
 header('Cache-Control: max-age=0');
 // If you're serving to IE 9, then the following may be needed
 header('Cache-Control: max-age=1');

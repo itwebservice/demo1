@@ -9,7 +9,7 @@ include_once('../../inc/vendor_generic_functions.php');
 			<select id="estimate_id_filter" name="estimate_id_filter" style="width:100%" title="Supplier Estimate ID" onchange="list_reflect()">
 		        <option value="">Supplier Estimate ID</option>
 		        <?php 
-		        $sq_estimate = mysqlQuery("select * from vendor_estimate where status='Cancel' order by estimate_id desc");
+		        $sq_estimate = mysqlQuery("select * from vendor_estimate where status='Cancel' and delete_status='0' order by estimate_id desc");
 		        while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
 		          	$vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
 					$date = $row_estimate['purchase_date'];

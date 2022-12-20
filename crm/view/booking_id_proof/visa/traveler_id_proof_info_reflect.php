@@ -20,13 +20,13 @@ $sq_traveler_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_ent
     <div class="row mg_tp_20">
       <input type="hidden" name="traveler_id" id="traveler_id" value="<?php echo $entry_id; ?>">
       <div class="col-md-2">
-        <input type="text" name="passport_no" id="passport_no" title="Passport No" class="form-control"  onchange="validate_passport(this.id);" value="<?= $sq_traveler_info['passport_id'] ?>" placeholder="*Passport No" title="Passport No" style="text-transform: uppercase;">
+        <input type="text" name="passport_no" id="passport_no" title="Passport No" class="form-control"  onchange="validate_passport(this.id);" value="<?= $sq_traveler_info['passport_id'] ?>" placeholder="Passport No" title="Passport No" style="text-transform: uppercase;">
       </div>
       <div class="col-md-2">
-        <input type="text" name="issue_date" id="issue_date" title="Issue Date" class="form-control" value="<?= ($sq_traveler_info['passport_issue_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['issue_date']) ?>"  placeholder="*Issue Date"  title="Issue Date" onchange="get_to_date(this.id,'expiry_date');">
+        <input type="text" name="issue_date" id="issue_date" title="Issue Date" class="form-control" value="<?= ($sq_traveler_info['passport_issue_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['issue_date']) ?>"  placeholder="Issue Date"  title="Issue Date" onchange="get_to_date(this.id,'expiry_date');">
       </div>
       <div class="col-md-2">
-        <input type="text" name="expiry_date" id="expiry_date" title="Expiry Date" class="form-control" value="<?= ($sq_traveler_info['passport_expiry_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['expiry_date']) ?>"  placeholder="*Expiry Date" title="Expiry Date" onchange="validate_validDate('issue_date','expiry_date');">
+        <input type="text" name="expiry_date" id="expiry_date" title="Expiry Date" class="form-control" value="<?= ($sq_traveler_info['passport_expiry_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['expiry_date']) ?>"  placeholder="Expiry Date" title="Expiry Date" onchange="validate_validDate('issue_date','expiry_date');">
         </div>
         <div class="col-md-2 col-sm-6 text_left_xs">
             <div class="div-upload col-md-8" style="margin-bottom: 5px;" id="div_upload_button">
@@ -42,7 +42,7 @@ $sq_traveler_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_ent
             </div>
         </div>
           
-        <div class="col-md-2 col-sm-6 text_left_xs">
+        <div class="col-md-3 col-sm-6 text_left_xs">
           <div class="div-upload col-md-8" style="margin-bottom: 5px;" id="div_upload_button">
             <div id="pan_card_upload" class="upload-button1"><span>ID Proof-2</span></div>
               <span id="pan_card_status" ></span>
@@ -55,7 +55,9 @@ $sq_traveler_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_ent
             <?php endif; ?>
           </div>
         </div>
-        <div class="col-md-offset-5"><span class="note">(Note size : upto 5MB. Only pdf, jpg, png files)</span></div> 
+    </div>
+    <div class="row mg_tp_10">
+      <div class="col-md-offset-8"><span class="note">(Note size : upto 5MB. Only pdf, jpg, png files)</span></div>
     </div>
     <div class="row mg_tp_20">
         <div class="col-md-12 text-center">
@@ -68,9 +70,6 @@ $sq_traveler_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_ent
 $('#issue_date,#expiry_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
 $('#frm_save').validate({
   rules:{
-    passport_no : { required : true },
-    issue_date : { required : true },
-    expiry_date : { required : true },
   },
   submitHandler:function(){
 

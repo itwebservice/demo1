@@ -45,7 +45,7 @@
 		var tour_id = $('#tour_id_filter').val();
     var group_id = $('#group_id_filter').val();
 		$.post('reports_content/group_tour/refund_tour_cancelation_report/refund_tour_cancelation_report_filter.php', {tour_id : tour_id,group_id : group_id}, function(data){
-      pagination_load(data, column, true, true, 20, 'gtc_tour_report');
+      pagination_load(data, column, true, true, 20, 'gtc_tour_report',true);
 	});
 	}
   passanger_reflect();

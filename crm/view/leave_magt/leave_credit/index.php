@@ -14,7 +14,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
   <div class="col-sm-12 text-right text_left_sm_xs">
       <button class="btn btn-excel btn-sm mg_bt_10" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
       <?php if($role_id=="1" || $role_id=="5"){ ?>
-      <button class="btn btn-info btn-sm ico_left" onclick="credit_save_modal()"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New credit</button>
+      <button class="btn btn-info btn-sm ico_left" onclick="credit_save_modal()"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;leave credit</button>
       <?php } ?>
   </div>
 </div>

@@ -13,7 +13,7 @@ $branch_status = $_POST['branch_status'];
         <select id="fcmb_traveler_id" name="fcmb_traveler_id" title="Passenger Name" style="width:100%;" onchange="traveler_id_proof_info_reflect()" title="Passenger">
             <option value="">Passenger Name</option>
             <?php 
-                  $query = "select * from ticket_master_entries where 1";
+                  $query = "select * from ticket_master_entries where 1 and ticket_id in (select ticket_id from ticket_master where delete_status='0')";
                   if($branch_status=='yes' && $role!='Admin'){
                       $query .= " and ticket_id in (select ticket_id from ticket_master where branch_admin_id = '$branch_admin_id')";
                   }
@@ -26,7 +26,7 @@ $branch_status = $_POST['branch_status'];
                   $sq_travelers_details = mysqlQuery($query);   
                   while($row_travelers_details = mysqli_fetch_assoc( $sq_travelers_details ))
                   {
-                    $sql_booking = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$row_travelers_details[ticket_id]'"));
+                    $sql_booking = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$row_travelers_details[ticket_id]' and delete_status='0'"));
                     $booking_date = $sql_booking['created_at'];
                     $yr = explode("-", $booking_date);
                     $year =$yr[0];

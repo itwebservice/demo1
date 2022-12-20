@@ -30,7 +30,7 @@ $emp_id = $_SESSION['emp_id'];
 			<select name="visa_id_filter" id="visa_id_filter" title="Booking ID" style="width: 100%">
 		        <option value="">Booking ID</option>
 		        <?php 
-		        $query = "select * from visa_master where 1";
+		        $query = "select * from visa_master where 1 and delete_status='0'";
 	            include"../../../../model/app_settings/branchwise_filteration.php";
 	            $query .= " order by visa_id desc";
 	            $sq_visa = mysqlQuery($query);
@@ -129,7 +129,7 @@ function list_reflect()
 	var branch_status_r = $('#branch_status_r').val();
 	$.post(base_url+'view/visa_passport_ticket/visa/payment_status/list_reflect.php', { customer_id : customer_id, visa_id : visa_id, from_date : from_date, to_date : to_date, cust_type : cust_type, company_name : company_name,booker_id:booker_id,branch_id : branch_id, branch_status : branch_status_r }, function(data){
 		// $('#div_list').html(data);
-		pagination_load(data, column, true, true, 20, 'visa_tour_report');
+		pagination_load(data, column, true, true, 20, 'visa_tour_report',true);
 		$('.loader').remove();
 	});
 }

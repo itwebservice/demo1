@@ -15,18 +15,19 @@ public function quotation_master_update()
 	$service_tax =  $_POST['service_tax'];
 	$service_charge =  $_POST['service_charge'];		
 	$total_tour_cost =  $_POST['total_tour_cost'];
+	$active_flag =  $_POST['active_flag'];
 
 	$roundoff = $_POST['roundoff'];
 
 	$bsmValues = json_decode(json_encode($_POST['bsmValues']));
-  	foreach($bsmValues[0] as $key => $value){
-      switch($key){
+	foreach($bsmValues[0] as $key => $value){
+	switch($key){
 		case 'basic' : $subtotal = ($value != "") ? $value : $subtotal;break;
 		case 'service' : $service_charge = ($value != "") ? $value : $service_charge;break;
 		case 'markup' : $markup_cost = ($value != "") ? $value : $markup_cost;break;
-      }
-    }
- 
+	}
+	}
+
 	//Plane
 	$from_city_id_arr = $_POST['from_city_id_arr'];
 	$to_city_id_arr = $_POST['to_city_id_arr'];
@@ -43,7 +44,7 @@ public function quotation_master_update()
 
 	$quotation_date = get_date_db($quotation_date);
 	$bsmValues = json_encode($bsmValues);
-	$query = "UPDATE flight_quotation_master SET enquiry_id ='$enquiry_id', customer_name='$customer_name', email_id='$email_id', mobile_no='$mobile_no', subtotal = '$subtotal',markup_cost='$markup_cost',markup_cost_subtotal='$markup_cost_subtotal', service_tax = '$service_tax', service_charge = '$service_charge', quotation_cost = '$total_tour_cost', quotation_date='$quotation_date', roundoff = '$roundoff',bsm_values='$bsmValues'  WHERE quotation_id = '$quotation_id'";
+	$query = "UPDATE flight_quotation_master SET enquiry_id ='$enquiry_id', customer_name='$customer_name', email_id='$email_id', mobile_no='$mobile_no', subtotal = '$subtotal',markup_cost='$markup_cost',markup_cost_subtotal='$markup_cost_subtotal', service_tax = '$service_tax', service_charge = '$service_charge', quotation_cost = '$total_tour_cost', quotation_date='$quotation_date', roundoff = '$roundoff',bsm_values='$bsmValues',status='$active_flag'  WHERE quotation_id = '$quotation_id'";
 	$sq_quotation = mysqlQuery($query);
 
 	if($sq_quotation){

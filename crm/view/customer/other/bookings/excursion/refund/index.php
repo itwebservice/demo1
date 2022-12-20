@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="exc_id1" id="exc_id1" style="width:100%" onchange="refund_report_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_exc = mysqlQuery("select * from excursion_master where customer_id='$customer_id' and  exc_id in ( select exc_id from excursion_master_entries where status='Cancel')order by exc_id desc");
+			        $sq_exc = mysqlQuery("select * from excursion_master where customer_id='$customer_id' and delete_status='0' and exc_id in ( select exc_id from excursion_master_entries where status='Cancel')order by exc_id desc");
 			        while($row_exc = mysqli_fetch_assoc($sq_exc)){
 						$date = $row_exc['created_at'];
 						$yr = explode("-", $date);

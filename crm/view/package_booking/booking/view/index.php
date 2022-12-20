@@ -27,15 +27,15 @@ $year =$yr[0];
 					$sq_c_hotel = mysqli_num_rows(mysqlQuery("select * from package_hotel_accomodation_master where booking_id='$booking_id'"));
 					$sq_c_package_exc = mysqli_num_rows(mysqlQuery("select * from package_tour_excursion_master where booking_id='$booking_id'"));
 					$sq_c_package_transp = mysqli_num_rows(mysqlQuery("select * from package_tour_transport_master where booking_id='$booking_id'"));
-					$sq_c_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+					$sq_c_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 
-					 if($sq_c_hotel != '0' || $sq_c_package_transp !='0' || $sq_c_package_exc!='0'){ 
+					if($sq_c_hotel != '0' || $sq_c_package_transp !='0' || $sq_c_package_exc!='0'){ 
 						
 						?>
 					<li role="presentation"><a href="#hotel_transport_information" aria-controls="hotel_transport_information" role="tab" data-toggle="tab" class="tab_name">Hotel & Transport</a></li>
 					<?php 
 					}
-					 ?>
+					?>
 					<li role="presentation"><a href="#booking_costing" aria-controls="booking_costing" role="tab" data-toggle="tab" class="tab_name">Costing Information</a></li>
 					<li role="presentation"><a href="#payment_information" aria-controls="payment_information" role="tab" data-toggle="tab" class="tab_name">Receipt Information</a></li>
 					<li class="pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></li>

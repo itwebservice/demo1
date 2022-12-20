@@ -68,8 +68,8 @@ $booking_id = $_POST['booking_id'];
 	</div>
 	<div class="col-md-4">
 
-		<?php     
-			$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+		<?php  
+			$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 			$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from hotel_booking_payment where booking_id='$booking_id'"));
 			$sq_refund_info = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from hotel_booking_refund_master where booking_id='$booking_id'"));
 			
@@ -166,7 +166,7 @@ $booking_id = $_POST['booking_id'];
 
 			$total_refund = $total_refund+$row_hotel_refund['refund_amount'];
 
-			$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$row_hotel_refund[booking_id]'"));
+			$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$row_hotel_refund[booking_id]' and delete_status='0'"));
 			
 			$hotel_name = "";
 			$sq_refund_entries = mysqlQuery("select * from hotel_booking_refund_entries where refund_id='$row_hotel_refund[refund_id]'");

@@ -33,7 +33,6 @@ $branch_status = $sq['branch_status'];
 									<?php get_new_customer_dropdown($role, $branch_admin_id, $branch_status); ?>
 								</select>
 							</div>
-							<div id="new_cust_div"></div>
 							<div id="cust_details">
 								<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
 									<input type="text" id="email_id" name="email_id" title="Email Id" placeholder="Email ID" title="Email ID" class="form-control" readonly>
@@ -57,8 +56,9 @@ $branch_status = $sq['branch_status'];
 						</div>
 
 					</div>
+					<div id="new_cust_div"></div>
 					<div class="panel panel-default panel-body fieldset">
-						<legend>Services Details</legend>
+						<legend>Service Details</legend>
 
 						<div class="row">
 							<div class="col-md-4 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
@@ -167,7 +167,7 @@ $branch_status = $sq['branch_status'];
 						</div>
 						<div class="row mg_bt_10">
 							<div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-								<input class="form-control" type="text" id="bank_name" name="bank_name" placeholder="Bank Name" class="bank_suggest" title="Bank Name" readonly>
+								<input class="form-control bank_suggest" type="text" id="bank_name" name="bank_name" placeholder="Bank Name" title="Bank Name" readonly>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
 								<input class="form-control" type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
@@ -199,6 +199,7 @@ $branch_status = $sq['branch_status'];
 </div>
 
 
+<script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>
 
 <script>
 $('#visa_save_modal').modal('show');
@@ -371,12 +372,12 @@ function business_rule_load() {
 				}
 				if (payment_mode == "Credit Note" && credit_amount != '') {
 					if (parseFloat(payment_amount) > parseFloat(credit_amount)) {
-						error_msg_alert('Low Credit note balance');
+						error_msg_alert('Credit Note Balance is not available');
 						$('#btn_visa_master_save').prop('disabled', false);
 						return false;
 					}
 				} else if (payment_mode == "Credit Note" && credit_amount == '') {
-					error_msg_alert("You don't have Credit Note Amount");
+					error_msg_alert("Credit Note Balance is not available");
 					$('#btn_visa_master_save').prop('disabled', false);
 					return false;
 				}

@@ -3,9 +3,9 @@ include "../../../model/model.php";
 $financial_year_id = $_SESSION['financial_year_id'];
 $booking_id = $_POST['booking_id'];
 
-$query = mysqli_fetch_assoc(mysqlQuery("select max(booking_id) as booking_id,net_total as net_total from package_tour_booking_master where financial_year_id='$financial_year_id'"));
-$query_package = "select * from package_tour_booking_master where 1 ";
-$query_payment = "select * from package_payment_master where 1 ";
+$query = mysqli_fetch_assoc(mysqlQuery("select max(booking_id) as booking_id,net_total as net_total from package_tour_booking_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+$query_package = "select * from package_tour_booking_master where 1 and delete_status='0' ";
+$query_payment = "select * from package_payment_master where 1 and delete_status='0' ";
 
 if($booking_id != ''){
   $sq_entry = mysqlQuery("select * from package_travelers_details where booking_id='$booking_id'");
@@ -47,16 +47,12 @@ $sq_payment = mysqlQuery($query_payment);
                 else {
                   $bg="#fff";	}
                 $count++;
-                $age = $row_entry['age'];
-                $exp = explode(":" , $age); //explode marks data
-
-                $mark1 = $exp[0];  
               ?>
                 <tr class="<?= $bg ?>">
                     <td><?php echo $count ?></td>
                     <td><?php echo $row_entry['m_honorific'].' '.$row_entry['first_name']." ".$row_entry['last_name']; ?></td>
                     <td><?php echo get_date_user($row_entry['birth_date']); ?></td>
-                    <td><?php echo $mark1 ?></td>
+                    <td><?php echo $row_entry['age']; ?></td>
                     <td>
                       <button class="btn btn-info btn-sm" title="ID Proof" id="id-proof-<?= $count ?>" onclick="display_package_id_proof('<?php echo $row_entry['id_proof_url']; ?>')"><i class="fa fa-id-card-o"></i></button>
                     </td>
@@ -74,15 +70,14 @@ $sq_payment = mysqlQuery($query_payment);
         if($sale_total_amount==""){ $sale_total_amount = 0 ;  }
         $cancel_est=mysqli_fetch_assoc(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$booking_id'"));
         $cancel_amount = $cancel_est['cancel_amount'];
-        if($cancel_amount != ''){	
-          if($cancel_amount <= $paid_amount){
+        
+        if ($cancel_amount != '') {
+          if ($cancel_amount <= $paid_amount) {
             $balance_amount = 0;
-          }
-          else{
+          } else {
             $balance_amount =  $cancel_amount - $paid_amount;
           }
-        }
-        else{
+        } else {
           $cancel_amount = ($cancel_amount == '') ? '0' : $cancel_amount;
           $balance_amount = $sale_total_amount - $paid_amount;
         }

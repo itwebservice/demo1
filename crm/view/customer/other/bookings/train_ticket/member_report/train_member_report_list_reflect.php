@@ -11,6 +11,7 @@ if($customer_id!=""){
 if($ticket_id!=""){
 	$query .=" and train_ticket_id='$ticket_id'";
 }
+$query .= " and train_ticket_id in (select train_ticket_id from train_ticket_master where delete_status='0')";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
 	
@@ -18,6 +19,7 @@ if($ticket_id!=""){
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
+			<th>Booking_ID</th>
 			<th>Passenger_Name</th>
 			<th>Birth_Date</th>
 			<th>Adolescence</th>
@@ -32,23 +34,26 @@ if($ticket_id!=""){
 		$sq_ticket = mysqlQuery($query);
 		while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
-			 $sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select customer_id from train_ticket_master where train_ticket_id='$row_ticket[train_ticket_id]'"));
+			$sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select customer_id from train_ticket_master where train_ticket_id='$row_ticket[train_ticket_id]'"));
 
 			$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_train_ticket[customer_id]'"));
+			$date = $sq_train_ticket['created_at'];
+			$yr = explode("-", $date);
+			$year = $yr[0];
 
-
-				$bg = ($row_ticket['status']=='Cancel') ? 'danger' : '';
-				?>
-				<tr class="<?= $bg ?>">
-					<td><?= ++$count ?></td>
-					<td><?= $row_ticket['first_name']."  ".$row_ticket['last_name'] ?></td>
-					<td><?= get_date_user($row_ticket['birth_date']) ?></td>
-					<td><?= $row_ticket['adolescence'] ?></td>
-					<td><?= $row_ticket['coach_number'] ?></td>
-					<td><?= $row_ticket['seat_number'] ?></td>
-					<td><?= $row_ticket['ticket_number'] ?></td>
-				</tr>
-				<?php
+			$bg = ($row_ticket['status']=='Cancel') ? 'danger' : '';
+			?>
+			<tr class="<?= $bg ?>">
+				<td><?= ++$count ?></td>
+				<td><?= get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year) ?></td>
+				<td><?= $row_ticket['first_name']."  ".$row_ticket['last_name'] ?></td>
+				<td><?= get_date_user($row_ticket['birth_date']) ?></td>
+				<td><?= $row_ticket['adolescence'] ?></td>
+				<td><?= $row_ticket['coach_number'] ?></td>
+				<td><?= $row_ticket['seat_number'] ?></td>
+				<td><?= $row_ticket['ticket_number'] ?></td>
+			</tr>
+			<?php
 			}
 		?>
 	</tbody>

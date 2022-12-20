@@ -6,7 +6,7 @@ $booking_id = $_POST['booking_id'];
 ?>
 
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
-<table class="table table-bordered cust_table" id="tbl_list" style="margin:20px 0 !important">
+<table class="table table-bordered bg_white cust_table" id="tbl_list" style="margin:20px 0 !important">
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
@@ -15,7 +15,7 @@ $booking_id = $_POST['booking_id'];
 			<th>Mode</th>
 			<th>Bank_Name</th>
 			<th>Cheque_No/ID</th>
-			<th class="text-right success">Amount</th>
+			<th class="success">Amount</th>
 			<th>Receipt</th>
 		</tr>
 	</thead>
@@ -41,7 +41,7 @@ $booking_id = $_POST['booking_id'];
 		while($row_payment = mysqli_fetch_assoc($sq_payment)){
 			$count++;
 
-			$sq_bus_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_payment[booking_id]'"));
+			$sq_bus_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_payment[booking_id]' and delete_status='0'"));
 			$total_sale = $sq_bus_info['net_total'];
 			$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bus_booking_payment_master where clearance_status!='Cancelled' and booking_id='$row_payment[booking_id]'"));
 			$total_pay_amt = $sq_pay['sum'];
@@ -57,7 +57,6 @@ $booking_id = $_POST['booking_id'];
 			$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_bus_info[customer_id]'"));
 			
 			$bg='';
-			$sq_paid_amount = $sq_paid_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
 			if($row_payment['clearance_status']=="Pending"){ 
 				$bg='warning';
 				$sq_pending_amount = $sq_pending_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
@@ -66,6 +65,12 @@ $booking_id = $_POST['booking_id'];
 				$bg='danger';
 				$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
 			}
+			else if($row_payment['clearance_status']=="Cleared"){ 
+				$bg='success';
+			}else{
+				$bg='';
+			}
+			$sq_paid_amount = $sq_paid_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
 			$sq_travel_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_entries where booking_id='$row_payment[booking_id]'"));
 
 			$payment_id_name = "Bus Payment ID";
@@ -83,7 +88,7 @@ $booking_id = $_POST['booking_id'];
 			$bank_name = $row_payment['bank_name'];
 			$receipt_type = "Bus Receipt";
 			
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=bus_booking_payment_master&customer_field=booking_id&in_customer_id=$row_payment[booking_id]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=bus_booking_payment_master&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&status=$row_payment[status]";
 			?>
 			<tr class="<?= $bg?>">				
 				<td><?= $count ?></td>				
@@ -92,7 +97,7 @@ $booking_id = $_POST['booking_id'];
 				<td><?= $row_payment['payment_mode'] ?></td>
 				<td><?= $row_payment['bank_name'] ?></td>
 				<td><?= $row_payment['transaction_id'] ?></td>	
-				<td class="text-right success"><?= number_format($row_payment['payment_amount'] + $row_payment['credit_charges'],2) ?></td>
+				<td class="success"><?= number_format($row_payment['payment_amount'] + $row_payment['credit_charges'],2) ?></td>
 				<td>
 					<a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Reciept"><i class="fa fa-print"></i></a>
 				</td>		
@@ -103,7 +108,7 @@ $booking_id = $_POST['booking_id'];
 	</tbody>
 	<tfoot>
 		<tr class="active">
-			<th colspan="2"  class="text-right info">Total Paid : <?= number_format($sq_paid_amount,2) ?></th>			
+			<th colspan="2" class="text-right info">Total Paid : <?= number_format($sq_paid_amount,2) ?></th>			
 			<th colspan="2" class="text-right warning">Pending Clearance : <?= number_format($sq_pending_amount,2) ?></th>		
 			<th colspan="2" class="text-right danger">Cancelled : <?= number_format($sq_cancel_amount,2) ?></th>			
 			<th colspan="2" class="text-right success">Total Payment : <?= number_format(($sq_paid_amount - $sq_pending_amount - $sq_cancel_amount),2) ?></th>

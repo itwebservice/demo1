@@ -121,31 +121,32 @@ $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);   
 
-$query = "select * from  cash_deposit_master where 1 ";
+$query = "select * from cash_deposit_master where 1 and delete_status=0 and amount!=0";
 if($from_date!="" && $to_date!=""){
-  $from_date = get_date_db($from_date);
-  $to_date = get_date_db($to_date);
+    $from_date = get_date_db($from_date);
+    $to_date = get_date_db($to_date);
 
-  $query .= " and transaction_date between '$from_date' and '$to_date'";
+    $query .= " and transaction_date between '$from_date' and '$to_date'";
 }
 if($bank_id!=""){
-  $query .= " and bank_id='$bank_id' ";
+    $query .= " and bank_id='$bank_id' ";
 }
 if($financial_year_id!=""){
-  $query .=" and financial_year_id='$financial_year_id'";
+    $query .=" and financial_year_id='$financial_year_id'";
 }
 
 include "../../../model/app_settings/branchwise_filteration.php";
+$query .=" order by deposit_id desc";
 
 $row_count = 6;
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Date")
+        ->setCellValue('C'.$row_count, "Tr_Date")
         ->setCellValue('D'.$row_count, "Debitor Bank")
         ->setCellValue('E'.$row_count, "Amount")
-        ->setCellValue('F'.$row_count, "Created by");
-         
+        ->setCellValue('F'.$row_count, "Created By");
+
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($borderArray);    
 
@@ -161,7 +162,7 @@ $count = 0;
       $total_amount = $total_amount + $row_deposit['amount'];
 
 	$objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, ++$count)
+        ->setCellValue('B'.$row_count, $row_deposit['deposit_id'])
         ->setCellValue('C'.$row_count, get_date_user($row_deposit['transaction_date']))
         ->setCellValue('D'.$row_count, $sq_bank['bank_name'].'('.$sq_bank['branch_name'].')')
         ->setCellValue('E'.$row_count, number_format($row_deposit['amount'],2))

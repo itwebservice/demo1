@@ -1,6 +1,5 @@
 <?php
 include "../../../../../../model/model.php";
-
 /** Error reporting */
 error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
@@ -20,7 +19,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -50,24 +49,24 @@ $content_style_Array = array(
 
 //This is border array
 $borderArray = array(
-          'borders' => array(
-              'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN
-              )
-          )
-      );
+    'borders' => array(
+        'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+        )
+    )
+);
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
 
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
+    ->setLastModifiedBy("Maarten Balliauw")
+    ->setTitle("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setKeywords("office 2007 openxml php")
+    ->setCategory("Test result file");
 
 
 //////////////////////////****************Content start**************////////////////////////////////
@@ -78,11 +77,11 @@ $tour_group_id = $_GET['tour_group_id'];
 $total_sale = 0; $total_purchase = 0;
 
 //Sale
-$q1 = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id ='$tour_group_id' and tour_group_status!='Cancel' ");
+$q1 = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id ='$tour_group_id' and delete_status='0' ");
 while($tourwise_details = mysqli_fetch_assoc($q1)){
 
-	$pass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from  travelers_details where traveler_group_id='$tourwise_details[id]'"));
-	$cancelpass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from  travelers_details where traveler_group_id='$tourwise_details[id]' and status='Cancel'"));
+	$pass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from  travelers_details where traveler_group_id='$tourwise_details[traveler_group_id]'"));
+	$cancelpass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from  travelers_details where traveler_group_id='$tourwise_details[traveler_group_id]' and status='Cancel'"));
 
 	if($pass_count != $cancelpass_count){
 
@@ -101,7 +100,7 @@ while($tourwise_details = mysqli_fetch_assoc($q1)){
 }
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
   $total_purchase += $row_purchase['net_total'];
   //Service Tax 
@@ -135,7 +134,7 @@ $profit_amount = $total_sale - $total_purchase;
 $profit_loss_per = ($total_sale>0) ?($profit_amount / $total_sale) * 100 : 0;
 $profit_loss_per = round($profit_loss_per, 2);
 
-$sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel'"));
+$sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'"));
 $sq_count = mysqli_num_rows(mysqlQuery("select * from group_tour_estimate_expense where tour_id='$tour_id' and tour_group_id ='$tour_group_id'"));
 
 // Add some data
@@ -197,13 +196,13 @@ $objPHPExcel->setActiveSheetIndex(0)
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($borderArray);
 $row_count++;
- 
+
 $count = 1;
-$q1 = mysqlQuery("select *  from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id ='$tour_group_id' and tour_group_status!='Cancel' ");
+$q1 = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id ='$tour_group_id' and tour_group_status!='Cancel' and delete_status='0' ");
 while($tourwise_details = mysqli_fetch_assoc($q1)){
 
-	$pass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id='$tourwise_details[id]'"));
-	$cancelpass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id='$tourwise_details[id]' and status='Cancel'"));
+	$pass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id='$tourwise_details[traveler_group_id]'"));
+	$cancelpass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id='$tourwise_details[traveler_group_id]' and status='Cancel'"));
 	$sq_emp = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from emp_master where emp_id='$tourwise_details[emp_id]'"));
 	$emp_name = $sq_emp['first_name'].' '.$sq_emp['last_name'];
 
@@ -258,18 +257,18 @@ if($sq_pcount!=0){
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($header_style_Array);
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($borderArray);          
     $count = 1;
-    $sq_query = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel'");
+    $sq_query = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
     while($row_query = mysqli_fetch_assoc($sq_query))
     { 
         $vendor_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
         //Service Tax 
         $service_tax_amount = 0;
         if($row_query['service_tax_subtotal'] !== 0.00 && ($row_query['service_tax_subtotal']) !== ''){
-          $service_tax_subtotal1 = explode(',',$row_query['service_tax_subtotal']);
-          for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
-          $service_tax = explode(':',$service_tax_subtotal1[$i]);
-          $service_tax_amount +=  $service_tax[2];
-          }
+            $service_tax_subtotal1 = explode(',',$row_query['service_tax_subtotal']);
+            for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
+                $service_tax = explode(':',$service_tax_subtotal1[$i]);
+                $service_tax_amount +=  $service_tax[2];
+            }
         }
         $row_count++;
         if($row_query['net_total'] != '0'){
@@ -354,7 +353,7 @@ exit;
 
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
   $total_purchase += $row_purchase['net_total'] ;
 }
@@ -437,7 +436,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':D'.$row_count)->applyF
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':D'.$row_count)->applyFromArray($borderArray);                    
 
 $count = 1;
-$sq_query = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel'");
+$sq_query = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
 while($row_query = mysqli_fetch_assoc($sq_query))
 { 
   $row_count++;

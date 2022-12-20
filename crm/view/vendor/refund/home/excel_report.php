@@ -146,7 +146,7 @@ $row_count++;
     $sq_estimate = mysqlQuery($query);
     while($row_refund = mysqli_fetch_assoc($sq_estimate)){
 
-        $query = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$row_refund[estimate_id]'"));
+        $query = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$row_refund[estimate_id]' and delete_status='0'"));
         $date = $query['purchase_date'];
         $yr = explode("-", $date);
         $year =$yr[0];

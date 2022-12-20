@@ -32,10 +32,10 @@ $disabled = ($sq_income_info['payment_mode']=="Cash" ||$sq_income_info['payment_
             </div>
             <div class="row">
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="payment_amount" name="payment_amount" placeholder="Amount" title="Amount" value="<?= $sq_income_info['payment_amount'] ?>" onchange="validate_balance(this.id)">
+                <input type="text" id="payment_date" name="payment_date" placeholder="Date" readonly title="Date" value="<?= get_date_user($sq_income_info['payment_date']) ?>">
               </div>
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="payment_date" name="payment_date" placeholder="Date" readonly title="Date" value="<?= get_date_user($sq_income_info['payment_date']) ?>">
+                <input type="text" id="payment_amount" name="payment_amount" placeholder="Amount" title="Amount" value="<?= $sq_income_info['payment_amount'] ?>" onchange="validate_balance(this.id)">
               </div>
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                 <select name="payment_mode" id="payment_mode" class="form-control" title="Mode" onchange="payment_master_toggles(this.id, 'bank_name', 'transaction_id', 'bank_id')" disabled>
@@ -83,8 +83,7 @@ $disabled = ($sq_income_info['payment_mode']=="Cash" ||$sq_income_info['payment_
 
 <script>
 $('#update_modal').modal('show');
-$('#payment_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
-
+// $('#payment_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
 $('#frm_update').validate({
   rules:{
           income_type_id : { required: true },

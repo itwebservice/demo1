@@ -12,7 +12,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
 ?>
 <option value="">Booking ID</option>
 <?php
-$query = "select * from excursion_master where 1";
+$query = "select * from excursion_master where 1 and delete_status='0'";
 if($customer_id!=""){
 	$query .="  and customer_id='$customer_id'";
 }

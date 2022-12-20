@@ -56,6 +56,7 @@ $('#frm_tab3').validate({
 		var quotation_date = $('#quotation_date').val();
 		var currency_code = $('#currency_code').val();
 		var base_url = $('#base_url').val();
+		var hotel_requirements = $('#hotel_requirements').val();
 
 		var enquiryDetails = {
 			enquiry_id : $('#enquiry_id').val(),
@@ -68,7 +69,6 @@ $('#frm_tab3').validate({
 			children_with_bed : $('#children_with_bed').val(),
 			total_infant : $('#total_infant').val(),
 			total_members : $('#total_members').val(),
-			hotel_requirements : $('#hotel_requirements').val()
 		};
 
 		var optionJson = [];
@@ -122,7 +122,7 @@ $('#frm_tab3').validate({
 				"markup" : $(row.cells[4].childNodes[0]).find('span').text()
 			});
 		}
-		$.post(base_url + '/controller/hotel/quotation/quotation_save.php',	{ nofquotation : nofquotation, optionJson : optionJson, costingJson : costingJson , enquiryDetails : enquiryDetails, quotation_date : quotation_date, bsmValues : bsmValues,currency_code:currency_code},	function(message){
+		$.post(base_url + '/controller/hotel/quotation/quotation_save.php',	{ nofquotation : nofquotation, optionJson : optionJson, costingJson : costingJson , enquiryDetails : enquiryDetails, quotation_date : quotation_date, bsmValues : bsmValues,currency_code:currency_code,hotel_requirements:hotel_requirements},	function(message){
 			
 			$('#btn_quotation_save').button('reset');
 			var msg = message.split('--');
@@ -130,6 +130,7 @@ $('#frm_tab3').validate({
 			if(msg[0]=="error"){
 				$('#btn_quotation_save').prop('disabled',false);
 				error_msg_alert(msg[1]);
+				return false;
 			}
 			else{
 					$('#vi_confirm_box').vi_confirm_box({

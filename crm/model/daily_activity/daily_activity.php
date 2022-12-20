@@ -18,9 +18,9 @@ $branch_admin_id = $_POST['branch_admin_id'];
     $max_id = $max_id1['max']+1;
 
     $activity_date_arr1 = date('Y-m-d',strtotime($activity_date_arr[$i]));
-    
+    $activity_type_arr1=addslashes($activity_type_arr[$i]);
     $description1 = addslashes($description_arr[$i]); 
-    $sq = mysqlQuery("insert into daily_activity (id,emp_id, branch_admin_id,activity_date, activity_type,time_taken, description ) values ('$max_id','$emp_id', '$branch_admin_id','$activity_date_arr1', '$activity_type_arr[$i]', '$time_taken_arr[$i]', '$description1') ");
+    $sq = mysqlQuery("insert into daily_activity (id,emp_id, branch_admin_id,activity_date, activity_type,time_taken, description ) values ('$max_id','$emp_id', '$branch_admin_id','$activity_date_arr1', '$activity_type_arr1', '$time_taken_arr[$i]', '$description1') ");
     if(!$sq)
     {
       echo "error--".$activity_type_arr[$i]." not saved!";

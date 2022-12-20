@@ -4,10 +4,10 @@ $query = mysqli_fetch_assoc(mysqlQuery("select max(booking_id) as booking_id fro
 
 $booking_id = $_POST['booking_id'];
 if($booking_id != ''){
-	$sq_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+	$sq_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 }
 else{
-	$sq_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$query[booking_id]'"));
+	$sq_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$query[booking_id]' and delete_status='0'"));
 }
 ?>
 
@@ -27,16 +27,16 @@ else{
               </thead>
               <tbody>
               <?php 
-             while($row_entry = mysqli_fetch_assoc($sq_entry)){
-           			if($row_entry['status']=="Cancel")
-           			{
-           				$bg="danger";
-           			}
-           			else
-           			{
-           				$bg="#fff";
-           			}
-           			$count++;
+              while($row_entry = mysqli_fetch_assoc($sq_entry)){
+                  if($row_entry['status']=="Cancel")
+                  {
+                    $bg="danger";
+                  }
+                  else
+                  {
+                    $bg="#fff";
+                  }
+                  $count++;
               ?>
                 <tr class="<?= $bg ?>">
                     <td><?php echo $count ?></td>

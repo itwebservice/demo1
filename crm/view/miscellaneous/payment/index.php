@@ -5,7 +5,7 @@ $branch_status = $_POST['branch_status'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$query = "select * from miscellaneous_master where 1";
+$query = "select * from miscellaneous_master where 1 and delete_status='0'";
 include "../../../model/app_settings/branchwise_filteration.php";
 $query .= " order by misc_id desc";
 ?>
@@ -24,10 +24,6 @@ $query .= " order by misc_id desc";
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 		        <select name="cust_type_filter" id="cust_type_filter" style="width:100%" onchange="dynamic_customer_load(this.value,'company_filter'); company_name_reflect();" title="Customer Type">
 		            <?php get_customer_type_dropdown(); ?>
-		            
-		            
-		            
-                    
 		        </select>
 	    </div>
 	    <div id="company_div" class="hidden">
@@ -41,15 +37,13 @@ $query .= " order by misc_id desc";
 			        <?php 
 		            $sq_visa = mysqlQuery($query);
 			        while($row_visa = mysqli_fetch_assoc($sq_visa)){
-
-
 			        $date = $row_visa['created_at'];
-				      $yr = explode("-", $date);
-				      $year =$yr[0];
-			          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_visa[customer_id]'"));
-			          ?>
-			          <option value="<?= $row_visa['misc_id'] ?>"><?= get_misc_booking_id($row_visa['misc_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-			          <?php
+					$yr = explode("-", $date);
+					$year =$yr[0];
+					$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_visa[customer_id]'"));
+					?>
+					<option value="<?= $row_visa['misc_id'] ?>"><?= get_misc_booking_id($row_visa['misc_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+					<?php
 			        }
 			        ?>
 		    </select>
@@ -115,7 +109,7 @@ $query .= " order by misc_id desc";
 		var branch_status = $('#branch_status').val();
 		$.post('payment/visa_payment_list_reflect.php', { customer_id : customer_id, misc_id : misc_id, payment_mode : payment_mode, financial_year_id : financial_year_id, payment_from_date : payment_from_date, payment_to_date : payment_to_date, cust_type : cust_type, company_name : company_name, branch_status : branch_status  }, function(data){
 			// $('#div_visa_payment_list').html(data);
-			pagination_load(data,columns,true,true,10,'misc_r_book');
+			pagination_load(data,columns,true,true,10,'misc_r_book',true);
 			$('.loader').remove();
 		});
 	}
@@ -143,19 +137,19 @@ $query .= " order by misc_id desc";
 		window.location = 'payment/excel_report.php?customer_id='+customer_id+'&misc_id='+misc_id+'&from_date='+from_date+'&to_date='+to_date+'&payment_mode='+payment_mode+'&financial_year_id='+financial_year_id+'&cust_type='+cust_type+'&company_name='+company_name+'&branch_status='+branch_status;
 	}
 	function bank_receipt(){
-			var payment_mode = $('#payment_mode_filter').val();
-			var base_url = $('#base_url').val();
-			$.post(base_url+'view/hotels/booking/payment/bank_receipt_generate.php',{payment_mode : payment_mode}, function(data){
-				$('#receipt_data').html(data);
-			});
-		}
-		function whatsapp_send_r(booking_id, payment_amount, base_url){
+		var payment_mode = $('#payment_mode_filter').val();
+		var base_url = $('#base_url').val();
+		$.post(base_url+'view/hotels/booking/payment/bank_receipt_generate.php',{payment_mode : payment_mode}, function(data){
+			$('#receipt_data').html(data);
+		});
+	}
+	function whatsapp_send_r(booking_id, payment_amount, base_url){
 		$.post(base_url+'controller/miscellaneous/receipt_whatsapp_send.php',{booking_id:booking_id, payment_amount:payment_amount}, function(data){
-		window.open(data);
-	});
-}
+			window.open(data);
+		});
+	}
 function validate_issueDate (from, to) {
-	  var from_date = $('#'+from).val(); 
+	var from_date = $('#'+from).val(); 
     var to_date = $('#'+to).val(); 
 
     var parts = from_date.split('-');
@@ -178,14 +172,29 @@ function validate_issueDate (from, to) {
     var to_date_ms = date1.getTime();
 
     if(from_date_ms>to_date_ms ){
-      error_msg_alert(" From Date should be greater than To Date");
-      $('#'+to).css({'border':'1px solid red'});  
-        document.getElementById(to).value="";
-        $('#'+to).focus();
-        g_validate_status = false;
-      return false;
-    } 
-  }
+		error_msg_alert(" From Date should be greater than To Date");
+		$('#'+to).css({'border':'1px solid red'});  
+			document.getElementById(to).value="";
+			$('#'+to).focus();
+			g_validate_status = false;
+		return false;
+    }
+}
 
+function p_delete_entry(payment_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/miscellaneous/miscellaneous_master_payment_delete.php',{ payment_id : payment_id }, function(data){
+					success_msg_alert(data);
+					visa_payment_list_reflect();
+				});
+			}
+		}
+	});
+}
 </script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

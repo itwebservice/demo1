@@ -33,13 +33,13 @@ $sq_count1 = mysqli_num_rows(mysqlQuery("SELECT booking_id FROM hotel_booking_pa
                       {
                           $count++;
                           $bg='';
-                          if($row_payment['clearance_status']=="Pending"){ 
+                          if($row_entry['clearance_status']=="Pending"){ 
                             $bg="warning";
                           }
-                          else if($row_payment['clearance_status']=="Cancelled"){ 
+                          else if($row_entry['clearance_status']=="Cancelled"){ 
                             $bg="danger";
                           }
-                          else if($row_payment['clearance_status']=="Cleared"){ 
+                          else if($row_entry['clearance_status']=="Cleared"){ 
                             $bg="success";
                           }
                           ?>

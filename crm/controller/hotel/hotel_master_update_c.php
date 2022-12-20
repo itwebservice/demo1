@@ -16,7 +16,7 @@ $email_id_2 = $_POST["email_id_2"];
 $contact_person_name = $_POST["contact_person_name"];
 $immergency_contact_no = $_POST['immergency_contact_no'];
 $hotel_address = $_POST["hotel_address"];
-$country = $_POST['country'];
+// $country = $_POST['country'];
 $website = $_POST['website'];
 $bank_name = $_POST['bank_name'];
 $branch = $_POST['branch'];
@@ -42,5 +42,5 @@ $cwob_from = $_POST['cwob_from'];
 $cwob_to = $_POST['cwob_to'];
 
 $hotel_master = new hotel_master();
-$hotel_master->hotel_master_update( $hotel_id, $vendor_login_id, $city_id, $hotel_name, $mobile_no, $landline_no, $email_id,$email_id_1,$email_id_2, $contact_person_name,$immergency_contact_no, $hotel_address, $country, $website, $opening_balance,$rating_star, $active_flag, $bank_name,$account_name,$account_no,$branch, $ifsc_code,  $service_tax_no,$state,$side1,$supp_pan,$as_of_date,$description,$policies,$amenities,$hotel_type,$meal_plan,$cwb_from,$cwb_to,$cwob_from,$cwob_to);
+$hotel_master->hotel_master_update( $hotel_id, $vendor_login_id, $city_id, $hotel_name, $mobile_no, $landline_no, $email_id,$email_id_1,$email_id_2, $contact_person_name,$immergency_contact_no, $hotel_address, $website, $opening_balance,$rating_star, $active_flag, $bank_name,$account_name,$account_no,$branch, $ifsc_code,  $service_tax_no,$state,$side1,$supp_pan,$as_of_date,$description,$policies,$amenities,$hotel_type,$meal_plan,$cwb_from,$cwb_to,$cwob_from,$cwob_to);
 ?>

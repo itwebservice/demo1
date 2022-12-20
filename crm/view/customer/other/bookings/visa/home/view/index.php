@@ -3,7 +3,7 @@ include "../../../../../../../model/model.php";
 
 $visa_id = $_POST['visa_id'];
 
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id' and delete_status='0'"));
 $date = $sq_visa_info['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];

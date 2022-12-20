@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $visa_id = $_POST['visa_id'];
 $customer_id = $_SESSION['customer_id'];
 
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 $query .=" and customer_id='$customer_id'";
 if($visa_id!=""){
 	$query .=" and visa_id='$visa_id'";
@@ -21,7 +21,7 @@ if($visa_id!=""){
 			<th>Birthdate</th>
 			<th>Visa_Country</th>
 			<th>Visa_Type</th>
-			<th>Received_Documents</th>
+			<th>Nationality</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -47,7 +47,7 @@ if($visa_id!=""){
 					<td><?= date('d-m-Y', strtotime($row_entry['birth_date'])); ?></td>
 					<td><?= $row_entry['visa_country_name'] ?></td>
 					<td><?= $row_entry['visa_type'] ?></td>
-					<td><?= $row_entry['received_documents'] ?></td>
+					<td><?= $row_entry['nationality'] ?></td>
 				</tr>
 				<?php
 			}

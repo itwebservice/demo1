@@ -1,6 +1,6 @@
-<div class="row mg_bt_10" >
+<div class="row mg_tp_10 mg_bt_10" >
     <div class="col-md-4 col-sm-6">
-        <input type="checkbox" id="chk_train_select_all" onchange="select_all('tbl_train_travel_details_dynamic_row',this.id);  calculate_train_expense('tbl_train_travel_details_dynamic_row',true)" checked>&nbsp;&nbsp;<label for="chk_train_select_all">Select All</label>
+        <input type="checkbox" id="chk_train_select_all" onchange="select_all('tbl_train_travel_details_dynamic_row',this.id);  calculate_train_expense('tbl_train_travel_details_dynamic_row',true)">&nbsp;&nbsp;<label for="chk_train_select_all">Select All</label>
     </div>
     <div class="col-md-8 col-sm-6 text-right">
         <button type="button" class="btn btn-excel btn-sm" onClick="addRow('tbl_train_travel_details_dynamic_row');city_lzloading('.train_from','*From',true);city_lzloading('.train_to','*To',true);" title="Add Row"><i class="fa fa-plus"></i></button>
@@ -24,11 +24,11 @@
             </select></td>
             <td><select id="txt_train_to_location1" name="txt_train_to_location1" onchange="validate_location('txt_train_to_location1' , 'txt_train_from_location1')" class="train_to" style="width:150px" title="To Location">
             </select></td>
-            <td style="width: 130px;"><input type="text" id="txt_train_no1" onchange="validate_specialChar(this.id);" name="txt_train_no1" placeholder="Train Name & No" Title="Train Name & No"/></td>
+            <td><input type="text" id="txt_train_no1" onchange="validate_specialChar(this.id);" name="txt_train_no1" placeholder="Train Name & No" Title="Train Name & No" style="width: 150px;"/></td>
 
-            <td style="width: 30px;"><input type="text" id="txt_train_total_seat1" name="txt_train_total_seat1" placeholder="Total Seats" title="Total Seats" maxlength="3" onchange="validate_balance(this.id);" /></td>
+            <td><input type="text" id="txt_train_total_seat1" name="txt_train_total_seat1" placeholder="Total Seats" title="Total Seats" maxlength="3" onchange="validate_balance(this.id);" style="width: 95px;" /></td>
 
-            <td style="width: 130px;"><input type="text" id="txt_train_amount1" name="txt_train_amount1" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);" onkeyup=" calculate_train_expense('tbl_train_travel_details_dynamic_row',true);" /></td>
+            <td><input type="text" id="txt_train_amount1" name="txt_train_amount1" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);" onkeyup=" calculate_train_expense('tbl_train_travel_details_dynamic_row',true);" style="width: 170px;" /></td>
 
             <td><select id="cmb_train_class1" name="cmb_train_class1" title="Class" style="width: 83px"> 
                     <option value="" selected>Class</option>

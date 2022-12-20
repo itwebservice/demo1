@@ -21,13 +21,13 @@ $booking_id = $sq_traveler_info['booking_id'];
   <div class="row mg_tp_20">
     <input type="hidden" name="traveler_id" id="traveler_id" value="<?php echo $traveler_id; ?>">
     <div class="col-md-2 col-sm-4 mg_bt_10_xs">
-      <input type="text" name="passport_no" id="passport_no" onchange="validate_passport(this.id);" class="form-control" value="<?= $sq_traveler_info['passport_no'] ?>" placeholder="*Passport No" title="Passport No" style="text-transform: uppercase;">
+      <input type="text" name="passport_no" id="passport_no" onchange="validate_passport(this.id);" class="form-control" value="<?= $sq_traveler_info['passport_no'] ?>" placeholder="Passport No" title="Passport No" style="text-transform: uppercase;">
     </div>
     <div class="col-md-2 col-sm-4 mg_bt_10_xs">
-      <input type="text" name="issue_date" id="issue_date" title="Issue Date" class="form-control" value="<?= ($sq_traveler_info['passport_issue_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['passport_issue_date']) ?>"  placeholder="*Issue Date"  title="Issue Date" onchange="get_to_date(this.id,'expiry_date');">
+      <input type="text" name="issue_date" id="issue_date" title="Issue Date" class="form-control" value="<?= ($sq_traveler_info['passport_issue_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['passport_issue_date']) ?>"  placeholder="Issue Date"  title="Issue Date" onchange="get_to_date(this.id,'expiry_date');">
     </div>
     <div class="col-md-2 col-sm-4 mg_bt_10_xs">
-      <input type="text" name="expiry_date" id="expiry_date" title="Expiry Date" class="form-control" value="<?= ($sq_traveler_info['passport_expiry_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['passport_expiry_date']) ?>"  placeholder="*Expire Date" title="Expire Date" onchange="validate_validDate('issue_date','expiry_date');">
+      <input type="text" name="expiry_date" id="expiry_date" title="Expiry Date" class="form-control" value="<?= ($sq_traveler_info['passport_expiry_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['passport_expiry_date']) ?>"  placeholder="Expiry Date" title="Expiry Date" onchange="validate_validDate('issue_date','expiry_date');">
     </div>
     <div class="col-md-2 col-sm-6 text_left_xs">
         <div class="div-upload col-md-8" style="margin-bottom: 5px;" id="div_upload_button">
@@ -47,7 +47,7 @@ $booking_id = $sq_traveler_info['booking_id'];
         </div>
     </div>
 
-    <div class="col-md-2 col-sm-6 text_left_xs">
+    <div class="col-md-3 col-sm-6 text_left_xs">
         <div class="div-upload col-md-8" style="margin-bottom: 5px;" id="div_upload_button">
             <div id="pan_card_upload" class="upload-button1"><span>ID Proof-2</span></div>
             <span id="pan_card_status" ></span>
@@ -63,15 +63,17 @@ $booking_id = $sq_traveler_info['booking_id'];
               <a href="<?= $pan_carddownload_url2 ?>" class="btn btn-info btn-sm ico_left" title="Download ID Proof-2" style="padding: 15px 24px;" download><i class="fa fa-download"></i></a>
               <?php } ?>
       </div>
-    </div> <div class="col-md-offset-5"><span class="note">(Note size : upto 5MB. Only pdf, jpg, png files)</span></div>
+    </div>
+  </div> 
+  <div class="row mg_tp_10">
+    <div class="col-md-offset-8"><span class="note">(Note size : upto 5MB. Only pdf, jpg, png files)</span></div>
+  </div>
     
-  </div>
   <div class="row mg_tp_20">
-     <div class="col-md-12 text-center">
-       <button id="btn_save1" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>
-     </div>
+    <div class="col-md-12 text-center">
+      <button id="btn_save1" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>
+    </div>
   </div>
-            
   <?php
  // }
   ?>
@@ -84,11 +86,8 @@ $('#issue_date,#expiry_date').datetimepicker({ timepicker:false, format:'d-m-Y' 
 
 $('#frm_save').validate({
   rules:{
-           passport_no : { required : true },
-           issue_date : { required : true },
-           expiry_date : { required : true },
           },
-     submitHandler:function(){
+    submitHandler:function(){
 
             var passport_no = $('#passport_no').val();
             var issue_date = $('#issue_date').val();

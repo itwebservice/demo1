@@ -7,7 +7,7 @@ require('../../../../classes/fpdf/fpdf.php');
 
 $booking_id = $_GET['booking_id'];
 
-$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_hotel[customer_id]'"));
 
 

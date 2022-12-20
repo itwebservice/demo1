@@ -27,7 +27,7 @@ $emp_id = $_SESSION['emp_id'];
 			<select name="visa_id_filter" id="visa_id_filter" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
 		        <?php 
-		        $query = "select * from visa_master where 1";
+		        $query = "select * from visa_master where 1 and delete_status='0'";
 	            include "../../../../model/app_settings/branchwise_filteration.php";
 	            $query .= " order by visa_id desc";
 	            $sq_visa = mysqlQuery($query);

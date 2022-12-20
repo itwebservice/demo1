@@ -48,7 +48,7 @@ public function quotation_master_clone()
   $this->clone_train_entries($quotation_id, $quotation_max);
   $this->clone_plane_entries($quotation_id, $quotation_max);
   $this->clone_cruise_entries($quotation_id, $quotation_max);
-  $sq_update  = mysqlQuery("update group_tour_quotation_master set clone='yes' where quotation_id='$quotation_max'");
+  $sq_update  = mysqlQuery("update group_tour_quotation_master set clone='yes',status='1' where quotation_id='$quotation_max'");
   echo "Quotation has been successfully copied.";
 
 }

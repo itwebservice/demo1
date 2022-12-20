@@ -19,7 +19,7 @@ $branch_status = $_POST['branch_status'];
           <select name="group_id_filter1" id="group_id_filter1" style="width:100%" title="Booking ID" onchange="load_visa_report(this.id,'group_tour','group_status_div')">
             <option value="">Booking ID</option>
             <?php 
-            $query = "select * from tourwise_traveler_details where 1";
+            $query = "select * from tourwise_traveler_details where 1 and delete_status='0'";
             if($branch_status=='yes' && $role!='Admin'){
                 $query .=" and branch_admin_id = '$branch_admin_id'";
             } 

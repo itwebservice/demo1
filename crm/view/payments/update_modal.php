@@ -7,7 +7,7 @@ include "../../../model/model.php";
 $payment_id = $_POST['payment_id'];
 
 $sq_payment = mysqli_fetch_assoc(mysqlQuery("select * from package_payment_master where payment_id='$payment_id'"));
-$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_payment[booking_id]'"));
+$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_payment[booking_id]' and delete_status='0'"));
 $date = $sq_tour['booking_date'];
 $yr = explode("-", $date);
 $year =$yr[0];

@@ -1,12 +1,12 @@
 <?php
 include_once('../model.php');
 $due_date=date('Y-m-d');
-$sq_visa = mysqli_num_rows(mysqlQuery("select * from visa_master where due_date='$due_date'"));
+$sq_visa = mysqli_num_rows(mysqlQuery("select * from visa_master where due_date='$due_date' and delete_status='0'"));
 global $secret_key,$encrypt_decrypt;
 
 if($sq_visa>0){
 
-	$sq_visa_details = mysqlQuery("select * from visa_master where due_date='$due_date'");
+	$sq_visa_details = mysqlQuery("select * from visa_master where due_date='$due_date' and delete_status='0'");
 	while ($row_visa = mysqli_fetch_assoc($sq_visa_details)) {
 
 		$visa_id = $row_visa['visa_id'];

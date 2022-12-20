@@ -5,6 +5,7 @@ include "../../print_functions.php";
 require("../../../../../classes/convert_amount_to_word.php"); 
 
 //Parameters
+global $currency;
 $invoice_no = $_GET['invoice_no'];
 $ticket_id = $_GET['ticket_id'];
 $invoice_date = $_GET['invoice_date'];
@@ -20,13 +21,14 @@ $total_paid = $_GET['total_paid'];
 $balance_amount = $_GET['balance_amount'];
 $sac_code = $_GET['sac_code'];
 $credit_card_charges = $_GET['credit_card_charges'];
+$bg = $_GET['bg'];
+$canc_amount = $_GET['canc_amount'];
+$cancel_type = $_GET['cancel_type'];
 
 $charge = ($credit_card_charges!='') ? $credit_card_charges : 0;
-// $total_paid += $charge;
 
-$sq_passenger = mysqlQuery("select * from ticket_master_entries where ticket_id = '$ticket_id'");
 $sq_passenger_count = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from ticket_master_entries where ticket_id = '$ticket_id'"));
-$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id'"));
+$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'"));
 $bsmValues = json_decode($sq_fields['bsm_values']);
 
 $other_tax = $sq_fields['other_taxes'];
@@ -50,7 +52,7 @@ if($bsmValues[0]->service != ''){ //inclusive service charge
   $newSC = $service_tax_amount + $service_charge;
 }
 else{
-  $tax_show =  rtrim($name, ', ').' : ' . ($service_tax_amount);
+  $tax_show =  rtrim($name, ', ').' : ' . number_format($service_tax_amount,2);
   $newSC = $service_charge;
 }
 ////////////////////Markup Rules
@@ -68,13 +70,13 @@ if($bsmValues[0]->markup != ''){ //inclusive markup
 }
 else{
   $newBasic = $basic_cost1;
-  $newSC = $service_charge + $sq_fields['markup'];
-  $tax_show = rtrim($name, ', ') .' : ' . ($markupservice_tax_amount + $service_tax_amount);
+  $newSC = $service_charge ;
 }
-////////////Basic Amount Rules
+///////////Basic Amount Rules
 if($bsmValues[0]->basic != ''){ //inclusive markup
   $newBasic = $basic_cost1 + $service_tax_amount + $sq_fields['markup'] + $markupservice_tax_amount;
 }
+$other_charges = $markupservice_tax_amount + $sq_fields['markup'];
 
 //Header
 if($app_invoice_format == "Standard"){include "../headers/standard_header_html.php"; }
@@ -85,10 +87,11 @@ $net_amount1 =  $basic_cost1 + $sq_fields['service_charge'] + $sq_fields['markup
 $word_amount =  $net_amount1;
 $amount_in_word = $amount_to_word->convert_number_to_words($word_amount);?>
 
-
-<div class="col-md-12 mg_tp_20"><p class="border_lt"><span class="font_5">PASSENGER (s):  <?= $sq_passenger_count['cnt'] ?></span></p></div>
+<div class="row mg_tp_20">
+  <div class="col-md-12"><p class="border_lt"><span class="font_5">PASSENGER (s):  <?= $sq_passenger_count['cnt'] ?></span></p></div>
+</div>
 <!-- invoice_receipt_body_table-->
-  <div class="main_block inv_rece_table main_block">
+  <div class="main_block inv_rece_table">
     <div class="row">
       <div class="col-md-12">
       <div class="table-responsive">
@@ -97,10 +100,10 @@ $amount_in_word = $amount_to_word->convert_number_to_words($word_amount);?>
             <tr class="table-heading-row">
               <th class="font_s_12">S.NO</th>
               <th class="font_s_12">NAME</th>
-              <th class="font_s_12">SECTOR</th>
-              <th class="font_s_12">Departure</th>
+              <th class="font_s_12">From_To_SECTOR</th>
+              <th class="font_s_12">Departure_date</th>
               <th class="font_s_12">Time</th>
-              <th class="font_s_12">PNR</th>
+              <th class="font_s_12">Airline_PNR</th>
               <th class="font_s_12">FLIGHT_NO</th>
               <th class="font_s_12">Ticket_NO</th>
             </tr>
@@ -108,29 +111,35 @@ $amount_in_word = $amount_to_word->convert_number_to_words($word_amount);?>
           <tbody>   
           <?php 
           $count = 1;
+          $sq_passenger = mysqlQuery("select * from ticket_master_entries where ticket_id = '$ticket_id'");
           while($row_passenger = mysqli_fetch_assoc($sq_passenger))
           {
+            $bg1 = ($row_passenger['status'] == 'Cancel') ? ' (Cancelled)' : '';
             ?>
             <tr class="odd">
               <td><?php echo $count; ?></td>
-              <td><?php echo $row_passenger['first_name'].' '.$row_passenger['last_name']; ?></td>
+              <td><?php echo $row_passenger['first_name'].' '.$row_passenger['middle_name'].' '.$row_passenger['last_name'].$bg1; ?></td>
             <?php
-            $sq_dest1 = mysqlQuery("select * from ticket_trip_entries where ticket_id = '$row_passenger[ticket_id]'");
+            $sq_dest1 = mysqlQuery("select * from ticket_trip_entries where passenger_id = '$row_passenger[entry_id]'");
             $dep_final = '';
             $flight_no = '';
             $dep_time = '';
             $time = '';
-            $pnr = '';
+            $pnr = $row_passenger['gds_pnr'].'<br>';
             while($sq_dest = mysqli_fetch_assoc($sq_dest1)){
+              
+
               $sectors_dep = explode('(',$sq_dest['departure_city']);
               $sectors_dep = $sectors_dep[sizeof($sectors_dep)-1];
               $sectors_ar = explode('(',$sq_dest['arrival_city']);
               $sectors_ar = $sectors_ar[sizeof($sectors_ar)-1];
               $dep_time .= date("d-m-Y", strtotime($sq_dest['departure_datetime'])).'<br>';
               $time .= date("H:i", strtotime($sq_dest['departure_datetime'])).'<br>';
-              $pnr .= $sq_dest['airlin_pnr'].'<br>';
               $flight_no .=  $sq_dest['flight_no'].'<br>';
-              $dep_final .= $sectors_dep.' - '.$sectors_ar.' ,<br>';   
+              
+              $cancel_clr = ($sq_dest['status'] == 'Cancel') ? '<span style="color:red !important;">'.$sectors_dep.' - '.$sectors_ar.'</span>' : $sectors_dep.' - '.$sectors_ar;
+
+              $dep_final .= $cancel_clr.' ,<br>';   
             }
             ?>
               <td><?php echo rtrim(str_replace(array( '(', ')' ), '', $dep_final),', <br>') ?></td>
@@ -138,41 +147,45 @@ $amount_in_word = $amount_to_word->convert_number_to_words($word_amount);?>
               <td><?php echo $time; ?></td>
               <td style="text-transform: uppercase;"><?php echo $pnr; ?></td>
               <td><?php echo $flight_no; ?></td>
-              <td><?php echo $row_passenger['ticket_no'] ?></td>
-            <?php 
-              
-              ?>         
-              <!-- <td><?php echo $sq_fields['basic_cost'] ?></td>   
-              <td><?php echo $yq_tax ?></td>
-              <td><?php echo $other_tax ?></td> -->
+              <td><?php echo strtoupper($row_passenger['ticket_no']) ?></td>
               </tr>
           <?php $count++; } ?>
           </tbody>
         </table>
-       </div>
-     </div>
+      </div>
+    </div>
     </div>
   </div>
 
-
- <!-- invoice_receipt_body_calculation -->
+<!-- invoice_receipt_body_calculation -->
 <section class="print_sec main_block">
   <div class="row">
     <div class="col-md-12">
       <div class="main_block inv_rece_calculation border_block">
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?php echo $currency_code." ".number_format($newBasic,2); ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?php echo $currency_code." ".number_format($newBasic,2); ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUND OFF </span><span class="float_r"><?php echo $currency_code.' '.$sq_fields['roundoff']; ?></span></p></div> 
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">OTHER CHARGES AND TAXES </span><span class="float_r"><?php echo $currency_code." ".number_format($other_charges,2); ?></span></p></div> 
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?php echo $currency_code." ".number_format($net_amount1,2); ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">OTHER TAX + YQ</span><span class="float_r"><?php echo $currency_code.' '.($sq_fields['other_taxes'] + $sq_fields['yq_tax']); ?></span></p></div>   
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">OTHER TAX + YQ</span><span class="float_r"><?php echo $currency_code.' '.number_format($sq_fields['other_taxes'] + $sq_fields['yq_tax'],2); ?></span></p></div>  
         <div class="col-md-6"><p class="border_lt"><span class="font_5">CREDIT CARD CHARGES </span><span class="float_r"><?= $currency_code." ".number_format($charge,2)?></span></p></div>  
         <div class="col-md-6"><p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?php echo $currency_code." ".number_format($newSC,2); ?></span></p></div> 
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?php echo $currency_code." ".number_format($total_paid,2); ?></span></p></div>  
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">DISCOUNT</span><span class="float_r"><?= $currency_code.' '.$sq_fields['basic_cost_discount'] ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?php echo $currency_code." ".number_format($balance_amount,2); ?></span></p></div> 
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">TDS</span><span class="float_r"><?= $currency_code.' '.$sq_fields['tds'] ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">&nbsp;</span><span class="float_r">&nbsp;</span></p></div> 
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= $currency_code.' '.$tax_show ?></span></p></div> 
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">&nbsp;</span><span class="float_r">&nbsp;</span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUND OFF </span><span class="float_r"><?php echo $currency_code.' '.$sq_fields['roundoff']; ?></span></p></div> 
+        <?php
+        if($bg != ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">CANCELLATION CHARGES</span><span class="float_r"><?= $currency_code.' '.$canc_amount ?></span></p></div>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">DISCOUNT</span><span class="float_r"><?= $currency_code.' '.$sq_fields['basic_cost_discount'] ?></span></p></div>
+            
+            <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?php echo $currency_code." ".number_format($balance_amount,2); ?></span></p></div>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">TDS</span><span class="float_r"><?= $currency_code.' '.$sq_fields['tds'] ?></span></p></div> 
+          <?php
+        }
+        else{ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?php echo $currency_code." ".number_format($balance_amount,2); ?></span></p></div> 
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">DISCOUNT</span><span class="float_r"><?= $currency_code.' '.$sq_fields['basic_cost_discount'] ?></span></p></div>
+        <div class="col-md-6"><p><span class="font_5">&nbsp;</span><span class="float_r">&nbsp;</span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">TDS</span><span class="float_r"><?= $currency_code.' '.$sq_fields['tds'] ?></span></p></div> 
+        <?php } ?>
       </div>
     </div>
   </div>

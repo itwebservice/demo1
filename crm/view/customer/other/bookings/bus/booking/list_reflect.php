@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $customer_id = $_SESSION['customer_id'];
 $booking_id = $_POST['booking_id'];
 
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($booking_id!=""){
 	$query .= " and booking_id='$booking_id'";
 }
@@ -21,10 +21,10 @@ $query .= " and customer_id='$customer_id'";
 			<th>Total_bus</th>
 			<th>Bus_Operator</th>
 			<th>View</th>
-			<th class="text-right info">Total_Amount</th>
-			<th class="text-right success">Paid_Amount</th>
-			<th class="text-right danger">Cncl_amount</th>
-			<th class="text-right warning">Balance</th>
+			<th class="info">Total_Amount</th>
+			<th class="success">Paid_Amount</th>
+			<th class="danger">Cncl_amount</th>
+			<th class="warning">Balance</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -47,11 +47,11 @@ $query .= " and customer_id='$customer_id'";
 			$year =$yr[0];
 			$sq_total_seates = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_entries where booking_id='$row_booking[booking_id]'")); 
 
-			$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from bus_booking_payment_master where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
-			$sale_total_amount = $row_booking['net_total'];
+			$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(credit_charges) as sumc from bus_booking_payment_master where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
+			$sale_total_amount = $row_booking['net_total'] + $sq_payment_info['sumc'];
 			$cancel_amount = $row_booking['cancel_amount'];
 			
-			$paid_amount =$sq_payment_info['sum'];
+			$paid_amount =$sq_payment_info['sum'] + $sq_payment_info['sumc'];
 			$paid_amount = ($paid_amount == '')?'0':$paid_amount;
 			
 			if($paid_amount > 0){
@@ -86,12 +86,12 @@ $query .= " and customer_id='$customer_id'";
 				<td><?= $sq_total_seates ?></td>
 				<td><?= $sq_entry['company_name'] ?></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="view_modal(<?= $row_booking['booking_id'] ?>)" title="View Details"><i class="fa fa-eye"></i></button>
+					<button class="btn btn-info btn-sm" onclick="view_modal(<?= $row_booking['booking_id'] ?>)" title="View Details" id="bus-<?= $row_booking['booking_id'] ?>"><i class="fa fa-eye"></i></button>
 				</td>
-				<td class="text-right info"><?= $sale_total_amount ?></td>
-				<td class="text-right success"><?= $paid_amount ?></td>
-				<td class="text-right danger"><?= $row_booking['cancel_amount'] ?></td>
-				<td class="text-right warning"><?= number_format($balance_amount,2) ?></td>
+				<td class="info"><?= $sale_total_amount ?></td>
+				<td class="success"><?= $paid_amount ?></td>
+				<td class="danger"><?= $row_booking['cancel_amount'] ?></td>
+				<td class="warning"><?= number_format($balance_amount,2) ?></td>
 			</tr>
 			<?php
 		}

@@ -31,9 +31,9 @@ include "../../../model/model.php";
                 <ul class="no-marg">
                   <li class="mg_tp_10">Accommodation on twin/Double sharing basis in Deluxe hotels.</li>
                   <li class="mg_tp_10">Return Air fare</li>
-                  <li class="mg_tp_10">Extra bed for the extra Adult, Child (above 12 yrs) Child without bed (5-11 Yrs) i.e. Aa Per tour cost paid.</li>
-                  <li class="mg_tp_10">Internal transfers &amp; sightseeing by AC vehicle some sightseeings by Non AC small vehicleas tour iternary.</li>
-                  <li class="mg_tp_10">Food Plan As per tour Iternary.</li>
+                  <li class="mg_tp_10">Extra bed for the extra Adult, Child (above 12 yrs) Child without bed (5-11 Yrs) i.e.  Per tour cost paid.</li>
+                  <li class="mg_tp_10">Internal transfers &amp; sightseeing by AC vehicle some sightseeings by Non AC small vehicles tour Itinerary.</li>
+                  <li class="mg_tp_10">Food Plan As per tour Itinerary.</li>
                   <li class="mg_tp_10">Tour Escort.</li>
                   <li class="mg_tp_10">Per day per person 2 ltrs drinking water bottle. (except Infant).</li>
                   <li class="mg_tp_10">Porter charges except itinerary.</li>

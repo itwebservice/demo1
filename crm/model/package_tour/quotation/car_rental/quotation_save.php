@@ -54,7 +54,7 @@ public function quotation_master_save()
       }
     }
 
-	$enquiry_content = '[{"name":"total_pax","value":"'.$total_pax.'"},{"name":"days_of_traveling","value":"'.$days_of_traveling.'"},{"name":"traveling_date","value":"'.$traveling_date.'"},{"name":"vehicle_type","value":"'.$vehicle_type.'"},{"name":"travel_type","value":"'.$travel_type.'"},{"name":"budget","value":"0"},{"name":"places_to_visit","value":"'.$places_to_visit.'"}]';
+	$enquiry_content = '[{"name":"total_pax","value":"'.$total_pax.'"},{"name":"days_of_traveling","value":"'.$days_of_traveling.'"},{"name":"traveling_date","value":"'.$traveling_date.'"},{"name":"vehicle_type","value":"'.''.'"},{"name":"travel_type","value":"'.$travel_type.'"},{"name":"budget","value":"0"},{"name":"places_to_visit","value":"'.$places_to_visit.'"}]';
 
 	$traveling_date = get_datetime_db($traveling_date);	
 	$quotation_date = get_date_db($quotation_date);
@@ -68,7 +68,7 @@ public function quotation_master_save()
     $bsmValues = json_encode($bsmValues);
 	$places_to_visit = addslashes($places_to_visit);
 	$local_places_to_visit = addslashes($local_places_to_visit);
-	$q = "insert into car_rental_quotation_master ( quotation_id, enquiry_id, login_id,emp_id, branch_admin_id,financial_year_id, customer_name,email_id,mobile_no, total_pax,days_of_traveling,traveling_date,travel_type,places_to_visit,vehicle_name,from_date,to_date,route,extra_km_cost,extra_hr_cost,daily_km,subtotal,markup_cost,markup_cost_subtotal,taxation_id,service_charge,service_tax_subtotal,permit,toll_parking,driver_allowance,total_tour_cost,created_at,quotation_date,total_hrs,total_km,rate,total_max_km,state_entry,other_charge,capacity,local_places_to_visit,bsm_values,roundoff) values ('$quotation_id','$enquiry_id','$login_id','$emp_id', '$branch_admin_id','$financial_year_id', '$customer_name','$email_id','$mobile_no', '$total_pax','$days_of_traveling','$traveling_date','$travel_type','$places_to_visit','$vehicle_name','$from_date','$to_date','','$extra_km_cost','$extra_hr_cost','$daily_km','$subtotal','$markup_cost','$markup_cost_subtotal','$taxation_id','$service_charge','$service_tax_subtotal','$permit','$toll_parking','$driver_allowance','$total_tour_cost','$created_at','$quotation_date','$total_hr','$total_km','$rate','$total_max_km','$state_entry','$other_charge','$capacity','$local_places_to_visit','$bsmValues','$roundoff')";
+	$q = "insert into car_rental_quotation_master ( quotation_id, enquiry_id, login_id,emp_id, branch_admin_id,financial_year_id, customer_name,email_id,mobile_no, total_pax,days_of_traveling,traveling_date,travel_type,places_to_visit,vehicle_name,from_date,to_date,route,extra_km_cost,extra_hr_cost,daily_km,subtotal,markup_cost,markup_cost_subtotal,taxation_id,service_charge,service_tax_subtotal,permit,toll_parking,driver_allowance,total_tour_cost,created_at,quotation_date,total_hrs,total_km,rate,total_max_km,state_entry,other_charge,capacity,local_places_to_visit,bsm_values,roundoff,status) values ('$quotation_id','$enquiry_id','$login_id','$emp_id', '$branch_admin_id','$financial_year_id', '$customer_name','$email_id','$mobile_no', '$total_pax','$days_of_traveling','$traveling_date','$travel_type','$places_to_visit','$vehicle_name','$from_date','$to_date','','$extra_km_cost','$extra_hr_cost','$daily_km','$subtotal','$markup_cost','$markup_cost_subtotal','$taxation_id','$service_charge','$service_tax_subtotal','$permit','$toll_parking','$driver_allowance','$total_tour_cost','$created_at','$quotation_date','$total_hr','$total_km','$rate','$total_max_km','$state_entry','$other_charge','$capacity','$local_places_to_visit','$bsmValues','$roundoff','1')";
 	
 	$sq_quotation = mysqlQuery($q);
 
@@ -107,6 +107,7 @@ public function quotation_whatsapp(){
 	
 	$all_message = "";
 	$sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_quotation_master where quotation_id='$quotation_id'"));
+	$whatsapp_no = $sq_quotation['mobile_no'];
 	
 	$mobile_no = mysqli_fetch_assoc(mysqlQuery("SELECT landline_no FROM `enquiry_master` WHERE enquiry_id = ".$sq_quotation['enquiry_id']));
 	$sq_login = mysqli_fetch_assoc(mysqlQuery("select * from roles where id='$sq_quotation[login_id]'"));
@@ -120,7 +121,7 @@ public function quotation_whatsapp(){
 	}
 	$route = ($sq_quotation['travel_type'] == "Local") ? $sq_quotation['local_places_to_visit']: $sq_quotation['places_to_visit'];
 
-	$whatsapp_msg = rawurlencode('Hello Dear '.$sq_quotation['customer_name'].',
+	$whatsapp_msg = rawurlencode('Dear '.$sq_quotation['customer_name'].',
 Hope you are doing great. This is car on rent quotation details as per your request. We look forward to having you onboard with us.
 *Route* : '.$route.'
 *Total Days* : '.$sq_quotation['days_of_traveling'].' Days
@@ -129,7 +130,7 @@ Hope you are doing great. This is car on rent quotation details as per your requ
 Please contact for more details : '.$contact.'
 Thank you.');
 	$all_message .=$whatsapp_msg;
-	$link = 'https://web.whatsapp.com/send?phone='.$mobile_no['landline_no'].'&text='.$all_message;
+	$link = 'https://web.whatsapp.com/send?phone='.$whatsapp_no.'&text='.$all_message;
 	echo $link;
 }
 }

@@ -58,7 +58,7 @@ $sq_pro = mysqli_fetch_assoc(mysqlQuery("select * from sales_projection where fr
                     </tr>
                     <tr>
                         <td>3</td>
-                        <td> Flight Tour </td>
+                        <td> Flight Ticket </td>
                         <td id="bud_s_f"><?php echo ($budget_s_f=='') ? 0.00 : $budget_s_f; ?></td>
                         <td><input type="text" id="pro_s_f" name="pro_s_f" placeholder="ex.10" title="PROBABILITIES OF SALES ID" onchange="number_validate(this.id);calculate_sale()" value="<?= $sq_pro['pro_s_f'] ?>"> </td>
                         <td id="bud_h_f"><?php echo ($budget_h_f=='') ? 0.00 : $budget_h_f; ?></td>
@@ -188,10 +188,12 @@ function calculate_sale()
     if(pro_h_p=="") { pro_h_p=0; }
     if(pro_c_p=="") { pro_c_p=0; }
 
-    var total_strong_p = parseFloat((bud_strong_p * pro_s_p)/100);
-    var total_hot_p = parseFloat((bud_hot_p * pro_h_p)/100);
-    var total_cold_p = parseFloat((bud_cold_p * pro_c_p)/100);
-
+    var total_strong_p = (pro_s_p!=0) ? parseFloat((bud_strong_p * pro_s_p)/100) : 0;
+    var total_hot_p = (pro_h_p!=0) ? parseFloat((bud_hot_p * pro_h_p)/100) : 0;
+    var total_cold_p = (pro_c_p!=0) ? parseFloat((bud_cold_p * pro_c_p)/100) : 0;
+    console.log(total_strong_p);
+    console.log(total_hot_p);
+    console.log(total_cold_p);
     var total_p = parseFloat(total_strong_p + total_hot_p + total_cold_p );
     document.getElementById('total_p').innerHTML = total_p.toFixed(2);
 

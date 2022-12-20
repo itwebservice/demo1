@@ -63,8 +63,10 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 						$count++;
 						$bg = '';
 						if($row_visa_payment['clearance_status']=="Pending"){ $bg="warning";}
-					    else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg="danger";} 
-					    else { $bg = 'success';}
+					    else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg="danger";}
+						else if ($row_visa_payment['clearance_status'] == "Cleared") {
+							$bg = "success";
+						}
 						?>
 
 						<tr class="<?php echo $bg; ?>">

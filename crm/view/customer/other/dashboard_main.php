@@ -4,15 +4,15 @@ include_once('../layouts/admin_header.php');
 
 $customer_id = $_SESSION['customer_id'];
 
-$sq_group_booking_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where customer_id='$customer_id'"));
-$sq_package_booking_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where customer_id='$customer_id'"));
-$sq_visa_count = mysqli_num_rows(mysqlQuery("select * from visa_master where customer_id='$customer_id'"));
+$sq_group_booking_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where customer_id='$customer_id' and delete_status='0'"));
+$sq_package_booking_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where customer_id='$customer_id' and delete_status='0'"));
+$sq_visa_count = mysqli_num_rows(mysqlQuery("select * from visa_master where customer_id='$customer_id' and delete_status='0'"));
 $sq_passport_count = mysqli_num_rows(mysqlQuery("select * from passport_master where customer_id='$customer_id'"));
-$sq_ticket_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where customer_id='$customer_id'"));
-$sq_hotel_booking_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where customer_id='$customer_id'"));
-$sq_car_rental_booking_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where customer_id='$customer_id'"));
-$sq_train_ticket_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where customer_id='$customer_id'"));
-$sq_bus_booking_count = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_master where customer_id='$customer_id'"));
+$sq_ticket_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where customer_id='$customer_id' and delete_status='0'"));
+$sq_hotel_booking_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where customer_id='$customer_id' and delete_status='0'"));
+$sq_car_rental_booking_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where customer_id='$customer_id' and delete_status='0'"));
+$sq_train_ticket_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where customer_id='$customer_id' and delete_status='0'"));
+$sq_bus_booking_count = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_master where customer_id='$customer_id' and delete_status='0'"));
 $sq_forex_booking_count = mysqli_num_rows(mysqlQuery("select booking_id from forex_booking_master where customer_id='$customer_id'"));
 ?>
 

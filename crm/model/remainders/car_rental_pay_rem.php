@@ -2,11 +2,11 @@
 include_once('../model.php');
 $due_date=date('Y-m-d');
 global $secret_key,$encrypt_decrypt;
-$sq_car_rental= mysqli_num_rows(mysqlQuery("select * from car_rental_booking where due_date='$due_date' and status!='Cancel'"));
+$sq_car_rental= mysqli_num_rows(mysqlQuery("select * from car_rental_booking where due_date='$due_date' and status!='Cancel' and delete_status='0'"));
 
 if($sq_car_rental>0){
 
-	$sq_car_rental_details = mysqlQuery("select * from car_rental_booking where due_date='$due_date' and status!='Cancel'");
+	$sq_car_rental_details = mysqlQuery("select * from car_rental_booking where due_date='$due_date' and status!='Cancel' and delete_status='0'");
 	while($row_car=mysqli_fetch_assoc($sq_car_rental_details)) {
 
 		$booking_id = $row_car['booking_id'];

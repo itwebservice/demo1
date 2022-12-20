@@ -1,10 +1,10 @@
-<?php 
+<?php
 include_once('../../../model/model.php');
-
 $traveler_id = $_POST['traveler_id'];
-
 $sq_traveler_info = mysqli_fetch_assoc(mysqlQuery("select * from travelers_details where traveler_id='$traveler_id'"));
 $traveler_group_id = $sq_traveler_info['traveler_group_id'];
+$sq_group_tour = mysqli_fetch_assoc(mysqlQuery("select tour_id from tourwise_traveler_details where traveler_group_id='$traveler_group_id'"));
+$sq_tour = mysqli_fetch_assoc(mysqlQuery("select tour_type from tour_master where tour_id='$sq_group_tour[tour_id]'"));
 ?>
 
 <div class="mg_tp_20"></div>
@@ -13,11 +13,11 @@ $traveler_group_id = $sq_traveler_info['traveler_group_id'];
 <form id="frm_save">
   <?php
   $count=0;
-    $download_url = preg_replace('/(\/+)/','/',$sq_traveler_info['id_proof_url']);
-    $download_url = BASE_URL.str_replace('../', '', $download_url);
+  $download_url = preg_replace('/(\/+)/','/',$sq_traveler_info['id_proof_url']);
+  $download_url = BASE_URL.str_replace('../', '', $download_url);
 
   $pan_url= preg_replace('/(\/+)/','/',$sq_traveler_info['pan_card_url']);
-    $pan_url = BASE_URL.str_replace('../', '', $pan_url); 
+  $pan_url = BASE_URL.str_replace('../', '', $pan_url); 
 
   $count++;
 
@@ -25,14 +25,15 @@ $traveler_group_id = $sq_traveler_info['traveler_group_id'];
   ?>
   <div class="row mg_tp_20">
       <input type="hidden" name="traveler_id" id="traveler_id" value="<?php echo $traveler_id; ?>">
+      <input type="hidden" name="tour_type" id="tour_type" value="<?php echo $sq_tour['tour_type']; ?>">
       <div class="col-md-2 col-sm-4 mg_bt_10_xs">
-        <input type="text" name="passport_no" onchange="validate_passport(this.id);" id="passport_no" class="form-control" value="<?= $sq_traveler_info['passport_no'] ?>" placeholder="*Passport No" title="Passport No" style="text-transform: uppercase;">
+        <input type="text" name="passport_no" onchange="validate_passport(this.id);" id="passport_no" class="form-control" value="<?= $sq_traveler_info['passport_no'] ?>" placeholder="Passport No" title="Passport No" style="text-transform: uppercase;">
       </div>
       <div class="col-md-2 col-sm-4 mg_bt_10_xs">
-        <input type="text" name="issue_date" id="issue_date" title="Issue Date" class="form-control" value="<?= ($sq_traveler_info['passport_issue_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['passport_issue_date']) ?>" onchange="get_to_date(this.id,'expiry_date');" placeholder="*Issue Date">
+        <input type="text" name="issue_date" id="issue_date" title="Issue Date" class="form-control" value="<?= ($sq_traveler_info['passport_issue_date']) == "1970-01-01" ? '': get_date_user($sq_traveler_info['passport_issue_date']) ?>" onchange="get_to_date(this.id,'expiry_date');" placeholder="Issue Date">
       </div>
       <div class="col-md-2 col-sm-4 mg_bt_10_xs">
-        <input type="text" name="expiry_date" id="expiry_date" title="Expiry Date" class="form-control" value="<?= ($sq_traveler_info['passport_expiry_date']) == "1970-01-01" ? date('d-m-Y'): get_date_user($sq_traveler_info['passport_expiry_date']) ?>"  placeholder="*Expire Date" onchange="validate_validDate('issue_date','expiry_date');">
+        <input type="text" name="expiry_date" id="expiry_date" title="Expiry Date" class="form-control" value="<?= ($sq_traveler_info['passport_expiry_date']) == "1970-01-01" ?'': get_date_user($sq_traveler_info['passport_expiry_date']) ?>"  placeholder="Expiry Date" onchange="validate_validDate('issue_date','expiry_date');">
       </div>
       <div class="col-md-2 col-sm-6 text_left_xs">
           <div  class="div-upload col-md-8" id="div_upload_button">
@@ -48,7 +49,7 @@ $traveler_group_id = $sq_traveler_info['traveler_group_id'];
             <?php } ?>
           </div>
       </div>   
-      <div class="col-md-2 col-sm-6 text_left_xs">
+      <div class="col-md-3 col-sm-6 text_left_xs">
         <div  class="div-upload col-md-8" style="margin-bottom: 5px;"  id="div_upload_button">
             <div id="pan_card_upload_g" class="upload-button1"><span>ID Proof-2</span></div>
             <span id="pan_card_status1" ></span>
@@ -60,7 +61,10 @@ $traveler_group_id = $sq_traveler_info['traveler_group_id'];
           <a href="<?= $pan_url ?>" style="padding: 15px 24px;" title="Download ID Proof-2" class="btn btn-info btn-sm ico_left" download><i class="fa fa-download"></i></a>
           <?php } ?>
         </div>
-      </div> <div class="col-md-offset-5"><span class="note">(Note size : upto 5MB. Only pdf, jpg, png files)</span></div>
+      </div> 
+  </div>
+  <div class="row mg_tp_10">
+    <div class="col-md-offset-8"><span class="note">(Note size : upto 5MB. Only pdf, jpg, png files)</span></div>
   </div>
   <div class="row mg_tp_20">
     <div class="col-md-12 text-center">
@@ -222,30 +226,41 @@ function id_proof_upload1()
 
 $('#frm_save').validate({
     rules:{
-        passport_no : { required : true },
-        issue_date : { required : true },
-        expiry_date : { required : true },
       },
     submitHandler:function(){
+            
+      var tour_type = $('#tour_type').val();
+      var passport_no = $('#passport_no').val();
+      var issue_date = $('#issue_date').val();
+      var expiry_date = $('#expiry_date').val();
+      var traveler_id = $('#traveler_id').val();
+      var msg = '';
+      if(tour_type == 'International' && passport_no==''){
+        msg = "Passport no required!"+'<br/>';
+      }
+      if(tour_type == 'International' && issue_date==''){
+        msg += "Issue date required!"+'<br/>';
+      }
+      if(tour_type == 'International' && expiry_date==''){
+        msg += "Expiry date required!";
+      }
+      if(msg!=''){
+        error_msg_alert(msg);
+        return false;
+      }
+      $('#btn_save').button('loading');
 
-            var passport_no = $('#passport_no').val();
-            var issue_date = $('#issue_date').val();
-            var expiry_date = $('#expiry_date').val();
-            var traveler_id = $('#traveler_id').val();
-
-            $('#btn_save').button('loading');
-
-            $.ajax({
-              type: 'post',
-              url: base_url()+'controller/passport_id_details/info_save.php',
-              data:{ passport_no : passport_no, issue_date : issue_date, expiry_date : expiry_date, traveler_id : traveler_id },
-              success: function(result){
-                msg_alert(result);
-                $('#btn_save').button('reset');
-                traveler_id_proof_info_reflect();
-              }
-          });
+      $.ajax({
+        type: 'post',
+        url: base_url()+'controller/passport_id_details/info_save.php',
+        data:{ passport_no : passport_no, issue_date : issue_date, expiry_date : expiry_date, traveler_id : traveler_id },
+        success: function(result){
+          msg_alert(result);
+          $('#btn_save').button('reset');
+          traveler_id_proof_info_reflect();
         }
+    });
+  }
 }); 
 </script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

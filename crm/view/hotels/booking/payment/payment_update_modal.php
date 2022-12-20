@@ -27,7 +27,7 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
               <select name="booking_id1" id="booking_id1" title="Booking" style="width:100%" disabled>
                 <?php 
-                $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$sq_payment[booking_id]'"));
+                $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$sq_payment[booking_id]' and delete_status='0'"));
                 $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
                 if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
                 ?>
@@ -82,8 +82,8 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
 					</div>
           <?php } ?>
         </div>
+        <input type="hidden" id="canc_status1" name="canc_status" class="form-control" value="<?= $sq_payment['status'] ?>"/>
 
-       
         <div class="row text-center mg_tp_20">
           <div class="col-xs-12">
               <button class="btn btn-sm btn-success" id="btn_update_hotel"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Update</button>
@@ -125,17 +125,18 @@ $(function(){
               var credit_charges = $('#credit_charges1').val();
               var credit_card_details = $('#credit_card_details1').val();
               var credit_charges_old = $('#credit_charges_old').val();
+              var canc_status = $('#canc_status1').val(); 
               if(!check_updated_amount(payment_old_value,payment_amount)){
-              error_msg_alert("You can update receipt to 0 only!");
-              return false;
-            }
+                error_msg_alert("You can update receipt to 0 only!");
+                return false;
+              }
               var base_url = $('#base_url').val();
               $('#btn_update_hotel').button('loading');
 
               $.ajax({
                 type:'post',
                 url: base_url+'controller/hotel/payment/payment_update.php',
-                data:{ payment_id : payment_id, booking_id : booking_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id,payment_old_value : payment_old_value,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old  },
+                data:{ payment_id : payment_id, booking_id : booking_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id,payment_old_value : payment_old_value,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,canc_status:canc_status  },
                 success:function(result){
                   msg_popup_reload(result);
                   $('#btn_update_hotel').button('reset');

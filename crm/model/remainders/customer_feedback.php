@@ -19,7 +19,7 @@ if($sq_tour_group>0){
 			$journey_date = date('d-m-Y',strtotime($row_tour['from_date'])).' To '.date('d-m-Y',strtotime($row_tour['to_date']));
 
 			$query = "select * from tourwise_traveler_details where tour_id='$tour_id' and 
-			tour_group_id='$tour_group_id' and id not in (select booking_id from customer_feedback_master where booking_type='Group Booking') ";
+			tour_group_id='$tour_group_id' and delete_status='0' and id not in (select booking_id from customer_feedback_master where booking_type='Group Booking') ";
 		
 			$sq_bookings = mysqlQuery($query);
 			while($row_bookings = mysqli_fetch_assoc($sq_bookings)){
@@ -55,11 +55,10 @@ $value=mysqli_fetch_assoc($row);
 $max=$value['max']+1;
 $sq_check_status=mysqlQuery("INSERT INTO `remainder_status`(`id`, `remainder_name`, `date`, `status`) VALUES ('$max','customer_feedback','$today','Done')");
 
-
 function feedback_email_send($email_id,$tourwise_traveler_id,$tour_name,$journey_date,$username,$password,$cust_name,$customer_id)
 {
-	global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website;
-	global $mail_em_style, $mail_font_family, $mail_strong_style, $mail_color;
+	global $mail_strong_style;
+	$link = BASE_URL.'view/customer';
 	$content = '
 	<tr>
 		<td>

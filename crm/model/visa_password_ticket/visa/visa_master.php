@@ -7,13 +7,6 @@ class visa_master
 	public function visa_master_save()
 	{
 		$row_spec = 'sales';
-		$service_tax_no = strtoupper($_POST['service_tax_no']);
-		$landline_no = $_POST['landline_no'];
-		$alt_email_id = $_POST['alt_email_id'];
-		$company_name = $_POST['company_name'];
-		$cust_type = $_POST['cust_type'];
-		$state = $_POST['state'];
-
 		$customer_id = $_POST['customer_id'];
 		$emp_id = $_POST['emp_id'];
 		$visa_issue_amount = $_POST['visa_issue_amount'];
@@ -86,7 +79,6 @@ class visa_master
 					break;
 			}
 		}
-
 		//Invoice number reset to one in new financial year
 		$sq_count = mysqli_num_rows(mysqlQuery("select entry_id from invoice_no_reset_master where service_name='visa' and financial_year_id='$financial_year_id'"));
 		if($sq_count > 0){ // Already having bookings for this financial year
@@ -202,6 +194,154 @@ class visa_master
 		}
 	}
 
+	public function visa_master_delete(){
+
+		global $delete_master,$transaction_master;
+		$visa_id = $_POST['booking_id'];
+
+		$deleted_date = date('Y-m-d');
+		$row_spec = "sales";
+	
+		$row_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id'"));
+		$row_visa_type = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_entries where visa_id='$visa_id'"));
+
+		$reflections = json_decode($row_visa['reflections']);
+		$service_tax_markup = $row_visa['markup_tax'];
+		$service_tax_subtotal = $row_visa['service_tax_subtotal'];
+		$customer_id = $row_visa['customer_id'];
+		$booking_date = $row_visa['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		
+		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+		if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+			$cust_name = $sq_ct['company_name'];
+		}else{
+			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+		}
+
+		$particular = $this->get_particular($customer_id, $row_visa_type['visa_type']);
+		$delete_master->delete_master_entries('Invoice','Visa',$visa_id,get_visa_booking_id($visa_id,$year),$cust_name,$row_visa['visa_total_cost']);
+
+		//Getting customer Ledger
+		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+		$cust_gl = $sq_cust['ledger_id'];
+
+		////////////Sales/////////////
+		$module_name = "Visa Booking";
+		$module_entry_id = $visa_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+		$old_gl_id = $gl_id = 140;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		////////////service charge/////////////
+		$module_name = "Visa Booking";
+		$module_entry_id = $visa_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->hotel_sc != '') ? $reflections[0]->hotel_sc : 188;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		/////////Service Charge Tax Amount////////
+		$service_tax_subtotal = explode(',', $service_tax_subtotal);
+		$tax_ledgers = explode(',', $reflections[0]->hotel_taxes);
+		for ($i = 0; $i < sizeof($service_tax_subtotal); $i++) {
+
+			$service_tax = explode(':', $service_tax_subtotal[$i]);
+			$tax_amount = $service_tax[2];
+			$ledger = $tax_ledgers[$i];
+
+			$module_name = "Visa Booking";
+			$module_entry_id = $visa_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		}
+
+		////////////markup/////////////
+		$module_name = "Visa Booking";
+		$module_entry_id = $visa_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->hotel_markup != '') ? $reflections[0]->hotel_markup : 200;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		/////////Markup Tax Amount////////
+		// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+		$service_tax_markup = explode(',', $service_tax_markup);
+		$tax_ledgers = explode(',', $reflections[0]->hotel_markup_taxes);
+		for ($i = 0; $i < sizeof($service_tax_markup); $i++) {
+
+			$service_tax = explode(':', $service_tax_markup[$i]);
+			$tax_amount = $service_tax[2];
+			$ledger = $tax_ledgers[$i];
+
+			$module_name = "Visa Booking";
+			$module_entry_id = $visa_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '1', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		}
+		/////////roundoff/////////
+		$module_name = "Visa Booking";
+		$module_entry_id = $visa_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+		$old_gl_id = $gl_id = 230;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		////////Customer Amount//////
+		$module_name = "Visa Booking";
+		$module_entry_id = $visa_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Visa Sales');
+		$old_gl_id = $gl_id = $cust_gl;
+		$payment_side = "Debit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		
+		$sq_delete = mysqlQuery("update visa_master set visa_issue_amount = '0',service_charge='0',markup='0',markup_tax='', service_tax_subtotal='', visa_total_cost='0', roundoff='0', delete_status='1' where visa_id='$visa_id'");
+		if($sq_delete){
+			echo 'Entry deleted successfully!';
+			exit;
+		}
+	}
 	public function booking_sms($booking_id, $customer_id, $created_at)
 	{
 
@@ -217,7 +357,6 @@ class visa_master
 		$message = "Dear " . $sq_customer_info['first_name'] . " " . $sq_customer_info['last_name'] . ", your Visa Tour booking is confirmed. Please send your documents as earlier. Please contact for more details ." . $app_contact_no . "";
 		$model->send_message($mobile_no, $message);
 	}
-
 	public function finance_save($visa_id, $payment_id, $row_spec, $branch_admin_id, $particular)
 	{
 		$customer_id = $_POST['customer_id'];
@@ -246,9 +385,7 @@ class visa_master
 		$booking_date = date("Y-m-d", strtotime($booking_date));
 		$payment_date1 = date('Y-m-d', strtotime($payment_date));
 		$year1 = explode("-", $booking_date);
-		$year2 = explode("-", $payment_date1);
 		$yr1 = $year1[0];
-		$yr2 = $year2[0];
 
 		$bsmValues = json_decode(json_encode($_POST['bsmValues']));
 		foreach ($bsmValues[0] as $key => $value) {
@@ -403,9 +540,9 @@ class visa_master
 
 			if ($payment_mode == 'Credit Card') {
 
-				//////Customer Credit charges///////
-				$module_name = "Visa Booking";
-				$module_entry_id = $visa_id;
+				//////Customer Credit Charges///////
+				$module_name = "Visa Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_charges;
 				$payment_date = $payment_date1;
@@ -416,9 +553,9 @@ class visa_master
 				$clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 
-				//////Credit charges ledger///////
-				$module_name = "Visa Booking";
-				$module_entry_id = $visa_id;
+				//////Credit Charges ledger///////
+				$module_name = "Visa Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_charges;
 				$payment_date = $payment_date1;
@@ -445,8 +582,8 @@ class visa_master
 				$credit_company_amount = intval($payment_amount1) - intval($finance_charges);
 
 				//////Finance charges ledger///////
-				$module_name = "Visa Booking";
-				$module_entry_id = $visa_id;
+				$module_name = "Visa Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $finance_charges;
 				$payment_date = $payment_date1;
@@ -456,9 +593,10 @@ class visa_master
 				$payment_side = "Debit";
 				$clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
+				
 				//////Credit company amount///////
-				$module_name = "Visa Booking";
-				$module_entry_id = $visa_id;
+				$module_name = "Visa Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_company_amount;
 				$payment_date = $payment_date1;
@@ -468,10 +606,10 @@ class visa_master
 				$payment_side = "Debit";
 				$clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
-			} else {
-
-				$module_name = "Visa Booking";
-				$module_entry_id = $visa_id;
+			}
+			else{
+				$module_name = "Visa Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $payment_amount1;
 				$payment_date = $payment_date1;
@@ -484,8 +622,8 @@ class visa_master
 			}
 
 			//////Customer Payment Amount///////
-			$module_name = "Visa Booking";
-			$module_entry_id = $visa_id;
+			$module_name = "Visa Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -532,7 +670,7 @@ class visa_master
 			$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(customer_id) as max from customer_master"));
 			$customer_id = $sq_max['max'];
 		}
-		$module_name = "Visa Booking";
+		$module_name = "Visa Booking Payment";
 		$module_entry_id = $payment_id;
 		$payment_date = $payment_date;
 		$payment_amount = $payment_amount;
@@ -547,8 +685,6 @@ class visa_master
 
 		$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
 	}
-
-
 	public function visa_master_update()
 	{
 		$row_spec = "sales";
@@ -613,10 +749,7 @@ class visa_master
 			exit;
 		} else {
 
-
-
 			for ($i = 0; $i < sizeof($first_name_arr); $i++) {
-
 
 				$birth_date_arr[$i] = get_date_db($birth_date_arr[$i]);
 				$issue_date_arr[$i] = get_date_db($issue_date_arr[$i]);
@@ -684,8 +817,6 @@ class visa_master
 		$customer_id = $_POST['customer_id'];
 		$visa_issue_amount = $_POST['visa_issue_amount'];
 		$service_charge = $_POST['service_charge'];
-		$taxation_type = $_POST['taxation_type'];
-		$taxation_id = $_POST['taxation_id'];
 		$service_tax = $_POST['service_tax'];
 		$service_tax_subtotal = $_POST['service_tax_subtotal'];
 		$visa_total_cost = $_POST['visa_total_cost'];
@@ -695,7 +826,6 @@ class visa_master
 		$service_tax_markup = $_POST['service_tax_markup'];
 		$created_at = date('Y-m-d', strtotime($balance_date1));
 		$year1 = explode("-", $created_at);
-		$yr1 = $year1[0];
 		$reflections = json_decode(json_encode($_POST['reflections']));
 		global $transaction_master;
 
@@ -714,17 +844,12 @@ class visa_master
 			}
 		}
 		$visa_sale_amount = $visa_issue_amount;
-		//get total payment against visa id
-		$sq_visa = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from visa_payment_master where visa_id='$visa_id'"));
-		$balance_amount = $visa_total_cost - $sq_visa['payment_amount'];
 
 		//Getting customer Ledger
 		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
 		$cust_gl = $sq_cust['ledger_id'];
 
-
 		////////////Sales/////////////
-
 		$module_name = "Visa Booking";
 		$module_entry_id = $visa_id;
 		$transaction_id = "";
@@ -772,7 +897,7 @@ class visa_master
 			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
 		}
 
-		////////////markup/////////////
+		////////////Markup/////////////
 		$module_name = "Visa Booking";
 		$module_entry_id = $visa_id;
 		$transaction_id = "";
@@ -945,8 +1070,13 @@ class visa_master
 		} else {
 			$contact = $sq_emp_info['mobile_no'];
 		}
+		if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
+			$customer_name = $sq_customer['company_name'];
+		}else{
+			$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+		}
 
-		$whatsapp_msg = rawurlencode('Hello Dear ' . $sq_customer['first_name'] . ',
+		$whatsapp_msg = rawurlencode('Dear ' . $customer_name . ',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : ' . get_date_user($booking_date) . '
 

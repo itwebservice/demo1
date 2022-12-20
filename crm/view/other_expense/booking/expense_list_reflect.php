@@ -10,15 +10,15 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 
-$query = "select * from other_expense_master where 1 ";
+$query = "select * from other_expense_master where 1 and delete_status='0' ";
 if($supplier_type!=""){
-	$query .= "and supplier_id='$supplier_type'";
+	$query .= " and supplier_id='$supplier_type'";
 }
 if($expense_type!=""){
-	$query .= "and expense_type_id='$expense_type'";
+	$query .= " and expense_type_id='$expense_type'";
 }
 if($financial_year_id != ''){
-	$query .= "and financial_year_id='$financial_year_id'";
+	$query .= " and financial_year_id='$financial_year_id'";
 }
 if($branch_status=='yes'){
 	$query .= " and branch_admin_id = '$branch_admin_id'";
@@ -37,7 +37,7 @@ $query .= " order by expense_id desc";
 ?>
 <div class="row mg_tp_20"> 
 	<div class="col-md-12 no-pad"> 
-	 <div class="table-responsive">
+		<div class="table-responsive">
 		<table class="table table-hover" id="tbl_expense_list" style="margin: 20px 0 !important;">
 				<thead>
 					<tr class="active table-heading-row">
@@ -48,7 +48,7 @@ $query .= " order by expense_id desc";
 						<th>Supplier_Name</th>
 						<th>Invoice</th>
 						<th class="info">Total</th>
-						<th>Edit</th>
+						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -75,8 +75,6 @@ $query .= " order by expense_id desc";
 							$newUrl_arr = explode('uploads/', $newUrl);
 							$newUrl = BASE_URL.'uploads/'.$newUrl_arr[1];	
 						}
-						
-						
 						?>
 						<tr class="<?= $bg ?>">
 							<td><?= ++$count ?></td>
@@ -86,14 +84,15 @@ $query .= " order by expense_id desc";
 							<td><?= ($sq_supp['vendor_name'] == '') ? 'NA' : $sq_supp['vendor_name'] ?></td>							
 							<?php if($newUrl != ''){ ?>
 							<td>
-							   <a class="btn btn-info btn-sm" href="<?php echo $newUrl; ?>" download  title="Download Invoice"><i class="fa fa-download"></i></a>
+								<a class="btn btn-info btn-sm" href="<?php echo $newUrl; ?>" download  title="Download Invoice"><i class="fa fa-download"></i></a>
 							</td> <?php } 
-							   else{?>
+								else{?>
 								<td></td>
 								<?php } ?>
 							<td class="info text-right"><?= $row_expense['total_fee'] ?></td>
 							<td>
-								<button class="btn btn-info btn-sm" onclick="expense_update_modal(<?= $row_expense['expense_id'] ?>)" title="Edit Entry"><i class="fa fa-pencil-square-o"></i></button>
+								<button class="btn btn-info btn-sm" onclick="expense_update_modal(<?= $row_expense['expense_id'] ?>)" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
+								<button class="<?= $delete_flag ?> btn btn-danger btn-sm" onclick="delete_entry(<?= $row_expense['expense_id'] ?>)" title="Delete Entry"><i class="fa fa-trash"></i></button>
 							</td>			
 						</tr>
 						<?php
@@ -108,7 +107,7 @@ $query .= " order by expense_id desc";
 					</tr>
 				</tfoot>	
 			</table>	
-	 </div>
+		</div>
     </div>
 </div>
 <script>

@@ -33,10 +33,10 @@ $(function () {
 			var ferry_type = $('#ferry_type').val();
 			var ferry_name = $('#ferry_name').val();
 			var seating_capacity = $('#seating_capacity').val();
-			var childfrom = $('#childfrom').val();
-			var childto = $('#childto').val();
-			var infantfrom = $('#infantfrom').val();
-			var infantto = $('#infantto').val();
+			var childfrom = 0;
+			var childto = 0;
+			var infantfrom = 0;
+			var infantto = 0;
 			var inclusions = $('#inclusions').val();
 			var exclusions = $('#exclusions').val();
 			var terms = $('#terms').val();

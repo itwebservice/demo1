@@ -39,7 +39,7 @@ class refund_estimate{
     $year1 = explode("-", $created_at);
     $yr1 =$year1[0];
 
-    $sq_car_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+    $sq_car_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_car_info['customer_id'];
     $service_tax_subtotal = $sq_car_info['service_tax_subtotal'];
     $service_charge = $sq_car_info['service_charge'];

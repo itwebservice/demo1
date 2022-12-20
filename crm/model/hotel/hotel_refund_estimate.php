@@ -66,37 +66,29 @@ public function finance_save($booking_id,$row_spec)
 
 {
 
-	$booking_id = $_POST['booking_id'];
-  $cancel_amount = $_POST['cancel_amount'];
-  $total_refund_amount = $_POST['total_refund_amount'];
+    $booking_id = $_POST['booking_id'];
+    $cancel_amount = $_POST['cancel_amount'];
 
-  $created_at = date("Y-m-d");
-	$year2 = explode("-", $created_at);
-  $yr1 = $year2[0];
+    $created_at = date("Y-m-d");
+    $year2 = explode("-", $created_at);
+    $yr1 = $year2[0];
 
-  $sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
-  $customer_id = $sq_hotel_info['customer_id'];
-  $service_tax_subtotal = $sq_hotel_info['service_tax_subtotal'];
-  $hotel_amount = $sq_hotel_info['sub_total'];
-  $service_charge = $sq_hotel_info['service_charge'];
-  $reflections = json_decode($sq_hotel_info['reflections']);
-  $roundoff = $sq_hotel_info['roundoff'];
-  $markup = $sq_hotel_info['markup'];
-  $service_tax_markup = $sq_hotel_info['markup_tax'];
+    $sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+    $customer_id = $sq_hotel_info['customer_id'];
+    $service_tax_subtotal = $sq_hotel_info['service_tax_subtotal'];
+    $hotel_amount = $sq_hotel_info['sub_total'];
+    $service_charge = $sq_hotel_info['service_charge'];
+    $reflections = json_decode($sq_hotel_info['reflections']);
+    $roundoff = $sq_hotel_info['roundoff'];
+    $markup = $sq_hotel_info['markup'];
+    $service_tax_markup = $sq_hotel_info['markup_tax'];
 
-  //Getting customer Ledger
-  $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
-  $cust_gl = $sq_cust['ledger_id'];
+    //Getting customer Ledger
+    $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+    $cust_gl = $sq_cust['ledger_id'];
   
-  //Particular
-  $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
-  $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-  $sq_htm = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
-  $sq_hte = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id'"));
-
-  $sq_ht = mysqli_fetch_assoc(mysqlQuery("select hotel_name from hotel_master where hotel_id='$sq_hte[hotel_id]'"));
-  $hotel_name = $sq_ht['hotel_name'];
-  global $transaction_master;
+    //Particular
+    global $transaction_master;
     //////////Sales/////////////
 
     $module_name = "Hotel Booking";

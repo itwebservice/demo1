@@ -9,7 +9,7 @@ $visa_id = $_POST['visa_id'];
 	<div class="col-md-10  col-md-offset-1 col-sm-12 col-xs-12">
 		<div class="widget_parent-bg-img bg-img-red">
 			<?php
-			$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id'"));
+			$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id' and delete_status='0'"));
 			$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from visa_payment_master where visa_id='$visa_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 			$sq_refund_info = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from visa_refund_master where visa_id='$visa_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -141,7 +141,7 @@ $visa_id = $_POST['visa_id'];
 <?php
 $sq_cancel_count = mysqli_num_rows(mysqlQuery("select * from visa_master_entries where visa_id='$visa_id' and status='Cancel'"));
 if ($sq_cancel_count > 0) {
-	$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id'"));
+	$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id' and delete_status='0'"));
 	if($sq_visa_info['cancel_amount'] == "0.00"){
 		$refund_amount = $sq_payment_info['sum'];
 	}else{
@@ -149,7 +149,11 @@ if ($sq_cancel_count > 0) {
 	}
 ?>
 	<form id="frm_refund">
-
+	<div class="row">
+		<div class="col-md-12 text-center mt-5 mb-5" style="margin-bottom: 20px;">
+			<h4>Refund Estimate</h4>
+		</div>
+	</div>
 		<div class="row text-center mg_bt_30">
 			<div class="col-md-3 col-md-offset-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 				<input type="text" name="cancel_amount" id="cancel_amount" class="text-right" placeholder="*Cancellation Charges" title="Cancellation Charges" onchange="validate_balance(this.id);calculate_total_refund()" value="<?= $sq_visa_info['cancel_amount'] ?>">

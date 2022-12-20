@@ -23,8 +23,11 @@ public function vendor_login_save($username, $password,$vendor_type, $user_id, $
   $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(ledger_id) as max from ledger_master"));
   $ledger_id = $sq_max['max'] + 1;
   $ledger_name = $user_id.'_'.$username;
-  $side = ($side == 'Credit') ? 'Cr' : 'Dr'; 
-  $sq_ledger = mysqlQuery("insert into ledger_master (ledger_id, ledger_name, alias, group_sub_id, balance, dr_cr,customer_id,user_type) values ('$ledger_id', '$ledger_name', '', '105', '0','$side','$user_id','$vendor_type')");
+  
+  $side = ($side == '') ? 'Credit' : $side;
+
+  $side1 = ($side == 'Credit') ? 'Cr' : 'Dr'; 
+  $sq_ledger = mysqlQuery("insert into ledger_master (ledger_id, ledger_name, alias, group_sub_id, balance,balance_side, dr_cr,customer_id,user_type) values ('$ledger_id', '$ledger_name', '', '105', '$opening_balance','$side','$side1','$user_id','$vendor_type')");
   
   //Finance save
   //$this->finance_save($user_id,$ledger_id,$vendor_type,$side,$as_on_date,$opening_balance,$username);
@@ -81,8 +84,8 @@ public function vendor_login_update($login_id, $username, $password, $user_id, $
   $sq_login = mysqlQuery("update vendor_login set username='$username', password='$password', user_id='$user_id', active_flag='$active_flag', email='$email_id' where login_id='$login_id'");
 
   $ledger_name = $user_id.'_'.$username;
-  $side1 = ($side1 == 'Credit') ? 'Cr' : 'Dr'; 
-  $q = "update ledger_master set ledger_name='$ledger_name', dr_cr='$side1' where user_type='$vendor_type' and customer_id='$user_id' ";
+  $sides = ($side1 == 'Credit') ? 'Cr' : 'Dr'; 
+  $q = "update ledger_master set ledger_name='$ledger_name', dr_cr='$sides',balance='$opening_balance',balance_side='$side1' where user_type='$vendor_type' and customer_id='$user_id' ";
   $sq_login = mysqlQuery($q);
   
   //Finance save

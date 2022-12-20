@@ -8,7 +8,7 @@ header("Content-type: text/css");
 #tbl_hotel_booking_update select,
 #tbl_hotel_booking textarea, 
 #tbl_hotel_booking_update textarea{
-	height: 30px;
+	height: 40px;
 	font-size: 12px;
 }
 #tbl_hotel_booking select[name="received_documents"], 

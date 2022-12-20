@@ -129,7 +129,7 @@
 	</div>
 </div>
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-12">
 		<div class="profile_box main_block" style="min-height: 80px;">
 	        <h3>Tour Amount</h3>
 			<?php
@@ -155,7 +155,7 @@
 				$total_seats = $total_adult + $total_b_children + $total_wb_children + $total_infant;
 			?>
 	        <div class="row">
-				<div class="col-sm-6">
+				<div class="col-sm-12">
 	        	    <span class="main_block">
 	        	      	<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 	        	      	<?php echo "<label>Adult Cost <em>:</em></label> ".$adult_expense; ?> 

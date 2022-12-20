@@ -7,7 +7,7 @@ include "../../../../../model/model.php";
   $traveler_group_id_arr =array();
   $year_arr =array();
   $cust_name_arr = array();
-  $sq = mysqlQuery("select id, traveler_group_id, form_date,customer_id from tourwise_traveler_details where tour_id = '$tour_id' and tour_group_id = '$tour_group_id' ");
+  $sq = mysqlQuery("select id, traveler_group_id, form_date,customer_id from tourwise_traveler_details where tour_id = '$tour_id' and tour_group_id = '$tour_group_id' and delete_status='0' ");
   echo "<option value=''> Select Booking ID </option>";
   while($row = mysqli_fetch_assoc($sq))
   {

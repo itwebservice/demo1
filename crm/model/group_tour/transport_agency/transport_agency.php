@@ -2,7 +2,7 @@
 $flag = true;
 class transport_agency{
 
-function transport_agency_master_save( $city_id, $transport_agency_name, $mobile_no,$landline_no, $email_id, $contact_person_name,$immergency_contact_no, $transport_agency_address, $country, $website, $opening_balance, $active_flag, $service_tax_no, $bank_name,$account_name ,$account_no, $branch, $ifsc_code,$state,$side,$supp_pan,$as_of_date){
+function transport_agency_master_save( $city_id, $transport_agency_name, $mobile_no,$landline_no, $email_id, $contact_person_name,$immergency_contact_no, $transport_agency_address, $website, $opening_balance, $active_flag, $service_tax_no, $bank_name,$account_name ,$account_no, $branch, $ifsc_code,$state,$side,$supp_pan,$as_of_date){
 
   $city_id = mysqlREString($city_id);
   $mobile_no = mysqlREString($mobile_no);
@@ -10,7 +10,7 @@ function transport_agency_master_save( $city_id, $transport_agency_name, $mobile
   $email_id = mysqlREString($email_id);
   $contact_person_name = mysqlREString($contact_person_name);
   $immergency_contact_no = mysqlREString($immergency_contact_no);
-  $country = mysqlREString($country);
+  // $country = mysqlREString($country);
   $website = mysqlREString($website);
   $transport_agency_address = mysqlREString($transport_agency_address);
   $opening_balance = mysqlREString($opening_balance);
@@ -43,7 +43,7 @@ function transport_agency_master_save( $city_id, $transport_agency_name, $mobile
   $max_transport_agency_id1 = mysqli_fetch_assoc(mysqlQuery("select max(transport_agency_id) as max from transport_agency_master"));
   $max_transport_agency_id = $max_transport_agency_id1['max']+1;
 
-  $sq = mysqlQuery("insert into transport_agency_master ( transport_agency_id, city_id, transport_agency_name, mobile_no,landline_no, email_id, contact_person_name,immergency_contact_no, transport_agency_address, country, website, opening_balance, service_tax_no, active_flag, bank_name,account_name, account_no, branch, ifsc_code , state_id,side,pan_no,as_of_date) values ( '$max_transport_agency_id', '$city_id', '$transport_agency_name', '$mobile_no','$landline_no', '$email_id', '$contact_person_name', '$immergency_contact_no', '$transport_agency_address','$country','$website', '$opening_balance', '$service_tax_no', '$active_flag','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$state','$side','$supp_pan','$as_of_date')");
+  $sq = mysqlQuery("insert into transport_agency_master ( transport_agency_id, city_id, transport_agency_name, mobile_no,landline_no, email_id, contact_person_name,immergency_contact_no, transport_agency_address, website, opening_balance, service_tax_no, active_flag, bank_name,account_name, account_no, branch, ifsc_code , state_id,side,pan_no,as_of_date) values ( '$max_transport_agency_id', '$city_id', '$transport_agency_name', '$mobile_no','$landline_no', '$email_id', '$contact_person_name', '$immergency_contact_no', '$transport_agency_address','$website', '$opening_balance', '$service_tax_no', '$active_flag','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$state','$side','$supp_pan','$as_of_date')");
   sundry_creditor_balance_update();
 
   if(!$sq)
@@ -54,9 +54,9 @@ function transport_agency_master_save( $city_id, $transport_agency_name, $mobile
   } 
   else
   {
-     $vendor_login_master = new vendor_login_master;
-     $vendor_login_master->vendor_login_save($transport_agency_name, $mobile_no, 'Transport Vendor', $max_transport_agency_id, $active_flag, $email_id,$opening_balance,$side,$as_of_date);
-     if($GLOBALS['flag']){
+    $vendor_login_master = new vendor_login_master;
+    $vendor_login_master->vendor_login_save($transport_agency_name, $mobile_no, 'Transport Vendor', $max_transport_agency_id, $active_flag, $email_id,$opening_balance,$side,$as_of_date);
+    if($GLOBALS['flag']){
         commit_t();
         echo "Transport Supplier has been successfully saved.";
         exit;
@@ -68,7 +68,7 @@ function transport_agency_master_save( $city_id, $transport_agency_name, $mobile
     }
   } 
 }
-function transport_agency_master_update( $transport_agency_id, $vendor_login_id, $city_id, $transport_agency_name, $mobile_no,$landline_no, $email_id, $contact_person_name,$immergency_contact_no, $transport_agency_address, $country, $website, $opening_balance, $active_flag, $service_tax_no, $bank_name,$account_name, $account_no, $branch, $ifsc_code,$state,$side,$supp_pan,$as_of_date)
+function transport_agency_master_update( $transport_agency_id, $vendor_login_id, $city_id, $transport_agency_name, $mobile_no,$landline_no, $email_id, $contact_person_name,$immergency_contact_no, $transport_agency_address,  $website, $opening_balance, $active_flag, $service_tax_no, $bank_name,$account_name, $account_no, $branch, $ifsc_code,$state,$side,$supp_pan,$as_of_date)
 
 {
   $city_id = mysqlREString($city_id);
@@ -82,7 +82,7 @@ function transport_agency_master_update( $transport_agency_id, $vendor_login_id,
   $active_flag = mysqlREString($active_flag);
   $service_tax_no = mysqlREString($service_tax_no);
   $immergency_contact_no = mysqlREString($immergency_contact_no);
-  $country = mysqlREString($country);
+  // $country = mysqlREString($country);
   $website = mysqlREString($website);
   $bank_name = mysqlREString($bank_name);
   $account_name = mysqlREString($account_name);
@@ -107,7 +107,7 @@ function transport_agency_master_update( $transport_agency_id, $vendor_login_id,
     exit;
   }  
 
-  $sq = mysqlQuery("update transport_agency_master set city_id='$city_id', transport_agency_name='$transport_agency_name', mobile_no='$mobile_no',landline_no ='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', transport_agency_address='$transport_agency_address', country='$country', website='$website', opening_balance='$opening_balance', active_flag='$active_flag', service_tax_no='$service_tax_no', bank_name='$bank_name',account_name='$account_name',account_no='$account_no',branch='$branch',ifsc_code='$ifsc_code', state_id='$state',side='$side',pan_no='$supp_pan' ,as_of_date = '$as_of_date' where transport_agency_id='$transport_agency_id'");
+  $sq = mysqlQuery("update transport_agency_master set city_id='$city_id', transport_agency_name='$transport_agency_name', mobile_no='$mobile_no',landline_no ='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', transport_agency_address='$transport_agency_address', website='$website', opening_balance='$opening_balance', active_flag='$active_flag', service_tax_no='$service_tax_no', bank_name='$bank_name',account_name='$account_name',account_no='$account_no',branch='$branch',ifsc_code='$ifsc_code', state_id='$state',side='$side',pan_no='$supp_pan' ,as_of_date = '$as_of_date' where transport_agency_id='$transport_agency_id'");
    sundry_creditor_balance_update();
   if(!$sq)
   {
@@ -167,24 +167,24 @@ public function vendor_csv_save()
                 $emergency_contact = $data[6];
                 $address = $data[7];
                 $state_id = $data[8];
-                $country = $data[9];
-                $website = $data[10];
-                $bank_name = $data[11];
-                $account_name = $data[12];
-                $account_no = $data[13];
-                $branch = $data[14];
-                $ifsc_code = $data[15];
-                $supp_pan = $data[16];
-                $gst_no = $data[17];
-                $opening_balance = '';
+                // $country = $data[9];
+                $website = $data[9];
+                $bank_name = $data[10];
+                $account_name = $data[11];
+                $account_no = $data[12];
+                $branch = $data[13];
+                $ifsc_code = $data[14];
+                $supp_pan = $data[15];
+                $gst_no = $data[16];
+                $opening_balance = $data[17];
                 $as_of_date = '';
-                $side = '';
+                $side = $data[18];
                 $as_of_date = get_date_db($as_of_date);
 
                 $created_at = date('Y-m-d H:i');
                 $downloaded_at = date('Y-m-d');
                 
-                   if(preg_match('/^[0-9]*$/', $city_id) && preg_match('/^[a-zA-Z \s]*$/', $transport_name) && preg_match('/^[0-9]*$/', $state_id) && (strlen($mobile)<=20)){
+                  if(preg_match('/^[0-9]*$/', $city_id) && preg_match('/^[a-zA-Z \s]*$/', $transport_name) && preg_match('/^[0-9]*$/', $state_id) && (strlen($mobile)<=20)){
                       $sq_transport_count = mysqli_num_rows(mysqlQuery("select * from transport_agency_master where transport_agency_name='$transport_name'"));
                       if($sq_transport_count==0)
                       {
@@ -194,7 +194,8 @@ public function vendor_csv_save()
                           $email = $encrypt_decrypt->fnEncrypt($email, $secret_key);
                           
 	                        $transport_name = addslashes($transport_name);
-                          $query = "insert into transport_agency_master ( transport_agency_id, city_id, transport_agency_name, mobile_no,landline_no, email_id, contact_person_name,immergency_contact_no, transport_agency_address, country, website, opening_balance, service_tax_no, active_flag, bank_name,account_name, account_no, branch, ifsc_code , state_id,side,pan_no,as_of_date) values ( '$transport_agency_id', '$city_id', '$transport_name', '$mobile','$landline', '$email', '$contact_person', '$emergency_contact', '$address','$country','$website', '$opening_balance', '$gst_no', 'Active','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$state_id','$side','$supp_pan','$as_of_date')";
+	                        $side = ($side == '') ? 'Credit' : $side;
+                          $query = "insert into transport_agency_master ( transport_agency_id, city_id, transport_agency_name, mobile_no,landline_no, email_id, contact_person_name,immergency_contact_no, transport_agency_address,  website, opening_balance, service_tax_no, active_flag, bank_name,account_name, account_no, branch, ifsc_code , state_id,side,pan_no,as_of_date) values ( '$transport_agency_id', '$city_id', '$transport_name', '$mobile','$landline', '$email', '$contact_person', '$emergency_contact', '$address','$website', '$opening_balance', '$gst_no', 'Active','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$state_id','$side','$supp_pan','$as_of_date')";
                           $sq_enquiry = mysqlQuery($query);
 
                           if($sq_enquiry)
@@ -227,9 +228,8 @@ public function vendor_csv_save()
 
         fclose($handle);
 
-         if(isset($unprocessedArray) && !empty($unprocessedArray))
+        if(isset($unprocessedArray) && !empty($unprocessedArray))
         {
-           
           //print_r($unprocessedArray); die;
           $filePath='../../../download/unprocessed_transport_records'.$downloaded_at.'.csv';
           $save = preg_replace('/(\/+)/','/',$filePath);
@@ -241,11 +241,11 @@ public function vendor_csv_save()
         header("Pragma: no-cache");
         header("Expires: 0");
             $output = fopen($save, "w");  
-            fputcsv($output, array('city_id' , 'Transport_Name' , 'Mobile' , 'landline' ,'Email', 'Contact Person' , 'Emergency Contact No' , 'Address' , 'state_id' , 'Country' , 'Website' , 'Bank Name' , 'Account Type' , 'Account No' , 'Branch', 'IFSC/swift Code' , 'PAN/TAN No' , 'Tax No'));  
+            fputcsv($output, array('city_id' , 'Transport_Name' , 'Mobile' , 'landline' ,'Email', 'Contact Person' , 'Emergency Contact No' , 'Address' , 'state_id' ,  'Website' , 'Bank Name' , 'Account Type' , 'Account No' , 'Branch', 'IFSC/swift Code' , 'PAN/TAN No' , 'Tax No','Opening Balance','Balance Side'));  
           
-           foreach($unprocessedArray as $row){
-          fputcsv($output, $row);  
-           }
+          foreach($unprocessedArray as $row){
+            fputcsv($output, $row);  
+          }
             
           fclose($output); 
           //print_r($downloadurl);

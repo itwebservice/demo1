@@ -4,6 +4,7 @@ global $app_quot_format,$whatsapp_switch,$currency;
 $from_date = $_POST['from_date'];
 $to_date = $_POST['to_date'];
 $quotation_id = $_POST['quotation_id'];
+$status = $_POST['status'];
 $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
@@ -11,7 +12,14 @@ $branch_status = $_POST['branch_status'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 
-$query = "select * from hotel_quotation_master where financial_year_id='$financial_year_id' ";
+if($status != ''){
+
+	$query = "select * from hotel_quotation_master where financial_year_id='$financial_year_id' and status='$status'";
+}else{
+
+	$query = "select * from hotel_quotation_master where financial_year_id='$financial_year_id' and status='1' ";
+}
+
 if($from_date!='' && $to_date!=""){
 
 	$from_date = date('Y-m-d', strtotime($from_date));
@@ -41,7 +49,13 @@ $array_s = array();
 	$sq_quotation = mysqlQuery($query);
 	while($row_quotation = mysqli_fetch_assoc($sq_quotation)){
 
-		$bg = ($row_quotation['clone'] == 1) ? 'warning': '';
+		if($row_quotation['status'] == '0') {
+			$bg = 'danger';
+		}else if($row_quotation['clone'] == 1){
+			$bg = 'warning';
+		} else{
+			$bg = '';
+		}
 		$sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_quotation[emp_id]'"));
 		$emp_name = ($row_quotation['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
 		$quotation_date = $row_quotation['quotation_date'];
@@ -82,6 +96,12 @@ $array_s = array();
 			$currency_amount = '';
 		}
 		
+		$copy_btn = ($row_quotation['status'] == '1') ? '<button class="btn btn-warning btn-sm" onclick="quotation_clone('.$row_quotation['quotation_id'].')" title="Create Copy of this Quotation" data-toggle="tooltip"><i class="fa fa-files-o"></i></button>' : '';
+
+		$pdf_btn = ($row_quotation['status'] == '1') ? '<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a> <button class="btn btn-info btn-sm" onclick="send_mail(\''.trim($enq_details['email_id']).'\')" title="Email Quotation to Customer" data-toggle="tooltip"><i class="fa fa-envelope-o"></i></button>' : '';
+
+		$whatsapp_show = ($row_quotation['status'] == '1') ? '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>' : '';
+
 		$temp_arr = array( "data" => array(
 			(int)(++$count),
 			get_quotation_id($row_quotation['quotation_id'],$year),
@@ -89,11 +109,11 @@ $array_s = array();
 			$enq_details['customer_name'],
 			number_format($cost_details['total_amount'],2).$currency_amount,
 			$emp_name,
-			'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a> <button class="btn btn-info btn-sm" onclick="send_mail(\''.trim($enq_details['email_id']).'\')" title="Send Email" data-toggle="tooltip"><i class="fa fa-envelope-o"></i></button><button class="btn btn-warning btn-sm" onclick="quotation_clone('.$row_quotation['quotation_id'].')" title="Clone Quotation" data-toggle="tooltip"><i class="fa fa-files-o"></i></button>'.$whatsapp_show.'<form  style="display:inline-block" action="update/index.php" id="frm_booking_'.$count.'" method="POST">
+			$pdf_btn.$copy_btn.$whatsapp_show.'<form  style="display:inline-block" action="update/index.php" id="frm_booking_'.$count.'" method="POST">
 				<input  style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
 				<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
 			</form><form  style="display:inline-block" action="quotation_view.php" target="_blank" id="frm_booking_view_'.$count.'" method="GET">
-				<input  style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
+				<input style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
 				<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="View Details"><i class="fa fa-eye"></i></button>
 			</form>',
 		), "bg" =>$bg);

@@ -169,7 +169,7 @@ $pdf->MultiCell(119, 8, "BANK NAME : ".$bank_name_setting, 1);
 
 $pdf->SetXY(129, 44);
 
-$pdf->MultiCell(70, 8, "A/C NAME : ".$acc_name, 1);
+$pdf->MultiCell(70, 8, "A/C TYPE : ".$acc_name, 1);
 
 
 $pdf->SetXY(10, 52);
@@ -239,7 +239,7 @@ $sq_passenger = mysqlQuery("select * from  train_ticket_master_entries where tra
 
 
 
-$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id'"));
+$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id' and delete_status='0'"));
 
 
 

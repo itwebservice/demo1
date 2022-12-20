@@ -50,7 +50,7 @@ $sq_comp = mysqli_fetch_assoc(mysqlQuery("select * from other_complaince_master 
             </div>
             <div class="row text-center">
               <div class="col-md-12">
-                <button id="btn_save" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>
+                <button id="btn_save" class="btn btn-sm btn-success"><i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;Update</button>
               </div>
             </div>
     </div>

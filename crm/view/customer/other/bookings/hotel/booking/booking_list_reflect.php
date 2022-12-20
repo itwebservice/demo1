@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $customer_id = $_SESSION['customer_id'];
 $booking_id = $_POST['booking_id'];
 
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 $query .=" and customer_id='$customer_id'";
 if($booking_id!=""){
 	$query .=" and booking_id='$booking_id'";
@@ -12,17 +12,17 @@ if($booking_id!=""){
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
 	
-<table class="table table-bordered cust_table" id='tbl_booking_list' style="margin:20px 0 !important;">
+<table class="table table-bordered bg_white cust_table" id='tbl_booking_list' style="margin:20px 0 !important;">
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
 			<th>Booking_ID</th>
 			<th>Booking_Date</th>
 			<th>View</th>
-			<th class="text-right info">Total Amount</th>
-			<th class="text-right success">Paid Amount</th>
-			<th class="text-right danger">Cancellation Charges</th>
-			<th class="text-right warning">Balance</th>
+			<th class="info">Total Amount</th>
+			<th class="success">Paid Amount</th>
+			<th class="danger">CNCEL_AMOUNT</th>
+			<th class="warning">Balance</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -100,12 +100,12 @@ if($booking_id!=""){
 				<td><?= get_hotel_booking_id($row_booking['booking_id'],$year) ?></td>
 				<td><?= date('d-m-Y', strtotime($row_booking['created_at'])) ?></td>	
 				<td>
-					<button class="btn btn-info btn-sm" onclick="booking_display_modal(<?= $row_booking['booking_id'] ?>)" title="View Details"><i class="fa fa-eye"></i></button>
+					<button class="btn btn-info btn-sm" onclick="booking_display_modal(<?= $row_booking['booking_id'] ?>)" title="View Details" id="hotel-<?= $row_booking['booking_id'] ?>"><i class="fa fa-eye"></i></button>
 				</td>		
-				<td class="text-right  info"><?= $sale_total_amount1 ?></td>
-				<td class="text-right  success"><?= $paid_amount1 ?></td>
-				<td class="text-right danger"><?= $cancel_amount1 ?></td>
-				<td class="text-right warning"><?= $balance_amount1 ?></td>	
+				<td class="info"><?= $sale_total_amount1 ?></td>
+				<td class="success"><?= $paid_amount1 ?></td>
+				<td class="danger"><?= $cancel_amount1 ?></td>
+				<td class="warning"><?= $balance_amount1 ?></td>	
 			</tr>
 			<?php
 		}

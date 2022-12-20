@@ -86,7 +86,7 @@ $company_name = $_GET['company_name'];
 $booker_id = $_GET['booker_id'];
 $branch_id = $_GET['branch_id'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
 $date = $sql_booking_date['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -168,7 +168,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
 
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($customer_id!=""){
     $query .= " and customer_id='$customer_id'";
 }
@@ -223,16 +223,17 @@ $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('R'.$row_count, "Cancel")
                 ->setCellValue('S'.$row_count, "Total")
                 ->setCellValue('T'.$row_count, "Paid")
-                ->setCellValue('U'.$row_count, "Outstanding Balance")
-                ->setCellValue('V'.$row_count, "Due_Date")
-                ->setCellValue('W'.$row_count, "Purchase")
-                ->setCellValue('X'.$row_count, "Purchased_From")
-                ->setCellValue('Y'.$row_count, "Branch")
-                ->setCellValue('Z'.$row_count, "Booked_By")
-                ->setCellValue('AA'.$row_count, "Incentive");
+                ->setCellValue('U'.$row_count, "Sales_Return")
+                ->setCellValue('V'.$row_count, "Outstanding Balance")
+                ->setCellValue('W'.$row_count, "Due_Date")
+                ->setCellValue('X'.$row_count, "Purchase")
+                ->setCellValue('Y'.$row_count, "Purchased_From")
+                ->setCellValue('Z'.$row_count, "Branch")
+                ->setCellValue('AA'.$row_count, "Booked_By")
+                ->setCellValue('AB'.$row_count, "Incentive");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AB'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AB'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
@@ -259,7 +260,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
     $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
     $email_id = $encrypt_decrypt->fnDecrypt($sq_customer_info['email_id'], $secret_key);
-    if($sq_customer_info['type']=='Corporate'){
+    if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type']=='B2B'){
         $customer_name = $sq_customer_info['company_name'];
     }else{
         $customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
@@ -271,7 +272,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
     $sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
     $branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-    $sq_total_member = mysqli_num_rows(mysqlQuery("select ticket_id from ticket_master_entries where ticket_id = '$row_ticket[ticket_id]' AND status!='Cancel'"));
+    $sq_total_member = mysqli_num_rows(mysqlQuery("select ticket_id from ticket_master_entries where ticket_id = '$row_ticket[ticket_id]'"));
 
     $due_date = ($row_ticket['due_date'] == '1970-01-01') ? 'NA' : get_date_user($row_ticket['due_date']);
     $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum, sum(credit_charges) as sumc from ticket_payment_master where ticket_id='$row_ticket[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
@@ -286,25 +287,28 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     
     if($cancel_amount=="") {$cancel_amount = 0;  }
 
-    if($pass_count == $cancel_count){
-        if($paid_amount > 0){
-            if($cancel_amount >0){
-                if($paid_amount > $cancel_amount){
-                    $bal = 0;
-                }else{
-                    $bal = $cancel_amount - $paid_amount;
-                }
-            }else{
-            $bal = 0;
-            }
-        }
-        else{
-            $bal = $cancel_amount;
-        }
-    }
-    else{
-        $bal = $total_sale - $paid_amount;
-    }
+	if($row_ticket['cancel_type'] == '1'){
+		if($paid_amount > 0){
+			if($cancel_amount >0){
+				if($paid_amount > $cancel_amount){
+					$bal = 0;
+				}else{
+					$bal = $cancel_amount - $paid_amount;
+				}
+			}else{
+			$bal = 0;
+			}
+		}
+		else{
+			$bal = $cancel_amount;
+		}
+	}else if($row_ticket['cancel_type'] == '2'||$row_ticket['cancel_type'] == '3'){
+		$cancel_estimate = json_decode($row_ticket['cancel_estimate']);
+		$bal = (($total_sale - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_amount) - $paid_amount;
+	}
+	else{
+		$bal = $total_sale - $paid_amount;
+	}
 
     if($balaces>=0){
         $total_balance=$total_balance+$balaces;
@@ -324,14 +328,14 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     $purchase_amt = 0;
     $i=0;
     $p_due_date = '';
-    $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]'"));
+    $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]' and delete_status='0'"));
     if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-    $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]'");
+    $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]' and delete_status='0'");
     while($row_purchase = mysqli_fetch_assoc($sq_purchase)){		
         $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
         $total_purchase = $total_purchase + $purchase_amt;
     }
-    $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]'"));		
+    $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket[ticket_id]' and delete_status='0'"));		
     $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
     if($vendor_name == ''){ $vendor_name1 = 'NA';  }
     else{ $vendor_name1 = $vendor_name; }
@@ -392,6 +396,10 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     }
     
 	$sq_incentive = mysqli_fetch_assoc(mysqlQuery("select * from booker_sales_incentive where booking_id='$row_ticket[ticket_id]' and service_type='Ticket Booking'"));
+
+	$cancel_estimate = json_decode($row_ticket['cancel_estimate']);
+	$sales_return = ($row_ticket['cancel_type'] == 1 || $row_ticket['cancel_type'] == 2 || $row_ticket['cancel_type'] == 3) ? number_format(floatval($cancel_estimate[0]->ticket_total_cost),2) : 'NA';
+
     $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('B'.$row_count, ++$count)
     ->setCellValue('C'.$row_count, get_ticket_booking_id($row_ticket['ticket_id'],$year))
@@ -412,16 +420,17 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     ->setCellValue('R'.$row_count, number_format($cancel_amt,2))
     ->setCellValue('S'.$row_count, number_format($total_bal,2))
     ->setCellValue('T'.$row_count, number_format($paid_amount,2))
-    ->setCellValue('U'.$row_count, number_format($bal,2))
-    ->setCellValue('V'.$row_count, $due_date)
-    ->setCellValue('W'.$row_count, number_format($total_purchase,2))
-    ->setCellValue('X'.$row_count, $vendor_name1)
-    ->setCellValue('Y'.$row_count, $branch_name)
-    ->setCellValue('Z'.$row_count, $emp_name)
-    ->setCellValue('AA'.$row_count, number_format($sq_incentive['incentive_amount'],2));
+    ->setCellValue('U'.$row_count, $sales_return)
+    ->setCellValue('V'.$row_count, number_format($bal,2))
+    ->setCellValue('W'.$row_count, $due_date)
+    ->setCellValue('X'.$row_count, number_format($total_purchase,2))
+    ->setCellValue('Y'.$row_count, $vendor_name1)
+    ->setCellValue('Z'.$row_count, $branch_name)
+    ->setCellValue('AA'.$row_count, $emp_name)
+    ->setCellValue('AB'.$row_count, number_format($sq_incentive['incentive_amount'],2));
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AB'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AB'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
 

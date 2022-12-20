@@ -13,7 +13,7 @@ include "../../../../model/model.php";
 			<select name="booking_id" id="booking_id" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
 		        <?php 
-		        $sq_booking = mysqlQuery("select * from car_rental_booking where status='Cancel'");
+		        $sq_booking = mysqlQuery("select * from car_rental_booking where status='Cancel' and delete_status='0'");
 		        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 	              $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
 				  if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){

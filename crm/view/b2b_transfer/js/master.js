@@ -1,6 +1,3 @@
-$('#master_save_modal').on('shown.bs.modal', function () {
-	$('#vehicle_name').focus();
-});
 var columns = [
 	{ title: 'S_No.' },
 	{ title: 'Vehicle_type' },
@@ -9,7 +6,8 @@ var columns = [
 	{ title: 'Actions', className: 'text-center' }
 ];
 function master_list_reflect () {
-	$.post('master/list_reflect.php', {}, function (data) {
+	var status = $('#status').val();
+	$.post('master/list_reflect.php', {status:status}, function (data) {
 		setTimeout(() => {
 			pagination_load(data, columns, true, false, 20, 'tbl_list');
 		}, 1000);

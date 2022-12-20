@@ -7,7 +7,7 @@ $payment_id = $_POST['payment_id'];
 
 $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_payment_master where payment_id='$payment_id'"));
 
-$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$sq_payment_info[visa_id]'"));
+$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$sq_payment_info[visa_id]' and delete_status='0'"));
 $date = $sq_visa['created_at'];
 $yr = explode("-", $date);
 $year = $yr[0];
@@ -32,22 +32,10 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
 
          <div class="row">
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-              <select name="customer_id1" id="customer_id1" title="Customer Name" style="width:100%" disabled onchange="visa_id_dropdown_load('customer_id1', 'visa_id1');">
-                <?php 
-                $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_visa[customer_id]'"));
-                if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
-                ?>
-                  <option value="<?= $sq_customer['customer_id'] ?>"><?= $sq_customer['company_name'] ?></option>
-                <?php } else{ ?>
-                  <option value="<?= $sq_customer['customer_id'] ?>"><?= $sq_customer['first_name'].' '.$sq_customer['middle_name'].' '.$sq_customer['last_name'] ?></option>
-                  <?php } ?>
-              </select>
-          </div>
-          <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
             <select name="visa_id1" id="visa_id1" style="width:100%" title="Booking ID" disabled>              
-			         <option value="<?= $sq_visa['visa_id'] ?>"><?= get_visa_booking_id($sq_visa['visa_id'],$year) ?></option>
+			        <option value="<?= $sq_visa['visa_id'] ?>"><?= get_visa_booking_id($sq_visa['visa_id'],$year) ?></option>
               <?php
-              $sq_visa = mysqlQuery("select * from visa_master where customer_id='$sq_visa[customer_id]'");
+              $sq_visa = mysqlQuery("select * from visa_master where customer_id='$sq_visa[customer_id]' and delete_status='0'");
               while($row_visa = mysqli_fetch_assoc($sq_visa)){
                 ?>
                 <option value="<?= $row_visa['visa_id'] ?>"><?= get_visa_booking_id($row_visa['visa_id'],$year) ?></option>
@@ -65,11 +53,11 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
                 <?php get_payment_mode_dropdown(); ?>
             </select>
           </div>
-         </div>
-         <div class="row mg_tp_10">
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
             <input type="text" id="payment_amount1" name="payment_amount1" class="form-control" placeholder="Amount" title="Amount" value="<?= $sq_payment_info['payment_amount'] ?>" onchange="validate_balance(this.id);get_credit_card_charges('identifier','payment_mode1','payment_amount1','credit_card_details1','credit_charges1');">
           </div>
+        </div>
+        <div class="row mg_tp_10">
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
             <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment_info['bank_name'] ?>" <?= $enable ?>>
           </div>
@@ -99,6 +87,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
 					</div>
 				</div>
         <?php } ?>
+        <input type="hidden" id="canc_status1" name="canc_status" value="<?= $sq_payment_info['status'] ?>" class="form-control"/>
 
         <div class="row text-center mg_tp_20">
             <div class="col-md-12">
@@ -114,7 +103,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
 </div>
 
 <script>
-$('#customer_id1, #visa_id1').select2();
+$('#visa_id1').select2();
 
 $('#visa_payment_update_modal').modal('show');  
 $(function(){
@@ -145,7 +134,8 @@ $('#frm_visa_payment_update').validate({
     var credit_charges = $('#credit_charges1').val();
     var credit_card_details = $('#credit_card_details1').val();
     var credit_charges_old = $('#credit_charges_old').val();
-    
+    var canc_status = $('#canc_status1').val();
+
     if(!check_updated_amount(payment_old_value,payment_amount)){
       error_msg_alert("You can update receipt to 0 only!");
       return false;
@@ -156,12 +146,12 @@ $('#frm_visa_payment_update').validate({
       $.ajax({
         type: 'post',
         url: base_url+'controller/visa_passport_ticket/visa/visa_master_payment_update.php',
-        data:{ payment_id : payment_id, visa_id : visa_id, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_old_value : payment_old_value, payment_old_mode : payment_old_mode,payment_bank_old : payment_bank_old,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old },
+        data:{ payment_id : payment_id, visa_id : visa_id, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_old_value : payment_old_value, payment_old_mode : payment_old_mode,payment_bank_old : payment_bank_old,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,canc_status:canc_status },
         success: function(result){
           var msg = result.split('-');
           if(msg[0]=='error'){
             msg_alert(result);
-               $('#btn_visa_p_update').button('reset');
+            $('#btn_visa_p_update').button('reset');
           }
           else{
             msg_alert(result);
@@ -170,7 +160,6 @@ $('#frm_visa_payment_update').validate({
             $('#visa_payment_update_modal').modal('hide');  
             visa_payment_list_reflect();
           }
-          
         }
       });
   }

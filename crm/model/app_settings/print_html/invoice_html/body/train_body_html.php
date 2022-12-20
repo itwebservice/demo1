@@ -1,4 +1,4 @@
-<?php  
+<?php
 //Generic Files
 include "../../../../model.php"; 
 include "../../print_functions.php";
@@ -21,15 +21,17 @@ $balance_amount = $_GET['balance_amount'];
 $sac_code = $_GET['sac_code'];
 $service_charge = $_GET['service_charge'];
 $credit_card_charges = $_GET['credit_card_charges'];
+$bg = $_GET['bg'];
+$canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 $total_paid += $charge;
 $sq_passenger = mysqlQuery("select * from  train_ticket_master_entries where train_ticket_id = '$train_ticket_id'");
 $sq_passenger_count = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from  train_ticket_master_entries where train_ticket_id = '$train_ticket_id'"));
-$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id'"));
+$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id' and delete_status='0'"));
 
 $basic_cost = number_format($basic_cost1,2);
-$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
 $roundoff = $sq_hotel['roundoff'];
 $bsmValues = json_decode($sq_hotel['bsm_values']);
 $tax_show = '';
@@ -86,14 +88,14 @@ if($app_invoice_format == "Regular"){include "../headers/regular_header_html.php
 if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php"; }
 ?>
 
-
-
-<div class="col-md-12 mg_tp_20"><p class="border_lt"><span class="font_5">PASSENGER (s):  <?= $sq_passenger_count['cnt'] ?></span><span><?= $sq_hotel['p_name'] ?></span></p></div>
+<hr class="no-marg">
+<div class="row">
+<div class="col-md-12 mg_tp_20"><p class="border_lt"><span class="font_5">PASSENGER (s):  <?= $sq_passenger_count['cnt'] ?></span><span><?= $sq_hotel['p_name'] ?></span></p></div></div>
 <!-- invoice_receipt_body_table-->
-   <div class="main_block inv_rece_table main_block">
+  <div class="main_block inv_rece_table">
     <div class="row">
       <div class="col-md-12">
-       <div class="table-responsive">
+        <div class="table-responsive">
         <table class="table table-bordered no-marg" id="tbl_emp_list" style="padding: 0 !important;">
           <thead>
             <tr class="table-heading-row">
@@ -107,7 +109,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
             </tr>
           </thead>
           <tbody>   
-          <?php 
+          <?php
           $count = 1;
           while($row_passenger = mysqli_fetch_assoc($sq_passenger)){
             $sq_dest1 = mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id = '$row_passenger[train_ticket_id]'");
@@ -124,21 +126,20 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
             </tr>
             <?php $count++;
               }
-             } ?>
+            } ?>
           </tbody>
         </table>
-       </div>
-     </div>
+        </div>
+      </div>
     </div>
   </div>
-
- <!-- invoice_receipt_body_calculation -->
+  <!-- invoice_receipt_body_calculation -->
 
 <section class="print_sec main_block">
   <div class="row">
     <div class="col-md-12">
       <div class="main_block inv_rece_calculation border_block">
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="font_5 float_r"><?= $currency_code." ".$newBasic ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="font_5 float_r"><?= $currency_code." ".$newBasic ?></span></p></div>
         
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $currency_code." ".number_format($net_amount1,2) ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $currency_code." ".$newSC ?></span></p></div>
@@ -146,9 +147,16 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
         <div class="col-md-6"><p class="border_lt"><span class="font_5">DELIVERY CHARGE </span><span class="float_r"><?php echo $currency_code." ".number_format( $sq_fields['delivery_charges'],2) ; ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $currency_code." ".number_format($total_paid,2) ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= $tax_show ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $currency_code." ".number_format($balance_amount,2) ?></span></p></div>
+        <?php
+        if($bg != ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">CANCELLATION CHARGES</span><span class="float_r"><?= $currency_code.' '.$canc_amount ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUNDOFF </span><span class="font_5 float_r"><?= $currency_code." ".$roundoff ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">&nbsp; </span><span class="font_5 float_r">&nbsp;</span></p></div>
+        <?php } ?>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $currency_code." ".number_format($balance_amount,2) ?></span></p></div>
+        <?php
+        if($bg == ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUNDOFF </span><span class="font_5 float_r"><?= $currency_code." ".$roundoff ?></span></p></div>
+        <?php } ?>
         
       </div>
     </div>

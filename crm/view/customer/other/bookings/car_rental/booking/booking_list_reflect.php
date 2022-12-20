@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $customer_id = $_SESSION['customer_id'];
 $booking_id = $_POST['booking_id'];
 
-$query = "select * from car_rental_booking where customer_id='$customer_id' ";
+$query = "select * from car_rental_booking where customer_id='$customer_id' and delete_status='0' ";
 if ($booking_id != "") {
 	$query .= " and booking_id='$booking_id'";
 }
@@ -20,10 +20,10 @@ if ($booking_id != "") {
 						<th>NO_OF_PAX</th>
 						<th>Traveling_Date</th>
 						<th>View</th>
-						<th class="text-right info">Total Amount</th>
-						<th class="text-right success">Paid Amount</th>
-						<th class="text-right danger">Cncl_amount</th>
-						<th class="text-right warning">Balance</th>
+						<th class="info">Total Amount</th>
+						<th class="success">Paid Amount</th>
+						<th class="danger">Cncl_amount</th>
+						<th class="warning">Balance</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,6 +34,7 @@ if ($booking_id != "") {
 					$total_cancel = 0;
 					$sq_booking = mysqlQuery($query);
 					while ($row_booking = mysqli_fetch_assoc($sq_booking)) {
+
 						$date = $row_booking['created_at'];
 						$yr = explode("-", $date);
 						$year = $yr[0];
@@ -45,12 +46,12 @@ if ($booking_id != "") {
 						$sale_total_amount = $row_booking['total_fees']+$sq_payment_info['sumc'];
 						$cancel_amount = $row_booking['cancel_amount'];
 
-						$paid_amount = $sq_payment_info['sum']+$sq_payment_info['sumc'];
+						$paid_amount = $sq_payment_info['sum'] + $sq_payment_info['sumc'];
 
-						if ($row_booking['status'] == 'Cancel') {
+						if($row_booking['status'] == 'Cancel'){
 							if ($paid_amount > 0) {
 								if ($cancel_amount > 0) {
-									if ($paid_amount > $cancel_amount) {
+									if ($paid_amount > $cancel_amount){
 										$balance_amount = 0;
 									} else {
 										$balance_amount = $cancel_amount - $paid_amount;
@@ -61,7 +62,7 @@ if ($booking_id != "") {
 							} else {
 								$balance_amount = $cancel_amount;
 							}
-						} else {
+						}else{
 							$balance_amount = $sale_total_amount - $paid_amount;
 						}
 
@@ -72,20 +73,20 @@ if ($booking_id != "") {
 						$total_balance += $balance_amount;
 
 						$bg = ($row_booking['status'] == "Cancel") ? "danger" : "";
-						$trav_date = ($row_booking['travel_type'] == 'Local') ? 'NA' : date('d-m-Y H:i', strtotime($row_booking['traveling_date']));
-					?>
+						$trav_date = ($row_booking['travel_type'] == 'Local') ? 'NA' : get_date_user($row_booking['traveling_date']);
+						?>
 						<tr class="<?= $bg ?>">
 							<td><?= $count ?></td>
 							<td><?= get_car_rental_booking_id($row_booking['booking_id'], $year) ?></td>
 							<td><?= $row_booking['total_pax'] ?></td>
 							<td><?= $trav_date ?></td>
 							<td>
-								<button class="btn btn-info btn-sm" onclick="car_display_modal(<?= $row_booking['booking_id'] ?>)" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
+								<button class="btn btn-info btn-sm" onclick="car_display_modal(<?= $row_booking['booking_id'] ?>)" title="View Details" id="car-<?= $row_booking['booking_id'] ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
 							</td>
-							<td class="text-right info"><?= number_format($sale_total_amount, 2) ?></td>
-							<td class="text-right success"><?= number_format($paid_amount, 2) ?></td>
-							<td class="text-right danger"><?= number_format($cancel_amount, 2) ?></td>
-							<td class="text-right warning"><?= number_format($balance_amount, 2); ?></td>
+							<td class="info"><?= number_format($sale_total_amount, 2) ?></td>
+							<td class="success"><?= number_format($paid_amount, 2) ?></td>
+							<td class="danger"><?= number_format($cancel_amount, 2) ?></td>
+							<td class="warning"><?= number_format($balance_amount, 2); ?></td>
 						</tr>
 					<?php
 					}

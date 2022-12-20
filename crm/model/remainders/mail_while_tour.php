@@ -13,7 +13,7 @@ if($sq_count==0)
 		$sq_tour = mysqli_fetch_assoc(mysqlQuery("SELECT * from tour_master where tour_id='$tour_detail[tour_id]'"));
 		$tour_name = $sq_tour['tour_name'].'('.date('d-m-Y', strtotime($tour_detail['from_date'])).' to '.date('d-m-Y', strtotime($tour_detail['to_date'])).')';
 
-		$sq_cus = mysqlQuery("select * from tourwise_traveler_details where tour_group_id='$tour_detail[group_id]' and tour_group_status != 'Cancel'");
+		$sq_cus = mysqlQuery("select * from tourwise_traveler_details where tour_group_id='$tour_detail[group_id]' and tour_group_status != 'Cancel' and delete_status='0'");
 
 		while($row_cus = mysqli_fetch_assoc($sq_cus)){
 			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select *from customer_master where customer_id='$row_cus[customer_id]'"));
@@ -79,14 +79,15 @@ function journey_mail($tour_name,$booking_id,$cust_id,$tour_type)
 							$count++;
 						}
 
-						$row_tour=mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and tour_status!='Cancel'"));
+						$row_tour=mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and tour_status!='Cancel' and delete_status='0'"));
 
 						$content.='<tr><td style="text-align:left;border: 1px solid #888888;">Tour Date </td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($row_tour['tour_from_date']).' To '.get_date_user($row_tour['tour_to_date']).'</td></tr>';
 					}
 					if($tour_type=="Group Tour")
 					{
 						$count=1;
-						$sq_member=mysqlQuery("select * from travelers_details where traveler_group_id='$booking_id' and status!='Cancel'");
+						$sq_tour=mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and tour_group_status!='Cancel' and delete_status='0'"));
+						$sq_member=mysqlQuery("select * from travelers_details where traveler_group_id='$sq_tour[traveler_group_id]' and status!='Cancel'");
 						while($row_traveler = mysqli_fetch_assoc($sq_member))
 						{
 							
@@ -94,7 +95,6 @@ function journey_mail($tour_name,$booking_id,$cust_id,$tour_type)
 							$count++;
 
 						}
-						$sq_tour=mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and tour_group_status!='Cancel'"));
 						$sq_tour_group=mysqli_fetch_assoc(mysqlQuery("select * from tour_groups where group_id='$sq_tour[tour_group_id]' and status!='Cancel'"));
 						
 						$content.='<tr><td style="text-align:left;border: 1px solid #888888;"> Tour Name</td>   <td style="text-align:left;border: 1px solid #888888;">'.$tour_name.'</td></tr>';																

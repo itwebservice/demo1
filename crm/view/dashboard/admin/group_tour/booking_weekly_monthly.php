@@ -24,7 +24,7 @@ $sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tour_master where tour_i
 		</thead>
 		<tbody>
 			<?php 
-			$sq = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_status!='Cancel' and WEEKOFYEAR(form_date)=WEEKOFYEAR(NOW())");
+			$sq = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_status!='Cancel' and WEEKOFYEAR(form_date)=WEEKOFYEAR(NOW()) and delete_status='0'");
 			while($row = mysqli_fetch_assoc($sq)){
 				$tour_group_id = $row['tour_group_id'];
 				$sq_tour_group = mysqli_fetch_assoc(mysqlQuery("select * from tour_groups where tour_id='$tour_id' and group_id='$tour_group_id'"));
@@ -61,7 +61,7 @@ $sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tour_master where tour_i
 		</thead>
 		<tbody>
 			<?php 
-			$sq = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_status!='Cancel' and YEAR(form_date) = YEAR(NOW()) AND MONTH(form_date)=MONTH(NOW())");
+			$sq = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_status!='Cancel' and YEAR(form_date) = YEAR(NOW()) AND MONTH(form_date)=MONTH(NOW()) and delete_status='0'");
 			while($row = mysqli_fetch_assoc($sq)){
 				$tour_group_id = $row['tour_group_id'];
 				$sq_tour_group = mysqli_fetch_assoc(mysqlQuery("select * from tour_groups where tour_id='$tour_id' and group_id='$tour_group_id'"));

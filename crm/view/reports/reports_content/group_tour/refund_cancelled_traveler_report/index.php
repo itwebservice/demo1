@@ -52,7 +52,7 @@
     var group_id = $('#group_id_filter').val();
     var id = $('#booking_id_filter3').val();
 		$.post('reports_content/group_tour/refund_cancelled_traveler_report/refund_cancelled_traveler_report_filter.php', {id:id,tour_id : tour_id,group_id : group_id}, function(data){
-      pagination_load(data, column, true, true, 20, 'gtc_tour_report');
+      pagination_load(data, column, true, true, 20, 'gtc_tour_report',true);
 	});
 	}
   collection_reflect();

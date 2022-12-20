@@ -1,6 +1,5 @@
-<?php include "../../model/model.php"; ?>
-
 <?php
+include "../../model/model.php";
 $traveler_group_id = $_GET['traveler_group_id'];
 $traveler_group_id_arr = json_decode($traveler_group_id);
 $count_g = 1;
@@ -8,22 +7,22 @@ $count_p = 1;
 ?>
 
 <div class="modal fade profile_box_modal" id="display_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-lg" role="document">
-  	
-    <div class="modal-content">
-      <div class="modal-body profile_box_padding">
-      	<!-- Nav tabs -->
-				  	<ul class="nav nav-tabs" role="tablist">
-				    	<li role="presentation" class="active"><a href="#basic_information" aria-controls="home" role="tab" data-toggle="tab" class="tab_name">Group Tours Attended</a></li>
+<div class="modal-dialog modal-lg" role="document">
+	
+	<div class="modal-content">
+	<div class="modal-body profile_box_padding">
+		<!-- Nav tabs -->
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active"><a href="#basic_information" aria-controls="home" role="tab" data-toggle="tab" class="tab_name">Group Tours Attended</a></li>
 						<li role="presentation" ><a href="#package_info" aria-controls="home" role="tab" data-toggle="tab" class="tab_name">Package Tours Attended</a></li>
-				    	<li class="pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></li>
-				  	</ul>
-		            <div class="panel panel-default panel-body fieldset profile_background">
+						<li class="pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></li>
+					</ul>
+					<div class="panel panel-default panel-body fieldset profile_background">
 						<!-- Tab panes1 -->
 						<div class="tab-content">
-						    <!-- *****TAb1 start -->
-						    <div role="tabpanel" class="tab-pane active" id="basic_information">
-						     	<div class="row">
+							<!-- *****TAb1 start -->
+							<div role="tabpanel" class="tab-pane active" id="basic_information">
+								<div class="row">
 									<div class="col-md-12">
 										<table class="table table-bordered">
 											<tr class="table-heading-row">
@@ -152,10 +151,6 @@ $count_p = 1;
 			</div>
 		</div>
 	</div>
-
-
-<?php
-?>
 <script type="text/javascript">
 	$('#display_modal').modal('show');
 </script>

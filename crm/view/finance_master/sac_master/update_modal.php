@@ -22,7 +22,7 @@ if($sac_id <= '12'){
         
     		<div class="row">
     			<div class="col-sm-6 mg_bt_10">
-    				<input type="text" id="service_name" name="service_name" placeholder="SAC Name" onchange="fname_validate(this.id)" title="SAC Name" value="<?= $sq_sac['service_name'] ?>" <?= $disabled ?>>
+    				<input type="text" id="service_name" name="service_name" placeholder="Service Name" onchange="fname_validate(this.id)" title="Service Name" value="<?= $sq_sac['service_name'] ?>" <?= $disabled ?>>
     			</div>
           <div class="col-sm-6 mg_bt_10">
             <input type="text" id="hsn_sac_code" name="hsn_sac_code" placeholder="HSN/SAC Code" title="HSN/SAC Code" value="<?= $sq_sac['hsn_sac_code'] ?>">

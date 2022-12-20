@@ -124,20 +124,20 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_vendor['email_id'], $secret_key);
 
 							        				</span>
 
-									        		<span class="main_block">
+									        		<!-- <span class="main_block">
 
 							        				<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i> 
 
 							        				    <?php echo "<label>Country <em>:</em></label> " .$sq_vendor['country']; ?>
 
-							        				</span>
+							        				</span> -->
 							        				 <?php $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_vendor[state_id]'"));
                    									 ?>  
 							        				 <span class="main_block">
 
 										                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-										                  <?php echo "<label>State <em>:</em></label>".$sq_state['state_name'] ?>
+										                  <?php echo "<label>State/Country <em>:</em></label>".$sq_state['state_name'] ?>
 
 										            </span>	
 										            <span class="main_block">
@@ -203,6 +203,20 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_vendor['email_id'], $secret_key);
 							        				    <?php echo "<label>Tax No <em>:</em></label> " .strtoupper($sq_vendor['service_tax_no']); ?>
 
 							        				</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Opening Balance <em>:</em></label> " .$sq_vendor['opening_balance']; ?>
+
+													</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Balance Side <em>:</em></label> " .$sq_vendor['side']; ?>
+
+													</span>
 
 							        				<span class="main_block">
 

@@ -121,7 +121,7 @@ class email_hf{
                                                       <table width="auto" align="left" border="0" cellpadding="0" cellspacing="0" style="vertical-align:middle;mso-table-lspace:0pt; mso-table-rspace:0pt;" role="presentation">
                                                          <tr>
                                                             <td align="left" valign="top" style="padding-right: 10px; width: 15px; line-height: 0px;" width="15">
-                                                            <img src="http://itwebservice.in/emailer/img/world-icon-white.png" width="15" style="max-width: 15px; display: block !important; " vspace="0" hspace="0" alt="icon-world"></td>
+                                                            <img src="'.BASE_URL.'/images/world-icon-white.png" width="15" style="max-width: 15px; display: block !important; " vspace="0" hspace="0" alt="icon-world"></td>
                                                          </tr>
                                                       </table>
                                                    </td>
@@ -153,7 +153,7 @@ class email_hf{
                                                       <table width="auto" align="left" border="0" cellpadding="0" cellspacing="0" style="vertical-align:middle;mso-table-lspace:0pt; mso-table-rspace:0pt;" role="presentation">
                                                          <tr>
                                                             <td align="left" valign="top" style="padding-right: 10px; width: 15px; line-height: 0px;" width="15">
-                                                            <img src="http://itwebservice.in/emailer/img/phone-icon-white.png" width="15" style="max-width: 15px; display: block !important; " vspace="0" hspace="0" alt="set6-icon-phone"></td>
+                                                            <img src="'.BASE_URL.'/images/phone-icon-white.png" width="15" style="max-width: 15px; display: block !important; " vspace="0" hspace="0" alt="set6-icon-phone"></td>
                                                          </tr>
                                                       </table>
                                                    </td>

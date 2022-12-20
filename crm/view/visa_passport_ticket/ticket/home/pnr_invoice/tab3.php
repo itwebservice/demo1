@@ -48,16 +48,16 @@
 					<input type="text" id="flight_no-1" style="text-transform: uppercase;" name="flight_no" onchange="validate_specialChar(this.id)" placeholder="Flight No" title="Flight No" data-dyn-valid="">
 				</div>
 				<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="airlin_pnr-1" style="text-transform: uppercase;" onchange=" validate_specialChar(this.id)" name="airlin_pnr" placeholder="Airline PNR" title="Airline PNR" data-dyn-valid="">
+					<input type="text" id="airlin_pnr-1" style="text-transform: uppercase;" onchange=" validate_specialChar(this.id)" name="airlin_pnr" placeholder="GDS PNR" title="GDS PNR" data-dyn-valid="">
 				</div>
 			</div>
 		<div class="row">
-				<div class="col-md-4 col-sm-4 col-xs-12 mg_bt_10_xs">
+				<div class="col-md-5 col-sm-4 col-xs-12 mg_bt_10_xs">
 					<input id="airpf-1" name="airpf" class="form-control autocomplete" placeholder="Enter Departure Airport" data-dyn-valid="required">
 					<input type="hidden" name="from_city" id="from_city-1" data-dyn-valid="required"/>
 					<input type="hidden" name="departure_city" id="departure_city-1" data-dyn-valid="required">
 				</div>
-				<div class="col-md-4 col-sm-4 col-xs-12 mg_bt_10_xs">
+				<div class="col-md-5 col-sm-4 col-xs-12 mg_bt_10_xs">
 					<input id="airpt-1" name="airpt" class="form-control autocomplete" placeholder="Enter Arrival Airport" data-dyn-valid="required">
 					<input type="hidden" name="to_city" id="to_city-1" data-dyn-valid="required"/>
 					<input type="hidden" name="arrival_city" id="arrival_city-1" data-dyn-valid="required">
@@ -65,8 +65,8 @@
 				<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
 					<input type="text" id="meal_plan-1" name="meal_plan" onchange="validate_specialChar(this.id)" placeholder="Meal Plan" title="Meal Plan" data-dyn-valid="">
 				</div>
-				<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="luggage-1" name="luggage" onchange="validate_specialChar(this.id)" placeholder="Luggage" title="Luggage" data-dyn-valid="">
+				<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+					<input type="hidden" id="luggage-1" name="luggage" onchange="validate_specialChar(this.id)" placeholder="Cabin Baggage" title="Cabin Baggage" data-dyn-valid="">
 				</div>
 				<div class="col-md-4 col-sm-12 col-xs-12">
 					<textarea name="special_note" id="special_note-1" onchange="validate_address(this.id)" rows="1" placeholder="Special Note" title="Special Note" data-dyn-valid=""></textarea>

@@ -1,6 +1,6 @@
 <div class="row mg_bt_20">
   <div class="col-md-12 text-right">
-    <button class="btn btn-info btn-sm ico_left" data-toggle="modal" data-target="#master_save_modal" title="Add new Ferry/Cruise"><i class="fa fa-plus"></i>&nbsp;&nbsp;Ferry/Cruise</button>
+    <button class="btn btn-info btn-sm ico_left" title="Add new Ferry/Cruise" onclick="save_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Ferry/Cruise</button>
   </div>
   </div>
   <div class="app_panel_content Filter-panel">
@@ -22,8 +22,16 @@
     </div>
   </div>
 </div>
+<div id="div_save_modal"></div>
 <div id="div_edit_modal"></div>
 <script src="<?= BASE_URL ?>js/ajaxupload.3.5.js"></script>
-<?php include_once('save_modal.php'); ?>
 <div id="div_view_modal"></div>
+
+<script>
+function save_modal(){
+	$.post('master/save_modal.php', { }, function (data) {
+		$('#div_save_modal').html(data);
+	});
+}
+</script>
 <script src="js/master.js"></script>

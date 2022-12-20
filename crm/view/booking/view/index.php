@@ -6,13 +6,14 @@ include "../../../model/model.php";
 
 $id = $_POST['id'];
 
-$query = mysqlQuery("select * from tourwise_traveler_details where id='$id'");
+$query = mysqlQuery("select * from tourwise_traveler_details where id='$id' and delete_status='0'");
 
 $sq_group_info = mysqli_fetch_assoc($query);
+$tour_id = $sq_group_info['tour_id'];
 
 $date = $sq_group_info['form_date'];
-            $yr = explode("-", $date);
-			   $year =$yr[0];
+$yr = explode("-", $date);
+$year =$yr[0];
 $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(amount) as sum,sum(`credit_charges`) as sumc from payment_master where tourwise_traveler_id='$sq_group_info[id]'"));
 $total_paid = $sq_paid_amount['sum'];  
 $credit_card_charges = $sq_paid_amount['sumc'];
@@ -40,7 +41,8 @@ $credit_card_charges = $sq_paid_amount['sumc'];
 				$sq_train_count = mysqli_num_rows(mysqlQuery("select * from train_master where tourwise_traveler_id='$id'")); 
 				$sq_air_count = mysqli_num_rows(mysqlQuery("select * from plane_master where tourwise_traveler_id='$id'"));
 				$sq_cruise_count = mysqli_num_rows(mysqlQuery("select * from group_cruise_master where booking_id='$id'"));
-				if($sq_train_count!='0' || $sq_air_count != '0' || $sq_cruise_count != '0'){
+				$sq_gr_count = mysqli_num_rows(mysqlQuery("select * from group_tour_hotel_entries where tour_id='$tour_id'")); 
+				if($sq_train_count!='0' || $sq_air_count != '0' || $sq_cruise_count != '0' || $sq_gr_count != '0'){
 				?>
 			    <li role="presentation"><a href="#travelling_information" aria-controls="home" role="tab" data-toggle="tab" class="tab_name">Travelling Information</a></li>
 				<?php } ?>

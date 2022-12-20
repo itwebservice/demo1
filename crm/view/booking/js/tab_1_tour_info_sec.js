@@ -125,6 +125,22 @@ function validate_travelingDates(id) {
 
 
 function tour_details_reflect(cmb_tour_group) {
+
+  var currentdate = new Date(); 
+  var dd = currentdate.getDate();
+  if (dd < 10) {
+    dd = '0' + dd;
+  }
+  var mm = currentdate.getMonth();
+  if (mm < 10) {
+    mm = '0' + mm;
+  }
+  var curr_datetime = dd + "-"
+                + (mm+1)  + "-" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes();
+
   var group_id = $('#' + cmb_tour_group).val();
   /////////////// Train ////////////////
   $.ajax({
@@ -141,10 +157,27 @@ function tour_details_reflect(cmb_tour_group) {
         f_row.cells[0].childNodes[0].removeAttribute('checked');
         document.getElementById('chk_train_select_all').removeAttribute('checked');
       };
+      if (table.rows.length == 1) {
+          for (var k = 1; k < table.rows.length; k++) {
+              document.getElementById("tbl_train_travel_details_dynamic_row")
+                  .deleteRow(k);
+          }
+      } else {
+          while (table.rows.length > 1) {
+              document.getElementById("tbl_train_travel_details_dynamic_row")
+                  .deleteRow(table.rows.length-1);
+              table.rows.length--;
+          }
+      }
+      var f_row = table.rows[0];
+      f_row.cells[2].childNodes[0].value = curr_datetime;
+      document.getElementById(f_row.cells[3].childNodes[0].id).selectedIndex = 0;
+      document.getElementById(f_row.cells[4].childNodes[0].id).selectedIndex = 0;
+      document.getElementById(f_row.cells[8].childNodes[0].id).selectedIndex = 0;
       if (table.rows.length != train_arr.length) {
-        for (var i = 1; i < train_arr.length; i++) {
-          addRow('tbl_train_travel_details_dynamic_row');
-        }
+          for (var j = 0; j < train_arr.length - 1; j++) {
+              addRow('tbl_train_travel_details_dynamic_row');
+          }
       }
       for (var i = 0; i < train_arr.length; i++) {
         var row = table.rows[i];
@@ -177,17 +210,34 @@ function tour_details_reflect(cmb_tour_group) {
     success: function (result) {
 
       var table = document.getElementById("tbl_plane_travel_details_dynamic_row");
-
       var plane_arr = JSON.parse(result);
       if (jQuery.isEmptyObject(plane_arr)) {
         var f_row = table.rows[0];
         f_row.cells[0].childNodes[0].removeAttribute('checked');
         document.getElementById('chk_plane_select_all').removeAttribute('checked');
       };
+      if (table.rows.length == 1) {
+          for (var k = 1; k < table.rows.length; k++) {
+              document.getElementById("tbl_plane_travel_details_dynamic_row")
+                  .deleteRow(k);
+          }
+      } else {
+          while (table.rows.length > 1) {
+              document.getElementById("tbl_plane_travel_details_dynamic_row")
+                  .deleteRow(table.rows.length-1);
+              table.rows.length--;
+          }
+      }
+      var f_row = table.rows[0];
+      f_row.cells[2].childNodes[0].value = curr_datetime;
+      f_row.cells[3].childNodes[0].value = '';
+      f_row.cells[4].childNodes[0].value = '';
+      document.getElementById(f_row.cells[5].childNodes[0].id).selectedIndex = 0;
+      f_row.cells[8].childNodes[0].value = curr_datetime;
       if (table.rows.length != plane_arr.length) {
-        for (var i = 1; i < plane_arr.length; i++) {
-          addRow('tbl_plane_travel_details_dynamic_row');
-        }
+          for (var j = 0; j < plane_arr.length - 1; j++) {
+              addRow('tbl_plane_travel_details_dynamic_row');
+          }
       }
       for (var i = 0; i < plane_arr.length; i++) {
 
@@ -223,11 +273,27 @@ function tour_details_reflect(cmb_tour_group) {
         f_row.cells[0].childNodes[0].removeAttribute('checked');
         document.getElementById('chk_cruise_select_all').removeAttribute('checked');
       };
-
+      if (table.rows.length == 1) {
+          for (var k = 1; k < table.rows.length; k++) {
+              document.getElementById("tbl_dynamic_cruise_package_booking")
+                  .deleteRow(k);
+          }
+      } else {
+          while (table.rows.length > 1) {
+              document.getElementById("tbl_dynamic_cruise_package_booking")
+                  .deleteRow(table.rows.length-1);
+              table.rows.length--;
+          }
+      }
+      var f_row = table.rows[0];
+      f_row.cells[2].childNodes[0].value = curr_datetime;
+      f_row.cells[3].childNodes[0].value = curr_datetime;
+      f_row.cells[4].childNodes[0].value = '';
+      f_row.cells[5].childNodes[0].value = '';
       if (table.rows.length != cruise_arr.length) {
-        for (var i = 1; i < cruise_arr.length; i++) {
-          addRow('tbl_dynamic_cruise_package_booking');
-        }
+          for (var j = 0; j < cruise_arr.length - 1; j++) {
+              addRow('tbl_dynamic_cruise_package_booking');
+          }
       }
 
       for (var i = 0; i < cruise_arr.length; i++) {
@@ -260,6 +326,24 @@ function tour_details_reflect(cmb_tour_group) {
         var f_row = table.rows[0];
         f_row.cells[0].childNodes[0].removeAttribute('checked');
       };
+      if (table.rows.length == 1) {
+          for (var k = 1; k < table.rows.length; k++) {
+              document.getElementById("tbl_package_hotel_master")
+                  .deleteRow(k);
+          }
+      } else {
+          while (table.rows.length > 1) {
+              document.getElementById("tbl_package_hotel_master")
+                  .deleteRow(table.rows.length-1);
+              table.rows.length--;
+          }
+      }
+      var f_row = table.rows[0];
+      f_row.cells[2].childNodes[0].value = '';
+      f_row.cells[3].childNodes[0].value = '';
+      f_row.cells[4].childNodes[0].value = '';
+      f_row.cells[5].childNodes[0].value = '';
+
       if (table.rows.length != hotel_arr.length) {
         for (var i = 1; i < hotel_arr.length; i++) {
           addRow('tbl_package_hotel_master');

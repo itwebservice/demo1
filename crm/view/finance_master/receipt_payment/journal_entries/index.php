@@ -26,7 +26,7 @@ include "../../../../model/model.php";
 <div id="div_modal" class="main_block"></div>
 
 <div id="div_list_content" class="main_block loader_parent mg_tp_20">
- <div class="table-responsive">
+<div class="table-responsive">
     <table id="tbl_list" class="table table-hover" style="margin: 20px 0 !important;">
     </table>
 </div>
@@ -39,7 +39,7 @@ include "../../../../model/model.php";
 $('#payment_from_date_filter, #payment_to_date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
 var columns = [
 	{ title : "S_No." },
-	{ title : "JV_ID" },
+	{ title : "Transaction_ID" },
 	{ title : "Date" },
 	{ title : "Particulars" },
 	{ title : "dr_cr" },
@@ -85,6 +85,21 @@ function entry_display_modal(entry_id)
 	var base_url = $('#base_url').val();
 	$.post(base_url+'view/finance_master/receipt_payment/journal_entries/view/index.php', {entry_id : entry_id}, function(data){
 		$('#journal_modal_display').html(data);
+	});
+}
+function delete_entry(entry_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/finance_master/journal_entry/journal_master_delete.php',{ entry_id : entry_id }, function(data){
+					success_msg_alert(data);
+					list_reflect();
+				});
+			}
+		}
 	});
 }
 </script>

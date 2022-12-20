@@ -77,7 +77,7 @@ $email_id2 = $encrypt_decrypt->fnDecrypt($sq_hotel['alternative_email_2'], $secr
                 <input type="text" value="<?= $sq_hotel['immergency_contact_no'] ?>"  class="form-control" id="immergency_contact_no" name="immergency_contact_no"  onchange="mobile_validate(this.id);" placeholder="Emergency Contact No" title="Emergency Contact No">
             </div>
             <div class="col-sm-2 col-xs-6 mg_bt_10">
-                <select name="cust_state1" id="cust_state1" title="Select State" style="width:100%" required>
+                <select name="cust_state1" id="cust_state1" title="Select State/Country Name" style="width:100%" required>
                 <?php if($sq_hotel['state_id'] != '0'){ ?>
                   <?php $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_hotel[state_id]'"));
                   ?>
@@ -86,9 +86,9 @@ $email_id2 = $encrypt_decrypt->fnDecrypt($sq_hotel['alternative_email_2'], $secr
                   <?php get_states_dropdown() ?>
                 </select>
               </div>
-              <div class="col-md-2 col-sm-6 mg_bt_10">
+              <!-- <div class="col-md-2 col-sm-6 mg_bt_10">
                   <textarea id="country" name="country" placeholder="Country" title="Country" class="form-control" rows="1"><?= $sq_hotel['country'] ?></textarea>
-              </div>
+              </div> -->
               <div class="col-md-2 col-sm-6 mg_bt_10">
                   <input type="text" id="website" name="website" placeholder="Website" title="Website" class="form-control" value="<?= $sq_hotel['website'] ?>">
               </div>
@@ -118,7 +118,7 @@ $email_id2 = $encrypt_decrypt->fnDecrypt($sq_hotel['alternative_email_2'], $secr
                 <?php get_hotel_type_dropdown(); ?>
                 </select>
               </div>
-            <div class="col-md-2 col-sm-6 mg_bt_10">
+            <div class="col-md-2 col-sm-6 mg_bt_10 hidden">
               <select name="meal_plan1" id="meal_plan1" title="Meal Plan">
                 <?php if($sq_hotel['meal_plan']!=''){?>
                   <option value="<?= $sq_hotel['meal_plan'] ?>"><?= $sq_hotel['meal_plan'] ?></option>
@@ -159,22 +159,25 @@ $email_id2 = $encrypt_decrypt->fnDecrypt($sq_hotel['alternative_email_2'], $secr
             </div>
             <div class="col-md-2 col-sm-6 mg_bt_10">
                 <input type="text" name="service_tax_no" id="service_tax_no"  onchange="validate_alphanumeric(this.id);" placeholder="Tax No" title="Tax No" value="<?= strtoupper($sq_hotel['service_tax_no'])?>" style="text-transform: uppercase;">
-                  <input type="hidden" id="opening_balance" name="opening_balance" placeholder="Opening Balance" title="Opening Balance" value="<?= $sq_hotel['opening_balance'] ?>" <?= $value ?>  onchange="validate_balance(this.id)">
             </div>
           </div>
 		    	<div class="row"> 
           <div class="col-md-2 mg_bt_10">
-             <input type="text" id="supp_pan" name="supp_pan" value="<?= $sq_hotel['pan_no']?>" onchange="validate_alphanumeric(this.id)" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+              <input type="text" id="supp_pan" name="supp_pan" value="<?= $sq_hotel['pan_no']?>" onchange="validate_alphanumeric(this.id)" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
             <input type="hidden" id="as_of_date1" name="as_of_date1" placeholder="*As of Date" title="As of Date" value="<?= get_date_user($sq_hotel['as_of_date']) ?>" required>
           </div>
           <div class="col-md-2 mg_bt_10">
-            <select class="hidden" name="side" id="side1" title="Select side" disabled required>
-            <?php if($sq_hotel['side']!=''){?>
+            <input type="number" id="opening_balance1" name="opening_balance" placeholder="*Opening Balance" title="Opening Balance" value="<?= $sq_hotel['opening_balance'] ?>" >
+          </div>
+          <div class="col-md-2 mg_bt_10">
+            <select class="form-control" name="side" id="side1" title="Balance side" data-toggle='tooltip'>
               <option value="<?= $sq_hotel['side'] ?>"><?= $sq_hotel['side'] ?></option>
-            <?php } ?>
-              <option value="">*Select Side</option>
+              <?php if($sq_hotel['side'] != 'Debit'){ ?>
+                <option value="Debit">Debit</option>
+              <?php }
+              if($sq_hotel['side'] != 'Credit'){ ?>
               <option value="Credit">Credit</option>
-              <option value="Debit">Debit</option>
+              <?php } ?>
             </select>
           </div>
           </div>
@@ -626,6 +629,7 @@ $(function(){
             cwb_to1 : { required : true },
             cwob_from1 : { required : true },
             cwob_to1 : { required : true },
+            opening_balance : { required : true },
     },
     submitHandler:function(form){
       var hotel_id = $("#txt_hotel_id").val();
@@ -641,14 +645,15 @@ $(function(){
       var contact_person_name = $("#txt_contact_person_name").val();
       var immergency_contact_no =$("#immergency_contact_no").val();
       var hotel_address = $("#txt_hotel_address").val();
-      var country = $("#country").val();
+      // var country = $("#country").val();
       var website = $("#website").val();
       var bank_name = $("#bank_name").val();
       var branch = $("#branch").val();
-      var ifsc_code = $("#ifsc_code").val();
+      var ifsc_code1 = $("#ifsc_code").val();
+      var ifsc_code = ifsc_code1.toUpperCase();
       var account_no = $("#account_no").val();
       var account_name = $("#account_name1").val();
-      var opening_balance = $('#opening_balance').val();
+      var opening_balance = $('#opening_balance1').val();
       var rating_star = $('#rating_star').val();
       var hotel_type = $('#hotel_type1').val();
       var meal_plan = $('#meal_plan1').val();
@@ -656,7 +661,8 @@ $(function(){
       var service_tax_no = $('#service_tax_no').val();
       var state = $('#cust_state1').val();
       var side1 = $('#side1').val();
-      var supp_pan = $('#supp_pan').val();
+      var supp_pan1 = $('#supp_pan').val();
+      var supp_pan = supp_pan1.toUpperCase();
       var as_of_date = $('#as_of_date1').val();
       var cwb_from = $('#cwb_from1').val();
       var cwb_to = $('#cwb_to1').val();
@@ -700,7 +706,7 @@ $(function(){
       
       $.post(
             base_url+"controller/hotel/hotel_master_update_c.php",
-            { hotel_id : hotel_id, vendor_login_id : vendor_login_id, city_id : city_id, hotel_name : hotel_name, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, hotel_address : hotel_address, country : country, website :website,  opening_balance : opening_balance,rating_star : rating_star,hotel_type:hotel_type,meal_plan:meal_plan, active_flag : active_flag, bank_name : bank_name, account_no: account_no, branch : branch, ifsc_code :ifsc_code, service_tax_no : service_tax_no, state : state,side1 : side1,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date,description:description,policies:policies,amenities:amenities,cwb_from:cwb_from,cwb_to:cwb_to,cwob_from:cwob_from,cwob_to:cwob_to,email_id_1:email_id_1,email_id_2:email_id_2 },
+            { hotel_id : hotel_id, vendor_login_id : vendor_login_id, city_id : city_id, hotel_name : hotel_name, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, hotel_address : hotel_address, website :website,  opening_balance : opening_balance,rating_star : rating_star,hotel_type:hotel_type,meal_plan:meal_plan, active_flag : active_flag, bank_name : bank_name, account_no: account_no, branch : branch, ifsc_code :ifsc_code, service_tax_no : service_tax_no, state : state,side1 : side1,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date,description:description,policies:policies,amenities:amenities,cwb_from:cwb_from,cwb_to:cwb_to,cwob_from:cwob_from,cwob_to:cwob_to,email_id_1:email_id_1,email_id_2:email_id_2 },
 
             function(data) {  
                 msg_alert(data);

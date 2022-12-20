@@ -7,6 +7,12 @@ global $currency_code,$currency;
 $booking_id = $_GET['booking_id'];
 $credit_card_charges = $_GET['credit_card_charges'];
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2c/sales/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 
 
@@ -56,9 +62,10 @@ $net_amount = currency_conversion($currency,$currency,$net_amount);
       <div class="col-md-8 no-pad">
         <div class="print_header_contact text-right">
           <span class="title"><?php echo $app_name; ?></span><br>
-          <p><?php echo $app_address ?></p>
-          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo $app_contact_no ?></p>
-          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></p>
+          <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p>
+          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
+          $branch_details['contact_no'] : $app_contact_no ?></p>
+          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
         </div>
       </div>
     </section>

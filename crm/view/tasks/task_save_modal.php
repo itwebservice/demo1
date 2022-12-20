@@ -90,7 +90,7 @@ $cur_datetime = date('d-m-Y H:i');
             <select id="booking_id" name="booking_id" style="width:100%"> 
                 <option value="">*Select Booking ID</option>
                 <?php
-                    $query = "select * from package_tour_booking_master where 1 ";
+                    $query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
                     include "../../model/app_settings/branchwise_filteration.php";
                     $sq_booking = mysqlQuery($query);
                     while($row_booking = mysqli_fetch_assoc($sq_booking)){

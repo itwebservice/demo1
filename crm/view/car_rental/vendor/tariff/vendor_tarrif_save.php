@@ -7,7 +7,7 @@ include "../../../../model/model.php";
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Car Rental Tariff</h4>
+            <h4 class="modal-title" id="myModalLabel">Vehicle Tariff</h4>
         </div>
         <div class="modal-body">
         <div class="row mg_bt_10">
@@ -84,7 +84,7 @@ $(function(){
                   var rate = row.cells[8].childNodes[0].value;
                   
                   // var msg = "";
-                  // if(vehicle_name==""){ msg +="> Enter vehicle name in row "+(i+1)+"<br>"; }
+                  if(vehicle_name==""){ error_msg_alert("Enter vehicle name in row "+(i+1)); return false; }
                   // if(vehicle_type==""){ msg +="> Enter vehicle type  in row "+(i+1)+"<br>"; }
                   // if(msg!=""){ error_msg_alert(msg); return false; }
                   vehicle_name_local_arr.push(vehicle_name);
@@ -136,6 +136,7 @@ $(function(){
               var state_entry = row.cells[13].childNodes[0].value;
               var other_charge = row.cells[14].childNodes[0].value;
               
+              if(vehicle_name==""){ error_msg_alert("Enter vehicle name in row "+(i+1)); return false; }
               vehicle_name_arr.push(vehicle_name);
               seating_capacity_arr.push(capacity);
               route_arr.push(route);

@@ -39,7 +39,7 @@ else { $emp_name = $sq_emp['first_name'].' ' .$sq_emp['last_name']; }
           <li><p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p></li>
           <li><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
           $branch_details['contact_no'] : $app_contact_no ?></li>
-          <li><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></li>
+          <li><i class="fa fa-envelope" style="margin-right: 5px;"></i><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></li>
           <li><span class="font_5">TAX NO : </span><?php echo ($branch_status=='yes' && $role!='Admin') ? strtoupper($branch_details['branch_tax']) : strtoupper($service_tax_no); ?></li>
         </ul>
       </div>
@@ -60,6 +60,7 @@ else { $emp_name = $sq_emp['first_name'].' ' .$sq_emp['last_name']; }
           <li><i class="fa fa-map-marker"></i> : <?php echo $sq_customer['address']; ?></li>
           <li><i class="fa fa-thumb-tack"></i> : <?php echo $sq_customer['address2']; ?></li>
           <li><i class="fa fa-globe"></i> : <?php echo $sq_customer['city']; ?></li>
+          <li><i class="fa fa-phone"></i> : <?php echo $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);; ?></li>
           <li><span class="font_5">TAX NO : </span> <?php echo $sq_customer['service_tax_no']; ?></li>
         </ul>
       </div>

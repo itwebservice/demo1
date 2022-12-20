@@ -1,6 +1,6 @@
-<div class="row mg_bt_10">
+<div class="row mg_tp_10 mg_bt_10">
     <div class="col-md-4 col-sm-6">
-        <input type="checkbox" id="chk_plane_select_all" onchange="select_all('tbl_plane_travel_details_dynamic_row',this.id);calculate_plane_expense('tbl_plane_travel_details_dynamic_row',true)" checked>&nbsp;&nbsp;<label for="chk_plane_select_all">Select All</label>
+        <input type="checkbox" id="chk_plane_select_all" onchange="select_all('tbl_plane_travel_details_dynamic_row',this.id);calculate_plane_expense('tbl_plane_travel_details_dynamic_row',true)">&nbsp;&nbsp;<label for="chk_plane_select_all">Select All</label>
     </div>
     <div class="col-md-8 col-sm-6 text-right">
         <button type="button" class="btn btn-excel btn-sm" onClick="addRow('tbl_plane_travel_details_dynamic_row');event_airport('tbl_plane_travel_details_dynamic_row',3,4)" title="Add Row"><i class="fa fa-plus"></i></button>

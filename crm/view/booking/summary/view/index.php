@@ -1,7 +1,8 @@
-<?php 
+<?php
 include "../../../../model/model.php";
 $id = $_POST['id'];
-$row_booking = mysqli_fetch_assoc(mysqlQuery( "select * from tourwise_traveler_details where id ='$id' "));
+$row_booking = mysqli_fetch_assoc(mysqlQuery( "select * from tourwise_traveler_details where id ='$id' and delete_status='0' "));
+$traveler_group_id = $row_booking['traveler_group_id'];
 $booking_date = $row_booking['form_date'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -32,16 +33,16 @@ $year =$yr[0];
 				                       	<th>Adole</th>
 				                       	<th>Passport_No.</th>
 				                       	<th>Issue_Date</th>
-				                       	<th>Expire_Date</th>
+				                       	<th>Expiry_Date</th>
 			                        </tr>
 			                    </thead>
 		                        <tbody>
 		                       <?php 
 		                       		$count = 0;
-		                       		$sq_entry = mysqlQuery("select * from travelers_details where traveler_group_id='$id'");
+		                       		$sq_entry = mysqlQuery("select * from travelers_details where traveler_group_id='$traveler_group_id'");
 		                            $bg="";
 		                       		while($row_entry = mysqli_fetch_assoc($sq_entry)){
-		                       			$sq_entry1 = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where traveler_group_id='$row_entry[traveler_group_id]'"));
+		                       			$sq_entry1 = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where traveler_group_id='$row_entry[traveler_group_id]' and delete_status='0'"));
 
 		                       			if($row_entry['status']=="Cancel" || $sq_entry1['tour_group_status']=='Cancel' ) 	{
 

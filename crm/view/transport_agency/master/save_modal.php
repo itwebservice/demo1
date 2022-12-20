@@ -9,7 +9,7 @@ include "../../../model/model.php";
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Transporter Details</h4>
+        <h4 class="modal-title" id="myModalLabel">Transporter Supplier Details</h4>
       </div>
       <div class="modal-body">
 			<form id="frm_transport_agency_save">
@@ -47,13 +47,13 @@ include "../../../model/model.php";
         
         <div class="row">
            <div class="col-sm-3 col-xs-6 mg_bt_10">
-                  <select name="state" id="state" title="Select State" style="width:100%" required>
+                  <select name="state" id="state" title="Select State/Country Name" style="width:100%" required>
                     <?php get_states_dropdown() ?>
                   </select>
             </div>  
-         <div class="col-md-3 col-sm-6 mg_bt_10">
+         <!-- <div class="col-md-3 col-sm-6 mg_bt_10">
             <input type="text" name="country" id="country" placeholder="Country" title="Country">
-          </div>
+          </div> -->
           <div class="col-md-3 col-sm-6 mg_bt_10">
             <input type="text" name="website" id="website" placeholder="Website" title="Website">
           </div>
@@ -80,23 +80,23 @@ include "../../../model/model.php";
           <div class="col-md-3 col-sm-6 mg_bt_10">
             <input type="text" name="ifsc_code" id="ifsc_code" onchange="validate_IFSC(this.id)" placeholder="IFSC/SWIFT CODE" title="IFSC/SWIFT CODE" style="text-transform: uppercase;">
           </div>
-           <div class="col-md-3 col-sm-6 mg_bt_10">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
             <input type="text" name="service_tax_no" id="service_tax_no" onchange="validate_alphanumeric(this.id)" placeholder="Tax No" title="Tax No" style="text-transform: uppercase;">
           </div>
-           <div class="col-md-3 col-sm-6 mg_bt_10">
-             <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)"  placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+              <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)"  placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
           </div> 
-         <div class="col-md-3 col-sm-6 mg_bt_10">
-            <input type="hidden" id="opening_balance" name="opening_balance" placeholder="Opening Balance" title="Opening Balance" value="0.00"  onchange="validate_balance(this.id)">
-          </div>
-          <div class="col-sm-3 mg_bt_10">
-            <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <input type="number" id="opening_balance" value="0" name="opening_balance" placeholder="*Opening Balance" title="Opening Balance">
           </div>
           <div class="col-md-3 col-sm-6 mg_bt_10">
-            <select class="hidden" name="side" id="side" title="Select side">
+            <select class="form-control" data-toggle='tooltip' name="side" id="side" title="Balance side">
               <option value="Credit">Credit</option>
               <option value="Debit">Debit</option>
             </select>
+          </div>
+          <div class="col-sm-3 mg_bt_10">
+            <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
           </div>
         </div>
         <div class="row">
@@ -128,9 +128,10 @@ city_lzloading('#cmb_city_id');
 $(function(){
   $('#frm_transport_agency_save').validate({
     rules:{
-            cmb_city_id : { required : true },
-            txt_transport_agency_name : { required : true },
-            as_of_date: { required : true },
+      cmb_city_id : { required : true },
+      txt_transport_agency_name : { required : true },
+      as_of_date: { required : true },
+      opening_balance : { required : true }
     },
 
     submitHandler:function(form){
@@ -143,7 +144,7 @@ $(function(){
         var contact_person_name = $("#txt_contact_person_name").val();
         var transport_agency_address = $("#txt_transport_agency_address").val();  
         var immergency_contact_no = $("#immergency_contact_no").val();
-        var country = $("#country").val();
+        // var country = $("#country").val();
         var website = $("#website").val();
         var opening_balance = $('#opening_balance').val(); 
         var active_flag = $('#active_flag').val();
@@ -155,7 +156,8 @@ $(function(){
         var ifsc_code = $("#ifsc_code").val();
         var state = $('#state').val();
         var side = $('#side').val();
-        var supp_pan = $('#supp_pan').val();
+        var supp_pan1 = $('#supp_pan').val();
+        var supp_pan = supp_pan1.toUpperCase();
         var as_of_date = $('#as_of_date').val();
 
         var add = validate_address('txt_transport_agency_address');
@@ -168,7 +170,7 @@ $(function(){
 
                base_url+"controller/group_tour/transport_agency/transport_agency_master_c.php",
 
-               {  city_id : city_id, transport_agency_name : transport_agency_name, mobile_no : mobile_no, landline_no :landline_no, email_id : email_id, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, transport_agency_address : transport_agency_address, country : country, website : website, opening_balance : opening_balance, active_flag : active_flag, service_tax_no : service_tax_no, bank_name : bank_name, account_no: account_no,branch : branch,ifsc_code : ifsc_code, state : state,side : side,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date},
+               {  city_id : city_id, transport_agency_name : transport_agency_name, mobile_no : mobile_no, landline_no :landline_no, email_id : email_id, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, transport_agency_address : transport_agency_address,  website : website, opening_balance : opening_balance, active_flag : active_flag, service_tax_no : service_tax_no, bank_name : bank_name, account_no: account_no,branch : branch,ifsc_code : ifsc_code, state : state,side : side,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date},
 
                function(data) {  
                       msg_alert(data); 

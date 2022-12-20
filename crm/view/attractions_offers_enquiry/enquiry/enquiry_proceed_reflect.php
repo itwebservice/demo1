@@ -108,7 +108,7 @@ if($from_date!='' && $to_date!=""){
 	$query .=" and (enquiry_date between '$from_date' and '$to_date')";
 }
 if($branch_status=='yes' && $role!='Admin'){
-		$query .= " and branch_admin_id = '$branch_admin_id'";
+	$query .= " and branch_admin_id = '$branch_admin_id'";
 }
 if($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .=" and assigned_emp_id='$emp_id' ";
@@ -116,7 +116,7 @@ if($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 		$query .=" and enquiry_type='$enquiry_type' ";
 	}
 	if($reference_id_filter!=""){
-					$query .=" and reference_id='$reference_id_filter' ";
+		$query .=" and reference_id='$reference_id_filter' ";
 	}
 	if($from_date!='' && $from_date!='undefined' && $to_date!="" && $to_date!='undefined'){
 		$from_date = get_date_db($from_date);
@@ -207,7 +207,7 @@ while($row = mysqli_fetch_assoc($sq_enquiries)){
 	foreach($temp_arr2 as $vals) $actions_string .= $vals;
 	if($role=="Admin" || $role=='Branch Admin'){
 		
-		$temp_arr3= '<button data-toggle="tooltip" style="display:inline-block" class="btn btn-danger btn-sm" onclick="enquiry_status_disable('.$row['enquiry_id'] .')" title="Delete Enquiry"><i class="fa fa-times"></i></button>';
+		$temp_arr3= '<button data-toggle="tooltip" style="display:inline-block" class="btn btn-danger btn-sm" onclick="enquiry_status_disable('.$row['enquiry_id'] .')" title="Delete Enquiry"><i class="fa fa-trash"></i></button>';
 		//array_push($temp_arr['data'],$temp_arr3);
 		$actions_string .= $temp_arr3;
 	}

@@ -106,7 +106,7 @@ function package_tour_booking_tab3_validate()
       if(row.cells[3].childNodes[0].value==""){ validate_message += "Hotel in row-"+(i+1)+" is required<br>"; }                
       if(row.cells[4].childNodes[0].value==""){ validate_message += "Check-In date in row-"+(i+1)+" is required<br>"; }               
       if(row.cells[5].childNodes[0].value==""){ validate_message += "Check-Out date in row-"+(i+1)+" is required<br>"; }               
-      if(row.cells[6].childNodes[0].value==""){ validate_message += "Rooms in row-"+(i+1)+" is required<br>"; }               
+      if(row.cells[6].childNodes[0].value==""){ validate_message += "Room(s) in row-"+(i+1)+" is required<br>"; }               
       if(row.cells[7].childNodes[0].value==""){ validate_message += "Category in row-"+(i+1)+" is required<br>"; }               
       if(row.cells[8].childNodes[0].value==""){ validate_message += "Meal Plan in row-"+(i+1)+" is required<br>"; }               
       if(row.cells[9].childNodes[0].value==""){ validate_message += "Room type in row-"+(i+1)+" is required<br>"; }               

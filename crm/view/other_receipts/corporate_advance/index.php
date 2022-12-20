@@ -49,8 +49,8 @@ $('#cust_id_filter').select2();
 $('#from_date_filter, #to_date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
 var columns = [
 	{ title : "S_No"},
-    { title : "Customer"},
-	{ title : "Date"},
+    { title : "Customer_name"},
+	{ title : "Payment_Date"},
 	{ title : "Mode"},
 	{ title : "particular"},
 	{ title : "Amount", className : "success"},
@@ -96,13 +96,28 @@ function update_income_modal(advance_id)
 }
 
 function excel_report()
-  {
+{
     var from_date = $('#from_date_filter').val();
 	var to_date = $('#to_date_filter').val();
 	var cust_id = $('#cust_id_filter').val();
 	var financial_year_id = $('#financial_year_id_filter').val();
     var branch_status1 = $('#branch_status1').val();
     window.location = 'corporate_advance/excel_report.php?cust_id='+cust_id+'&from_date='+from_date+'&to_date='+to_date+'&financial_year_id='+financial_year_id+'&branch_status='+branch_status1;
-  }
+}
+function delete_entry(advance_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/corporate_advance/corporate_delete.php',{ advance_id : advance_id }, function(data){
+					success_msg_alert(data);
+					list_reflect();
+				});
+			}
+		}
+	});
+}
 
 </script>

@@ -234,10 +234,14 @@ function list_reflect()
 }
 list_reflect();
 function view_modal(feedback_id){
-        $.post('report_reflect/customer_feedback/view/index.php', { feedback_id : feedback_id }, function(data){
-            $('#div_view').html(data);
-        }); 
-    }
+  $('#feedback-'+feedback_id).prop('disabled',true);
+  $('#feedback-'+feedback_id).button('loading');
+  $.post('report_reflect/customer_feedback/view/index.php', { feedback_id : feedback_id }, function(data){
+      $('#div_view').html(data);
+      $('#feedback-'+feedback_id).button('reset');
+      $('#feedback-'+feedback_id).prop('disabled',false);
+  });
+}
 
 </script>
 <script src="<?= BASE_URL ?>js/app/footer_scripts.js"></script>

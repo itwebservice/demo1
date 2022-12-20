@@ -42,7 +42,7 @@ while($row_req = mysqli_fetch_assoc($sq_req)){
 
 	$temp_arr = array( "data" => array(
 		(int)(++$count),
-		date('d/m/Y', strtotime($row_req['created_at'])),
+		date('d-m-Y', strtotime($row_req['created_at'])),
 		$sq_city['city_name'],
 		$vendor_type_val,
 		$row_req['total_cost'].' ('.$sq_currency1['currency_code'].')',

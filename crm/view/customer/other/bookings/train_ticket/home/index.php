@@ -1,6 +1,5 @@
 <?php
 include "../../../../../../model/model.php";
-
 $customer_id = $_SESSION['customer_id'];
 ?>
 <!-- Filter-panel -->
@@ -11,7 +10,7 @@ $customer_id = $_SESSION['customer_id'];
 			<select name="ticket_id" id="ticket_id" style="width:100%" onchange="train_ticket_customer_list_reflect()">
 				<option value="">Select Booking</option>
 				<?php
-				$sq_ticket = mysqlQuery("select * from train_ticket_master where customer_id='$customer_id'");
+				$sq_ticket = mysqlQuery("select * from train_ticket_master where customer_id='$customer_id' and delete_status='0'");
 				while ($row_ticket = mysqli_fetch_assoc($sq_ticket)) {
 
 					$date = $row_ticket['created_at'];
@@ -48,11 +47,12 @@ $customer_id = $_SESSION['customer_id'];
 	train_ticket_customer_list_reflect();
 
 	function train_ticket_view_modal(train_ticket_id) {
+    	$('#train-'+train_ticket_id).button('loading');
 		$.post('bookings/train_ticket/home/view/index.php', {
 			train_ticket_id: train_ticket_id
 		}, function(data) {
-			console.log(data);
 			$('#div_train_ticket_view_modal').html(data);
+    		$('#train-'+train_ticket_id).button('reset');
 		});
 	}
 </script>

@@ -71,5 +71,7 @@ $branch_status = $_POST['branch_status'];
 <div id="div_sms_message_log_content"></div>
 
 <script>
-	$('#tbl_sms_message').dataTable({"pagingType": "full_numbers"});	
+	$('#tbl_sms_message').dataTable({"pagingType": "full_numbers",
+		order: [[0, 'desc']],
+	});	
 </script>

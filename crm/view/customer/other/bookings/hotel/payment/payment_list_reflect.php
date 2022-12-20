@@ -12,7 +12,7 @@ $query .= " and booking_id in (select booking_id from hotel_booking_master where
 ?>
 <div class="row mg_tp_20"><div class="col-xs-12">
 <div class="table-responsive">
-<table class="table table-bordered table-hover cust_table" id="tbl_payment_list" style="margin:20px 0 !important;">
+<table class="table table-bordered table-hover bg_white cust_table" id="tbl_payment_list" style="margin:20px 0 !important;">
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
@@ -66,14 +66,11 @@ $query .= " and booking_id in (select booking_id from hotel_booking_master where
 			if($row_payment['clearance_status']=="Cancelled"){ $bg='danger';
 				$sq_cancel_amount = $row_payment['payment_amount']+ $row_payment['credit_charges'];
 			}
-
 			if($row_payment['clearance_status']=="Cleared"){ $bg='success';
-				$sq_paid_amount = $row_payment['payment_amount']+ $row_payment['credit_charges'];
 			}
-
 			if($row_payment['clearance_status']==""){ $bg='';
-				$sq_paid_amount = $row_payment['payment_amount']+ $row_payment['credit_charges'];
 			}
+			$sq_paid_amount = $row_payment['payment_amount']+ $row_payment['credit_charges'];
 
 			$payment_id_name = "Hotel Payment ID";
 			$payment_id = get_hotel_booking_payment_id($row_payment['payment_id'],$year1);
@@ -101,7 +98,7 @@ $query .= " and booking_id in (select booking_id from hotel_booking_master where
 			$sq_cancel_amount_string = explode(' ',$sq_cancel_amount1);
 			$footer_cancel_total += str_replace(',', '', $sq_cancel_amount_string[1]);
 
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=hotel_booking_payment&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&currency_code=$sq_booking[currency_code]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=hotel_booking_payment&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&currency_code=$sq_booking[currency_code]&status=$row_payment[status]";
 			?>
 			<tr class="<?= $bg;?>">				
 				<td><?= $count ?></td>

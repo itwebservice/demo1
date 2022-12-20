@@ -8,7 +8,7 @@ $query = "select * from miscellaneous_refund_master where 1 ";
 if($misc_id!=""){
 	$query .=" and misc_id='$misc_id'";
 }
-$query .=" and misc_id in ( select misc_id from miscellaneous_master where customer_id='$customer_id' )";
+$query .=" and misc_id in ( select misc_id from miscellaneous_master where customer_id='$customer_id' and delete_status='0' )";
 
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
@@ -23,7 +23,7 @@ $query .=" and misc_id in ( select misc_id from miscellaneous_master where custo
 			<th>Mode</th>
 			<th>Bank_Name</th>
 			<th>Cheque_No/ID</th>
-			<th class="success text-right">Refund_Amount</th>
+			<th class="success">Refund_Amount</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -39,7 +39,7 @@ $query .=" and misc_id in ( select misc_id from miscellaneous_master where custo
 		while($row_refund = mysqli_fetch_assoc($sq_refund)){
 
 			$traveler_name = "";
-			$sq_miscellaneous = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$row_refund[misc_id]'"));
+			$sq_miscellaneous = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$row_refund[misc_id]' and delete_status='0'"));
 			$date = $sq_miscellaneous['created_at'];
 			$yr = explode("-", $date);
 			$year1 =$yr[0];
@@ -54,6 +54,7 @@ $query .=" and misc_id in ( select misc_id from miscellaneous_master where custo
 			$total_refund = $total_refund+$row_refund['refund_amount'];
 
 			($row_refund['clearance_status']=='Pending')?$bg='warning':$bg='';
+			($row_refund['clearance_status']=='Cancelled')?$bg='danger':$bg='';
 
 			if($row_refund['clearance_status']=="Pending"){$pen_amt=$pen_amt+$row_refund['refund_amount'];}
 			if($row_refund['clearance_status']=="Cancelled"){$can_amt=$can_amt+$row_refund['refund_amount'];}
@@ -78,7 +79,7 @@ $query .=" and misc_id in ( select misc_id from miscellaneous_master where custo
 				<td><?= $row_refund['refund_mode'] ?></td>
 				<td><?= $row_refund['bank_name'] ?></td>
 				<td><?= $row_refund['transaction_id'] ?></td>
-				<td class="success text-right"><?= $row_refund['refund_amount'] ?></td>
+				<td class="success"><?= $row_refund['refund_amount'] ?></td>
 			</tr>
 			<?php
 

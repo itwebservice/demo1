@@ -9,13 +9,13 @@ $query = mysqli_fetch_assoc(mysqlQuery("select max(id) as booking_id from tourwi
 
 $sq_traveler = "select * from traveler_personal_info where 1 ";
 
-$query_package = "select * from package_tour_booking_master where financial_year_id='$financial_year_id'";
+$query_package = "select * from package_tour_booking_master where financial_year_id='$financial_year_id' and delete_status='0'";
 
 if($booking_id != ''){
-  $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'");
+  $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'");
 }
 else{
-   $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$query[booking_id]'");
+   $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$query[booking_id]' and delete_status='0'");
 }
 $row_entry = mysqli_fetch_assoc($sq_entry);
  $sq_tour_name = mysqli_fetch_assoc(mysqlQuery("select  * from tour_master where tour_id = '$row_entry[tour_id]'"));
@@ -103,17 +103,14 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
                   }
                 }
                 $count++;
-                $age = $row_entry1['age'];
-                $exp = explode(":" , $age);//explode marks data
-                $mark1 = $exp[0];
                 ?>
                 <tr class="<?= $bg ?>">
                     <td><?php echo $count ?></td>
                     <td><?php echo $row_entry1['m_honorific'].' '.$row_entry1['first_name']." ".$row_entry1['last_name']; ?></td>
                     <td><?php echo get_date_user($row_entry1['birth_date']); ?></td>
-                    <td><?php echo $mark1; ?></td>
+                    <td><?php echo $row_entry1['age']; ?></td>
                     <td>
-                      <button class="btn btn-info btn-sm" title="ID Proof"><i class="fa fa-id-card-o" onclick="display_group_id_proof('<?php echo $row_entry1['id_proof_url']; ?>')"></i></button>
+                      <button class="btn btn-info btn-sm" title="ID Proof" id="gbtn-<?=$count?>"><i class="fa fa-id-card-o" onclick="display_group_id_proof('<?php echo $row_entry1['id_proof_url']; ?>','<?=$count?>')"></i></button>
                     </td>
                 </tr>
                   <?php } ?>
@@ -153,8 +150,12 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
 <script type="text/javascript">
 function display_group_id_proof(id_proof_url)
 {
+    $('#gbtn-'+count).prop('disbled',true);
+    $('#gbtn-'+count).button('loading');
   $.post('admin/id_proof/group_booking_id.php', { id_proof_url : id_proof_url }, function(data){
     $('#id_proof').html(data);
+    $('#gbtn-'+count).prop('disbled',false);
+    $('#gbtn-'+count).button('reset');
   });
 }
 </script>

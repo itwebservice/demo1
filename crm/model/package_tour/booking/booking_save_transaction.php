@@ -163,19 +163,147 @@ function finance_save($booking_id, $row_spec, $branch_admin_id,$particular)
     $clearance_status = "";
     $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'INVOICE');
 
-     ////////Customer Amount//////
-     $module_name = "Package Booking";
-     $module_entry_id = $booking_id;
-     $transaction_id = "";
-     $payment_amount = $net_total;
-     $payment_date = $booking_date;
-     $payment_particular = $particular;
-     $ledger_particular = get_ledger_particular('To','Package Sales');
-     $gl_id = $cust_gl;
-     $payment_side = "Debit";
-     $clearance_status = "";
-     $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'INVOICE');
+    ////////Customer Amount//////
+    $module_name = "Package Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = $net_total;
+    $payment_date = $booking_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Package Sales');
+    $gl_id = $cust_gl;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'INVOICE');
     
+}
+function package_tour_booking_master_delete(){
+  
+    global $delete_master,$transaction_master;
+    $booking_id = $_POST['booking_id'];
+
+    $deleted_date = date('Y-m-d');
+    $row_spec = "sales";
+
+    $row_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+    $reflections = json_decode($row_booking['reflections']);
+    $tour_service_tax_subtotal = $row_booking['tour_service_tax_subtotal'];
+    $customer_id = $row_booking['customer_id'];
+    $booking_date = $row_booking['booking_date'];
+    $yr = explode("-", $booking_date);
+    $year = $yr[0];
+    
+    $sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+    if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+      $cust_name = $sq_ct['company_name'];
+    }else{
+      $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+    }
+    $total_tour_days = $row_booking['total_tour_days'];
+    $tour_name = $row_booking['tour_name'];
+    $tour_from_date = $row_booking['tour_from_date'];
+    
+    $particular = $tour_name.' for '.$cust_name.' for '.$total_tour_days.' Night(s) starting from '.get_date_user($tour_from_date);
+
+    $delete_master->delete_master_entries('Invoice','Package Tour',$booking_id,get_package_booking_id($booking_id,$year),$cust_name,$row_booking['net_total']);
+
+    //Getting customer Ledger
+    $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+    $cust_gl = $sq_cust['ledger_id'];
+
+    ////////////Sales/////////////
+    $module_name = "Package Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = 91;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+      ////////////service charge/////////////
+    $module_name = "Package Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Package Sales');
+    $old_gl_id = $gl_id = ($reflections[0]->hotel_sc != '') ? $reflections[0]->hotel_sc : 185;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    /////////Service Charge Tax Amount////////
+    // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+    $service_tax_subtotal = explode(',',$tour_service_tax_subtotal);
+    $tax_ledgers = explode(',',$reflections[0]->hotel_taxes);
+    for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+
+      $service_tax = explode(':',$service_tax_subtotal[$i]);
+      $tax_amount = $service_tax[2];
+      $ledger = $tax_ledgers[$i];
+
+      $module_name = "Package Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Package Sales');
+      $old_gl_id = $gl_id = $ledger;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    }
+
+    /////////roundoff/////////
+    $module_name = "Package Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Package Sales');
+    $old_gl_id = $gl_id = 230;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    
+    ////////////service charge/////////////
+    $module_name = "Package Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Package Sales');
+    $old_gl_id = $gl_id = 232;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    
+    ////////Customer Amount//////
+    $module_name = "Package Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Package Sales');
+    $old_gl_id = $gl_id = $cust_gl;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    
+    $sq_delete = mysqlQuery("update package_tour_booking_master set total_hotel_expense = '0',service_charge='0',subtotal='0',tour_service_tax='', tour_service_tax_subtotal='', net_total='0', roundoff='0',subtotal_with_rue='0',actual_tour_expense='0',total_travel_expense='0',cruise_expense='0',plane_expense='0',train_expense='0',total_cruise_expense='0',total_plane_expense='0',total_train_expense='0',basic_amount='0',delete_status='1',tcs_tax='0',tcs_per='0' where booking_id='$booking_id'");
+    if($sq_delete){
+      echo 'Entry deleted successfully!';
+      exit;
+    }
 }
 public function payment_finance_save($booking_id, $payment_id, $branch_admin_id, $payment_date, $payment_mode, $payment_amount, $transaction_id1,$bank_id, $clearance_status,$credit_charges_arr,$credit_card_details_arr){
 
@@ -202,8 +330,8 @@ public function payment_finance_save($booking_id, $payment_id, $branch_admin_id,
 		if($payment_mode == 'Credit Card'){
 
 			//////Customer Credit charges///////
-			$module_name = "Package Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Package Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges_arr;
 			$payment_date = $payment_date;
@@ -215,8 +343,8 @@ public function payment_finance_save($booking_id, $payment_id, $branch_admin_id,
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
 			//////Credit charges ledger///////
-			$module_name = "Package Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Package Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges_arr;
 			$payment_date = $payment_date;
@@ -245,8 +373,8 @@ public function payment_finance_save($booking_id, $payment_id, $branch_admin_id,
 			$credit_company_amount = $payment_amount1 - $finance_charges;
 
 			//////Finance charges ledger///////
-			$module_name = "Package Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Package Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $finance_charges;
 			$payment_date = $payment_date;
@@ -257,8 +385,8 @@ public function payment_finance_save($booking_id, $payment_id, $branch_admin_id,
 			$clearance_status = ($payment_mode=="Cheque"||$payment_mode=="Credit Card") ? "Pending" : "";
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 			//////Credit company amount///////
-			$module_name = "Package Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Package Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_company_amount;
 			$payment_date = $payment_date;
@@ -271,8 +399,8 @@ public function payment_finance_save($booking_id, $payment_id, $branch_admin_id,
 		}
 		else{
         //////Payment Amount///////
-        $module_name = "Package Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Package Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $payment_amount1;
         $payment_date = $payment_date;
@@ -285,8 +413,8 @@ public function payment_finance_save($booking_id, $payment_id, $branch_admin_id,
     }
     
         //////Customer Payment Amount///////
-        $module_name = "Package Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Package Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $payment_amount1;
         $payment_date = $payment_date;
@@ -324,7 +452,7 @@ public function bank_cash_book_save($booking_id, $payment_id, $payment_date, $pa
     }
 
 
-    $module_name = "Package Booking";
+    $module_name = "Package Booking Payment";
 
     $module_entry_id = $payment_id;
 

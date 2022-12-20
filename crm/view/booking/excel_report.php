@@ -116,7 +116,7 @@ if($from_date!="" && $to_date!=""){
 else{
     $date_str = "";
 }
-$sq_group_tour = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$financial_year_id'"));
+$sq_group_tour = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and delete_status='0'"));
 $date = $sq_group_tour['form_date'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -164,7 +164,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);      
 
-$query = "select * from tourwise_traveler_details where financial_year_id='$financial_year_id'";
+$query = "select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and delete_status='0'";
 if($tour_id!=""){
   $query .=" and tour_id='$tour_id'";
 }
@@ -250,7 +250,7 @@ $row_count++;
       $invoice_id = ($booking_id!="") ? get_group_booking_id($booking_id,$year): "";
       $tour = $sq_tour['tour_name'];
       $group = get_date_user($sq_group['from_date']).' to '.get_date_user($sq_group['to_date']);
-      $sq_total_members = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[id]'"));
+      $sq_total_members = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]'"));
 
       $visa_total_amount= ($row_booking['visa_total_amount']!="") ? $row_booking['visa_total_amount']: 0.00;
       $insuarance_total_amount= ($row_booking['insuarance_total_amount']!="") ? $row_booking['insuarance_total_amount']: 0.00;
@@ -259,8 +259,8 @@ $row_count++;
       $sq_paid = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as paid_amount,sum(`credit_charges`) as sumc from payment_master where tourwise_traveler_id='$row_booking[id]' and clearance_status !='Cancelled' and clearance_status !='Pending'"));
       $total_tour_amount = $row_booking['net_total'] + $sq_paid['sumc'];
       
-    $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[id]'"));
-    $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[id]' and status='Cancel'"));
+    $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[traveler_group_id]'"));
+    $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[traveler_group_id]' and status='Cancel'"));
     
     $paid_amount = $sq_paid['paid_amount'] + $sq_paid['sumc'];
     $sq_est_count = mysqli_num_rows(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));

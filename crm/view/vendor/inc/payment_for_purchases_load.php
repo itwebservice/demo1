@@ -9,7 +9,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $role_id = $_SESSION['role_id'];
 $role = $_SESSION['role'];
 $emp_id = $_SESSION['emp_id'];
-$query = "select * from vendor_estimate where vendor_type='$vendor_type' and vendor_type_id='$vendor_type_id'";
+$query = "select * from vendor_estimate where vendor_type='$vendor_type' and vendor_type_id='$vendor_type_id' and delete_status='0' and status!='Cancel'";
 
 include "../../../model/app_settings/branchwise_filteration.php";
 $sq_supplier = mysqlQuery($query);

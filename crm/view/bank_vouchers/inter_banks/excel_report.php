@@ -124,39 +124,34 @@ $objPHPExcel->setActiveSheetIndex(0)
 
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($borderArray);    
-
 $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);    
-
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);   
 $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);   
 
-
-$query = "select * from inter_bank_transfer_master where 1 ";
+$query = "select * from inter_bank_transfer_master where 1 and delete_status=0 and amount!=0 ";
 if($from_date!="" && $to_date!=""){
-  $from_date = get_date_db($from_date);
-  $to_date = get_date_db($to_date);
-
-  $query .= " and transaction_date between '$from_date' and '$to_date'";
+    $from_date = get_date_db($from_date);
+    $to_date = get_date_db($to_date);
+    $query .= " and transaction_date between '$from_date' and '$to_date'";
 }
 if($bank_id!=""){
-  $query .= " and from_bank_id='$bank_id' ";
+    $query .= " and from_bank_id='$bank_id' ";
 }
 if($dbank_id!=""){
-$query .= " and to_bank_id='$dbank_id' ";
+    $query .= " and to_bank_id='$dbank_id' ";
 }
 if($financial_year_id!=""){
-  $query .=" and financial_year_id='$financial_year_id'";
+    $query .=" and financial_year_id='$financial_year_id'";
 }
 include "../../../model/app_settings/branchwise_filteration.php";
-
 $row_count = 7;
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Date")
+        ->setCellValue('C'.$row_count, "Tr_Date")
         ->setCellValue('D'.$row_count, "Creditor Bank")
         ->setCellValue('E'.$row_count, "Debitor Bank")
         ->setCellValue('F'.$row_count, "Transaction Type")
@@ -164,7 +159,7 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('H'.$row_count, "Instrument Date")
         ->setCellValue('I'.$row_count, "Lapse Date")
         ->setCellValue('J'.$row_count, "Amount")
-        ->setCellValue('K'.$row_count, "Created by");
+        ->setCellValue('K'.$row_count, "Created By");
          
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray); 
@@ -182,7 +177,7 @@ while($row_withdraw = mysqli_fetch_assoc($sq_withdraw)){
   $total_amount = $total_amount + $row_withdraw['amount'];
 
 	$objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, ++$count)
+        ->setCellValue('B'.$row_count, $row_withdraw['entry_id'])
         ->setCellValue('C'.$row_count, get_date_user($row_withdraw['transaction_date']))
         ->setCellValue('D'.$row_count, $sq_bank1['bank_name'].'('.$sq_bank1['branch_name'].')')
         ->setCellValue('E'.$row_count, $sq_bank2['bank_name'].'('.$sq_bank2['branch_name'].')')

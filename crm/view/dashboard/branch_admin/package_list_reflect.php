@@ -6,7 +6,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 
 $query = mysqli_fetch_assoc(mysqlQuery("select max(booking_id) as booking_id from package_tour_booking_master where branch_admin_id='$branch_admin_id' and financial_year_id='$financial_year_id'"));
-$query_package = "select * from package_tour_booking_master where 1";
+$query_package = "select * from package_tour_booking_master where 1 and delete_status='0'";
 $query_payment = "select * from package_payment_master where 1";
 
 if($booking_id != ''){
@@ -15,9 +15,9 @@ if($booking_id != ''){
   $query_payment .= " and booking_id = '$booking_id'";
 }
 else{
-   $sq_entry = mysqlQuery("select * from package_travelers_details where booking_id='$query[booking_id]'");
-	 $query_package .= " and booking_id = '$query[booking_id]'";
-   $query_payment .= " and booking_id = '$query[booking_id]'";
+  $sq_entry = mysqlQuery("select * from package_travelers_details where booking_id='$query[booking_id]'");
+  $query_package .= " and booking_id = '$query[booking_id]'";
+  $query_payment .= " and booking_id = '$query[booking_id]'";
 }
 $sq_package = mysqli_fetch_assoc(mysqlQuery($query_package));
 $sq_payment = mysqlQuery($query_payment);
@@ -41,12 +41,13 @@ $sq_payment = mysqlQuery($query_payment);
                 </tr>
               </thead>
               <tbody>
-              <?php 
-             while($row_entry = mysqli_fetch_assoc($sq_entry)){
-           			if($row_entry['status']=="Cancel"){
-           				$bg="danger";    			}
-           			else {
-           				$bg="#fff";      			}
+              <?php
+              while($row_entry = mysqli_fetch_assoc($sq_entry)){
+                if($row_entry['status']=="Cancel"){
+                  $bg="danger";
+                }else {
+                  $bg="#fff";
+                }
                 $queryp = mysqli_fetch_assoc(mysqlQuery("SELECT sum(amount) as sum,sum(credit_charges) as sumc from package_payment_master where booking_id='$booking_id' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
                 $paid_amount = $queryp['sum'] + $queryp['sumc'];
                 $paid_amount = ($paid_amount == '')?'0':$paid_amount;
@@ -66,19 +67,15 @@ $sq_payment = mysqlQuery($query_payment);
                   $cancel_amount = ($cancel_amount == '') ? '0' : $cancel_amount;
                   $balance_amount = $sale_total_amount - $paid_amount;
                 }
-           			$count++;
-                $age = $row_entry['age'];
-                $exp = explode(":" , $age); //explode marks data
-
-                $mark1 = $exp[0];  
+                $count++;
               ?>
                 <tr class="<?= $bg ?>">
                     <td><?php echo $count ?></td>
                     <td><?php echo $row_entry['m_honorific'].' '.$row_entry['first_name']." ".$row_entry['last_name']; ?></td>
                     <td><?php echo get_date_user($row_entry['birth_date']); ?></td>
-                    <td><?php echo $mark1; ?></td>
+                    <td><?php echo $row_entry['age']; ?></td>
                     <td>
-                      <button class="btn btn-info btn-sm" title="ID Proof"  onclick="display_package_id_proof('<?php echo $row_entry['id_proof_url']; ?>')"><i class="fa fa-id-card-o"></i></button>
+                      <button class="btn btn-info btn-sm" title="ID Proof" id="btn-<?=$count?>" onclick="display_package_id_proof('<?php echo $row_entry['id_proof_url']; ?>','<?=$count?>')"><i class="fa fa-id-card-o"></i></button>
                     </td>
                 </tr>
                   <?php } ?>
@@ -115,10 +112,14 @@ $sq_payment = mysqlQuery($query_payment);
       <div id="id_proof1"></div>
 </div>
 <script type="text/javascript">
-  function display_package_id_proof(id_proof_url)
+  function display_package_id_proof(id_proof_url,count)
   {
-      $.post('admin/id_proof/package_booking_id.php', { id_proof_url : id_proof_url }, function(data){
+    $('#btn-'+count).prop('disbled',true);
+    $('#btn-'+count).button('loading');
+    $.post('admin/id_proof/package_booking_id.php', { id_proof_url : id_proof_url }, function(data){
       $('#id_proof1').html(data);
-     });
+      $('#btn-'+count).prop('disbled',false);
+      $('#btn-'+count).button('reset');
+    });
   }
 </script>

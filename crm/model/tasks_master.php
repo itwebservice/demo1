@@ -1,4 +1,4 @@
-<?php 
+<?php
 class tasks_master{
 
 public function tasks_master_save()
@@ -117,7 +117,7 @@ public function tasks_master_update()
 public function tasks_status_update()
 {
 	$task_id = $_POST['task_id'];
-	$extra_note = $_POST['extra_note'];
+	$extra_note = addslashes($_POST['extra_note']);
 	$task_status = $_POST['task_status'];
 
     $cur_date = date('Y-m-d H:i');
@@ -218,7 +218,7 @@ public function whatsapp_send(){
 
     $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id=".$assign_to));
 
-$whatsapp_msg = rawurlencode('Hello Dear '.$sq_emp['first_name'].',
+$whatsapp_msg = rawurlencode('Dear '.$sq_emp['first_name'].',
 Hope you are doing great. A new task has been assigned to you. Please update in the system once done.
 
 *Task Name* : '.$task_name.'

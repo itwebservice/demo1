@@ -39,9 +39,8 @@ public function transaction_update($module_name, $module_entry_id, $transaction_
 		$financial_year_id = $sq_fin['max'];
 	}
 	$payment_particular = addslashes($payment_particular);
-
-	$q1 = "UPDATE finance_transaction_master set financial_year_id='$financial_year_id', transaction_id='$transaction_id', payment_amount='$payment_amount', payment_date='$payment_date', payment_particular='$payment_particular', gl_id='$gl_id', clearance_status='$clearance_status', payment_side='$payment_side',row_specification = '$row_spec', ledger_particular = '$ledger_particular' WHERE module_name='$module_name' and module_entry_id='$module_entry_id' and gl_id='$old_gl_id' and payment_side='$old_payment_side' and type='$type'";
-
+	$q1 = "UPDATE finance_transaction_master set financial_year_id='$financial_year_id', transaction_id='$transaction_id', payment_amount='$payment_amount', payment_date='$payment_date', payment_particular='$payment_particular', gl_id='$gl_id', clearance_status='$clearance_status', payment_side='$payment_side',row_specification = '$row_spec', ledger_particular = '$ledger_particular' WHERE `module_name` LIKE '%$module_name%' and module_entry_id LIKE '%$module_entry_id%' and gl_id='$old_gl_id' and payment_side='$old_payment_side' and type='$type' and row_specification = '$row_spec'";
+	
 	if($tax_type != '')
 		$q1 .= ' and tax_type='.$tax_type;
 		

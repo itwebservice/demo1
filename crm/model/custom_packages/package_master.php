@@ -307,21 +307,16 @@ function create_tour_file($file_name){
    fwrite($myfile, $txt);
    fclose($myfile);
 }
-  public function delete_hotel_image(){
 
-    $image_id = $_POST['image_id'];
+public function delete_hotel_image(){
 
-    $sq_delete = mysqlQuery("delete from hotel_vendor_images_entries where id='$image_id'");
+   $image_id = $_POST['image_id'];
+   $sq_delete = mysqlQuery("delete from hotel_vendor_images_entries where id='$image_id'");
 
-    if($sq_delete){
-
+   if($sq_delete){
       echo "Image Deleted";
-
-    }
-
-
-
-  }
+   }
+}
 
 }
 

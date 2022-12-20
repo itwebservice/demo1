@@ -19,7 +19,7 @@
 <?php
 $count = 0;
 $bg;
-$sq1 =mysqlQuery("select * from tourwise_traveler_details where 1 ");
+$sq1 =mysqlQuery("select * from tourwise_traveler_details where 1 and delete_status='0' ");
 while($row1 = mysqli_fetch_assoc($sq1))
 {
 	$tourwise_id = $row1['id']; 

@@ -18,7 +18,7 @@ $branch_status = $sq['branch_status'];
 	<div class="row">
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<select id="bank_id_filter" name="bank_id_filter" style="width:100%" title="Bank" class="form-control">
-				<?php get_bank_dropdown('Bank'); ?>
+				<?php get_bank_dropdown('Select Bank'); ?>
 			</select>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
@@ -87,6 +87,21 @@ function excel_report()
 	var financial_year_id = $('#financial_year_id_filter').val();
 	var branch_status = $('#branch_status').val();
     window.location = 'receipt/excel_report.php?bank_id='+bank_id+'&from_date='+from_date+'&to_date='+to_date+'&financial_year_id='+financial_year_id+'&branch_status='+branch_status;
+}
+function rp_delete_entry(entry_id){
+
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/finance_master/receipt_payment/delete.php',{ entry_id : entry_id }, function(data){
+					success_msg_alert(data);
+					list_reflect();
+				});
+			}
+		}
+	});
 }
 
 </script>

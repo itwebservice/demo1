@@ -7,23 +7,17 @@ $paid_amount = ($paid_amount == '')?'0':$paid_amount;
 $sale_total_amount=$sq_group_info['net_total'] +$query['sumc'];
 if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
 
-$pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$sq_group_info[id]'"));
-$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$sq_group_info[id]' and status='Cancel'"));    
+$pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_group_info[traveler_group_id]'"));
+$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_group_info[traveler_group_id]' and status='Cancel'"));    
 
 if($sq_group_info['tour_group_status'] == 'Cancel'){
 	//Group Tour cancel
 	$cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_group_info[id]'"));
 	if($cancel_tour_count2 >= '1'){
 		$cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_group_info[id]'"));
-		$cancel_amount2 = $cancel_tour['cancel_amount'];
+		$cancel_amount = $cancel_tour['cancel_amount'];
 	}
-	else{ $cancel_amount2 = 0; }
-
-	if($cancel_esti_count1 >= '1'){
-		$cancel_amount = $cancel_amount1;
-	}else{
-		$cancel_amount = $cancel_amount2;
-	}	
+	else{ $cancel_amount = 0; }
 }
 else{
 	// Group booking cancel

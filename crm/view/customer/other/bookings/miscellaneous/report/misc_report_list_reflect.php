@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $misc_id = $_POST['misc_id'];
 $customer_id = $_SESSION['customer_id'];
 
-$query = "select * from miscellaneous_master where 1 ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0'";
 $query .=" and customer_id='$customer_id'";
 if($misc_id!=""){
 	$query .=" and misc_id='$misc_id'";

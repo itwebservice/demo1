@@ -21,10 +21,13 @@ $total_paid = $_GET['total_paid'];
 $balance_amount = $_GET['balance_amount'];
 $sac_code = $_GET['sac_code'];
 $credit_card_charges = $_GET['credit_card_charges'];
+$bg = $_GET['bg'];
+$canc_amount = $_GET['canc_amount'];
+
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 $basic_cost = number_format($basic_cost1,2);
 
-$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $tds = $sq_hotel['tds'];
 $discount = $sq_hotel['discount'];
 $bsmValues = json_decode($sq_hotel['bsm_values']);
@@ -63,13 +66,13 @@ if($sq_hotel['markup_tax'] !== 0.00 && $sq_hotel['markup_tax'] !== ""){
     $markupservice_tax_amount += $service_tax[2];
   }
 }
-$markupservice_tax_amount_show = currency_conversion($currency,$sq_hotel['currency_code'],$markupservice_tax_amount);
+// $markupservice_tax_amount_show = currency_conversion($currency,$sq_hotel['currency_code'],$markupservice_tax_amount);
 if($bsmValues[0]->markup != ''){ //inclusive markup
   $newBasic = $basic_cost1 + $sq_hotel['markup'] + $markupservice_tax_amount;
 }
 else{
   $newBasic = $basic_cost1;
-  $newSC = $service_charge + $sq_hotel['markup'];
+  $newSC = $service_charge;
   $tax_show = rtrim($name, ', ') .' : ' . $currency_code." ".($markupservice_tax_amount + $service_tax_amount);
 }
 ////////////Basic Amount Rules
@@ -83,21 +86,30 @@ $net_amount1 =  $basic_cost1 + $service_charge  + $sq_hotel['markup'] + $markups
 $net_total1 = currency_conversion($currency,$sq_hotel['currency_code'],$net_amount1);
 $amount_in_word = $amount_to_word->convert_number_to_words($net_total1,$sq_hotel['currency_code']);
 
-$newBasic1 = currency_conversion($currency,$sq_hotel['currency_code'],$newBasic+$newSC);
-// $newSC1 = currency_conversion($currency,$sq_hotel['currency_code'],$newSC);
+$newBasic1 = currency_conversion($currency,$sq_hotel['currency_code'],$newBasic);
+$newSC1 = currency_conversion($currency,$sq_hotel['currency_code'],$newSC);
 $charge1 = currency_conversion($currency,$sq_hotel['currency_code'],$charge);
 $total_paid1 = currency_conversion($currency,$sq_hotel['currency_code'],$total_paid);
 $tds1 = currency_conversion($currency,$sq_hotel['currency_code'],$tds);
 $discount1 = currency_conversion($currency,$sq_hotel['currency_code'],$discount);
 $roundoff1 = currency_conversion($currency,$sq_hotel['currency_code'],$roundoff);
-$balance = floatval($net_amount1) - floatval($total_paid) + floatval($credit_card_charges);
-$balance = currency_conversion($currency,$sq_hotel['currency_code'],$balance);
 $service_tax_amount_show = explode(' ',$service_tax_amount_show);
 $service_tax_amount_show1 = str_replace(',','',$service_tax_amount_show[1]);
 $markupservice_tax_amount_show = explode(' ',$markupservice_tax_amount_show);
 $markupservice_tax_amount_show1 = str_replace(',','',$markupservice_tax_amount_show[1]);
-
 $tcs_tax = currency_conversion($currency,$sq_hotel['currency_code'],$tcs_tax_amt);
+
+$other_charges = $markupservice_tax_amount + $sq_hotel['markup'];
+$other_charges = currency_conversion($currency,$sq_hotel['currency_code'],$other_charges);
+
+if($bg != ''){
+  $balance = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid);
+}else{
+  
+  $balance = floatval($net_amount1) - floatval($total_paid) + floatval($credit_card_charges);
+}
+$balance = currency_conversion($currency,$sq_hotel['currency_code'],$balance);
+$canc_amount = currency_conversion($currency,$sq_hotel['currency_code'],$canc_amount);
 
 //Header
 if($app_invoice_format == "Standard"){include "../headers/standard_header_html.php"; }
@@ -107,7 +119,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
 
 <hr class="no-marg">
 
-<div class="col-md-12 mg_tp_20"><p class="border_lt"><span class="font_5">PASSENGER : <?= $sq_hotel['pass_name'] ?></span></p></div>
+<div class="col-md-12 mg_tp_20"><p class="border_lt"><span class="font_5">GUEST NAME : <?= $sq_hotel['pass_name'] ?></span></p></div>
 
 <div class="main_block inv_rece_table main_block">
     <div class="row">
@@ -160,20 +172,32 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
 <div class="row">
   <div class="col-md-12">
     <div class="main_block inv_rece_calculation border_block">
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?= $newBasic1 ?></span></p></div>
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $net_total1 ?></span></p></div>
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= str_replace(',','',$name).$service_tax_amount_show[0].' '.number_format($service_tax_amount_show1 + $markupservice_tax_amount_show1,2) ?></span></p></div>
-      <!-- <div class="col-md-6"><p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $newSC1 ?></span></p></div> -->
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">CREDIT CARD CHARGES </span><span class="float_r"><?= $charge1 ?></span></p></div>
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">DISCOUNT</span><span class="float_r"><?= $discount1 ?></span></p></div>
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $total_paid1 ?></span></p></div>
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">TDS</span><span class="float_r"><?= $tds1 ?></span></p></div>
-
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $balance ?></span></p></div>
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">TCS<?= '('.$tcs_per.'%)'?></span><span class="float_r"><?= $tcs_tax ?></span></p></div>
-      
-      <div class="col-md-6"><p class="border_lt"><span class="font_5">&nbsp;</span><span class="float_r"></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?= $newBasic1 ?></span></p></div>
       <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUNDOFF</span><span class="float_r"><?= $roundoff1 ?></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">OTHER CHARGES AND TAXES </span><span class="float_r"><?= $other_charges ?></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $net_total1 ?></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $newSC1 ?></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">CREDIT CARD CHARGES </span><span class="float_r"><?= $charge1 ?></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= str_replace(',','',$name).$service_tax_amount_show[0].' '.number_format($service_tax_amount_show1,2) ?></span></p></div>
+      <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $total_paid1 ?></span></p></div>
+      <?php
+      if($bg != ''){ ?>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">DISCOUNT</span><span class="float_r"><?= $discount1 ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">CANCELLATION CHARGES</span><span class="float_r"><?= $canc_amount ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">TDS</span><span class="float_r"><?= $tds1 ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $balance ?></span></p></div>
+
+      <?php } else{ ?>
+
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">DISCOUNT</span><span class="float_r"><?= $discount1 ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $balance ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">TDS</span><span class="float_r"><?= $tds1 ?></span></p></div>
+
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">&nbsp;</span><span class="float_r"></span></p></div>
+      <?php } ?>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">TCS<?= '('.$tcs_per.'%)'?></span><span class="float_r"><?= $tcs_tax ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">&nbsp;</span><span class="float_r"></span></p></div>
+      
     </div>
   </div>
 </div>

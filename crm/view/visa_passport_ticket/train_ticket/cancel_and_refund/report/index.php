@@ -13,7 +13,7 @@ include "../../../../../model/model.php";
 			<select name="train_ticket_id" id="train_ticket_id" title="Select Booking" style="width:100%">
 		        <option value="">Select Booking</option>
 		        <?php 
-		        $sq_ticket = mysqlQuery("select * from train_ticket_master where train_ticket_id in ( select train_ticket_id from train_ticket_master_entries where status='Cancel' ) order by train_ticket_id desc");
+		        $sq_ticket = mysqlQuery("select * from train_ticket_master where train_ticket_id in ( select train_ticket_id from train_ticket_master_entries where status='Cancel' ) and delete_status='0' order by train_ticket_id desc");
 		        while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
 					$date = $row_ticket['created_at'];

@@ -30,11 +30,11 @@ $localIP = getHostByName(getHostName());
 $servername = "localhost";
 $username = "root";
 $password = "";
-$db_name = "itours_demo_8";
+$db_name = "v9";
 global $conn;
 $conn = new mysqli($servername, $username, $password, $db_name);
 
-define('BASE_URL', 'http://localhost/itours_git/demo1/crm/');
+define('BASE_URL', 'http://localhost/demo1/crm/');
 
 mysqli_query($conn, "SET SESSION sql_mode = ''");
 $b2b_index_url = BASE_URL . 'Tours_B2B/view/index.php';
@@ -96,6 +96,7 @@ if ($sq_app_setting_count == 1) {
   $bank_acc_no = $sq_app_setting['bank_acc_no'];
   $cin_no = $sq_app_setting['app_cin'];
   $bank_name_setting = $sq_app_setting['bank_name'];
+  $bank_account_name = $sq_app_setting['bank_account_name'];
   $acc_name = $sq_app_setting['acc_name'];
   $bank_branch_name = $sq_app_setting['bank_branch_name'];
   $bank_ifsc_code = $sq_app_setting['bank_ifsc_code'];
@@ -174,24 +175,30 @@ $mail_strong_style = "font-weight: 500; color:#000";
 
 include_once "app_settings/generic_email_hf.php";
 
+$role_id = $_SESSION['role_id'];
+global $active_inactive_flag;
+$active_inactive_flag = ($role_id == '1' || $role_id == '5') ? 'form-control' : 'hidden';
+global $delete_flag;
+$delete_flag = ($role_id == '1') ? 'form-control' : 'hidden';
+
 class model extends email_hf
 { // extending email file
 
-  public function generic_payment_mail($cms_id, $payment_amount, $payment_mode, $total_amount, $paid_amount, $payment_date, $due_date, $to, $subject, $fname,$currency_code='')
+  public function generic_payment_mail($cms_id, $payment_amount, $payment_mode, $total_amount, $paid_amount, $payment_date, $due_date, $to, $subject, $fname, $currency_code = '', $outstanding = '')
   {
-    global $currency_logo,$currency;
+    global $currency_logo, $currency;
     if ($payment_amount != '0' && $payment_amount != '') {
-      $balance_amount = $total_amount - $paid_amount;
-      if($currency_code==''){
+      $balance_amount = ($outstanding == '') ? ($total_amount - $paid_amount) : $outstanding;
+      if ($currency_code == '') {
 
-        $total_amount = $currency_logo . ' ' .number_format($total_amount, 2);
-        $balance_amount = $currency_logo . ' ' .number_format($balance_amount, 2);
-        $paid_amount = $currency_logo . ' ' .number_format($paid_amount, 2);
-      }else{
+        $total_amount = $currency_logo . ' ' . number_format($total_amount, 2);
+        $balance_amount = $currency_logo . ' ' . number_format($balance_amount, 2);
+        $paid_amount = $currency_logo . ' ' . number_format($paid_amount, 2);
+      } else {
 
-        $total_amount = currency_conversion($currency,$currency_code,$total_amount);
-        $paid_amount = currency_conversion($currency,$currency_code,$paid_amount);
-        $balance_amount = currency_conversion($currency,$currency_code,$balance_amount);
+        $total_amount = currency_conversion($currency, $currency_code, $total_amount);
+        $paid_amount = currency_conversion($currency, $currency_code, $paid_amount);
+        $balance_amount = currency_conversion($currency, $currency_code, $balance_amount);
       }
 
       $due_date_html = '';
@@ -201,9 +208,9 @@ class model extends email_hf
       $content = '
           <tr>
             <table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
-              <tr><td style="text-align:left;border: 1px solid #888888;">Total Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'. $total_amount . '</td></tr>
-              <tr><td style="text-align:left;border: 1px solid #888888;"> Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$paid_amount . '</td></tr>
-              <tr><td style="text-align:left;border: 1px solid #888888;"> Balance Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'. $balance_amount . '</td></tr>
+              <tr><td style="text-align:left;border: 1px solid #888888;">Total Amount</td>   <td style="text-align:left;border: 1px solid #888888;">' . $total_amount . '</td></tr>
+              <tr><td style="text-align:left;border: 1px solid #888888;"> Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >' . $paid_amount . '</td></tr>
+              <tr><td style="text-align:left;border: 1px solid #888888;"> Balance Amount</td>   <td style="text-align:left;border: 1px solid #888888;">' . $balance_amount . '</td></tr>
               ' . $due_date_html . '
             </table>
           </tr>';
@@ -477,7 +484,9 @@ class model extends email_hf
       foreach ($arrayAttachment as $attachment) {
         $dir = dirname(dirname(__FILE__));
         $att_url =  str_replace("'/'", "'\'", $dir);
-        $mail->AddAttachment($att_url . '/' . $attachment);
+        $temp = explode('/',$attachment);
+        $length = sizeof($temp)-1;
+        $mail->AddAttachment($att_url . '/' . $attachment,$temp[$length]);
       }
       //keep accountant in cc
       if ($acc_status == '' && !empty($accountant_email)) {
@@ -551,3 +560,181 @@ include_once('app_settings/dropdown_master.php');
 include_once('app_settings/particular_functions.php');
 include_once('encrypt_decrypt.php');
 include_once("get_cache_data.php");
+// include_once("app_settings/print_html/qr_sign_print.php");
+
+function get_qr($type)
+{
+  $QrQry = mysqlQuery('select qr_url,sign_url from app_settings');
+  $result = mysqli_fetch_assoc($QrQry);
+
+  if ($type == 'Landscape Advanced') {
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100   class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+  // Protrait Advance
+  if ($type == 'Protrait Advance') {
+
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100  class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+  if ($type == 'Protrait Creative') {
+
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100  class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+  //Landscape
+  if ($type == 'Landscape Creative') {
+
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100  class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+  //Standard
+  if ($type == 'Landscape Standard') {
+
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100  class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+  //protrait standard
+  if ($type == 'Protrait Standard') {
+
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100  class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+  if ($type == 'general') {
+
+    if (!empty($result['qr_url'])) {
+      $htmlQR = '<img src="' . BASE_URL . '/' . substr($result['qr_url'], 9) . '" alt="" width=100  class="img-thumbnail">';
+    } else {
+      $htmlQR = '<h4> No QR Img </h4>';
+    }
+    return $htmlQR;
+  }
+}
+
+function check_qr()
+{
+  $QrQry = mysqlQuery('select qr_url,sign_url from app_settings');
+  $result = mysqli_fetch_assoc($QrQry);
+  if (!empty($result['qr_url'])) {
+    return true;
+  } else {
+    return false;
+  }
+}
+function check_sign()
+{
+  $QrQry = mysqlQuery('select qr_url,sign_url from app_settings');
+  $result = mysqli_fetch_assoc($QrQry);
+  if (!empty($result['sign_url'])) {
+    return true;
+  } else {
+    return false;
+  }
+}
+function get_signature($url = false)
+{
+  $QrQry = mysqlQuery('select qr_url,sign_url from app_settings');
+  $result = mysqli_fetch_assoc($QrQry);
+  if (!empty($result['sign_url'])) {
+    $htmlSign = '<img src="' . BASE_URL . '/' . substr($result['sign_url'], 9) . '" alt="" width=110 >';
+  } else {
+    $htmlSign = '<h4> No Sign Uploaded </h4>';
+  }
+  if ($url == true && !empty($result['sign_url'])) {
+    $htmlSign = BASE_URL . '/' . substr($result['sign_url'], 9);
+  }
+  return $htmlSign;
+}
+
+
+function get_dates_for_package_itineary($quotation_id)
+{
+  // $count = 1;
+  $booking_id = $quotation_id;
+  // $package_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from enquiry_master where enquiry_id='$booking_id' and enquiry_type='Package Booking'"));
+  $package_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_master where quotation_id='$booking_id'"));
+
+  $sq_itinerary_count = (empty($package_booking_info['enquiry_id'])) ? "select booking_id from package_tour_schedule_master where booking_id='$booking_id'" : "select id from package_quotation_program where quotation_id='" . $package_booking_info['quotation_id'] . "'";
+
+  $sq_count = mysqli_num_rows(mysqlQuery($sq_itinerary_count));
+
+  $decodedData = json_decode($package_booking_info['enquiry_content']);
+
+  $fromDate = $package_booking_info['from_date'];
+  $toDate = $package_booking_info['to_date'];
+  // foreach($decodedData as $data)
+  // {
+  //     if($data->name == 'travel_from_date')
+  //     {
+  //       $fromDate = $data->value;
+  //     }
+  //     if($data->name == 'travel_to_date')
+  //     {
+  //       $toDate = $data->value;
+  //     }
+
+  // }
+
+  $date1 = $fromDate;
+  $date2 = $toDate;
+  if ($sq_count != 0) {
+    $dates = array();
+    $days = array();
+    $current = strtotime($date1);
+    $date2 = strtotime($date2);
+    $stepVal = '+1 day';
+    while ($current <= $date2) {
+      $dates[] = date('d-m-Y', $current);
+      $days[] = date('l', $current);
+      $current = strtotime($stepVal, $current);
+    }
+  }
+
+  return $dates;
+}
+
+
+function get_dates_for_tour_itineary($quotation_id)
+{
+  $booking_id = $quotation_id;
+  $group_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from group_tour_quotation_master where quotation_id='$booking_id'"));
+
+  $date1 = $group_booking_info['from_date'];
+  $date2 = $group_booking_info['to_date'];
+
+  $dates = array();
+  $days = array();
+  $current = strtotime($date1);
+  $date2 = strtotime($date2);
+  $stepVal = '+1 day';
+  while ($current <= $date2) {
+    $dates[] = date('d-m-Y', $current);
+    $days[] = date('l', $current);
+    $current = strtotime($stepVal, $current);
+  }
+  return $dates;
+}

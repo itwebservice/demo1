@@ -1,4 +1,4 @@
-<?php 
+<?php
 include "../../model/model.php";
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $emp_id = $_SESSION['emp_id'];
@@ -6,7 +6,7 @@ $role = $_SESSION['role'];
 $branch_status = $_GET['branch_status'];
 $email_id = $_GET['email_id'];
 
-$query = "SELECT * from `hotel_quotation_master` where 1 ";
+$query = "SELECT * from `hotel_quotation_master` where 1 and status='1'";
 if($role != 'Admin' && $role!='Branch Admin'){
 	$query .= " and emp_id='$emp_id'";
 }
@@ -20,22 +20,22 @@ $query .= ' ORDER BY `quotation_id` DESC';
 $sq_query = mysqlQuery($query);
 ?>
 <div class="modal fade" id="quotation_send_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog modal-lg"  role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Send Quotation</h4>
-      </div>
-      <div class="modal-body">
-		<div class="row">
-			<div class="col-xs-12">
-				<input type="checkbox" id="check_all" name="check_all" onClick="select_all_check(this.id,'custom_package')">&nbsp;&nbsp;&nbsp;<span style="text-transform: initial;">Check All</span>
-			</div>
+	<div class="modal-dialog modal-lg"  role="document">
+		<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title" id="myModalLabel">Send Quotation</h4>
 		</div>
-	  <div class="row">
-	  <div class="col-xs-12">
-      	<div class="table-responsive">
-		  <table class="table table-hover table-bordered no-marg" id="tbl_tour_list">
+		<div class="modal-body">
+			<div class="row">
+				<div class="col-xs-12">
+					<input type="checkbox" id="check_all" name="check_all" onClick="select_all_check(this.id,'custom_package')">&nbsp;&nbsp;&nbsp;<span style="text-transform: initial;">Check All</span>
+				</div>
+			</div>
+		<div class="row">
+		<div class="col-xs-12">
+			<div class="table-responsive">
+			<table class="table table-hover table-bordered no-marg" id="tbl_tour_list">
 		    <tr class="table-heading-row">
 				<th></th>
 				<th>SR No.</th>
@@ -65,18 +65,18 @@ $sq_query = mysqlQuery($query);
 				}
 			}
 		    ?>
-		  </table>
-		</div>
-		</div>
-		</div>
-		<div class="row text-center">
-			<div class="col-md-12 mg_tp_20">
-				<button class="btn btn-sm btn-success" id="btn_quotation_send" onclick="multiple_quotation_mail();"><i class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;<?php echo "Send on Email" ?></button>
+			</table>
 			</div>
+			</div>
+			</div>
+			<div class="row text-center">
+				<div class="col-md-12 mg_tp_20">
+					<button class="btn btn-sm btn-success" id="btn_quotation_send" onclick="multiple_quotation_mail();"><i class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;<?php echo "Send on Email" ?></button>
+				</div>
+			</div>
+		</div>  
 		</div>
-      </div>  
-    </div>
-  </div>
+	</div>
 </div>
 <script>
 $('#quotation_send_modal').modal('show');

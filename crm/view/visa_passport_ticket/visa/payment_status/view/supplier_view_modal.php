@@ -27,7 +27,7 @@ $visa_id = $_POST['visa_id'];
                      <tbody>
                        <?php 
                        $count = 0;
-                       $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE estimate_type LIKE 'Visa Booking' AND estimate_type_id = '$visa_id'");
+                       $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE status!='Cancel' and estimate_type LIKE  'Visa Booking' AND estimate_type_id = '$visa_id' and delete_status='0'");
 
                        while($row_entry = mysqli_fetch_assoc($sq_query))
                        {
@@ -39,7 +39,7 @@ $visa_id = $_POST['visa_id'];
                            <tr>
                               <td><?php echo $count; ?></td>
                               <td><?php echo get_date_user($row_entry['purchase_date']); ?></td>
-                              <td><?php echo $row_entry['vendor_type'];; ?></td>
+                              <td><?php echo $row_entry['vendor_type']; ?></td>
                               <td><?php echo $Supplier_name; ?></td>
                               <td><?php echo $row_entry['net_total']; ?></td>
                            

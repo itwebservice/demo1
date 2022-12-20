@@ -19,7 +19,7 @@ if($role=='Admin' || ($branch_status!='yes' && $role=='Branch Admin')){
 }
 
 if($tour_type=="Package Tour"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
     
     if($sq_booking['dest_id']=='0'){
         $sq_package = mysqli_fetch_assoc(mysqlQuery("select * from custom_package_master where package_id='$sq_booking[package_id]'"));
@@ -43,14 +43,23 @@ if($tour_type=="Package Tour" || $tour_type=="Group Tour"){
 }else{
     $sq_entitiesc = mysqli_num_rows(mysqlQuery("select * from checklist_entities where entity_for='$tour_type'"));
 }
+if($tour_type=="Package Tour"){
+    $modal_name = "Package Tour Booking";
+}else if($tour_type=="Group Tour"){
+    $modal_name = "Group Tour Booking";
+}else if($tour_type=="Excursion Booking"){
+    $modal_name = "Activity Booking";
+}else{
+    $modal_name = $tour_type;
+}
 ?>
 
 <div class="modal fade profile_box_modal" id="view_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
+    <div class="modal-content" style="text-align:center!important;">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title"><?= $tour_type.' Checklist' ?></h4>
+            <h4 class="modal-title"><?= $modal_name.' Checklist' ?></h4>
         </div>
         <div class="modal-body profile_box_padding">
         <?php if($sq_entitiesc != 0){ ?>
@@ -73,80 +82,43 @@ if($tour_type=="Package Tour" || $tour_type=="Group Tour"){
                     <tbody> 
                     <?php
                     if($tour_type=="Package Tour" || $tour_type=="Group Tour"){
-                            $sq_entities = mysqlQuery("select * from checklist_entities where entity_for='$tour_type' and destination_name = '$dest_id'");
+                        $sq_entities = mysqlQuery("select * from checklist_entities where entity_for='$tour_type' and destination_name = '$dest_id'");
                     }else{
                         $sq_entities = mysqlQuery("select * from checklist_entities where entity_for='$tour_type'");
                     }
                     while($row_entity = mysqli_fetch_assoc($sq_entities))
                     { 
-                        $count = 0;
+                        $count = 1;
                         $sql=mysqlQuery("select * from to_do_entries where entity_id='$row_entity[entity_id]'");
                         
-                            while($sq_todo_list=mysqli_fetch_assoc($sql))
-                            {
-                                $count++;
-                                $q = mysqlQuery("select * from checklist_package_tour where booking_id='$booking_id' and tour_type='$tour_type' and entity_id='$sq_todo_list[id]'");
-                                
-                                while($sql_entry = mysqli_fetch_assoc($q)){
+                        while($sq_todo_list=mysqli_fetch_assoc($sql))
+                        {
+                            $sq = mysqlQuery("select * from checklist_package_tour where booking_id='$booking_id' and tour_type='$tour_type' and entity_id='$sq_todo_list[id]'");
+                            while($sql_entry = mysqli_fetch_assoc($sq)){
 
-                                    if($sql_entry['assigned_emp_id']=="$emp_id"){  
+                                if($sql_entry['assigned_emp_id']=="$emp_id"){  
+                            
+                                    $sq_chk_count = mysqli_num_rows(mysqlQuery("select * from checklist_package_tour where booking_id='$booking_id' and entity_id='$sq_todo_list[id]' "));
                                 
-                                        $sq_chk_count = mysqli_num_rows(mysqlQuery("select * from checklist_package_tour where booking_id='$booking_id' and entity_id='$sq_todo_list[id]' "));
-                                    
-                                        $chk_status = ($sq_chk_count==1) ? "checked" : "";
-                                        $sq_chk_count1 = mysqli_num_rows(mysqlQuery("select * from checklist_package_tour where booking_id='$booking_id' and entity_id='$sq_todo_list[id]' and status='Completed'"));
-                                        $bg = ($sq_chk_count1==1) ? "success" : "";
-                                    
+                                    $chk_status = ($sq_chk_count==1) ? "checked" : "";
+                                    $sq_chk_count1 = mysqli_num_rows(mysqlQuery("select * from checklist_package_tour where booking_id='$booking_id' and entity_id='$sq_todo_list[id]' and status='Completed'"));
+                                    $bg = ($sq_chk_count1==1) ? "success" : "";
+                                
+                                    ?>
+                                    <tr class="<?= $bg ?>">
+                                    <td>
+                                        <input type="checkbox" id="chk_package_tour_checklist_<?= $sq_todo_list['id'] ?>" name="chk_package_tour_checklist" <?= $chk_status ?> data-entity-id="<?= $sq_todo_list['id'] ?>" disabled>
+                                    </td>
+                                    <td><?= $count++ ?></td>
+                                    <td><?= $sq_todo_list['entity_name'] ?></td>
+                                    <!-- <?php  ?> -->
+                                    <td class='<?= $class ?>'><select name="assigned_emp_id<?= $sq_todo_list['id'] ?>" id="assigned_emp_id<?= $sq_todo_list['id'] ?>" title="Allocate To" style="width:100%">
+                                    <?php 
+                            
+                                    if($sql_entry['assigned_emp_id']!=""){
+                                        $sql_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$sql_entry[assigned_emp_id]'"));     
                                         ?>
-                                        <tr class="<?= $bg ?>">
-                                        <td>
-                                            <input type="checkbox" id="chk_package_tour_checklist_<?= $sq_todo_list['id'] ?>" name="chk_package_tour_checklist" <?= $chk_status ?> data-entity-id="<?= $sq_todo_list['id'] ?>" disabled>
-                                        </td>
-                                        <td><?= $count ?></td>
-                                        <td><?= $sq_todo_list['entity_name'] ?></td>
-                                        <!-- <?php  ?> -->
-                                        <td class='<?= $class ?>'><select name="assigned_emp_id<?= $sq_todo_list['id'] ?>" id="assigned_emp_id<?= $sq_todo_list['id'] ?>" title="Allocate To" style="width:100%">
-                                        <?php 
-                                
-                                        if($sql_entry['assigned_emp_id']!=""){
-                                            $sql_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$sql_entry[assigned_emp_id]'"));     
-                                            ?>
-                                            <option value="<?= $sql_entry['assigned_emp_id'] ?>"><?= $sql_emp['first_name'] ?></option>
-                                                <?php  
-                                                if($login_id == "1"){
-                                                ?>
-                                                <option value="0">Admin</option>
-                                                <?php
-                                                }
-                                                if($role=='Admin' || ($branch_status!='yes' && $role=='Branch Admin')){
-                                                    $query = "select * from emp_master where active_flag='Active' order by first_name desc";
-                                                    $sq_emp = mysqlQuery($query);
-                                                    while($row_emp = mysqli_fetch_assoc($sq_emp)){
-                                                        ?>
-                                                        <option value="<?= $row_emp['emp_id'] ?>"><?= $row_emp['first_name'].' '.$row_emp['last_name'] ?></option>
-                                                        <?php
-                                                    }
-                                                }
-                                                elseif($branch_status=='yes' && $role=='Branch Admin'){
-                                                    $query = "select * from emp_master where active_flag='Active' and branch_id='$branch_admin_id' order by first_name asc";
-                                                    $sq_emp = mysqlQuery($query);
-                                                    while($row_emp = mysqli_fetch_assoc($sq_emp)){
-                                                        ?>
-                                                        <option value="<?= $row_emp['emp_id'] ?>"><?= $row_emp['first_name'].' '.$row_emp['last_name'] ?></option>
-                                                        <?php
-                                                    }
-                                                }else{ 
-                                                    $query1 = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$emp_id' and active_flag='Active'")); ?>
-                                                        <option value="<?= $query1['emp_id'] ?>"><?= $query1['first_name'].' '.$query1['last_name'] ?>
-                                                        </option>
-                                                    <script>
-                                                        $('#assigned_emp_id<?= $sq_todo_list['id'] ?>').select2();
-                                                    </script>
-                                                <?php } ?>
-                                            <?php 
-                                        }
-                                        else{ ?> 
-                                            <option value="">*Allocate To</option>
+                                        <option value="<?= $sql_entry['assigned_emp_id'] ?>"><?= $sql_emp['first_name'] ?></option>
                                             <?php  
                                             if($login_id == "1"){
                                             ?>
@@ -174,23 +146,58 @@ if($tour_type=="Package Tour" || $tour_type=="Group Tour"){
                                                 $query1 = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$emp_id' and active_flag='Active'")); ?>
                                                     <option value="<?= $query1['emp_id'] ?>"><?= $query1['first_name'].' '.$query1['last_name'] ?>
                                                     </option>
-                                            
+                                                <script>
+                                                    $('#assigned_emp_id<?= $sq_todo_list['id'] ?>').select2();
+                                                </script>
                                             <?php } ?>
-                                            <?php 
-                                        } ?>
-                                            </select></td> 
-                                            <td><select name="status<?= $sq_todo_list['id'] ?>" id="status<?= $sq_todo_list['id'] ?>" title="Status" style="width:100%">
-                                            <?php if($sql_entry['status']!=''){ ?>
-                                                <option value="<?= $sql_entry['status'] ?>"><?= $sql_entry['status'] ?></option>
-                                                <option value="Not Updated">Not Updated</option>
-                                                <option value="Completed">Completed</option>
-                                            <?php }else{ ?>
-                                                <option value="Not Updated">Not Updated</option>
-                                                <option value="Completed">Completed</option>
-                                            <?php } ?>
-                                            </select></td>
-                                            <td class="hidden"><input type="hidden" id="entry_id<?= $sq_todo_list['id'] ?>" name="entry_id<?= $sq_todo_list['id'] ?>" value="<?= $sql_entry['id'] ?>"></td>
-                                        </tr>
+                                        <?php 
+                                    }
+                                    else{ ?> 
+                                        <option value="">*Allocate To</option>
+                                        <?php  
+                                        if($login_id == "1"){
+                                        ?>
+                                        <option value="0">Admin</option>
+                                        <?php
+                                        }
+                                        if($role=='Admin' || ($branch_status!='yes' && $role=='Branch Admin')){
+                                            $query = "select * from emp_master where active_flag='Active' order by first_name desc";
+                                            $sq_emp = mysqlQuery($query);
+                                            while($row_emp = mysqli_fetch_assoc($sq_emp)){
+                                                ?>
+                                                <option value="<?= $row_emp['emp_id'] ?>"><?= $row_emp['first_name'].' '.$row_emp['last_name'] ?></option>
+                                                <?php
+                                            }
+                                        }
+                                        elseif($branch_status=='yes' && $role=='Branch Admin'){
+                                            $query = "select * from emp_master where active_flag='Active' and branch_id='$branch_admin_id' order by first_name asc";
+                                            $sq_emp = mysqlQuery($query);
+                                            while($row_emp = mysqli_fetch_assoc($sq_emp)){
+                                                ?>
+                                                <option value="<?= $row_emp['emp_id'] ?>"><?= $row_emp['first_name'].' '.$row_emp['last_name'] ?></option>
+                                                <?php
+                                            }
+                                        }else{ 
+                                            $query1 = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$emp_id' and active_flag='Active'")); ?>
+                                                <option value="<?= $query1['emp_id'] ?>"><?= $query1['first_name'].' '.$query1['last_name'] ?>
+                                                </option>
+                                        
+                                        <?php } ?>
+                                        <?php 
+                                    } ?>
+                                        </select></td> 
+                                        <td><select name="status<?= $sq_todo_list['id'] ?>" id="status<?= $sq_todo_list['id'] ?>" title="Status" style="width:100%">
+                                        <?php if($sql_entry['status']!=''){ ?>
+                                            <option value="<?= $sql_entry['status'] ?>"><?= $sql_entry['status'] ?></option>
+                                            <option value="Not Updated">Not Updated</option>
+                                            <option value="Completed">Completed</option>
+                                        <?php }else{ ?>
+                                            <option value="Not Updated">Not Updated</option>
+                                            <option value="Completed">Completed</option>
+                                        <?php } ?>
+                                        </select></td>
+                                        <td class="hidden"><input type="hidden" id="entry_id<?= $sq_todo_list['id'] ?>" name="entry_id<?= $sq_todo_list['id'] ?>" value="<?= $sql_entry['id'] ?>"></td>
+                                    </tr>
                                     <script>
                                         $('#assigned_emp_id<?=$sq_todo_list['id'] ?>').select2();
                                     </script>
@@ -205,7 +212,7 @@ if($tour_type=="Package Tour" || $tour_type=="Group Tour"){
                 </div></div>
                 <div class="row text-center mg_tp_20">
                     <div class="col-md-12">
-                        <button class="btn btn-sm btn-success" ><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Update</button>
+                        <button class="btn btn-sm btn-success" id="supdate_checklist"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Update</button>
                     </div>
                 </div>
             </form>
@@ -222,11 +229,12 @@ $('#view_modal').modal('show');
 
 $(function(){
 $('#frm_emquiry_save').validate({
-  rules:{
-    draft : { draft : true },
-  },
-  submitHandler:function(form){
-   
+    rules:{
+        draft : { draft : true },
+    },
+    submitHandler:function(form){
+
+    $('#supdate_checklist').prop('disabled',true);
     var booking_id = $('#booking_id').val();
     var branch_admin_id = $('#branch_admin_id1').val();
     var tour_type = $('#tour_type').val();
@@ -249,6 +257,11 @@ $('#frm_emquiry_save').validate({
         entity_id_arr.push(entity_id);
         check_id_arr.push('1');
     });
+    if(entity_id_arr.length == 0){ 
+        error_msg_alert('Atleast select one entity');
+        $('#supdate_checklist').prop('disabled',false);
+        return false;
+    }
     $('input[name="chk_package_tour_checklist"]:not(:checked)').each(function(){
         var entity_id = $(this).attr('data-entity-id');
         var emp_id = $('#assigned_emp_id'+entity_id).val();
@@ -261,8 +274,8 @@ $('#frm_emquiry_save').validate({
         check_id_arr.push('0');
     });
     
-    if(entity_id_arr.length == 0){ error_msg_alert('Atleast select one entity'); return false; }
     var base_url = $('#base_url').val();
+    $('#supdate_checklist').button('loading');
 
     $.ajax({
         type:'post',
@@ -270,7 +283,7 @@ $('#frm_emquiry_save').validate({
         data:{ booking_id:booking_id,branch_admin_id:branch_admin_id,entity_id_arr:entity_id_arr,tour_type:tour_type,ass_emp_id_arr:ass_emp_id_arr,status_arr:status_arr,entry_id_arr:entry_id_arr,check_id_arr:check_id_arr },
         success:function(result){
             msg_alert(result);
-            $('#btn_form_send').button('reset'); 
+            $('#supdate_checklist').button('reset'); 
             $('#view_modal').modal('hide');  
         }
     });

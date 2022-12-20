@@ -9,6 +9,7 @@ class quotation_master{
         $bsmValues = $_POST['bsmValues'];
         $enquiryDetails = $_POST['enquiryDetails'];
         $currency_code = $_POST['currency_code'];
+        $hotel_requirements = addslashes($_POST['hotel_requirements']);
 
         $login_id = $_SESSION['login_id'];
         $emp_id = $_SESSION['emp_id'];
@@ -39,7 +40,7 @@ class quotation_master{
             $sq_max = mysqli_fetch_assoc(mysqlQuery("SELECT max(`quotation_id`) as max from `hotel_quotation_master`"));
             $quotationId = $sq_max['max'] + 1;
             
-            $sq_ins = mysqlQuery("INSERT INTO `hotel_quotation_master`(`quotation_id`,`login_id`, `emp_id`, `branch_admin_id`, `financial_year_id`, `hotel_details`,`costing_details`,`enquiry_details`, `quotation_date`,`created_at`,`bsmValues`,`currency_code`) VALUES('$quotationId','$login_id','$emp_id','$branch_admin_id', '$financial_year_id','$hotelDetails_ins', '$costingDetails_ins', '$enquiryDetails', '$quotation_date', '$created_at', '$bsmValues_ins','$currency_code')");
+            $sq_ins = mysqlQuery("INSERT INTO `hotel_quotation_master`(`quotation_id`,`login_id`, `emp_id`, `branch_admin_id`, `financial_year_id`, `hotel_details`,`costing_details`,`enquiry_details`, `quotation_date`,`created_at`,`bsmValues`,`currency_code`,`status`,`hotel_req`) VALUES('$quotationId','$login_id','$emp_id','$branch_admin_id', '$financial_year_id','$hotelDetails_ins', '$costingDetails_ins', '$enquiryDetails', '$quotation_date', '$created_at', '$bsmValues_ins','$currency_code','1','$hotel_requirements')");
             array_push($errorCont, ($sq_ins) ? true : false);
         }
         
@@ -95,10 +96,12 @@ class quotation_master{
         $quotationId = $_POST['quotation_id'];
         $quotation_date = get_date_db($_POST['quotation_date']);
         $currency_code = $_POST['currency_code'];
+        $hotel_requirements = addslashes($_POST['hotel_requirements']);
         $hotelDetails = json_encode($_POST['hotelDetails']);
         $costingDetails = json_decode(json_encode($_POST['costingDetails']), true);
         $bsmValues_val = json_decode(json_encode($_POST['bsmValues']));
         $enquiryDetails = json_encode($_POST['enquiryDetails']);
+        $active_flag = $_POST['active_flag'];
 
         begin_t();   
         
@@ -110,10 +113,10 @@ class quotation_master{
             }
         }
 
+
         $bsmValues_ins = json_encode($bsmValues_val);
         $costingDetails_ins = json_encode($costingDetails);
-
-        $sq_upd = mysqlQuery("UPDATE `hotel_quotation_master` SET  `hotel_details` = '$hotelDetails',`costing_details` = '$costingDetails_ins', `enquiry_details` = '$enquiryDetails', `bsmValues` = '$bsmValues_ins',quotation_date='$quotation_date',`currency_code`='$currency_code' WHERE `quotation_id` =".$quotationId);
+        $sq_upd = mysqlQuery("UPDATE `hotel_quotation_master` SET  `hotel_details` = '$hotelDetails',`costing_details` = '$costingDetails_ins', `enquiry_details` = '$enquiryDetails', `bsmValues` = '$bsmValues_ins',quotation_date='$quotation_date',`currency_code`='$currency_code',status='$active_flag',hotel_req='$hotel_requirements' WHERE `quotation_id` =".$quotationId);
         
         if(!$sq_upd){
             rollback_t();
@@ -135,11 +138,12 @@ class quotation_master{
         $created_at = date("Y-m-d");
 
         $quotationValues = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `hotel_quotation_master` WHERE `quotation_id`=".$quotation_id));
+        $hotel_req = addslashes($quotationValues['hotel_req']);
 
         $sq_max = mysqli_fetch_assoc(mysqlQuery("SELECT max(`quotation_id`) as max from `hotel_quotation_master`"));
         $quotationId = $sq_max['max'] + 1;
 
-        $sq_ins = mysqlQuery("INSERT INTO `hotel_quotation_master`(`quotation_id`,`login_id`, `emp_id`, `branch_admin_id`, `financial_year_id`, `hotel_details`,`costing_details`,`enquiry_details`, `quotation_date`,`created_at`,`bsmValues`,`clone`,`currency_code`) VALUES('$quotationId','$login_id','$emp_id','$branch_admin_id', '$financial_year_id','$quotationValues[hotel_details]', '$quotationValues[costing_details]', '$quotationValues[enquiry_details]', '$created_at', '$created_at','$quotationValues[bsmValues]','1','$quotationValues[currency_code]')");
+        $sq_ins = mysqlQuery("INSERT INTO `hotel_quotation_master`(`quotation_id`,`login_id`, `emp_id`, `branch_admin_id`, `financial_year_id`, `hotel_details`,`costing_details`,`enquiry_details`, `quotation_date`,`created_at`,`bsmValues`,`clone`,`currency_code`,`status`,`hotel_req`) VALUES('$quotationId','$login_id','$emp_id','$branch_admin_id', '$financial_year_id','$quotationValues[hotel_details]', '$quotationValues[costing_details]', '$quotationValues[enquiry_details]', '$created_at', '$created_at','$quotationValues[bsmValues]','1','$quotationValues[currency_code]','1','$hotel_req')");
 
         if(!$sq_ins){
             echo "error--Sorry Hotel Quotation not cloned successfully!";

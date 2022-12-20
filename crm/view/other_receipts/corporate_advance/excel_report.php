@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -61,12 +61,12 @@ $borderArray = array(
 $objPHPExcel = new PHPExcel();
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
+  ->setLastModifiedBy("Maarten Balliauw")
+  ->setTitle("Office 2007 XLSX Test Document")
+  ->setSubject("Office 2007 XLSX Test Document")
+  ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+  ->setKeywords("office 2007 openxml php")
+  ->setCategory("Test result file");
 
 //////////////////////////****************Content start**************////////////////////////////////
 
@@ -114,7 +114,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);   
 
 
-$query = "select * from corporate_advance_master where payment_amount!='0' ";
+$query = "select * from corporate_advance_master where payment_amount!='0' and delete_status='0'";
 if($from_date!="" && $to_date!=""){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
@@ -137,12 +137,12 @@ $row_count = 6;
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Customer")
-        ->setCellValue('D'.$row_count, "Date")
+        ->setCellValue('C'.$row_count, "Customer Name")
+        ->setCellValue('D'.$row_count, "Payment Date")
         ->setCellValue('E'.$row_count, "Mode")
         ->setCellValue('F'.$row_count, "Particular")
         ->setCellValue('G'.$row_count, "Amount");
-         
+
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
 

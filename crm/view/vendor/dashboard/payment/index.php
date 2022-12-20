@@ -74,7 +74,7 @@ var column = [
 	{ title : "Purchase_ID"},
 	{ title : "Supplier_Type"},
 	{ title : "Supplier_Name"},
-	{ title : "Date"},
+	{ title : "Payment_Date"},
 	{ title : "Amount"},
 	{ title : "Mode"},
 	{ title : "Bank_Name"},
@@ -92,7 +92,7 @@ function payment_list_reflect()
 	var branch_status = $('#branch_status').val();
 	
 	$.post('payment/payment_list_reflect.php', { vendor_type : vendor_type, vendor_type_id : vendor_type_id,estimate_type : estimate_type, estimate_type_id : estimate_type_id, financial_year_id : financial_year_id, branch_status : branch_status }, function(data){
-		pagination_load(data, column, true, true, 20, 'payment');
+		pagination_load(data, column, true, true, 20, 'payment',true);
 		$('.loader').remove();
 	});
 }
@@ -116,11 +116,26 @@ function excel_report()
 {
 	var vendor_type = $('#vendor_type2').val();
 	var vendor_type_id = get_vendor_type_id('vendor_type2');
- 	var estimate_type = $('#estimate_type2').val();
- 	var estimate_type_id = get_estimate_type_id('estimate_type2', '2');
+	var estimate_type = $('#estimate_type2').val();
+	var estimate_type_id = get_estimate_type_id('estimate_type2', '2');
 	var financial_year_id = $('#financial_year_id_filter').val();
-  var branch_status = $('#branch_status').val();
+	var branch_status = $('#branch_status').val();
 	window.location = 'payment/excel_report.php?financial_year_id='+financial_year_id+'&vendor_type='+vendor_type+''+'&vendor_type_id='+vendor_type_id+'&estimate_type='+estimate_type+''+'&estimate_type_id='+estimate_type_id+'&branch_status='+branch_status;
+}
+function payment_delete_entry(payment_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/vendor/dashboard/payment/payment_delete.php',{ payment_id : payment_id }, function(data){
+					success_msg_alert(data);
+					payment_list_reflect();
+				});
+			}
+		}
+	});
 }
 
 </script>

@@ -6,11 +6,11 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='bank_vouchers/index.php'"));
 $branch_status = $sq['branch_status'];
 ?>
- <input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>" >
+<input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>" >
 <div class="row text-right mg_bt_20">
 	<div class="col-xs-12">
 		<button class="btn btn-excel btn-sm" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>
-		<button class="btn btn-info ico_left btn-sm" id="btn_new_cash" onclick="inter_banks_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Transfers</button>
+		<button class="btn btn-info ico_left btn-sm" id="btn_new_cash" onclick="inter_banks_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Inter Bank Transfers</button>
 	</div>
 </div>
 
@@ -18,12 +18,12 @@ $branch_status = $sq['branch_status'];
 	<div class="row">
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<select id="bank_id_filter" name="bank_id_filter" style="width:100%" title="Creditor Bank" class="form-control">
-				  <?php get_bank_dropdown(); ?>
+			<?php get_bank_dropdown(); ?>
 			</select>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<select id="bank_id_filter1" name="bank_id_filter1" style="width:100%" title="Debitor Bank" class="form-control">
-				  <?php get_bank_dropdown('Debitor Bank'); ?>
+			<?php get_bank_dropdown('Debitor Bank'); ?>
 			</select>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
@@ -84,7 +84,7 @@ function update_bank_modal(entry_id)
 }
 
 function excel_report()
-  {
+{
     var from_date = $('#from_date_filter').val();
 	var to_date = $('#to_date_filter').val();
 	var bank_id = $('#bank_id_filter').val();
@@ -92,7 +92,7 @@ function excel_report()
 	var financial_year_id = $('#financial_year_id_filter').val();
     var branch_status = $('#branch_status').val();
     window.location = 'inter_banks/excel_report.php?bank_id='+bank_id+'&dbank_id='+dbank_id+'&from_date='+from_date+'&to_date='+to_date+'&financial_year_id='+financial_year_id+'&branch_status='+branch_status;
-  }
+}
 
 function get_lapse_date(trans_type,ins_date,offset='')
 {
@@ -100,6 +100,21 @@ function get_lapse_date(trans_type,ins_date,offset='')
 	var ins_dateq = $('#'+ins_date).val();
 	$.post('inter_banks/get_lapse_date.php',{ trans_type : trans_typeq, ins_date : ins_dateq}, function(data){
 		$('#lapse_date'+offset).val(data);
+	});
+}
+function inter_delete_entry(entry_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/bank_vouchers/bank_transfer_delete.php',{ entry_id : entry_id }, function(data){
+					success_msg_alert(data);
+					list_reflect();
+				});
+			}
+		}
 	});
 }
 

@@ -40,7 +40,6 @@ function finance_update($tourwise_traveler_id, $row_spec,$booking_date,$particul
   $insuarance_service_tax_subtotal = $_POST['insuarance_service_tax_subtotal'];
   $insuarance_total_amount = $_POST['insuarance_total_amount'];
 
-
   //**tour details
   $adult_expense = $_POST['adult_expense'];      
   $child_b_expense = $_POST['child_b_expense'];        
@@ -83,8 +82,7 @@ function finance_update($tourwise_traveler_id, $row_spec,$booking_date,$particul
 
   $total_sale_amount = $basic_amount+$total_discount;
   
-  ////////////Sales/////////////
-
+    ////////////Sales/////////////
     $module_name = "Group Booking";
     $module_entry_id = $tourwise_traveler_id;
     $transaction_id = "";
@@ -96,9 +94,6 @@ function finance_update($tourwise_traveler_id, $row_spec,$booking_date,$particul
     $payment_side = "Credit";
     $clearance_status = "";
     $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$olg_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
-
-    /////////Tax Amount/////////
-    // tax_reflection_update('Group Booking',$tax_amount,$taxation_type,$tourwise_traveler_id,get_group_booking_id($tourwise_traveler_id,$yr1),$booking_date, $customer_id, $row_spec);
 
     // Discount 
     $module_name = "Group Booking";
@@ -140,46 +135,41 @@ function finance_update($tourwise_traveler_id, $row_spec,$booking_date,$particul
     $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
     $cust_gl = $sq_cust['ledger_id'];
 
-    $sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as amount from payment_master where tourwise_traveler_id='$tourwise_traveler_id'"));
-    $total_tour_expense = $net_total ;
-    $balance_amount = $total_tour_expense - $sq_pay['amount'];
+    /////////Service Charge Tax Amount////////
+    // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+    $service_tax_subtotal = explode(',',$service_tax);
+    $tax_ledgers = explode(',',$reflections[0]->hotel_taxes);
+    for($i=0;$i<sizeof($service_tax_subtotal);$i++){
 
-    global $transaction_master;
-        /////////Service Charge Tax Amount////////
-      // Eg. CGST:(9%):24.77, SGST:(9%):24.77
-      $service_tax_subtotal = explode(',',$service_tax);
-      $tax_ledgers = explode(',',$reflections[0]->hotel_taxes);
-      for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+      $service_tax = explode(':',$service_tax_subtotal[$i]);
+      $tax_amount = $service_tax[2];
+      $ledger = $tax_ledgers[$i];
 
-        $service_tax = explode(':',$service_tax_subtotal[$i]);
-        $tax_amount = $service_tax[2];
-        $ledger = $tax_ledgers[$i];
-
-        $module_name = "Group Booking";
-        $module_entry_id = $tourwise_traveler_id;
-        $transaction_id = "";
-        $payment_amount = $tax_amount;
-        $payment_date = $booking_date;
-        $payment_particular = $particular;
-        $ledger_particular = get_ledger_particular('To','Group Tour Sales');
-        $old_gl_id = $gl_id = $ledger;
-        $payment_side = "Credit";
-        $clearance_status = "";
-        $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
-      }
-
-      ////////Customer Amount//////
       $module_name = "Group Booking";
       $module_entry_id = $tourwise_traveler_id;
       $transaction_id = "";
-      $payment_amount = $net_total;
+      $payment_amount = $tax_amount;
       $payment_date = $booking_date;
       $payment_particular = $particular;
       $ledger_particular = get_ledger_particular('To','Group Tour Sales');
-      $old_gl_id = $gl_id = $cust_gl;
-      $payment_side = "Debit";
+      $old_gl_id = $gl_id = $ledger;
+      $payment_side = "Credit";
       $clearance_status = "";
       $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    }
+
+    ////////Customer Amount//////
+    $module_name = "Group Booking";
+    $module_entry_id = $tourwise_traveler_id;
+    $transaction_id = "";
+    $payment_amount = $net_total;
+    $payment_date = $booking_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Group Tour Sales');
+    $old_gl_id = $gl_id = $cust_gl;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
 }
 }
 ?>

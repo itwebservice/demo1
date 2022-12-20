@@ -35,25 +35,25 @@ class hotel_master{
                 $emergency_contact = $data[6];
                 $hotel_address = $data[7];
                 $state_id= $data[8];
-                $country = $data[9];
-                $website = $data[10];
-                $bank_name = $data[11];
-                $account_name = $data[12];
-                $account_no = $data[13];
-                $branch = $data[14];
-                $ifsc_code = $data[15];
-                $gst_no = $data[16];
-                $supp_pan = $data[17];
-                $opening_balance = '';
+                // $country = $data[9];
+                $website = $data[9];
+                $bank_name = $data[10];
+                $account_name = $data[11];
+                $account_no = $data[12];
+                $branch = $data[13];
+                $ifsc_code = $data[14];
+                $gst_no = $data[15];
+                $supp_pan = $data[16];
                 $as_on_date = '';
-                $hotel_type = $data[18];
-                $side = '';     
-                $cwob_from = $data[19];
-                $cwob_to = $data[20];           
-                $cwb_from = $data[21];
-                $cwb_to = $data[22];           
-                $meal_plan = $data[23];
-                $description = $data[24];
+                $hotel_type = $data[17];
+                $cwob_from = $data[18];
+                $cwob_to = $data[19];           
+                $cwb_from = $data[20];
+                $cwb_to = $data[21];           
+                $hotel_type11 = $data[22];
+                $description = $data[23];
+                $opening_balance = $data[24];
+                $side = $data[25];
                 
                 $as_on_date = get_date_db($as_on_date);
                 if($cwb_from == 0 || $cwb_from == ''){
@@ -100,10 +100,11 @@ class hotel_master{
                           $hotel_name = addslashes($hotel_name);
                           
                           //Login save
+	                        $side = ($side == '') ? 'Credit' : $side;
                           $vendor_login_master = new vendor_login_master;
                           $vendor_login_master->vendor_login_save($hotel_name, $mobile1, 'Hotel Vendor',$hotel_id, 'Active', $email,$opening_balance,$side,$as_on_date);
                           
-                          $query = "insert into hotel_master ( hotel_id, city_id, hotel_name, mobile_no, landline_no, email_id, contact_person_name, immergency_contact_no, hotel_address, country, website, opening_balance, rating_star,active_flag , bank_name, account_name ,account_no, branch, ifsc_code, service_tax_no, state_id,side,pan_no,as_of_date, `cwb_from`, `cwb_to`, `cwob_from`, `cwob_to`,`meal_plan`,`description`) values ('$hotel_id', '$city_id', '$hotel_name', '$mobile1', '$landline', '$email', '$contact_person', '$emergency_contact', '$hotel_address', '$country', '$website', '$opening_balance', '$hotel_type', 'Active','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$gst_no','$state_id','$side','$supp_pan','$as_on_date', '$cwb_from', '$cwb_to', '$cwob_from', '$cwob_to','$meal_plan','$description')";
+                          $query = "insert into hotel_master ( hotel_id, city_id, hotel_name, mobile_no, landline_no, email_id, contact_person_name, immergency_contact_no, hotel_address, website, opening_balance, rating_star,active_flag ,hotel_type, bank_name, account_name ,account_no, branch, ifsc_code, service_tax_no, state_id,side,pan_no,as_of_date, `cwb_from`, `cwb_to`, `cwob_from`, `cwob_to`,`meal_plan`,`description`) values ('$hotel_id', '$city_id', '$hotel_name', '$mobile1', '$landline', '$email', '$contact_person', '$emergency_contact', '$hotel_address',  '$website', '$opening_balance', '$hotel_type', 'Active','$hotel_type11','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$gst_no','$state_id','$side','$supp_pan','$as_on_date', '$cwb_from', '$cwb_to', '$cwob_from', '$cwob_to','','$description')";
                           $sq_enquiry = mysqlQuery($query);
                           if($sq_enquiry){
                           }   
@@ -136,14 +137,14 @@ class hotel_master{
           header("Content-Disposition: attachment; filename=file.csv");
           header("Pragma: no-cache");
           header("Expires: 0");
-          $output = fopen($save, "w");  
-          fputcsv($output, array('city_id' , 'Hotel_name' , 'Mobile' , 'landline' , 'Email' , 'Contact_Person' , 'Emergency_Contact_No' ,'Hotel_address', 'state_id' , 'Country' , 'Website' , 'Bank_Name' , 'Account_Name' , 'Account_No' , 'Branch' , 'IFSC_swift_Code' , 'Tax_No', 'PAN_TAN_No' , 'Hotel Category' ,'Child Without Bed From Age','Child Without Bed To Age','Child With Bed From Age','Child With Bed To Age','Meal Plan','Hotel Description'));   
+          $output = fopen($save, "w");
+          fputcsv($output, array('City Id' , 'Hotel Name' , 'Mobile' , 'landline' , 'Email' , 'Contact Person' , 'Emergency Contact No' ,'Hotel Address', 'State Id' ,  'Website' , 'Bank_Name' , 'Account_Name' , 'Account No' , 'Branch' , 'IFSC Swift Code' , 'Tax No', 'PAN TAN No' , 'Hotel Category' ,'Child Without Bed From Age','Child Without Bed To Age','Child With Bed From Age','Child With Bed To Age','Hotel Type','Hotel Description','Opening Balance','Balance Side'));
           
           foreach($unprocessedArray as $row){
             fputcsv($output, $row);
           }
-          fclose($output); 
-          echo "<script> window.location ='$downloadurl'; </script>";  
+          fclose($output);
+          echo "<script> window.location ='$downloadurl'; </script>";
         } 
     }
 
@@ -165,7 +166,7 @@ class hotel_master{
   }
 
 ///////////////////////***Hotel Master save start*********//////////////
-function hotel_master_save($city_id, $hotel_name, $mobile_no, $landline_no, $email_id,$email_id_1,$email_id_2, $contact_person_name, $immergency_contact_no, $hotel_address, $country, $website, $opening_balance,$rating_star, $active_flag, $bank_name,$account_name,$account_no,$branch, $ifsc_code, $service_tax_no ,$state,$side,$supp_pan,$hotel_image_path,$as_of_date,$description,$policies,$amenities,$hotel_type,$meal_plan,$cwb_from,$cwb_to,$cwob_from,$cwob_to){
+function hotel_master_save($city_id, $hotel_name, $mobile_no, $landline_no, $email_id,$email_id_1,$email_id_2, $contact_person_name, $immergency_contact_no, $hotel_address,  $website, $opening_balance,$rating_star, $active_flag, $bank_name,$account_name,$account_no,$branch, $ifsc_code, $service_tax_no ,$state,$side,$supp_pan,$hotel_image_path,$as_of_date,$description,$policies,$amenities,$hotel_type,$meal_plan,$cwb_from,$cwb_to,$cwob_from,$cwob_to){
 
   $city_id = mysqlREString($city_id);
   $mobile_no = mysqlREString($mobile_no);
@@ -175,7 +176,7 @@ function hotel_master_save($city_id, $hotel_name, $mobile_no, $landline_no, $ema
   $contact_person_name = mysqlREString($contact_person_name);
   $immergency_contact_no = mysqlREString($immergency_contact_no);
   $hotel_address = mysqlREString($hotel_address);
-  $country = mysqlREString($country);
+  // $country = mysqlREString($country);
   $website = mysqlREString($website);
   $opening_balance = mysqlREString($opening_balance);
   $rating_star = mysqlREString($rating_star);
@@ -221,7 +222,7 @@ function hotel_master_save($city_id, $hotel_name, $mobile_no, $landline_no, $ema
   $max_hotel_id1 = mysqli_fetch_assoc(mysqlQuery("select max(hotel_id) as max from hotel_master"));
   $max_hotel_id = $max_hotel_id1['max']+1;
   
-  $sq = mysqlQuery("insert into hotel_master ( hotel_id, city_id, hotel_name, mobile_no, landline_no, email_id,alternative_email_1,alternative_email_2, contact_person_name, immergency_contact_no, hotel_address, country, website, opening_balance, rating_star,meal_plan,hotel_type, bank_name,account_name, account_no, branch, ifsc_code, service_tax_no,active_flag, state_id,side,pan_no,as_of_date,description,policies,amenities, `cwb_from`, `cwb_to`, `cwob_from`, `cwob_to`) values ( '$max_hotel_id', '$city_id', '$hotel_name', '$mobile_no', '$landline_no', '$email_id', '$email_id_1', '$email_id_2', '$contact_person_name', '$immergency_contact_no', '$hotel_address', '$country', '$website', '$opening_balance','$rating_star','$meal_plan','$hotel_type', '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$service_tax_no', '$active_flag','$state','$side','$supp_pan','$as_of_date','$description','$policies','$amenities', '$cwb_from', '$cwb_to', '$cwob_from', '$cwob_to')");
+  $sq = mysqlQuery("insert into hotel_master ( hotel_id, city_id, hotel_name, mobile_no, landline_no, email_id,alternative_email_1,alternative_email_2, contact_person_name, immergency_contact_no, hotel_address, website, opening_balance, rating_star,meal_plan,hotel_type, bank_name,account_name, account_no, branch, ifsc_code, service_tax_no,active_flag, state_id,side,pan_no,as_of_date,description,policies,amenities, `cwb_from`, `cwb_to`, `cwob_from`, `cwob_to`) values ( '$max_hotel_id', '$city_id', '$hotel_name', '$mobile_no', '$landline_no', '$email_id', '$email_id_1', '$email_id_2', '$contact_person_name', '$immergency_contact_no', '$hotel_address', '$website', '$opening_balance','$rating_star','$meal_plan','$hotel_type', '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$service_tax_no', '$active_flag','$state','$side','$supp_pan','$as_of_date','$description','$policies','$amenities', '$cwb_from', '$cwb_to', '$cwob_from', '$cwob_to')");
 
   if(!$sq){
     rollback_t();
@@ -266,7 +267,7 @@ function hotel_master_save($city_id, $hotel_name, $mobile_no, $landline_no, $ema
 ///////////////////////***Hotel Master save end*********//////////////
 
 ///////////////////////***Hotel Master update start*********//////////////
-function hotel_master_update( $hotel_id, $vendor_login_id, $city_id, $hotel_name, $mobile_no, $landline_no, $email_id,$email_id_1,$email_id_2, $contact_person_name, $immergency_contact_no, $hotel_address, $country, $website, $opening_balance,$rating_star, $active_flag, $bank_name,$account_name ,$account_no, $branch, $ifsc_code, $service_tax_no,$state,$side1,$supp_pan,$as_of_date,$description,$policies,$amenities,$hotel_type,$meal_plan,$cwb_from,$cwb_to,$cwob_from,$cwob_to)
+function hotel_master_update( $hotel_id, $vendor_login_id, $city_id, $hotel_name, $mobile_no, $landline_no, $email_id,$email_id_1,$email_id_2, $contact_person_name, $immergency_contact_no, $hotel_address,  $website, $opening_balance,$rating_star, $active_flag, $bank_name,$account_name ,$account_no, $branch, $ifsc_code, $service_tax_no,$state,$side1,$supp_pan,$as_of_date,$description,$policies,$amenities,$hotel_type,$meal_plan,$cwb_from,$cwb_to,$cwob_from,$cwob_to)
 {
   $city_id = mysqlREString($city_id);
   $mobile_no = mysqlREString($mobile_no);
@@ -276,7 +277,7 @@ function hotel_master_update( $hotel_id, $vendor_login_id, $city_id, $hotel_name
   $contact_person_name = mysqlREString($contact_person_name);
   $immergency_contact_no = mysqlREString($immergency_contact_no);
   $hotel_address = mysqlREString($hotel_address);
-  $country = mysqlREString($country);
+  // $country = mysqlREString($country);
   $website = mysqlREString($website);
   $opening_balance = mysqlREString($opening_balance);
   $rating_star = mysqlREString($rating_star);
@@ -309,7 +310,7 @@ function hotel_master_update( $hotel_id, $vendor_login_id, $city_id, $hotel_name
   begin_t();
 
   $hotel_name = addslashes($hotel_name);
-  $sq = mysqlQuery("update hotel_master set city_id='$city_id', hotel_name='$hotel_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', alternative_email_1='$email_id_1', alternative_email_2='$email_id_2', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', hotel_address='$hotel_address', country='$country',website = '$website', opening_balance='$opening_balance',rating_star = '$rating_star',meal_plan='$meal_plan',hotel_type='$hotel_type', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name',account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code',  service_tax_no='$service_tax_no', state_id='$state',side='$side1',pan_no='$supp_pan',as_of_date='$as_of_date',description='$description',policies='$policies',amenities='$amenities',cwb_from='$cwb_from', cwb_to='$cwb_to', cwob_from='$cwob_from', cwob_to='$cwob_to' where hotel_id='$hotel_id' ");
+  $sq = mysqlQuery("update hotel_master set city_id='$city_id', hotel_name='$hotel_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', alternative_email_1='$email_id_1', alternative_email_2='$email_id_2', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', hotel_address='$hotel_address',website = '$website', opening_balance='$opening_balance',rating_star = '$rating_star',meal_plan='$meal_plan',hotel_type='$hotel_type', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name',account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code',  service_tax_no='$service_tax_no', state_id='$state',side='$side1',pan_no='$supp_pan',as_of_date='$as_of_date',description='$description',policies='$policies',amenities='$amenities',cwb_from='$cwb_from', cwb_to='$cwb_to', cwob_from='$cwob_from', cwob_to='$cwob_to' where hotel_id='$hotel_id' ");
 
   if(!$sq){
     rollback_t();

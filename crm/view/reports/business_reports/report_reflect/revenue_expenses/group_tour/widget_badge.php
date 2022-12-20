@@ -7,7 +7,7 @@ $total_sale = 0; $total_purchase = 0;
 $array_s = array();
 $temp_arr = array();
 //Sale
-$q1 = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id ='$tour_group_id' and tour_group_status!='Cancel' ");
+$q1 = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id ='$tour_group_id' and delete_status='0' and tour_group_status!='Cancel' ");
 while($tourwise_details = mysqli_fetch_assoc($q1)){
 
 	$pass_count = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id='$tourwise_details[id]'"));
@@ -30,7 +30,7 @@ while($tourwise_details = mysqli_fetch_assoc($q1)){
 }
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
 	$total_purchase += $row_purchase['net_total'];
 	//Service Tax 

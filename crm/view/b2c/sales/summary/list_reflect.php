@@ -18,7 +18,7 @@ if($from_date!="" && $to_date!=""){
 	$to_date = date('Y-m-d', strtotime($to_date));
 	$query .= " and created_at between '$from_date' and '$to_date'";
 }
-$query .= " order by booking_id desc";
+// $query .= " order by booking_id desc";
 $count = 0;
 $total_balance=0;
 $total_refund=0;		
@@ -93,7 +93,7 @@ while($row_booking = mysqli_fetch_assoc($sq_exc)){
 	$email_id,
 	$row_booking['service'],
 	get_date_user($row_booking['created_at']),
-	'<button class="btn btn-info btn-sm" onclick="exc_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" onclick="exc_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($total_cost,2),
 	number_format($tax_amount,2),
 	number_format($coupon_amount,2),
@@ -102,10 +102,10 @@ while($row_booking = mysqli_fetch_assoc($sq_exc)){
 	number_format($cancel_amount, 2),
 	number_format($total_cost1, 2),
 	number_format($paid_amount, 2),
-	'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['booking_id'] .')"  data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($balance_amount, 2),
 	number_format($total_purchase,2),
-	'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	$emp_name,
 	), "bg" =>$bg);
 	array_push($array_s,$temp_arr);

@@ -1,4 +1,4 @@
-<?php 
+<?php
 global $bank_cash_book_master;
 $bank_cash_book_master = new bank_cash_book_master;
 class bank_cash_book_master{

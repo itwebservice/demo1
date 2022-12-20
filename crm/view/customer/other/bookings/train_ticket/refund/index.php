@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="ticket_idr" id="ticket_idr" style="width:100%" onchange="traion_refund_report_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_ticket = mysqlQuery("select * from train_ticket_master where customer_id='$customer_id' and train_ticket_id in ( select train_ticket_id from train_ticket_master_entries where status='Cancel' ) order by train_ticket_id desc");
+			        $sq_ticket = mysqlQuery("select * from train_ticket_master where customer_id='$customer_id' and train_ticket_id in ( select train_ticket_id from train_ticket_master_entries where status='Cancel' ) and delete_status='0' order by train_ticket_id desc");
 			        while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
 						$date = $row_ticket['created_at'];

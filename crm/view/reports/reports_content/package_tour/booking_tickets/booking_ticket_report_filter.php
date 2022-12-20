@@ -6,7 +6,7 @@ $branch_status = $_GET['branch_status'];
 $branch_id= $_GET['branch_id_filter'];
 $array_s = array();
 $temp_arr = array();
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 if($booking_id!=""){
 	$query .= " and booking_id='$booking_id'";	
 }

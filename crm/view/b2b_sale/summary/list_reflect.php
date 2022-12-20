@@ -25,7 +25,7 @@ if($from_date!="" && $to_date !=""){
 	$to_date = get_datetime_db($to_date);
 	$query .=" and (created_at>='$from_date' and created_at<='$to_date') ";
 }
-$query .= " order by booking_id desc";
+// $query .= " order by booking_id desc";
 global $currency;
 $sq_to = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$currency'"));
 $to_currency_rate = $sq_to['currency_rate'];
@@ -276,14 +276,14 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 	$purchase_amt = 0;
 	$i=0;
 	$p_due_date = '';
-	$sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='B2B Booking' and estimate_type_id='$row_customer[booking_id]'"));
+	$sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='B2B Booking' and estimate_type_id='$row_customer[booking_id]' and delete_status='0'"));
 	if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-	$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='B2B Booking' and estimate_type_id='$row_customer[booking_id]'");
+	$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='B2B Booking' and estimate_type_id='$row_customer[booking_id]' and delete_status='0'");
 	while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 		$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 		$total_purchase = $total_purchase + $purchase_amt;
 	}
-	$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='B2B Booking' and estimate_type_id='$row_customer[booking_id]'"));		
+	$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='B2B Booking' and estimate_type_id='$row_customer[booking_id]' and delete_status='0'"));		
 	$vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
 	if($vendor_name == ''){ $vendor_name1 = 'NA';  }
 	else{ $vendor_name1 = $vendor_name; }
@@ -302,11 +302,11 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 		number_format($row_customer['cancel_amount'],2),
 		number_format($servie_total-$row_customer['cancel_amount'],2),
 		number_format($payment_amount,2),
-		'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_customer['booking_id'] .')"  data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_customer['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		number_format($balance_amount, 2),
 		number_format($total_purchase,2),
 		$vendor_name1,
-		'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_customer['booking_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_customer['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		$emp_name,
 		), "bg" =>$bg);
 	array_push($array_s,$temp_arr);

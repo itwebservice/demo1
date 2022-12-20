@@ -65,7 +65,7 @@ public function status_update($type){
 		}
 
 		//Visa Booking
-		if($module_name=="Visa Booking"){ 
+		if($module_name=="Visa Booking Payment"){ 
 			$table_name = 'visa_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
@@ -77,7 +77,7 @@ public function status_update($type){
 			$date_field = 'refund_date';
 		}
 		//miscelleneous Booking
-		if($module_name=="Miscellaneous Booking"){ 
+		if($module_name=="Miscellaneous Booking Payment"){ 
 			$table_name = 'miscellaneous_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
@@ -89,36 +89,20 @@ public function status_update($type){
 			$date_field = 'refund_date';
 		}
 
-	
-		//Passport Booking
-		if($module_name=="Passport Booking"){ 
-			$table_name = 'passport_payment_master';
-			$id_name = 'payment_id';
-			$date_field = 'payment_date';
-		}
-
-		if($module_name=="Passport Booking Refund Paid"){ 
-			$table_name = 'passport_refund_master';
-			$id_name = 'refund_id';
-			$date_field = 'refund_date';
-		}
-
 		//Air Ticket Booking
-		if($module_name=="Air Ticket Booking"){ 
+		if($module_name=="Air Ticket Booking Payment"){ 
 			$table_name = 'ticket_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
 
 		}
-
 		if($module_name=="Air Ticket Booking Refund Paid"){ 
 			$table_name = 'ticket_refund_master';
 			$id_name = 'refund_id';
 			$date_field = 'refund_date';
 		}
-
 		//Train Ticket Booking
-		if($module_name=="Train Ticket Booking"){ 
+		if($module_name=="Train Ticket Booking Payment"){ 
 			$table_name = 'train_ticket_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
@@ -131,25 +115,22 @@ public function status_update($type){
 		}
 
 		//Hotel Booking
-		if($module_name=="Hotel Booking"){ 
+		if($module_name=="Hotel Booking Payment"){ 
 			$table_name = 'hotel_booking_payment';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
 		}
-
 		if($module_name=="Hotel Booking Refund Paid"){ 
 			$table_name = 'hotel_booking_refund_master';
 			$id_name = 'refund_id';
 			$date_field = 'refund_date';
 		}
-
 		//Car Rental Booking
-		if($module_name=="Car Rental Booking"){ 
+		if($module_name=="Car Rental Booking Payment"){ 
 			$table_name = 'car_rental_payment';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
 		}
-
 		if($module_name=="Car Rental Booking Refund Paid"){ 
 			$table_name = 'car_rental_refund_master';
 			$id_name = 'refund_id';
@@ -157,7 +138,7 @@ public function status_update($type){
 		}
 
 		//Group Booking
-		if($module_name=="Group Booking"){ 
+		if($module_name=="Group Booking Payment"){ 
 			$table_name = 'payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'date';
@@ -176,7 +157,7 @@ public function status_update($type){
 		}
 
 		//Package Booking
-		if($module_name=="Package Booking"){ 
+		if($module_name=="Package Booking Payment"){ 
 			$table_name = 'package_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'date';
@@ -196,7 +177,7 @@ public function status_update($type){
 		}
 
 		//Office Expense
-		if($module_name=="Other Expense Booking"){ 
+		if($module_name=="Other Expense Booking Payment"){ 
 			$table_name = 'other_expense_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
@@ -215,32 +196,27 @@ public function status_update($type){
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
 		}
-
-		if($module_name=="Corporate Advance Payment"){ 
+		if($module_name=="Customer Advance"){ 
 			$table_name = 'corporate_advance_master';
 			$id_name = 'advance_id';
 			$date_field = 'payment_date';
 		}
-		
 		if($module_name=="Airline Supplier Payment"){ 
 			$table_name = 'flight_supplier_payment';
 			$id_name = 'id';
 			$date_field = 'payment_date';
 		}
-
 		if($module_name=="Visa Supplier Payment"){ 
 			$table_name = 'visa_supplier_payment';
 			$id_name = 'id';
 			$date_field = 'payment_date';
 		}
-
 		//Vendor Payment
 		if($module_name=="Vendor Payment"){ 
 			$table_name = 'vendor_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';
 		}
-
 		if($module_name=="Hotel Vendor"){ 
 			$table_name = 'vendor_payment_master';
 			$id_name = 'payment_id';
@@ -375,10 +351,7 @@ public function status_update($type){
 
 		}
 
-
-
 		//TDS
-
 		if($module_name=="TDS Payment"){ 
 
 			$table_name = 'tds_entry_master';
@@ -389,86 +362,47 @@ public function status_update($type){
 
 		}
 
-
-
 		//Miscellaneous
-
 		if($module_name=="Miscellaneous Booking Payment"){ 
-
 			$table_name = 'miscellaneous_payment_master';
-
 			$id_name = 'payment_id';
-
 			$date_field = 'payment_date';
-
 		}
 
 		if($module_name=="Miscellaneous Booking Refund"){ 
-
 			$table_name = 'miscellaneous_refund_master';
-
 			$id_name = 'refund_id';
-
 			$date_field = 'refund_date';
-
 		}
 
 
 
 		//Bus
-
-		if($module_name=="Bus Booking"){ 
-
+		if($module_name=="Bus Booking Payment"){ 
 			$table_name = 'bus_booking_payment_master';
-
 			$id_name = 'payment_id';
-
 			$date_field = 'payment_date';
-
 		}
 
 		if($module_name=="Bus Booking Refund Paid"){ 
-
 			$table_name = 'bus_booking_refund_master';
-
 			$id_name = 'refund_id';
-
 			$date_field = 'refund_date';
-
-		}
-
-		//Forex
-		if($module_name=="Forex Booking"){ 
-
-			$table_name = 'forex_booking_payment_master';
-
-			$id_name = 'payment_id';
-
-			$date_field = 'payment_date';
-
 		}
 
 		//GST Paid
 
 		if($module_name=="GST Monthly Payment"){ 
-
 			$table_name = 'gst_payable_master';
-
 			$id_name = 'id';
-
 			$date_field = 'payment_date';
-
 		}
 
 		//Excursion Booking
-		if($module_name=="Excursion Booking"){ 
-
+		if($module_name=="Excursion Booking Payment"){ 
 			$table_name = 'exc_payment_master';
-
 			$id_name = 'payment_id';
-
 			$date_field = 'payment_date';
-
 		}
 
 		if($module_name=="Excursion Booking Refund Paid"){ 
@@ -501,10 +435,12 @@ public function status_update($type){
 		if($GLOBALS['flag']){
 
 			if($type === 'card' && $status == 'Cleared'){
-				$this->finance_Save($module_name,$module_entry_id,$payment_amount,$payment_date,$table_name,$id_name,$particular);
+				if($module_name != "Customer Advance"){
+					$this->finance_Save($module_name,$module_entry_id,$payment_amount,$payment_date,$table_name,$id_name,$particular);
+				}
 			}
-			echo "Status has been successfully saved.";
-
+			$type1 = ($type  === 'card') ? 'Credit Card' : 'Cheque';
+			echo $type1." payment has been successfully ".$status;
 			commit_t();
 			exit;
 		}

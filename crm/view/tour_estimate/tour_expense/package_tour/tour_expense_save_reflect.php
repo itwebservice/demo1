@@ -22,27 +22,27 @@ $total_travel_amount = $travel_amount - $can_amount ;
 $total_sale = $total_tour_amount + $total_travel_amount;
 
 ////// Purchase ///////
-$sq_air_ticket = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Ticket Vendor'");
+$sq_air_ticket = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Ticket Vendor' and delete_status='0'");
 while($row_air_ticket = mysqli_fetch_assoc($sq_air_ticket)){
 	$air_ticket_sum = $air_ticket_sum + $row_air_ticket['net_total'] - $row_air_ticket['refund_net_total'];
 }
 
-$sq_train_ticket = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Train Ticket Vendor'");
+$sq_train_ticket = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Train Ticket Vendor' and delete_status='0'");
 while($row_train_ticket = mysqli_fetch_assoc($sq_train_ticket)){
 	$train_ticket_sum = $train_ticket_sum + $row_train_ticket['net_total'] - $row_train_ticket['refund_net_total'];
 }
 
-$sq_hotel = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Hotel Vendor'");
+$sq_hotel = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Hotel Vendor' and delete_status='0'");
 while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
 	$hotel_ticket_sum = $hotel_ticket_sum + $row_hotel['net_total'] - $row_hotel['refund_net_total'];
 }
 
-$sq_dmc = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='DMC Vendor'");
+$sq_dmc = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='DMC Vendor' and delete_status='0'");
 while($row_dmc = mysqli_fetch_assoc($sq_dmc)){
 	$dmc_ticket_sum = $dmc_ticket_sum + $row_dmc['net_total'] - $row_dmc['refund_net_total'];
 }
 
-$sq_trasnport = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Transport Vendor'");
+$sq_trasnport = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and vendor_type='Transport Vendor' and delete_status='0'");
 while($row_trasnport = mysqli_fetch_assoc($sq_trasnport)){
 	$transport_ticket_sum = $transport_ticket_sum + $row_trasnport['net_total'] - $row_trasnport['refund_net_total'];
 }

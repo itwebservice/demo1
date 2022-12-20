@@ -17,7 +17,7 @@ $branch_status = $_POST['branch_status'];
 
 $query = "SELECT * from bus_booking_payment_master where 1";		
 if($financial_year_id!=""){
-$query .= " and financial_year_id='$financial_year_id'";
+	$query .= " and financial_year_id='$financial_year_id'";
 }
 if($booking_id!=""){
 $query .= " and booking_id='$booking_id'";
@@ -54,7 +54,7 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
 $query .= " and booking_id in (select booking_id from bus_booking_master where emp_id ='$emp_id')";
 }
 
-$query .= " order by booking_id desc";
+// $query .= " order by booking_id desc";
 $bg;
 $count = 0;
 $total_paid_amt=0;
@@ -75,7 +75,30 @@ $sq_bus_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master w
 $total_sale = $sq_bus_info['net_total'];
 $sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bus_booking_payment_master where clearance_status!='Cancelled' and booking_id='$row_payment[booking_id]'"));
 $total_pay_amt = $sq_pay['sum'];
-$outstanding =  $total_sale - $total_pay_amt;
+// $outstanding =  $total_sale - $total_pay_amt;
+$cancel_amount = $sq_bus_info['cancel_amount'];
+$pass_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id='$row_payment[booking_id]'"));
+$cancel_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id='$row_payment[booking_id]' and status='Cancel'"));
+
+if($pass_count == $cancel_count){
+	if($total_pay_amt > 0){
+		if($cancel_amount >0){
+			if($total_pay_amt > $cancel_amount){
+				$outstanding = 0;
+			}else{
+				$outstanding = $cancel_amount - $total_pay_amt;
+			}
+		}else{
+			$outstanding = 0;
+		}
+	}
+	else{
+		$outstanding = $cancel_amount;
+	}
+}
+else{
+	$outstanding = $total_sale - $total_pay_amt;
+}
 
 $date = $sq_bus_info['created_at'];
 $yr = explode("-", $date);
@@ -99,7 +122,12 @@ else if($row_payment['clearance_status']=="Cancelled"){
 	$bg='danger';
 	$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
 }
-
+else if($row_payment['clearance_status']=="Cleared"){ 
+	$bg='success';
+}
+else{
+	$bg='';
+}
 $payment_id_name = "Bus Payment ID";
 $payment_id = get_bus_booking_payment_id($row_payment['payment_id'],$year);
 $receipt_date = date('d-m-Y');
@@ -115,7 +143,7 @@ $payment_date = date('d-m-Y',strtotime($row_payment['payment_date']));
 $bank_name = $row_payment['bank_name'];
 $receipt_type = "Bus Receipt";
 
-$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=bus_booking_payment_master&customer_field=booking_id&in_customer_id=$row_payment[booking_id]";
+$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=bus_booking_payment_master&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&status=$row_payment[status]";
 
 $checshow = "";
 
@@ -129,8 +157,10 @@ if($payment_mode1=="Cheque"){
 }
 if($row_payment['payment_mode'] == 'Credit Note' || ($row_payment['payment_mode'] == 'Credit Card' && $row_payment['clearance_status']=="Cleared")){
 	$edit_btn = '';
+	$delete_btn = '';
 }else{
 	$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='update_modal(".$row_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+	$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 }
 $temp_arr = array( "data" => array(
 	(int)($count),
@@ -143,7 +173,7 @@ $temp_arr = array( "data" => array(
 	number_format($row_payment['payment_amount']+$row_payment['credit_charges'],2),
 	'<a onclick="loadOtherPage(\''.$url1 .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 
-	'.$edit_btn
+	'.$edit_btn.$delete_btn
 	), "bg" =>$bg );
 	array_push($array_s,$temp_arr); 
 

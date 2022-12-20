@@ -160,7 +160,7 @@
 								<th>Adole</th>
 								<th>Passport_No.</th>
 								<th>Issue_Date</th>
-								<th>Expire_Date</th>
+								<th>Expiry_Date</th>
 							</tr>
 						</thead>
 						<tbody>

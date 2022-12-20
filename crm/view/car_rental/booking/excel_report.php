@@ -130,7 +130,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);   
 
-$query = "select * from car_rental_booking where financial_year_id='$financial_year_id'";
+$query = "select * from car_rental_booking where financial_year_id='$financial_year_id' and delete_status='0'";
 if($customer_id!=""){
     $query .= " and customer_id='$customer_id'";
 }
@@ -172,11 +172,12 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
             ->setCellValue('H'.$row_count, "Amount")
             ->setCellValue('I'.$row_count, "CNCL_Amount")
             ->setCellValue('J'.$row_count, "Total")
-            ->setCellValue('K'.$row_count, "Created By");
+            ->setCellValue('K'.$row_count, "Paid Amount")
+            ->setCellValue('L'.$row_count, "Created By");
 
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
     $total_sale = 0;
@@ -184,6 +185,11 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
     $total_balance = 0;
     $sq_booking = mysqlQuery($query);
     while($row_booking = mysqli_fetch_assoc($sq_booking)){
+        //Paid
+$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum ,sum(credit_charges) as sumc from car_rental_payment where booking_id='$row_booking[booking_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
+$paid_amount = $query['sum'] + $query['sumc'];
+$paid_amount = ($paid_amount == '')?'0':$paid_amount;
+
         $sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_booking[emp_id]'"));
         $emp_name = ($row_booking['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
 
@@ -217,7 +223,8 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
         ->setCellValue('H'.$row_count, number_format(($row_booking['total_fees'] + $credit_card_charges),2))
         ->setCellValue('I'.$row_count, number_format($row_booking['cancel_amount'],2))
         ->setCellValue('J'.$row_count, number_format(($row_booking['total_fees'] + $credit_card_charges-$row_booking['cancel_amount']),2))
-        ->setCellValue('K'.$row_count, $emp_name);
+        ->setCellValue('K'.$row_count, $paid_amount)
+        ->setCellValue('L'.$row_count, $emp_name);
 
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($content_style_Array);
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    

@@ -14,7 +14,7 @@ while($row_group_tour_payment = mysqli_fetch_assoc($sq_group_tour_payment)){
 
 $sq_paid_amount=0;
 $pending_cancel = 0;
-$sq_group_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+$sq_group_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
 $paid_amount =  ($sq_tour_paid_amount - $tour_pending_cancel );
 ?>
 <input type="hidden" id="total_sale" name="total_sale" value="<?= $sq_group_info['net_total'] ?>">	        
@@ -38,13 +38,13 @@ $paid_amount =  ($sq_tour_paid_amount - $tour_pending_cancel );
 <?php
 $sq_tour_info = mysqli_fetch_assoc(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$tourwise_id'"));
 $sq_tour_count = mysqli_num_rows(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$tourwise_id'"));
-
-$pass_count= mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$tourwise_id'"));
-$cancle_count= mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$tourwise_id' and status='Cancel'"));
-
 ?>
 <form id="frm_refund">
-
+<div class="row">
+		<div class="col-md-12 text-center mt-5 mb-5" style="margin-bottom: 20px;">
+			<h4>Refund Estimate</h4>
+		</div>
+	</div>
 	<div class="row text-center">
 		<div class="col-md-3 col-md-offset-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 			<input type="text" name="cancel_amount" id="cancel_amount" class="text-right" placeholder="*Cancellation Charges" title="Cancellation Charges" onchange="validate_balance(this.id);calculate_total_refund()" value="<?= $sq_tour_info['cancel_amount'] ?>">
@@ -99,16 +99,28 @@ $('#frm_refund').validate({
 		if(parseFloat(cancel_amount) > parseFloat(total_sale)) { error_msg_alert("Cancel amount can not be greater than Sale amount");
 		$('#btn_refund_save').prop('disabled',false); return false; }
 
-		$.ajax({
-			type:'post',
-			url: base_url()+'controller/group_tour/tour_cancelation_and_refund/booking_tour_refund_estimate.php',
-			data: { tourwise_id : tourwise_id,cancel_amount : cancel_amount, total_refund_amount : total_refund_amount},
-			success:function(result){
-				// msg_popup_reload(result);
-				msg_alert(result);
-                reset_form('frm_refund');
-				$('#btn_refund_save').prop('disabled',false);
-				refund_cancelled_tour_group_reflect();
+		$('#vi_confirm_box').vi_confirm_box({
+			message: 'Are you sure?',
+			callback: function(data1) {
+				if (data1 == "yes") {
+					$('#btn_refund_save').button('loading');
+					$.ajax({
+						type:'post',
+						url: base_url()+'controller/group_tour/tour_cancelation_and_refund/booking_tour_refund_estimate.php',
+						data: { tourwise_id : tourwise_id,cancel_amount : cancel_amount, total_refund_amount : total_refund_amount},
+						success:function(result){
+							msg_alert(result);
+							reset_form('frm_refund');
+							$('#btn_refund_save').prop('disabled',false);
+							$('#btn_refund_save').button('reset');
+							refund_cancelled_tour_group_reflect();
+						}
+					});
+				}else{
+					$('#btn_refund_save').prop('disabled',false);
+					$('#btn_refund_save').button('reset');
+
+				}
 			}
 		});
 	}

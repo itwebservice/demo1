@@ -22,7 +22,7 @@ include_once("../../../../model/model.php");
   	              <tr>
   	                  <td class="col-md-1"><input id="chk_debit1" type="checkbox" checked></td>
   	                  <td class="col-md-2"><input maxlength="15" value="1" type="text" name="no" placeholder="Sr. No." class="form-control" disabled /></td>
-  	                  <td class="col-md-6"><select name="ledger_id1" id="ledger_id1" title="Ledger" class="app_select2" style="width:100%">                        	
+  	                  <td class="col-md-6"><select name="ledger_id1" id="ledger_id1" title="Select Ledger" class="app_select2" style="width:100%">                        	
   	                        <option value="">Select Ledger</option>
   	                        <?php
   	                        $sq_ledger = mysqlQuery("select * from ledger_master");
@@ -50,7 +50,7 @@ include_once("../../../../model/model.php");
   	              <tr>
   	                  <td class="col-md-1"><input id="chk_credit1" type="checkbox" checked></td>
   	                  <td class="col-md-2"><input maxlength="15" value="1" type="text" name="no" placeholder="Sr. No." class="form-control" disabled /></td>
-  	                  <td class="col-md-6"><select name="ledger_id2" id="ledger_id2" title="Ledger" class="app_select2" style="width:100%">                        	
+  	                  <td class="col-md-6"><select name="ledger_id2" id="ledger_id2" title="Select Ledger" class="app_select2" style="width:100%">                        	
   	                        <option value="">Select Ledger</option>
   	                        <?php
   	                        $sq_ledger = mysqlQuery("select * from ledger_master");
@@ -172,6 +172,7 @@ $('#frm_save').validate({
       if(data !== 'valid'){
         error_msg_alert("The Entry Date does not match between selected Financial year.");
         $('#btn_save').prop('disabled',false);
+        $('#btn_save').button('reset');
         return false;
       }
       else{

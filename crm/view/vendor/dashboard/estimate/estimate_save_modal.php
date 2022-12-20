@@ -149,7 +149,7 @@ function upload_invoice_pic_attch()
 		onSubmit: function(file, ext)
 		{  
 			if (! (ext && /^(jpg|png|jpeg|pdf)$/.test(ext))){ 
-			error_msg_alert('Only JPG, PNG or pdf files are allowed');
+			error_msg_alert('Only JPG, PNG and PDF files are allowed');
 			return false;
 			}
 			$(btnUpload).find('span').text('Uploading...');
@@ -162,6 +162,7 @@ function upload_invoice_pic_attch()
 			{ 
 			$(btnUpload).find('span').text('Uploaded');
 			$('#id_upload_url'+dynamic_estimate_count).val(response);
+			msg_alert('File uploaded!');
 			}
 		}
     });
@@ -182,6 +183,9 @@ function brule_for_one(id,charges_flag,tx_for){
 
 function close_estimate(id){
 	$('#'+id).remove();
+	var dynamic_estimate_count = $('#dynamic_estimate_count').val();
+	dynamic_estimate_count = parseFloat(dynamic_estimate_count) - 1;
+	$('#dynamic_estimate_count').val(dynamic_estimate_count);
 }
 
 // New Customization ----start
@@ -389,12 +393,12 @@ $(function(){
 				}
 				var incentive_arr = [];
 				incentive_arr.push({
-						estimate_type:estimate_type,
-						booking_id : estimate_type_id,
-						emp_id : emp_id,
-						basic_amount : basic_amount,
-						financial_year_id : financial_year_id,
-						booking_date:booking_date
+					estimate_type:estimate_type,
+					booking_id : estimate_type_id,
+					emp_id : emp_id,
+					basic_amount : basic_amount,
+					financial_year_id : financial_year_id,
+					booking_date:booking_date
 				});
 				var incentive_arr = JSON.stringify(incentive_arr);
 				$.ajax({

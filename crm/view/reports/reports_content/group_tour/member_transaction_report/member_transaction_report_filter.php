@@ -24,7 +24,7 @@ $tour_group_id = $_GET['tour_group_id'];
 $traveler_group = $_GET['traveler_group'];
 $payment_for = $_GET['payment_for'];
 
-$query=" select * from tourwise_traveler_details where ";
+$query=" select * from tourwise_traveler_details where 1 and delete_status='0' ";
 
 if($traveler_group!="")
 {

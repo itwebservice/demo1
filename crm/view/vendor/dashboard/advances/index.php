@@ -5,7 +5,7 @@ $branch_status = $_POST['branch_status'];
 <div class="row text-right mg_bt_20">
 	<div class="col-md-12">
 		<button class="btn btn-excel btn-sm" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
-		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Advance</button>
+		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Supplier Advance</button>
 	</div>
 </div>
 
@@ -27,7 +27,7 @@ $branch_status = $_POST['branch_status'];
 		<div id="div_vendor_type_content2"></div>
 		<div class="row">
 			<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-				<select name="financial_year_id_filter" id="financial_year_id_filter" title="Financial Year">
+				<select name="financial_year_id_filter" id="financial_year_id_filter" title="Select Financial Year">
 					<?php get_financial_year_dropdown(); ?>
 				</select>
 			</div>
@@ -70,7 +70,7 @@ function payment_list_reflect()
     var branch_status = $('#branch_status').val();
     
 	$.post('advances/payment_list_reflect.php', { vendor_type : vendor_type, vendor_type_id : vendor_type_id, financial_year_id : financial_year_id, branch_status : branch_status }, function(data){
-		pagination_load(data, column, true, true, 20, 'advance_payment');
+		pagination_load(data, column, true, true, 20, 'advance_payment',true);
 		$('.loader').remove();
 	});
 }
@@ -96,6 +96,21 @@ function excel_report()
 	var branch_status = $('#branch_status').val();
 	var financial_year_id = $('#financial_year_id_filter').val();
 	window.location = 'advances/excel_report.php?financial_year_id='+financial_year_id+'&vendor_type='+vendor_type+''+'&vendor_type_id='+vendor_type_id+'&branch_status='+branch_status;
+}
+function advance_delete_entry(payment_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/vendor/dashboard/advances/payment_delete.php',{ payment_id : payment_id }, function(data){
+					success_msg_alert(data);
+					payment_list_reflect();
+				});
+			}
+		}
+	});
 }
 $(function () {
     $("[data-toggle='tooltip']").tooltip({placement: 'bottom'});

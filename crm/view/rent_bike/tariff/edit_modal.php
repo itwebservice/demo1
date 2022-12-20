@@ -86,7 +86,7 @@ $bike_id = $sq_query['bike_id'];
                               <option value="Percentage">Percentage</option>
                               <option value="Flat">Flat</option>
                             </select></td>
-                          <td><input type="text" id="markup_amount<?= $count ?>-u" name="markup_amount" placeholder="*Markup Amount" title="Markup Amount" value="<?= $row_tariffentries['markup_amount'] ?>" onchange="validate_balance(this.id)" style="width: 130px;" /></td>
+                          <td><input type="text" id="markup_amount<?= $count ?>-u" name="markup_amount" placeholder="*Markup Amount" title="Markup Amount" value="<?= $row_tariffentries['markup_amount'] ?>" onchange="validate_balance(this.id)" style="width: 132px;" /></td>
                           <td><input type="hidden" id="entry_id" name="entry_id" value="<?= $row_tariffentries['tariff_id'] ?>" /></td>
                       </tr>
                       <script>

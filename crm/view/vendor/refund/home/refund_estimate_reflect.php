@@ -2,7 +2,7 @@
 include "../../../../model/model.php";
 $estimate_id = $_POST['estimate_id'];
 
-$sq_vendor_esti_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id'"));
+$sq_vendor_esti_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id' and delete_status='0'"));
 
 $purchase = $sq_vendor_esti_info['net_total'];
 $estimate_type=$sq_vendor_esti_info['estimate_type'];

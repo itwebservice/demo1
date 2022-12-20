@@ -6,7 +6,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $tourwise_id = $_POST['booking_id'];
 $branch_status = $_POST['branch_status'];
 
-$sq_tourwise_id = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' "));
+$sq_tourwise_id = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0' "));
 
 $tour_id = $sq_tourwise_id['tour_id'];
 $tour_group_id = $sq_tourwise_id['tour_group_id'];
@@ -17,7 +17,7 @@ $tour_name = $tour_name_sq['tour_name'];
 $tour_group_sq = mysqli_fetch_assoc(mysqlQuery("select from_date, to_date from tour_groups where tour_id='$tour_id' and group_id='$tour_group_id'"));
 $tour_group_name = date("d-m-Y", strtotime($tour_group_sq['from_date']))." to ".date("d-m-Y", strtotime($tour_group_sq['to_date']));
 
-$tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+$tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
 $date = $tourwise_details['form_date'];
 $yr = explode("-", $date);
 $year =$yr[0];

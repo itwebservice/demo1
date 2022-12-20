@@ -13,7 +13,7 @@ $to_date = $_POST['to_date'];
 $cust_type = $_POST['cust_type'];
 $company_name = $_POST['company_name'];
 
-$query = "select * from train_ticket_master where financial_year_id='$financial_year_id' ";
+$query = "select * from train_ticket_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";
 }
@@ -32,7 +32,7 @@ if($company_name != ""){
 	$query .= " and customer_id in (select customer_id from customer_master where company_name = '$company_name')";
 }
 include "../../../../model/app_settings/branchwise_filteration.php";	
-$query .= " order by train_ticket_id desc";	
+// $query .= " order by train_ticket_id desc";	
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
 	
@@ -91,6 +91,7 @@ $query .= " order by train_ticket_id desc";
 </div> </div> </div>
 <script>
 	$('#tbl_train_trip_report').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>

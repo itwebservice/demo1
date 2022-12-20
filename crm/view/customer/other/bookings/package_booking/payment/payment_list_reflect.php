@@ -21,7 +21,7 @@ if($booking_id!=""){
            <th>Mode</th>
            <th>Bank_Name</th>
            <th>Cheque_No/ID</th>
-           <th class="text-right success">Amount</th>
+           <th class="success">Amount</th>
            <th>Receipt</th>
       </tr>   
   </thead>
@@ -40,7 +40,7 @@ if($booking_id!=""){
   {
       $sq_cancel_amount = 0;
       $sq_pending_amount = 0;
-      $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row[booking_id]'"));			
+      $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row[booking_id]' and delete_status='0'"));			
       $sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as sum ,sum(credit_charges) as sumc from package_payment_master where clearance_status!='Cancelled' and booking_id='$row[booking_id]'"));
 
       $total_sale = $sq_booking['net_total']+$sq_pay['sumc'];
@@ -90,7 +90,7 @@ if($booking_id!=""){
       $bank_name = $row['bank_name'];
       $receipt_type = ($row['payment_for']=='Travelling') ? "Travel Receipt" : "Tour Receipt";
 
-      $url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&tour=$tour&table_name=package_payment_master&customer_field=booking_id&in_customer_id=$row[booking_id]&currency_code=$sq_booking[currency_code]";
+      $url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&tour=$tour&table_name=package_payment_master&customer_field=booking_id&in_customer_id=$row[booking_id]&currency_code=$sq_booking[currency_code]&status=$row[status]";
       
       $paid_amount = currency_conversion($currency,$sq_booking['currency_code'],$row['amount']+$row['credit_charges']);
       ?>
@@ -101,7 +101,7 @@ if($booking_id!=""){
           <td> <?php echo $row['payment_mode'] ?> </td>
           <td> <?php echo $row['bank_name'] ?> </td>
           <td> <?php echo $row['transaction_id'] ?> </td>
-          <td class="text-right success"> <?php echo $paid_amount; ?> </td>
+          <td class="success"> <?php echo $paid_amount; ?> </td>
           <td>
               <a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
           </td>

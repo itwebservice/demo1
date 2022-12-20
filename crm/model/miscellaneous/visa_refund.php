@@ -25,9 +25,6 @@ public function miscellaneous_refund_save()
 	$financial_year_id = $_SESSION['financial_year_id'];
 	$branch_admin_id = $_SESSION['branch_admin_id'];
 
-	$bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $refund_amount);
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; }
-
 	begin_t(); 
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(refund_id) as max from miscellaneous_refund_master"));

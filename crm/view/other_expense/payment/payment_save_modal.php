@@ -21,8 +21,8 @@ $role = $_SESSION['role'];
 
               <div class="row">          
                   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-                    <select name="supplier_type2" id="supplier_type2" title="Supplier Type" onchange="supplier_expenses_load(this.value, 'div_expenses_load')" class="form-control" style="width: 100%;">
-                      <option value="">*Supplier Type</option>
+                    <select name="supplier_type2" id="supplier_type2" title="Supplier Name" onchange="supplier_expenses_load(this.value, 'div_expenses_load')" class="form-control" style="width: 100%;">
+                      <option value="">*Supplier Name</option>
                       <?php 
                       $sq_expense = mysqlQuery("select * from other_vendors order by vendor_name");
                       while($row_expense = mysqli_fetch_assoc($sq_expense)){
@@ -198,6 +198,7 @@ $(function(){
 
         if(parseFloat(total_purchase) < parseFloat(payment_amount)){
           error_msg_alert("Payment Amount should be less or equal to the Total Purchase");
+          $('#payment_save').prop('disabled',false);
           return false; }
 			  
 			  var payment_amount_arr = new Array();

@@ -1,4 +1,4 @@
-<?php 
+<?php
 $flag = true;
 class vendor_payment_master{
 
@@ -20,12 +20,7 @@ public function vendor_payment_save()
 	$created_at = date('Y-m-d H:i');
 
 	$clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
-
-	$financial_year_id = $_SESSION['financial_year_id'];
-
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $payment_amount);
-  	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }  
-
+	$financial_year_id = $_SESSION['financial_year_id']; 
 
 	begin_t();
 
@@ -35,7 +30,7 @@ public function vendor_payment_save()
 	$sq_payment = mysqlQuery("insert into vendor_advance_master (payment_id, financial_year_id, branch_admin_id, emp_id, vendor_type, vendor_type_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, remark, bank_id, payment_evidence_url, clearance_status, created_at) values ('$payment_id', '$financial_year_id', '$branch_admin_id', '$emp_id', '$vendor_type', '$vendor_type_id', '$payment_date', '$payment_amount', '$payment_mode', '$bank_name', '$transaction_id', '', '$bank_id', '$payment_evidence_url', '$clearance_status', '$created_at') ");
 	if(!$sq_payment){
 		rollback_t();
-		echo "error--Sorry, Advance not saved!";
+		echo "error--Sorry,Supplier Advance not saved!";
 		exit;
 	}
 	else{
@@ -53,14 +48,93 @@ public function vendor_payment_save()
 
 		if($GLOBALS['flag']){
 			commit_t();
-	    	echo "Advance has been successfully saved"; 
+	    	echo "Supplier Advance has been successfully saved"; 
 			exit;	
 		}
 	}
 }
+function payment_delete(){
+	
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$payment_id = $_POST['payment_id'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$deleted_date = date('Y-m-d');
+	$row_spec = "purchase advance";
+	
+	$sq_advance = mysqli_fetch_assoc(mysqlQuery("select * from vendor_advance_master where payment_id='$payment_id'"));
+	$payment_mode = $sq_advance['payment_mode'];
+	$transaction_id = $sq_advance['transaction_id'];
+	$bank_id = $sq_advance['bank_id'];
+	$cust_id = $sq_advance['cust_id'];
+	$bank_name = $sq_advance['bank_name'];
+	$vendor_type = $sq_advance['vendor_type'];
+	$vendor_type_id = $sq_advance['vendor_type_id'];
+
+	$sq_vendor = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$vendor_type_id' and user_type='$vendor_type' and group_sub_id='105'"));
+	$ledger_id = $sq_vendor['ledger_id'];
+	$vendor_name = get_vendor_name($vendor_type,$vendor_type_id);
+	$vendor_name = addslashes($vendor_name);
+    //Getting cash/Bank Ledger
+    if($payment_mode == 'Cash') {  $pay_gl = 20;  $type='CASH PAYMENT';}
+    else{
+	    $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+	    $pay_gl = $sq_bank['ledger_id'];
+		$type='BANK PAYMENT';
+    } 
+
+	$delete_master->delete_master_entries('Supplier Advances','PrePurchase Advance',$payment_id,$payment_id,$vendor_name.'('.$vendor_type.')',$sq_advance['payment_amount']);
+
+	//////Payment Amount///////
+    $module_name = $vendor_type;
+    $module_entry_id = $payment_id;
+    $transaction_id = $transaction_id;
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$deleted_date,$bank_id,$transaction_id);
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = $pay_gl;
+    $payment_side = "Credit";
+    $clearance_status = ($payment_mode!="Cash") ? "Pending" : "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
+
+    ////////Supplier Amount//////
+    $module_name = $vendor_type;
+    $module_entry_id = $payment_id;
+    $transaction_id = $transaction_id;
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$deleted_date,$bank_id,$transaction_id);
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = $ledger_id;
+    $payment_side = "Debit";
+    $clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
+
+	//Bank cash book
+	$module_name = "Vendor Advance Payment";
+	$module_entry_id = $payment_id;
+	$payment_date = $payment_date;
+	$payment_amount = $payment_amount;
+	$payment_mode = $payment_mode;
+	$bank_name = $bank_name;
+	$transaction_id = $transaction_id;
+	$bank_id = $bank_id;
+	$particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
+	$clearance_status = $clearance_status;
+	$payment_side = "Credit";
+	$payment_type = ($payment_mode=="Cash") ? "Cash" : "Bank";
+
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+
+	$sq_up1 = mysqlQuery("update vendor_advance_master set payment_amount = '0', delete_status = '1' where payment_id='$payment_id'");
+	if($sq_up1){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+}
 public function finance_save($payment_id,$ledger_id,$vendor_name,$branch_admin_id)
 {
-	$row_spec = 'purchase';
+	$row_spec = 'purchase advance';
 	$vendor_type = $_POST['vendor_type'];
 	$vendor_type_id = $_POST['vendor_type_id'];
 	$estimate_type = $_POST['estimate_type'];
@@ -74,7 +148,7 @@ public function finance_save($payment_id,$ledger_id,$vendor_name,$branch_admin_i
 
 	$payment_date = date('Y-m-d', strtotime($payment_date1));
 	$year1 = explode("-", $payment_date);
-	$yr1 =$year1[0];
+	$yr1 = $year1[0];
 
 	global $transaction_master;
 
@@ -167,9 +241,6 @@ public function vendor_payment_update()
 
 	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_advance_master where payment_id='$payment_id'"));
 
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $payment_amount, $sq_payment_info['payment_amount']);
-  	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }  
-
 	$clearance_status = ($sq_payment_info['payment_mode']=='Cash' && $payment_mode!="Cash") ? "Pending" : $sq_payment_info['clearance_status'];
 	if($payment_mode=="Cash"){ $clearance_status = ""; }
 
@@ -181,7 +252,7 @@ public function vendor_payment_update()
 
 	if(!$sq_payment){
 		rollback_t();
-		echo "error--Sorry, Payment not updated!";
+		echo "error--Sorry, Supplier Advance not updated!";
 		exit;
 	}
 	else{
@@ -194,7 +265,7 @@ public function vendor_payment_update()
 
 		if($GLOBALS['flag']){
 			commit_t();
-	    	echo "Advance has been successfully updated.";
+	    	echo "Supplier Advance has been successfully updated.";
 			exit;	
 		}
 		
@@ -203,7 +274,7 @@ public function vendor_payment_update()
 
 public function finance_update($sq_payment_info, $clearance_status1,$vendor_name)
 {
-	$row_spec ='purchase';
+	$row_spec ='purchase advance';
 	$payment_id = $_POST['payment_id'];
 	$vendor_type = $_POST['vendor_type'];
 	$vendor_type_id = $_POST['vendor_type_id'];

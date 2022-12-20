@@ -12,7 +12,7 @@ $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotat
 ?>
 <!-- Tab panes -->
 <div class="bk_tab_head bg_light">
-    <ul> 
+    <ul>
         <li>
             <a href="javascript:void(0)" id="tab1_head" class="active">
                 <span class="num" title="Enquiry">1<i class="fa fa-check"></i></span><br>
@@ -45,7 +45,7 @@ $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotat
         </li>
     </ul>
 </div>
-<div class="bk_tabs">
+<div class="bk_tabs bg-white">
     <div id="tab1" class="bk_tab active">
         <?php include_once("tab1.php"); ?>
     </div>
@@ -67,41 +67,49 @@ $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotat
 
 <script>
 $('#enquiry_id, #currency_code, #transport_vehicle1').select2();
-$('#from_date12, #to_date12, #quotation_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
-$('#txt_arrval1,#txt_dapart1, #train_arrival_date,#train_departure_date').datetimepicker({ format:'d-m-Y H:i' });
+$('#from_date12, #to_date12, #quotation_date').datetimepicker({
+    timepicker: false,
+    format: 'd-m-Y'
+});
+$('#txt_arrval1,#txt_dapart1, #train_arrival_date,#train_departure_date').datetimepicker({
+    format: 'd-m-Y H:i'
+});
 
 /**Hotel Name load start**/
-function hotel_name_list_load(id)
-{
-    var city_id = $("#"+id).val();
+function hotel_name_list_load(id) {
+    var city_id = $("#" + id).val();
     var count = id.substring(9);
-    $.get( "../hotel/hotel_name_load.php" , { city_id : city_id } , function ( data ) {
-            $ ("#hotel_name-"+count).html( data ) ;                   
-    } ) ;   
+    $.get("../hotel/hotel_name_load.php", {
+        city_id: city_id
+    }, function(data) {
+        $("#hotel_name-" + count).html(data);
+    });
 }
-function hotel_type_load(id)
-{
-    var hotel_id = $("#"+id).val();
+
+function hotel_type_load(id) {
+    var hotel_id = $("#" + id).val();
     var count = id.substring(10);
-    $.get( "../hotel/hotel_type_load.php" , { hotel_id : hotel_id } , function ( data ) {
-            $ ("#hotel_type"+count).val( data ) ;                            
-    } ) ;   
+    $.get("../hotel/hotel_type_load.php", {
+        hotel_id: hotel_id
+    }, function(data) {
+        $("#hotel_type" + count).val(data);
+    });
 }
 /**Excursion Name load**/
-function get_excursion_list(id)
-{
-    var city_id = $("#"+id).val();
+function get_excursion_list(id) {
+    var city_id = $("#" + id).val();
     var base_url = $('#base_url').val();
-    
-    var count = id.substring(10);  
-    $.post(base_url+"view/package_booking/quotation/home/excursion_name_load.php" , { city_id : city_id } , function ( data ) {
-            $("#excursion-"+count).empty();    
-            $("#excursion-"+count).html( data ) ;                            
-    });   
+
+    var count = id.substring(10);
+    $.post(base_url + "view/package_booking/quotation/home/excursion_name_load.php", {
+        city_id: city_id
+    }, function(data) {
+        $("#excursion-" + count).empty();
+        $("#excursion-" + count).html(data);
+    });
 }
 /**Excursion Amount load**/
-function get_excursion_amount_update(eleid)
-{
+function get_excursion_amount_update(eleid) {
     var base_url = $('#base_url').val();
     var total_adult = $('#total_adult12').val();
     var children_without_bed = $('#children_without_bed12').val();
@@ -112,19 +120,27 @@ function get_excursion_amount_update(eleid)
     var transfer_arr = new Array();
 
     var id = eleid.split('-');
-    
+
     total_adult = (total_adult == '') ? 0 : total_adult;
     children_without_bed = (children_without_bed == '') ? 0 : children_without_bed;
     children_with_bed = (children_with_bed == '') ? 0 : children_with_bed;
     total_infant = (total_infant == '') ? 0 : total_infant;
 
-    exc_date_arr.push($('#exc_date-'+id[1]).val());
-    exc_arr.push($('#excursion-'+id[1]).val());
-    transfer_arr.push($('#transfer_option-'+id[1]).val());
+    exc_date_arr.push($('#exc_date-' + id[1]).val());
+    exc_arr.push($('#excursion-' + id[1]).val());
+    transfer_arr.push($('#transfer_option-' + id[1]).val());
 
-    $.post(base_url+"view/package_booking/quotation/home/excursion_amount_load.php" , { exc_date_arr : exc_date_arr,exc_arr:exc_arr,transfer_arr:transfer_arr,total_adult:total_adult,children_without_bed:children_without_bed,children_with_bed:children_with_bed,total_infant:total_infant} , function ( data ){
+    $.post(base_url + "view/package_booking/quotation/home/excursion_amount_load.php", {
+        exc_date_arr: exc_date_arr,
+        exc_arr: exc_arr,
+        transfer_arr: transfer_arr,
+        total_adult: total_adult,
+        children_without_bed: children_without_bed,
+        children_with_bed: children_with_bed,
+        total_infant: total_infant
+    }, function(data) {
         var amount_arr = JSON.parse(data);
-        $('#excursion_amount-'+id[1]).val(amount_arr[0]['total_cost']);
+        $('#excursion_amount-' + id[1]).val(amount_arr[0]['total_cost']);
     });
 }
 </script>

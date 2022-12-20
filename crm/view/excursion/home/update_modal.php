@@ -5,7 +5,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $branch_status = $_POST['branch_status'];
 $exc_id = $_POST['exc_id'];
 
-$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
 $reflections = json_decode($sq_exc_info['reflections']);
 ?>
 <div class="modal fade" id="exc_update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
@@ -13,7 +13,7 @@ $reflections = json_decode($sq_exc_info['reflections']);
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Activity</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Activity Booking</h4>
       </div>
       <div class="modal-body">
       	<form id="frm_exc_update" name="frm_exc_save">
@@ -93,10 +93,10 @@ $reflections = json_decode($sq_exc_info['reflections']);
 								$count++;
 								?>
 							  <tr class="<?= $bg ?>">
-								 <td><input class="css-checkbox" id="chk_exc<?= $offset.$count?>" onchange="excursion_amount_calculate('exc_date-<?= $offset.$count ?>','1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1');" type="checkbox" checked><label class="css-label" for="chk_exc<?=  $count ?>"><label></td>
+								 <td><input class="css-checkbox" id="chk_exc<?= $offset.$count?>" onchange="excursion_amount_calculate('exc_date-<?= $offset.$count ?>','1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1');get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');" type="checkbox" checked><label class="css-label" for="chk_exc<?=  $count ?>"><label></td>
 								 <td><input maxlength="15" value="<?=  $count ?>" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
-								 <td><input type="text" id="exc_date-<?= $offset.$count ?>" name="exc_date-<?= $offset.$count ?>" placeholder="Activity Date & Time" title="Activity Date & Time" class="app_datetimepicker form-control" value="<?php echo get_datetime_user($row_entry['exc_date']); ?>" onchange="get_excursion_update_amount(this.id)"></td>
-								 <td><select id="city_name-<?= $offset.$count ?>" class="app_select2 form-control" name="city_name-<?= $offset.$count ?>" title="City Name" onchange="get_excursion_list(this.id);">
+								 <td><input type="text" id="exc_date-<?= $offset.$count ?>" name="exc_date-<?= $offset.$count ?>" placeholder="Activity Date & Time" title="Activity Date & Time" class="app_datetimepicker form-control" value="<?php echo get_datetime_user($row_entry['exc_date']); ?>" onchange="get_excursion_update_amount(this.id)" style="width:150px"></td>
+								 <td><select style="width:150px;" id="city_name-<?= $offset.$count ?>" class="form-control app_select2 city_name_exc" name="city_name-<?= $offset.$count ?>" title="City Name" onchange="get_excursion_list(this.id);">
 									 <?php
 										   $sq_city = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_entry[city_id]'")); ?>
 										   <option value="<?php echo $sq_city['city_id'] ?>" selected="selected"><?php echo $sq_city['city_name'] ?></option>
@@ -107,13 +107,13 @@ $reflections = json_decode($sq_exc_info['reflections']);
 									 <?php } ?>
 									 </select>
 								 </td>
-								 <td><select id="excursion-<?= $offset.$count ?>" class="app_select2 form-control" title="Activity Name" name="excursion-<?= $offset.$count ?>" onchange="get_excursion_update_amount(this.id);">
+								 <td><select style="width:160px;" id="excursion-<?= $offset.$count ?>" class="app_select2 form-control" title="Activity Name" name="excursion-<?= $offset.$count ?>" onchange="get_excursion_update_amount(this.id);">
 								 <?php
 										   $sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master_tariff where entry_id='$row_entry[exc_name]'")); ?>
 										   <option value="<?php echo $sq_exc['entry_id'] ?>"><?php echo $sq_exc['excursion_name'] ?></option>
 									 <option value="">*Activity Name</option>                                      
 								 </select></td>
-								 <td><select name="transfer_option-<?= $offset.$count ?>" id="transfer_option-<?= $offset.$count ?>" data-toggle="tooltip" class="form-control app_select2" title="Transfer Option" style="width:150px" onchange="get_excursion_update_amount(this.id);">
+								 <td><select name="transfer_option-<?= $offset.$count ?>" id="transfer_option-<?= $offset.$count ?>" data-toggle="tooltip" class="form-control app_select2" title="Transfer Option" style="width:165px" onchange="get_excursion_update_amount(this.id);">
 									 <option value="<?php echo $row_entry['transfer_option'] ?>"><?php echo $row_entry['transfer_option'] ?></option>
 									 <option value="">*Transfer Option</option>
 									 <option value="Without Transfer">Without Transfer</option>
@@ -121,11 +121,11 @@ $reflections = json_decode($sq_exc_info['reflections']);
 									 <option value="Private Transfer">Private Transfer</option>
 									 <option value="SIC">SIC</option>
 									 </select></td>
-								 <td><input type="text" id="total_adult-<?= $offset.$count ?>" name="total_adult-<?= $offset.$count ?>" placeholder="*Total Adult" title="Total Adult" value="<?php echo $row_entry['total_adult'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');"></td>
-								 <td><input type="text" id="total_children-<?= $offset.$count ?>" name="total_children-<?= $offset.$count ?>" placeholder="*Total Child" title="Total Child" value="<?php echo $row_entry['total_child'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');"></td>
-								 <td><input type="text" id="adult_cost-<?= $offset.$count ?>" name="adult_cost-<?= $offset.$count ?>" placeholder="Adult Cost" title="Adult Cost" value="<?php echo $row_entry['adult_cost'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);"></td>
-								 <td><input type="text" id="child_cost-<?= $offset.$count ?>" name="child_cost-<?= $offset.$count ?>" placeholder="Child Cost" title="Child Cost" value="<?php echo $row_entry['child_cost'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);"> </td>
-								 <td><input type="text" id="total_amount-<?= $offset.$count ?>" name="total_amount-<?= $offset.$count ?>" placeholder="Total Amount" title="Activity Amount" value="<?php echo $row_entry['total_cost'] ?>" onchange="validate_balance(this.id);excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1');"></td>
+								 <td><input type="text" id="total_adult-<?= $offset.$count ?>" name="total_adult-<?= $offset.$count ?>" placeholder="*Total Adult" title="Total Adult" value="<?php echo $row_entry['total_adult'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');" style="width:110px"></td>
+								 <td><input type="text" id="total_children-<?= $offset.$count ?>" name="total_children-<?= $offset.$count ?>" placeholder="*Total Child" title="Total Child" value="<?php echo $row_entry['total_child'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');" style="width:110px"></td>
+								 <td><input type="text" id="adult_cost-<?= $offset.$count ?>" name="adult_cost-<?= $offset.$count ?>" placeholder="Adult Cost" title="Adult Cost" value="<?php echo $row_entry['adult_cost'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);" style="width:110px"></td>
+								 <td><input type="text" id="child_cost-<?= $offset.$count ?>" name="child_cost-<?= $offset.$count ?>" placeholder="Child Cost" title="Child Cost" value="<?php echo $row_entry['child_cost'] ?>" onchange="excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1'); validate_balance(this.id);" style="width:110px"> </td>
+								 <td><input type="text" id="total_amount-<?= $offset.$count ?>" name="total_amount-<?= $offset.$count ?>" placeholder="Total Amount" title="Activity Amount" value="<?php echo $row_entry['total_cost'] ?>" onchange="validate_balance(this.id);excursion_amount_calculate(this.id,'1');calculate_exc_expense('tbl_dynamic_exc_booking_update','1');" style="width:120px"></td>
 								 <td><input type="hidden" value="<?= $row_entry['entry_id'] ?>"></td>
 							 </tr>  
 							 <script>
@@ -177,7 +177,7 @@ foreach($bsmValues[0] as $key => $value){
 	<div class="row">	        		
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 		<small id="basic_show1" style="color:red"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_b ?></span></small>
-			<input type="text" id="exc_issue_amount1" name="exc_issue_amount1" placeholder="Amount" title="Amount" value="<?= $visa_issue_amount; ?>" onchange="validate_balance(this.id);get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');">
+			<input type="text" id="exc_issue_amount1" name="exc_issue_amount1" placeholder="Basic Amount" title="Basic Amount" value="<?= $visa_issue_amount; ?>" onchange="validate_balance(this.id);get_auto_values('balance_date1','exc_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');">
 		</div>	
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 		<small id="service_show1" style="color:red"><?= ($inclusive_s == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_s ?></span></small>
@@ -234,6 +234,7 @@ foreach($bsmValues[0] as $key => $value){
 </div>
 </div>
 
+<script src="js/calculation.js"></script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>
 <script>
 $('#customer_id1,#acurrency_code1').select2();
@@ -326,8 +327,8 @@ $('#frm_exc_update').validate({
 				if(city_id==""){ msg +="City name is required in row:"+(i+1)+"<br>"; }
 				if(exc_name==""){ msg +="Activity Name is required in row:"+(i+1)+"<br>"; }
 				if(transfer_option==""){ msg +="Transfer option is required in row:"+(i+1)+"<br>"; }
-				if(total_adult==""){ msg +="Total Adult is required in row:"+(i+1)+"<br>"; }
-				if(total_child==""){ msg +="Total Children is required in row:"+(i+1)+"<br>"; }
+				if(total_adult==""){ msg +="Total Adult(s) is required in row:"+(i+1)+"<br>"; }
+				if(total_child==""){ msg +="Total Child(ren) is required in row:"+(i+1)+"<br>"; }
 				}
 				if(msg!=""){
 					error_msg_alert(msg);

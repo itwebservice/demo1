@@ -1,6 +1,8 @@
 <form id="frm_tab1">
 
 
+<div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_20">
+            <legend>Customer Details</legend>
 
 	<div class="row">
 
@@ -13,7 +15,6 @@
 			</select>
 
 		</div>	
-		<div id="new_cust_div"></div>
 	    <div id="cust_details">	    
 			<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 
@@ -43,6 +44,8 @@
 				&nbsp;&nbsp;<label for="copy_details1">Passenger Details same as above</label>
 			</div>
 		</div>
+	</div>
+		<div id="new_cust_div" class="mg_tp_10"></div>
 
 	<hr>
 

@@ -16,7 +16,7 @@
 									<th>To_location</th>
 									<th>Departure_Datetime</th>
 									<th>Arrival_Datetime</th>
-									<th>Ferry_Class</th>
+									<th>Ferry/Cruise_Class</th>
 									<th>Adult_Cost</th>
 									<th>child_cost</th>
 									<th>Infant_cost</th>

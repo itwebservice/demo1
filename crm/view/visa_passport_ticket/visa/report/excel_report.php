@@ -83,7 +83,7 @@ $from_date = $_GET['from_date'];
 $to_date = $_GET['to_date'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$visa_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$visa_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -145,7 +145,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
  
 
-$query = "select * from visa_master where financial_year_id ='$financial_year_id' ";
+$query = "select * from visa_master where financial_year_id ='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
     $query .=" and customer_id='$customer_id'";
 }
@@ -176,17 +176,16 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
 }
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Visa ID")
+        ->setCellValue('C'.$row_count, "Booking ID")
         ->setCellValue('D'.$row_count, "Customer Name")
         ->setCellValue('E'.$row_count, "Passenger Name")
         ->setCellValue('F'.$row_count, "Birthdate")
         ->setCellValue('G'.$row_count, "Country")
         ->setCellValue('H'.$row_count, "Visa Type")
-        ->setCellValue('I'.$row_count, "Nationality")
-        ->setCellValue('J'.$row_count, "Received Documents");
+        ->setCellValue('I'.$row_count, "Nationality");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray); 
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray); 
 $row_count++;
         $count = 1;
         $sq_visa = mysqlQuery($query);
@@ -213,12 +212,12 @@ $row_count++;
                 ->setCellValue('F'.$row_count, get_date_user($row_entry['birth_date']))
                 ->setCellValue('G'.$row_count, $row_entry['visa_country_name'])
                 ->setCellValue('H'.$row_count, $row_entry['visa_type'])
-                 ->setCellValue('I'.$row_count, $row_entry['nationality'])
-                ->setCellValue('J'.$row_count, $row_entry['received_documents']);
+                 ->setCellValue('I'.$row_count, $row_entry['nationality']);
+                
 
 
-                $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($content_style_Array);
-                $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);    
+                $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($content_style_Array);
+                $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);    
                     $row_count++;
             }
         }

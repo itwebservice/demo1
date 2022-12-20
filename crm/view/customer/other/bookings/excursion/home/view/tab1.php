@@ -93,7 +93,7 @@
 								else{
 									$bg="#fff";
 								}
-								$sq_exc1 = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$row_entry[exc_id]'"));
+								$sq_exc1 = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$row_entry[exc_id]' and delete_status='0'"));
                        			$sq_city = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_entry[city_id]'"));
                        			$sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master_tariff where entry_id='$row_entry[exc_name]'"));
 								$adult_cost1 = currency_conversion($currency,$sq_exc1['currency_code'],$row_entry['adult_cost']);

@@ -16,14 +16,14 @@
                     <td><select id="hotel_name1" name="hotel_name1" class="form-control" style="width:170px" title="Select Hotel Name" onchange="get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','true','service_charge','discount');">
                             <option value="">*Hotel Name</option>
                         </select></td>
-                    <td><input type="text" id="txt_hotel_from_date1" style="width: 170px" name="txt_hotel_from_date1" onchange="get_to_datetime(this.id,'txt_hotel_to_date1');" placeholder="Check-In DateTime" title="Check-In DateTime" style="width: 170px;"></td>
-                    <td><input type="text" id="txt_hotel_to_date1" style="width: 170px" name="txt_hotel_to_date1" onchange="validate_validDatetime('txt_hotel_from_date1' ,'txt_hotel_to_date1')" placeholder="Check-Out DateTime" title="Check-Out DateTime" style="width: 170px;"></td>
-                    <td><input type="text" id="txt_room1" name="txt_room1" placeholder="*Room" title="Room" ></td>
-                    <td><select name="txt_catagory1" id="txt_catagory1" title="Category" style="width: 120px;" class="app_select2">
+                    <td><input class="form-control app_datetimepicker" type="text" id="txt_hotel_from_date1" style="width: 170px" name="txt_hotel_from_date1" onchange="get_to_datetime(this.id,'txt_hotel_to_date1');" placeholder="Check-In DateTime" title="Check-In DateTime" style="width: 170px;"></td>
+                    <td><input class="form-control app_datetimepicker" type="text" id="txt_hotel_to_date1" style="width: 170px" name="txt_hotel_to_date1" onchange="validate_validDatetime('txt_hotel_from_date1' ,'txt_hotel_to_date1')" placeholder="Check-Out DateTime" title="Check-Out DateTime" style="width: 170px;"></td>
+                    <td><input type="text" id="txt_room1" name="txt_room1" placeholder="*Room(s)" title="Room(s)"  style="width: 110px;"></td>
+                    <td><select name="txt_catagory1" id="txt_catagory1" title="Category" style="width: 140px;" class="app_select2">
                     <?php get_room_category_dropdown(); ?>
                     </select></td>
                 
-                    <td><select title="Meal Plan" id="cmb_meal_plan1" name="cmb_meal_plan" title="Meal Plan" style="width:110px;">
+                    <td><select title="Meal Plan" id="cmb_meal_plan1" name="cmb_meal_plan" title="Meal Plan" style="width:130px;">
                     <?php get_mealplan_dropdown(); ?>
                     </select></td>
                     <td><select name="room_type1" id="room_type" title="Room Type" style="width:118px;">

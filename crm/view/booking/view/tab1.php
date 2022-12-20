@@ -63,7 +63,7 @@
 
     		<?php
 
-    		 $sq_tour_deatils = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$id'"));
+    		 $sq_tour_deatils = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$id' and delete_status='0'"));
 
     		 $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_tour_deatils[customer_id]'")); 
 
@@ -310,7 +310,7 @@
 
 		                       	<th>Issue_Date</th>
 
-		                       	<th>Expire_Date</th>
+		                       	<th>Expiry_Date</th>
 
 	                        </tr>
 
@@ -332,7 +332,7 @@
 
                        			 $bg="";
 
-                       			$sq_entry1 = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where traveler_group_id='$row_entry[traveler_group_id]'"));
+                       			$sq_entry1 = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where traveler_group_id='$row_entry[traveler_group_id]' and delete_status='0'"));
 
                        			if($row_entry['status']=="Cancel" || $sq_entry1['tour_group_status']=='Cancel' ) 	{
 

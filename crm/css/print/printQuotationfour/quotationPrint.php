@@ -402,10 +402,10 @@ h3.costBankTitle.text-center {
     padding: 15px 8px 10px 28px !important;
 }
 table th, .modal table.dataTable th{
-    font-size: 10px !important;
+    font-size: 12px !important;
 	padding-left: 28px !important;
     text-transform: uppercase;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     border: 0 !important;
     border-bottom: 1px solid #ddd !important;
     border-top: 1px solid #ddd !important;
@@ -419,12 +419,13 @@ table th, .modal table.dataTable th{
     display : inline-block;
 }
 .transportDetails_costing table tr th {
-    color: #ffffff !important;
-    background-color: #51514f !important;
+    color: #000000 !important;
+    background-color: #d2d2d2 !important;
     text-align:left !important;
 }
 .transportDetails_costing table tr td {
-    color: #ffffff !important;
+    color: #000000 !important;
+    text-align:left !important;
 }
 .vitinerary_div h6{
     color: black !important;

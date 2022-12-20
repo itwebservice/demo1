@@ -24,7 +24,7 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
             <div class="col-md-4">
               <select name="booking_id1" id="booking_id1" style="width:100%" disabled>
                 <?php
-                $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$sq_payment[booking_id]'"));
+                $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$sq_payment[booking_id]' and delete_status='0'"));
                 $date = $sq_booking['created_at'];
                 $yr = explode("-", $date);
                 $year = $yr[0];
@@ -36,7 +36,7 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
                   <option value="<?= $sq_booking['booking_id'] ?>"><?= get_car_rental_booking_id($sq_payment['booking_id'], $year) . " : " . $sq_customer['first_name'] . ' ' . $sq_customer['last_name'] ?></option>
                 <?php } ?>
                 <?php
-                $sq_booking = mysqlQuery("select * from car_rental_booking");
+                $sq_booking = mysqlQuery("select * from car_rental_booking where delete_status='0'");
                 while ($row_booking = mysqli_fetch_assoc($sq_booking)) {
                   $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
                 ?>
@@ -92,6 +92,7 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
               </div>
           </div>
         <?php } ?>
+        <input type="hidden" id="canc_status1" name="canc_status" class="form-control" value="<?= $sq_payment['status'] ?>"/>
 
         <div class="row text-center mg_tp_20">
           <div class="col-md-12">
@@ -172,6 +173,7 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
         var credit_charges = $('#credit_charges1').val();
         var credit_card_details = $('#credit_card_details1').val();
         var credit_charges_old = $('#credit_charges_old').val();
+        var canc_status = $('#canc_status1').val();
 
         if (!check_updated_amount(payment_old_value, payment_amount)) {
           error_msg_alert("You can update receipt to 0 only!");
@@ -198,7 +200,8 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
             payment_bank_old: payment_bank_old,
             credit_charges: credit_charges,
             credit_card_details: credit_card_details,
-            credit_charges_old: credit_charges_old
+            credit_charges_old: credit_charges_old,
+            canc_status:canc_status
           },
           success: function(result) {
             msg_popup_reload(result);

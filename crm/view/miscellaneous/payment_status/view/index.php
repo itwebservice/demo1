@@ -3,7 +3,7 @@ include "../../../../model/model.php";
 
 $misc_id = $_POST['misc_id'];
 
-$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id'"));
+$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id' and delete_status='0'"));
 $date = $sq_booking['created_at'];
 $yr = explode("-", $date);
 $year = $yr[0];
@@ -30,7 +30,7 @@ $year = $yr[0];
                        	<th>Adol</th>
                        	<th>Passport_Id</th>
                        	<th>Issue_Date</th>
-                       	<th>Expire_Date</th>
+                       	<th>Expiry_Date</th>
                        </tr>
                        </thead>
                        <tbody>

@@ -44,7 +44,7 @@ class visa_status
 		{
 			$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_entries where entry_id='$traveler_id' and status != 'Cancel'"));  
 			$passenger_name =  $sq_visa['first_name'].' '.$sq_visa['last_name'];
-			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$booking_id'"));
+			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$booking_id' and delete_status='0'"));
 			$sq_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_customer[customer_id]'"));
 			if($sq_email['type']=='Corporate'||$sq_email['type'] == 'B2B'){
 				$customer_name = $sq_email['company_name'];
@@ -59,7 +59,7 @@ class visa_status
 			$sq_package = mysqli_fetch_assoc(mysqlQuery("select * from package_travelers_details where traveler_id='$traveler_id' and status != 'Cancel'")); 
 			
 			$passenger_name =  $sq_package['first_name'].' '.$sq_package['last_name'];
-			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 			$sq_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_customer[customer_id]'"));
 			if($sq_email['type']=='Corporate'||$sq_email['type'] == 'B2B'){
 				$customer_name = $sq_email['company_name'];
@@ -73,7 +73,7 @@ class visa_status
 		{
 			$sq_group = mysqli_fetch_assoc(mysqlQuery("select * from travelers_details where traveler_id='$traveler_id' and status != 'Cancel'")); 
 			$passenger_name =  $sq_group['first_name'].' '.$sq_group['last_name'];
-			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'"));
+			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'"));
 			$sq_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_customer[customer_id]'"));
 			if($sq_email['type']=='Corporate'||$sq_email['type'] == 'B2B'){
 				$customer_name = $sq_email['company_name'];

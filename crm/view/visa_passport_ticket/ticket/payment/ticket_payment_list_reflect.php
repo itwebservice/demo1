@@ -53,7 +53,7 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and ticket_id in (select ticket_id from ticket_master where emp_id='$emp_id' ))";
 }
-$query .= " order by payment_id desc ";
+// $query .= " order by payment_id desc ";
 $count = 0;
 $sq_pending_amount=0;
 $sq_cancel_amount=0;
@@ -68,18 +68,41 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 	$count++;
 	$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from ticket_payment_master where clearance_status!='Cancelled' and ticket_id='$row_ticket_payment[ticket_id]'"));
 
-	$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]'"));
+	$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]' "));
 	$total_sale = $sq_ticket_info['ticket_total_cost'] + $sq_pay['sumc'];
+	$cancel_amount = $sq_ticket_info['cancel_amount'];
 
-	$total_pay_amt = $sq_pay['sum']+$sq_pay['sumc'];
-	$outstanding =  $total_sale - $total_pay_amt;
+	$total_pay_amt = $sq_pay['sum'] + $sq_pay['sumc'];
+	// $outstanding =  $total_sale - $total_pay_amt;
+	if($sq_ticket_info['cancel_type'] == '1'){
+		if($total_pay_amt > 0){
+			if($cancel_amount >0){
+				if($total_pay_amt > $cancel_amount){
+					$outstanding = 0;
+				}else{
+					$outstanding = $cancel_amount - $total_pay_amt;
+				}
+			}else{
+				$outstanding = 0;
+			}
+		}
+		else{
+			$outstanding = $cancel_amount;
+		}
+	}else if($sq_ticket_info['cancel_type'] == '2'||$sq_ticket_info['cancel_type'] == '3'){
+		$cancel_estimate = json_decode($sq_ticket_info['cancel_estimate']);
+		$outstanding = (($total_sale - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_amount) - $total_pay_amt;
+	}
+	else{
+		$outstanding = $total_sale - $total_pay_amt;
+	}
 
 	$date = $sq_ticket_info['created_at'];
 	$yr = explode("-", $date);
-	$year =$yr[0];
+	$year = $yr[0];
 
 	$bg='';
-	$sq_depa_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id ='$row_ticket_payment[ticket_id]'"));
+	$sq_depa_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id ='$row_ticket_payment[ticket_id]' and status!='Cancel'"));
 
 	$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket_info[customer_id]'"));
 	if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type']=='B2B'){
@@ -95,6 +118,12 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 	else if($row_ticket_payment['clearance_status']=="Cancelled"){ 
 		$bg='danger';
 		$sq_cancel_amount = $sq_cancel_amount + $row_ticket_payment['payment_amount'] + $row_ticket_payment['credit_charges'];
+	}
+	else if($row_ticket_payment['clearance_status']=="Cleared"){ 
+		$bg='success';
+	}
+	else if($row_ticket_payment['clearance_status']==""){ 
+		$bg='';
 	}
 	$sq_paid_amount = $sq_paid_amount + $row_ticket_payment['payment_amount'] + $row_ticket_payment['credit_charges'];
 
@@ -112,8 +141,7 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 	$bank_name = $row_ticket_payment['bank_name'];
 	$receipt_type = "Flight Ticket Receipt";
 
-
-	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=ticket_payment_master&customer_field=ticket_id&in_customer_id=$row_ticket_payment[ticket_id]";
+	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=ticket_payment_master&customer_field=ticket_id&in_customer_id=$row_ticket_payment[ticket_id]&status=$row_ticket_payment[status]";
 
 	$checkshow = "";
 	if($row_ticket_payment['payment_mode']=="Cash" || $row_ticket_payment['payment_mode']=="Cheque"){
@@ -128,8 +156,10 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 
 	if($row_ticket_payment['payment_mode'] == 'Credit Note' || ($row_ticket_payment['payment_mode'] == 'Credit Card' && $row_ticket_payment['clearance_status']=="Cleared")){
 		$edit_btn = '';
+		$delete_btn = '';
 	}else{
 		$edit_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="ticket_payment_update_modal('.$row_ticket_payment['payment_id'] .')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_ticket_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 
 
@@ -143,7 +173,7 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 		$payshow,
 		number_format($row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'],2),
 		'<a onclick="loadOtherPage(\''.$url1 .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
-		'.$edit_btn
+		'.$edit_btn.$delete_btn
 	), "bg" =>$bg );
 	
 	array_push($array_s,$temp_arr); 

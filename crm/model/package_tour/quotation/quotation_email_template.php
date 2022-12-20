@@ -299,12 +299,13 @@ $sq_terms = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions wh
                 $newBasic = currency_conversion($currency,$sq_quotation['currency_code'],$newBasic);
                 $travel_cost = floatval($sq_quotation['train_cost']) + floatval($sq_quotation['flight_cost']) + floatval($sq_quotation['cruise_cost']) + floatval($sq_quotation['visa_cost']) + floatval($sq_quotation['guide_cost'])+ floatval($sq_quotation['misc_cost']);
                 $travel_cost = currency_conversion($currency,$sq_quotation['currency_code'],$travel_cost);
+                // $tax = currency_conversion($currency,$sq_quotation['currency_code'],$sq_costing['service_tax_subtotal']);
                 ?>
                   <div class="row mg_bt_10">
                     <ul class="main_block">
                     <li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10"><span>Package Type : </span><u><?= $sq_costing['package_type'] ?></u></li>
                     <li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10"><span>Tour Cost : </span><?= $newBasic ?></li>
-                    <li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10 sm_r_brd_r8"><span>Tax : </span><?= $sq_costing['service_tax_subtotal'] ?></li>
+                    <li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10 sm_r_brd_r8"><span>Tax : </span><?= $service_tax_amount_show ?></li>
 
                     <li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10"><span>Travel + Other Cost  : </span><?= $travel_cost ?></li>
 
@@ -362,6 +363,7 @@ $sq_terms = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions wh
                 $quotation_cost = $basic_cost + $service_charge + $service_tax_amount + $sq_quotation['train_cost'] + $sq_quotation['cruise_cost'] + $sq_quotation['flight_cost'] + $sq_quotation['visa_cost'] + $sq_quotation['guide_cost'] + $sq_quotation['misc_cost'];
                 ////////////////Currency conversion ////////////
                 $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code'],$quotation_cost);
+                // $tax = currency_conversion($currency,$sq_quotation['currency_code'],$sq_costing['service_tax_subtotal']);
                 ?>
               <div class="row mg_bt_10">
                 <ul class="main_block">
@@ -370,7 +372,7 @@ $sq_terms = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions wh
                 <?php if($child_with!='0'){?><li class="col-md-4 col-sm-6 col-xs-12"><span>Child with Bed Cost : </span><?= $child_with ?></li> <?php } ?>
                 <?php if($child_without!='0'){?><li class="col-md-4 col-sm-6 col-xs-12"><span>Child w/o Bed Cost : </span><?= $child_without ?></li> <?php } ?>
                 <?php if($infant_cost!='0'){?><li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10_sm_xs"><span>Infant Cost : </span><?= $infant_cost ?></li> <?php } ?>
-                <li class="col-md-4 col-sm-6 col-xs-12 sm_r_brd_r8"><span>Tax : </span><?= $sq_costing['service_tax_subtotal'] ?></li>
+                <li class="col-md-4 col-sm-6 col-xs-12 sm_r_brd_r8"><span>Tax : </span><?= $service_tax_amount_show ?></li>
                 <li class="col-md-4 col-sm-6 col-xs-12 mg_bt_10"><span>Travel + Other Cost  : </span><?= $travel_cost ?></li>
                 </ul>
               </div>
@@ -510,6 +512,8 @@ if($sq_trans_count > 0){
           <div class="panel-group main_block" id="pkg_accordion" role="tablist" aria-multiselectable="true">
           <?php
           $count = 1;
+          $i = 0;
+          $dates =(array) get_dates_for_package_itineary($quotation_id);
           while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
             $sq_day_image = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_images where quotation_id='$row_itinarary[quotation_id]' and package_id='$sq_quotation[package_id]'"));
             $day_url1 = explode(',',$sq_day_image['image_url']);
@@ -523,10 +527,10 @@ if($sq_trans_count > 0){
             <div class="panel panel-default main_block">
               <div class="panel-heading main_block" role="tab" id="heading<?= $count; ?>">
                   <div class="Normal collapsed main_block" role="button" data-toggle="collapse" data-parent="#pkg_accordion" href="#collapse<?= $count; ?>" aria-expanded="false" aria-controls="collapse<?= $count; ?>">
-                    <div class="col-md-1"><span><em>Day :</em> <?= $count; ?></span></div>
+                    <div class="col-md-2"><span><em>Day :</em> <?= $count; ?> <?= '('.$dates[$i++].')' ?></span></div>
                     <div class="col-md-4" style="line-height: 26px; padding:7px 15px 7px 15px;"><span><em>Attraction :</em> <?= $row_itinarary['attraction']; ?></span></div>
                     <div class="col-md-4"><span><em>Overnight stay :</em> <?= $row_itinarary['stay']; ?></span></div>
-                    <div class="col-md-3"><span><em>Meal Plan :</em> <?= $row_itinarary['meal_plan']; ?></span></div>
+                    <div class="col-md-2"><span><em>Meal Plan :</em> <?= $row_itinarary['meal_plan']; ?></span></div>
                   </div>
               </div>
               <div id="collapse<?= $count; ?>" class="panel-collapse <?= $in; ?> collapse main_block" role="tabpanel" aria-labelledby="heading<?= $count; ?>">
@@ -772,7 +776,7 @@ if($sq_plane_count>0){ ?>
 
                 <td><?= $airline ?></td>
 
-                <td><?php echo ($row_train['class']!='') ? $row_train['class'] : 'NA'; ?></td>
+                <td><?php echo ($row_plane['class']!='') ? $row_plane['class'] : 'NA'; ?></td>
 
                 <td><?= date('d-m-Y H:i', strtotime($row_plane['dapart_time'])); ?></td>
 
@@ -974,8 +978,8 @@ if($sq_ex_count>0){ ?>
 
           <!-- Nav tabs -->
             <ul class="nav nav-tabs responsive" role="tablist">
-              <li role="presentation"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Inclusion</a></li>
-              <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Exclusion</a></li>
+              <li role="presentation"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Inclusions</a></li>
+              <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Exclusions</a></li>
               <li role="presentation" class="active"><a href="#terms" aria-controls="terms" role="tab" data-toggle="tab">Terms & conditions</a></li>
               <li role="presentation"><a href="#note" aria-controls="note" role="tab" data-toggle="tab">Note</a></li>
             </ul>

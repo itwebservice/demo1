@@ -7,13 +7,6 @@ class miscellaneous_master
 	public function miscellaneous_master_save()
 	{
 		$row_spec = 'sales';
-		$service_tax_no = strtoupper($_POST['service_tax_no']);
-		$landline_no = $_POST['landline_no'];
-		$alt_email_id = $_POST['alt_email_id'];
-		$company_name = $_POST['company_name'];
-		$cust_type = $_POST['cust_type'];
-		$state = $_POST['state'];
-
 		$customer_id = $_POST['customer_id'];
 		$emp_id = $_POST['emp_id'];
 		$misc_issue_amount = $_POST['misc_issue_amount'];
@@ -44,7 +37,6 @@ class miscellaneous_master
 		$last_name_arr = $_POST['last_name_arr'];
 		$birth_date_arr = $_POST['birth_date_arr'];
 		$adolescence_arr = $_POST['adolescence_arr'];
-		$visa_type_arr = $_POST['visa_type_arr'];
 		$passport_id_arr = $_POST['passport_id_arr'];
 		$issue_date_arr = $_POST['issue_date_arr'];
 		$expiry_date_arr = $_POST['expiry_date_arr'];
@@ -221,7 +213,150 @@ class miscellaneous_master
 
 		return $services . ' for ' . $cust_name;
 	}
+	public function miscellaneous_master_delete(){
 
+		global $delete_master,$transaction_master;
+		$misc_id = $_POST['booking_id'];
+
+		$deleted_date = date('Y-m-d');
+		$row_spec = "sales";
+	
+		$row_misc = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id'"));
+		$reflections = json_decode($row_misc['reflections']);
+		$service_tax_markup = $row_misc['service_tax_markup'];
+		$service_tax_subtotal = $row_misc['service_tax_subtotal'];
+		$customer_id = $row_misc['customer_id'];
+		$services = $row_misc['service'];
+		$booking_date = $row_misc['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		
+		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+		if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+			$cust_name = $sq_ct['company_name'];
+		}else{
+			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+		}
+		$particular =  $services . ' for ' . $cust_name;
+
+		$delete_master->delete_master_entries('Invoice','Miscellaneous',$misc_id,get_misc_booking_id($misc_id,$year),$cust_name,$row_misc['misc_total_cost']);
+
+		//Getting customer Ledger
+		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+		$cust_gl = $sq_cust['ledger_id'];
+
+		////////////Sales/////////////
+		$module_name = "Miscellaneous Booking";
+		$module_entry_id = $misc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+		$old_gl_id = $gl_id = 169;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		////////////Service Charge/////////////
+		$module_name = "Miscellaneous Booking";
+		$module_entry_id = $misc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->misc_sc != '') ? $reflections[0]->misc_sc : 193;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		/////////Service Charge Tax Amount////////
+		// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+		$service_tax_subtotal = explode(',', $service_tax_subtotal);
+		$tax_ledgers = explode(',', $reflections[0]->misc_taxes);
+		for ($i = 0; $i < sizeof($service_tax_subtotal); $i++) {
+
+			$ledger = $tax_ledgers[$i];
+
+			$module_name = "Miscellaneous Booking";
+			$module_entry_id = $misc_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '',  $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		}
+
+		////////////markup/////////////
+		$module_name = "Miscellaneous Booking";
+		$module_entry_id = $misc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->misc_markup != '') ? $reflections[0]->misc_markup : 205;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		/////////Markup Tax Amount////////
+		// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+		$service_tax_markup = explode(',', $service_tax_markup);
+		$tax_ledgers = explode(',', $reflections[0]->misc_markup_taxes);
+		for ($i = 0; $i < sizeof($service_tax_markup); $i++) {
+
+			$ledger = $tax_ledgers[$i];
+
+			$module_name = "Miscellaneous Booking";
+			$module_entry_id = $misc_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '1', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		}
+		/////////roundoff/////////
+		$module_name = "Miscellaneous Booking";
+		$module_entry_id = $misc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+		$old_gl_id = $gl_id = 230;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		////////Customer Amount//////
+		$module_name = "Miscellaneous Booking";
+		$module_entry_id = $misc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Miscellaneous Sales');
+		$old_gl_id = $gl_id = $cust_gl;
+		$payment_side = "Debit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		
+		$sq_delete = mysqlQuery("update miscellaneous_master set misc_issue_amount = '0',service_charge='0',markup='0',service_tax_markup='', service_tax_subtotal='', misc_total_cost='0', roundoff='0', delete_status='1' where misc_id='$misc_id'");
+		if($sq_delete){
+			echo 'Entry deleted successfully!';
+			exit;
+		}
+	}
 	public function finance_save($misc_id, $payment_id, $row_spec, $branch_admin_id, $particular)
 	{
 
@@ -406,8 +541,8 @@ class miscellaneous_master
 			if ($payment_mode == 'Credit Card') {
 
 				//////Customer Credit charges///////
-				$module_name = "Miscellaneous Booking";
-				$module_entry_id = $misc_id;
+				$module_name = "Miscellaneous Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_charges;
 				$payment_date = $payment_date1;
@@ -419,8 +554,8 @@ class miscellaneous_master
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 
 				//////Credit charges ledger///////
-				$module_name = "Miscellaneous Booking";
-				$module_entry_id = $misc_id;
+				$module_name = "Miscellaneous Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_charges;
 				$payment_date = $payment_date1;
@@ -447,8 +582,8 @@ class miscellaneous_master
 				$credit_company_amount = intval($payment_amount1) - intval($finance_charges);
 
 				//////Finance charges ledger///////
-				$module_name = "Miscellaneous Booking";
-				$module_entry_id = $misc_id;
+				$module_name = "Miscellaneous Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $finance_charges;
 				$payment_date = $payment_date1;
@@ -459,8 +594,8 @@ class miscellaneous_master
 				$clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 				//////Credit company amount///////
-				$module_name = "Miscellaneous Booking";
-				$module_entry_id = $misc_id;
+				$module_name = "Miscellaneous Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_company_amount;
 				$payment_date = $payment_date1;
@@ -472,8 +607,8 @@ class miscellaneous_master
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 			} else {
 
-				$module_name = "Miscellaneous Booking";
-				$module_entry_id = $misc_id;
+				$module_name = "Miscellaneous Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $payment_amount1;
 				$payment_date = $payment_date1;
@@ -486,8 +621,8 @@ class miscellaneous_master
 			}
 
 			//////Customer Payment Amount///////
-			$module_name = "Miscellaneous Booking";
-			$module_entry_id = $misc_id;
+			$module_name = "Miscellaneous Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -540,7 +675,7 @@ class miscellaneous_master
 			$customer_id = $sq_max['max'];
 		}
 
-		$module_name = "Miscellaneous Booking";
+		$module_name = "Miscellaneous Booking Payment";
 		$module_entry_id = $payment_id;
 		$payment_date = $payment_date;
 		$payment_amount = $payment_amount;
@@ -729,9 +864,6 @@ class miscellaneous_master
 		global $transaction_master;
 
 		$misc_sale_amount = $misc_issue_amount;
-		//get total payment against visa id
-		$sq_visa = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from miscellaneous_payment_master where misc_id='$misc_id'"));
-		$balance_amount = $misc_total_cost - $sq_visa['payment_amount'];
 
 		//Getting customer Ledger
 		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -924,8 +1056,9 @@ class miscellaneous_master
 		} else {
 			$contact = $sq_emp_info['mobile_no'];
 		}
+		$customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 
-		$whatsapp_msg = rawurlencode('Hello Dear ' . $sq_customer['first_name'] . ',
+		$whatsapp_msg = rawurlencode('Dear ' . $customer_name . ',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : ' . get_date_user($booking_date) . '
 

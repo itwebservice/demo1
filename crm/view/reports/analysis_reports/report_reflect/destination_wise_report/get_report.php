@@ -16,6 +16,7 @@ function total_bookings_package($dest_id)
 {
     $qry = "select count(*) as booking from package_tour_booking_master inner join destination_master on package_tour_booking_master.dest_id=destination_master.dest_id where destination_master.dest_id=".$dest_id." ".$_SESSION['package'];
     $res = mysqlQuery($qry);
+  
     $amt = mysqli_fetch_assoc($res)['booking'];
     return empty($amt) ? 0 : $amt;    
 }
@@ -53,13 +54,16 @@ $type = 'display';
 $result = mysqlQuery($query);
 $count = 1;
 while ($data = mysqli_fetch_assoc($result)) {
-   
-   
+   $total_bookings =  total_bookings_package($data['dest_id']) + total_bookings_tour($data['dest_id']);
+   $total_selling = total_selling_package($data['dest_id']) + total_selling_tour($data['dest_id']);
+
+   if($total_bookings > 0 || $total_selling > 0)
+   {
     $temparr = array("data" => array(
         (int) ($count++),
         $data['dest_name'],
-        total_bookings_package($data['dest_id']) + total_bookings_tour($data['dest_id']),
-        total_selling_package($data['dest_id']) + total_selling_tour($data['dest_id']),
+   $total_bookings,
+        $total_selling,
     
     
         '<button class="btn btn-info btn-sm" onclick="view_desti_wise_modal(' . $data['dest_id'] . ')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
@@ -67,6 +71,7 @@ while ($data = mysqli_fetch_assoc($result)) {
 
     ), "bg" => $bg);
     array_push($array_s, $temparr);
+    }
 }
 
 

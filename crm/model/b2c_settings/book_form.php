@@ -413,6 +413,6 @@ class book_master{
                 $year = $yr[0];
 
                 $subject = 'Payment Acknowledgement (Booking ID : '.get_b2c_booking_id($booking_id,$year).' )';
-                $model->generic_payment_mail('45',$payment_amount, $payment_mode, $net_total, $payment_amount, $payment_date, '',$email_id, $subject,$name,$currency);
+                $model->generic_payment_mail('45',$payment_amount, $payment_mode, $net_total, $payment_amount, $payment_date, '',$email_id, $subject,$name,$currency,'');
         }
 }

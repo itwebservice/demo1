@@ -21,23 +21,22 @@ $customer_id = $_SESSION['customer_id'];
                 $booking_type = $row['booking_type'];
                 $booking_id = $row['booking_id'];
                 if($booking_type=="Group Booking"){ 
-                $query = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'"));  
+                    $query = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'"));  
                     $sq_tour_name = mysqlQuery("select tour_name from tour_master where tour_id='$query[tour_id]'");
                     $row_tour_name = mysqli_fetch_assoc($sq_tour_name);
                     $tour_name = $row_tour_name['tour_name'];
 
                 }
                 elseif($booking_type=="Package Booking"){
-                $query = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
-                          $tour_name = $query['tour_name'];
-                     
-                    } 
+                    $query = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
+                    $tour_name = $query['tour_name'];
+                }
                 ?>
                 <tr>
                     <td><?= ++$count ?></td>
                     <td><?= $tour_name ?></td>
                     <td>
-                    <button class="btn btn-info btn-sm" onclick="view_modal(<?= $row['feedback_id'] ?>)" title="View Information"><i class="fa fa-eye"></i></button>
+                    <button class="btn btn-info btn-sm" id="feedback-<?= $row['feedback_id'] ?>" onclick="view_modal(<?= $row['feedback_id'] ?>)" title="View Details"><i class="fa fa-eye"></i></button>
                     </td>
                 </tr>
                 <?php

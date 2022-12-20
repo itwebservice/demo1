@@ -13,7 +13,7 @@ $branch_status = $sq['branch_status'];
 <div id="vi_confirm_box"></div>
 <div id="markup_confirm"></div>
 <div class="bk_tab_head bg_light">
-    <ul> 
+    <ul>
         <li>
             <a href="javascript:void(0)" id="tab1_head" class="active">
                 <span class="num" title="Enquiry">1<i class="fa fa-check"></i></span><br>
@@ -35,7 +35,7 @@ $branch_status = $sq['branch_status'];
     </ul>
 </div>
 
-<div class="bk_tabs">
+<div class="bk_tabs bg-white">
     <div id="tab1" class="bk_tab active">
         <?php include_once("tab1.php"); ?>
     </div>
@@ -45,28 +45,33 @@ $branch_status = $sq['branch_status'];
     <div id="tab3" class="bk_tab">
         <?php include_once("tab3.php"); ?>
     </div>
-</div>  
+</div>
 <script>
 $('#enquiry_id, #currency_code').select2();
 
-$('#from_date, #to_date, #quotation_date1').datetimepicker({ timepicker:false, format:'d-m-Y' });
-$('#txt_arrval1,#txt_dapart1,#train_arrival_date,#train_departure_date').datetimepicker({ format:'d-m-Y H:i' });
+$('#from_date, #to_date, #quotation_date1').datetimepicker({
+    timepicker: false,
+    format: 'd-m-Y'
+});
+$('#txt_arrval1,#txt_dapart1,#train_arrival_date,#train_departure_date').datetimepicker({
+    format: 'd-m-Y H:i'
+});
 
 /**Hotel Name load start**/
-function hotel_name_list_load(id)
-{
-  var city_id = $("#"+id).val();
-  var count = id.substring(9);
-  $.get( "../hotel/hotel_name_load.php" , { city_id : city_id } , function ( data ) {
-        $ ("#hotel_name-"+count).html( data ) ;                            
-  } ) ;   
+function hotel_name_list_load(id) {
+    var city_id = $("#" + id).val();
+    var count = id.substring(9);
+    $.get("../hotel/hotel_name_load.php", {
+        city_id: city_id
+    }, function(data) {
+        $("#hotel_name-" + count).html(data);
+    });
 }
-
 </script>
 <script src="<?php echo BASE_URL ?>view/hotel_quotation/js/quotation.js"></script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>
 <script src="<?php echo BASE_URL ?>js/app/field_validation.js"></script>
 <script src="<?php echo BASE_URL ?>view/hotel_quotation/js/business_rule.js"></script>
 <?php
-    include_once('../layouts/fullwidth_app_footer.php');
+include_once('../layouts/fullwidth_app_footer.php');
 ?>

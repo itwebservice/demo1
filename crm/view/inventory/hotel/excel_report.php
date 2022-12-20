@@ -97,8 +97,10 @@ $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);   
 
+$objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);   
 
-$row_count = 6;
+$row_count = 8;
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
@@ -127,7 +129,7 @@ while($row_ser = mysqli_fetch_assoc($query)){
             
             $check_in=$sql['from_date'];
             $check_out=$sql['to_date'];
-            $str1="select * from package_tour_booking_master where booking_id=$sql[booking_id]";
+            $str1="select * from package_tour_booking_master where booking_id='$sql[booking_id]' and delete_status='0'";
             $sql_cust=mysqli_fetch_assoc(mysqlQuery($str1));
             $date = $sql_cust['booking_date'];
             $yr = explode("-", $date);
@@ -159,7 +161,7 @@ while($row_ser = mysqli_fetch_assoc($query)){
     while($sql = mysqli_fetch_assoc($sql_temp)){
         $check_in=$sql['check_in'];
         $check_out=$sql['check_out'];
-        $str1="select * from hotel_booking_master where booking_id=$sql[booking_id]";
+        $str1="select * from hotel_booking_master where booking_id='$sql[booking_id]' and delete_status='0'";
         $sql_cust=mysqli_fetch_assoc(mysqlQuery($str1));
         $sql_Cust_details=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id=$sql_cust[customer_id]"));
         if($sql_Cust_details['type']=='Corporate'||$sql_Cust_details['type'] == 'B2B'){

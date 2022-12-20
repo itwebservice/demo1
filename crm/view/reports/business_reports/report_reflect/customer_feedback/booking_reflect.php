@@ -4,7 +4,7 @@ $booking_type = $_POST['booking_type']; ?>
 <option value="">Booking ID</option>
 <?php
 if($booking_type=="Group Booking"){ 
-$query = "select * from tourwise_traveler_details";  
+$query = "select * from tourwise_traveler_details where delete_status='0'";  
 
 	$sq_booking = mysqlQuery($query); 
 	while($row_booking = mysqli_fetch_assoc($sq_booking)){
@@ -23,7 +23,7 @@ $query = "select * from tourwise_traveler_details";
 	} 
 }
 elseif($booking_type=="Package Booking"){
-	$query = "select * from package_tour_booking_master ";
+	$query = "select * from package_tour_booking_master where delete_status='0' ";
 	$sq_booking = mysqlQuery($query); 
 	while($row_booking = mysqli_fetch_assoc($sq_booking)){
 			

@@ -78,8 +78,9 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 						$bg = '';
 						if($row_visa_payment['clearance_status']=="Pending"){ $bg="warning";}
 					    else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg="danger";} 
-					    else { $bg = 'success';}
-						$pay_amount = currency_conversion($currency,$sq_visa_info['currency_code'],$row_visa_payment['payment_amount'] + $row_visa_payment['credit_charges']);
+					    else if($row_visa_payment['clearance_status']=="Cleared"){ $bg="success";} 
+					    else { $bg = '';}
+						$pay_amount = $row_visa_payment['payment_amount'] + $row_visa_payment['credit_charges'];
 						?>
 
 						<tr class="<?php echo $bg; ?>">

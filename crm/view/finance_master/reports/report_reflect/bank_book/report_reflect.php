@@ -10,7 +10,7 @@ $role = $_POST['role'];
 $array_s = array();
 $temp_arr = array();
 $total_arr = array();
-$query = "select * from bank_cash_book_master where  clearance_status!='Cancelled' and payment_type='Bank' ";
+$query = "select * from bank_cash_book_master where clearance_status!='Cancelled' and payment_type='Bank' ";
 if($bank_id!=""){
 	$query .=" and bank_id='$bank_id'";
 }
@@ -26,8 +26,9 @@ if($branch_status == 'yes'){
 	}
 }
 
-//Opening Balance Get
-$opening_bal = get_bank_book_opening_balance($bank_id);
+//BANK Ledger
+$sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+$opening_bal = $sq_bank['balance'];
 
 $transaction_bal = 0;
 if(($from_date!="" && $to_date!="")){

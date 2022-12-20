@@ -51,7 +51,7 @@
 					 <div class="col-sm-12 col-xs-12">
 								<span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-		                  <?php echo "<label>Passenger <em>:</em></label> ".$sq_hotel_info['pass_name']; ?>
+		                  <?php echo "<label>Guest Name <em>:</em></label> ".$sq_hotel_info['pass_name']; ?>
 		            </span>
 					 </div>
 		        </div>

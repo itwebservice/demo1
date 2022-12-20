@@ -23,9 +23,6 @@ public function exc_refund_save()
 	$financial_year_id = $_SESSION['financial_year_id'];
 	$branch_admin_id = $_SESSION['branch_admin_id'];
 
-	$bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $refund_amount);
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; }
-
 	begin_t(); 
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(refund_id) as max from exc_refund_master"));
@@ -108,7 +105,7 @@ public function finance_save($refund_id)
 
 	global $transaction_master;
 
-	$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+	$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
   	$customer_id = $sq_exc_info['customer_id'];
 	$year = explode("-", $sq_exc_info['created_at']);
 	$yr =$year[0];
@@ -216,64 +213,53 @@ public function bank_cash_book_save($refund_id)
 	$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 
 }
-
 public function refund_mail_send($exc_id,$refund_amount,$refund_date,$refund_mode,$transaction_id)
- {
+{
 
+	global $model,$currency,$encrypt_decrypt,$secret_key;
 
-global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website,$encrypt_decrypt,$secret_key,$currency_logo;
-  global $mail_em_style, $mail_em_style1, $mail_font_family, $mail_strong_style, $mail_color;
-   
-  $sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
-  $date = $sq_exc_info['created_at'];
-  $yr = explode("-", $date);
-  $year =$yr[0];
-  $cust_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_exc_info[customer_id]'"));
-  if($cust_email['type']=='Corporate'||$cust_email['type'] == 'B2B'){
-	  $cust_name = $cust_email['company_name'];
-  }else{
-	  $cust_name = $cust_email['first_name'].' '.$cust_email['last_name'];
-  }
-  $email_id = $encrypt_decrypt->fnDecrypt($cust_email['email_id'], $secret_key);
+	$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+	$date = $sq_exc_info['created_at'];
+	$yr = explode("-", $date);
+	$year =$yr[0];
+	$cust_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_exc_info[customer_id]'"));
+	if($cust_email['type']=='Corporate'||$cust_email['type'] == 'B2B'){
+		$cust_name = $cust_email['company_name'];
+	}else{
+		$cust_name = $cust_email['first_name'].' '.$cust_email['last_name'];
+	}
+	$email_id = $encrypt_decrypt->fnDecrypt($cust_email['email_id'], $secret_key);
 
-  	$sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from exc_payment_master where exc_id='$exc_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
-	$sq_refund_amount1 = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from exc_refund_master where exc_id='$exc_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+	$sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from exc_payment_master where exc_id='$exc_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 	$sq_pay=mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from exc_refund_master where exc_id='$exc_id'"));
 	$refund_amount1 = ($sq_pay['sum'] == '')?'0':$sq_pay['sum'];
-
-	$sq_pend_pay=mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from exc_refund_master where exc_id='$exc_id' and clearance_status='Pending'"));
-	$pend_amount = ($sq_pend_pay['sum'] == '')?'0':$sq_pend_pay['sum'];
-
-	$sq_canl_pay=mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from exc_refund_master where exc_id='$exc_id' and clearance_status='Cancelled'"));
-	$can_amount = ($sq_canl_pay['sum'] == '')?'0':$sq_canl_pay['sum'];
-
-	$total_refund_pay=$refund_amount1 - $can_amount;
 
 	$sale_Amount = $sq_exc_info['exc_total_cost'];
 	$paid_amount = $sq_paid_amount['sum'];
 	$cancel_amount = $sq_exc_info['cancel_amount'];
 
-  $content = '
-  <tr>
-      <table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
-          <tr><td style="text-align:left;border: 1px solid #888888;">Service Type</td>   <td style="text-align:left;border: 1px solid #888888;">Activity Booking</td></tr>
-          <tr><td style="text-align:left;border: 1px solid #888888;">Selling Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$currency_logo.' '.number_format($sale_Amount,2).'</td></tr>
-          <tr><td style="text-align:left;border: 1px solid #888888;">Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$currency_logo.' '.number_format($paid_amount,2).'</td></tr>
-          <tr><td style="text-align:left;border: 1px solid #888888;">Cancellation Charges</td>   <td style="text-align:left;border: 1px solid #888888;">'.$currency_logo.' '.number_format($cancel_amount,2).'</td></tr>
-          <tr><td style="text-align:left;border: 1px solid #888888;">Refund Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$currency_logo.' '.number_format($refund_amount,2).'</td></tr>
-          <tr><td style="text-align:left;border: 1px solid #888888;">Refund Mode</td>   <td style="text-align:left;border: 1px solid #888888;">'.$refund_mode.'</td></tr>
-          <tr><td style="text-align:left;border: 1px solid #888888;">Refund Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($refund_date).'</td></tr>
-      </table>
-  </tr>'; 
-// if($transaction_id!= ''){ $content .= ' <tr><td style="text-align:left;border: 1px solid #888888;">Cheque No/ID</td>   <td style="text-align:left;border: 1px solid #888888;">'.$transaction_id.'</td></tr>';
-// }
-	  $content .= '</tr>';
- 
-   $subject = 'Activity Cancellation Refund( '.get_exc_booking_id($sq_exc_info['exc_id'],$year).' )';
-  global $model;
- 
-  $model->app_email_send('43',$cust_name,$email_id, $content,$subject);
- }
+	$sale_Amount1 = currency_conversion($currency,$sq_exc_info['currency_code'],$sale_Amount);
+	$paid_amount1 = currency_conversion($currency,$sq_exc_info['currency_code'],$paid_amount);
+	$cancel_amount1 = currency_conversion($currency,$sq_exc_info['currency_code'],$cancel_amount);
+	$refund_amount1 = currency_conversion($currency,$sq_exc_info['currency_code'],$refund_amount);
+
+	$content = '
+	<tr>
+		<table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
+			<tr><td style="text-align:left;border: 1px solid #888888;">Service Type</td>   <td style="text-align:left;border: 1px solid #888888;">Activity Booking</td></tr>
+			<tr><td style="text-align:left;border: 1px solid #888888;">Selling Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$sale_Amount1.'</td></tr>
+			<tr><td style="text-align:left;border: 1px solid #888888;">Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$paid_amount1.'</td></tr>
+			<tr><td style="text-align:left;border: 1px solid #888888;">Cancellation Charges</td>   <td style="text-align:left;border: 1px solid #888888;">'.$cancel_amount1.'</td></tr>
+			<tr><td style="text-align:left;border: 1px solid #888888;">Refund Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$refund_amount1.'</td></tr>
+			<tr><td style="text-align:left;border: 1px solid #888888;">Refund Mode</td>   <td style="text-align:left;border: 1px solid #888888;">'.$refund_mode.'</td></tr>
+			<tr><td style="text-align:left;border: 1px solid #888888;">Refund Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($refund_date).'</td></tr>
+		</table>
+	</tr>'; 
+	$content .= '</tr>';
+
+	$subject = 'Activity Cancellation Refund( '.get_exc_booking_id($sq_exc_info['exc_id'],$year).' )';
+	$model->app_email_send('43',$cust_name,$email_id, $content,$subject);
+	}
 
 }
 ?>

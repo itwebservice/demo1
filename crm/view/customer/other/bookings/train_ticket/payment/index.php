@@ -11,15 +11,15 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="ticket_id_filterp" id="ticket_id_filterp" style="width:100%" onchange="train_ticket_payment_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_ticket = mysqlQuery("select * from train_ticket_master where customer_id='$customer_id'");
+			        $sq_ticket = mysqlQuery("select * from train_ticket_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 						$date = $row_ticket['created_at'];
 						$yr = explode("-", $date);
 						$year =$yr[0];
-			          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
-			          ?>
-			          <option value="<?= $row_ticket['train_ticket_id'] ?>"><?= get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-			          <?php
+						$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
+						?>
+						<option value="<?= $row_ticket['train_ticket_id'] ?>"><?= get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+			        	<?php
 			        }
 			        ?>
 			    </select>

@@ -1,12 +1,12 @@
 <?php
 include_once('../model.php');
- 	$due_date=date('Y-m-d');
-	 global $secret_key,$encrypt_decrypt;
- 	$sq_air = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where due_date='$due_date'"));
+$due_date=date('Y-m-d');
+	global $secret_key,$encrypt_decrypt;
+ 	$sq_air = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where due_date='$due_date' and delete_status='0'"));
 
  	if($sq_air>0){
 
-	 	$sq_air_details = mysqlQuery("select * from miscellaneous_master where due_date='$due_date'");
+	 	$sq_air_details = mysqlQuery("select * from miscellaneous_master where due_date='$due_date' and delete_status='0'");
 
 	 	while ($row_air = mysqli_fetch_assoc($sq_air_details)) {
 

@@ -47,7 +47,83 @@ public function save()
 		exit;
 	}
 }
+function delete(){
+    
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$entry_id = $_POST['entry_id'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$deleted_date = date('Y-m-d');
 
+	$sq_rp = mysqli_fetch_assoc(mysqlQuery("select * from receipt_payment_master where id='$entry_id'"));
+	$row_spec = $receipt_type = $sq_rp['receipt_type'];
+	$payment_mode = $sq_rp['payment_mode'];
+	$bank_id = $sq_rp['bank_id'];
+	$ledger_id = $sq_rp['ledger_id'];
+    $narration = $sq_rp['narration'];
+	$sq_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$ledger_id'"));
+    
+    //Getting cash/Bank Ledger
+    if ($payment_mode == 'Cash') {
+        $pay_gl = 20;
+        $type = 'CASH ';
+    } else {
+        $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+        $pay_gl = $sq_bank['ledger_id'];
+        $type = 'BANK ';
+    }
+    $pr = ($receipt_type == 'Receipt') ? 'RECEIPT' : 'PAYMENT';
+    $type .= $pr;
+    
+	$delete_master->delete_master_entries($receipt_type.'('.$payment_mode.')',$receipt_type,$entry_id,$entry_id,$sq_ledger['ledger_name'],$sq_rp['payment_amount']);
+
+    //Selected ledger
+	$module_name = $receipt_type;
+    $module_entry_id = $entry_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $narration;
+    $ledger_particular = get_ledger_particular('By', 'Cash/Bank');
+    $old_gl_id = $gl_id = $ledger_id;
+    $payment_side = ($receipt_type == 'Receipt') ? "Credit" : "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
+
+    //Payment mode
+	$module_name = $receipt_type;
+    $module_entry_id = $entry_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $narration;
+    $ledger_particular = get_ledger_particular('By', 'Cash/Bank');
+    $old_gl_id = $gl_id = $pay_gl;
+    $payment_side = ($receipt_type == 'Receipt') ? "Debit" : "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
+
+    // Bank cash book
+    $module_name = $receipt_type;
+    $module_entry_id = $entry_id;
+    $payment_date = $payment_date;
+    $payment_amount = $payment_amount;
+    $payment_mode = $payment_mode;
+    $bank_name = $sq_rp['bank_name'];
+    $transaction_id = $transaction_id;
+    $bank_id = $bank_id;
+    $particular = $narration;
+    $clearance_status = ($payment_mode == "Cheque" || $payment_mode == 'Credit Card') ? "Pending" : "";
+    $payment_side = ($receipt_type == 'Receipt') ? "Debit" : "Credit";
+    $payment_type = ($payment_mode == "Cash") ? "Cash" : "Bank";
+
+    $bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+    $sq_delete = mysqlQuery("update receipt_payment_master set payment_amount = '0',delete_status = '1' where id='$entry_id'");
+	if($sq_delete){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+
+}
 public function finance_save($entry_id)
 {
 	$receipt_type = $_POST['receipt_type'];

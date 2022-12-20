@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -50,24 +50,24 @@ $content_style_Array = array(
 
 //This is border array
 $borderArray = array(
-          'borders' => array(
-              'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN
-              )
-          )
-      );
+    'borders' => array(
+        'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+        )
+    )
+);
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
 
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
+        ->setLastModifiedBy("Maarten Balliauw")
+        ->setTitle("Office 2007 XLSX Test Document")
+        ->setSubject("Office 2007 XLSX Test Document")
+        ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+        ->setKeywords("office 2007 openxml php")
+        ->setCategory("Test result file");
 
 
 //////////////////////////****************Content start**************////////////////////////////////
@@ -104,7 +104,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);  
 
-$query = "select * from other_expense_master where 1 ";
+$query = "select * from other_expense_master where 1 and delete_status='0'";
 if($supplier_type!=""){
     $query .= "and supplier_id='$supplier_type'";
 }
@@ -145,8 +145,8 @@ $sq_expense = mysqlQuery($query);
 while($row_expense = mysqli_fetch_assoc($sq_expense)){
 
     $date = $row_expense['expense_date'];
-         $yr = explode("-", $date);
-         $year =$yr[0];
+    $yr = explode("-", $date);
+    $year =$yr[0];
     $sq_supp = mysqli_fetch_assoc(mysqlQuery("select * from other_vendors where vendor_id='$row_expense[supplier_id]'"));
     $sq_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$row_expense[expense_type_id]'"));
 
@@ -155,7 +155,6 @@ while($row_expense = mysqli_fetch_assoc($sq_expense)){
     $balance_amt = $row_expense['total_fee'] - $sq_paid['sum'];
     $total_expense_amt = $total_expense_amt + $row_expense['total_fee'];
     $total_paid_amt = $total_paid_amt + $sq_paid['sum'];
-
 
     $newUrl = $row_expense['invoice_url'];
     if($newUrl!=""){

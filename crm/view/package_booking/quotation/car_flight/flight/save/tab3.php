@@ -4,31 +4,38 @@
 
 	<div class="col-md-2">
 		<small id="basic_show">&nbsp;</small>
+		<small>Basic Amount</small>
 	    <input type="text" id="subtotal" name="subtotal" placeholder="Basic amount" title="Basic amount" value="0.00" onchange="flight_quotation_cost_calculate();get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','true','service_charge', true);">
 
 	</div>
 	<div class="col-md-2">
 		<small id="service_show">&nbsp;</small>
+		<small>Service Charge</small>
   		<input type="text" id="service_charge" name="service_charge" placeholder="Service Charge" title="Service Charge" onchange="flight_quotation_cost_calculate();validate_balance(this.id);get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','true','service_charge');" value="0.00">  
   	</div>
 	<div class="col-md-2">
 		<small>&nbsp;</small>
+		<small>Tax Amount</small>
   		<input type="text" id="service_tax" name="service_tax" placeholder="Tax Amount" title="Tax Amount" onchange="flight_quotation_cost_calculate();validate_balance(this.id)" value="0.00" readonly>  
   	</div>
 	<div class="col-md-2">
 		<small id="markup_show">&nbsp;</small>
+		<small>Markup Cost</small>
   		<input type="text" id="markup_cost" name="markup_cost" placeholder="Markup Cost" title="Markup Cost" onchange="flight_quotation_cost_calculate();validate_balance(this.id);get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','false','service_charge');" value="0.00">  
   	</div>
 	<div class="col-md-2">
 		<small>&nbsp;</small>
+		<small>Tax On Markup</small>
   		<input type="text" id="markup_cost_subtotal" name="markup_cost_subtotal" placeholder="Tax on Markup" title="Tax on Markup" onchange="flight_quotation_cost_calculate();" value="0.00" readonly>  
   	</div>
 	  <div class="col-md-2">
 		<small>&nbsp;</small>
+		<small>Round Off</small>
   		<input type="text" id="roundoff" name="roundoff" placeholder="Round Off" title="Round Off" onchange="flight_quotation_cost_calculate();" value="0.00" readonly>  
   	</div>
 	<div class="col-md-2">
 		<small>&nbsp;</small>
+		<small>Quotation Cost</small>
 		<input type="text" id="total_tour_cost" class="amount_feild_highlight text-right" name="total_tour_cost" placeholder="Quotation Cost" title="Quotation Cost" value="0"  readonly>
 
 	</div>
@@ -54,7 +61,6 @@
 
 
 <script>
-
 function switch_to_tab2(){ $('a[href="#tab2"]').tab('show'); }
 
 $('#frm_tab3').validate({

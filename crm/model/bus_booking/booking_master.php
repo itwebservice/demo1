@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $flag = true;
 
@@ -198,6 +198,157 @@ public function booking_save()
     }
 }
 
+function booking_delete(){
+
+    global $delete_master,$transaction_master;
+    $booking_id = $_POST['booking_id'];
+
+    $deleted_date = date('Y-m-d');
+    $row_spec = "sales";
+
+    $row_misc = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$booking_id'"));
+    $reflections = json_decode($row_misc['reflections']);
+    $service_tax_markup = $row_misc['markup_tax'];
+    $service_tax_subtotal = $row_misc['service_tax_subtotal'];
+    $customer_id = $row_misc['customer_id'];
+    $services = $row_misc['service'];
+    $booking_date = $row_misc['created_at'];
+    $yr = explode("-", $booking_date);
+    $year = $yr[0];
+    
+    $sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+    if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+        $cust_name = $sq_ct['company_name'];
+    }else{
+        $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+    }
+    $row_bus = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_entries where booking_id='$booking_id'"));
+    $particular = $this->get_particular($customer_id,$row_bus['pnr_no'], $row_bus['origin'], $row_bus['destination'],get_date_user($row_bus['date_of_journey']));
+
+    $delete_master->delete_master_entries('Invoice','Bus',$booking_id,get_bus_booking_id($booking_id,$year),$cust_name,$row_misc['net_total']);
+
+    //Getting customer Ledger
+    $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+    $cust_gl = $sq_cust['ledger_id'];
+    
+    ////////////Sales/////////////
+    $module_name = "Bus Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Bus Sales');
+    $old_gl_id = $gl_id = 10;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    ////////////service charge/////////////
+    $module_name = "Bus Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Bus Sales');
+    $old_gl_id =$gl_id= ($reflections[0]->hotel_sc != '') ? $reflections[0]->hotel_sc : 190;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    /////////Service Charge Tax Amount////////
+    // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+    $service_tax_subtotal = explode(',',$service_tax_subtotal);
+    $tax_ledgers = explode(',',$reflections[0]->hotel_taxes);
+    for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+
+    $service_tax = explode(':',$service_tax_subtotal[$i]);
+    $tax_amount = $service_tax[2];
+    $ledger = $tax_ledgers[$i];
+
+    $module_name = "Bus Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Bus Sales');
+    $old_gl_id = $gl_id = $ledger;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    }
+
+    ////////////markup/////////////
+    $module_name = "Bus Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Bus Sales');
+    $old_gl_id = $gl_id = ($reflections[0]->hotel_markup != '') ? $reflections[0]->hotel_markup : 202;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    /////////Markup Tax Amount////////
+    // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+    $service_tax_markup = explode(',',$service_tax_markup);
+    $tax_ledgers = explode(',',$reflections[0]->hotel_markup_taxes);
+    for($i=0;$i<sizeof($service_tax_markup);$i++){
+
+        $service_tax = explode(':',$service_tax_markup[$i]);
+        $tax_amount = $service_tax[2];
+        $ledger = $tax_ledgers[$i];
+
+        $module_name = "Bus Booking";
+        $module_entry_id = $booking_id;
+        $transaction_id = "";
+        $payment_amount = 0;
+        $payment_date = $deleted_date;
+        $payment_particular = $particular;
+        $ledger_particular = get_ledger_particular('To','Bus Sales');
+        $old_gl_id = $gl_id = $ledger;
+        $payment_side = "Credit";
+        $clearance_status = "";
+        $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'1', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+    }
+    
+    /////////roundoff/////////
+    $module_name = "Bus Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Bus Sales');
+    $old_gl_id = $gl_id = 230;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    ////////Customer Amount//////
+    $module_name = "Bus Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Bus Sales');
+    $old_gl_id = $gl_id = $cust_gl;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    $sq_delete = mysqlQuery("update bus_booking_master set basic_cost = '0', service_charge='0', markup='0', markup_tax='', service_tax_subtotal='', net_total='0', roundoff='0', delete_status='1' where booking_id='$booking_id'");
+    if($sq_delete){
+        echo 'Entry deleted successfully!';
+        exit;
+    }
+}
+
 function get_particular($customer_id,$pnr_no,$source,$dest,$date_of_journey){
 
     $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
@@ -218,10 +369,7 @@ public function booking_sms($booking_id, $customer_id, $created_at){
     $message = " Dear ".$sq_customer_info['first_name']." ".$sq_customer_info['last_name'].", your Bus booking is confirmed. Seat details will send you shortly. Please contact for more details ".$app_contact_no.".";
     $model->send_message($mobile_no, $message);  
 }
-
-
 public function booking_mail($booking_id, $customer_id, $payment_amount)
-
 {
     global $mail_em_style, $mail_font_family, $mail_strong_style, $mail_color,$currency_logo;
     global $app_name,$encrypt_decrypt,$secret_key;
@@ -285,8 +433,6 @@ public function booking_mail($booking_id, $customer_id, $payment_amount)
     if($backoffice_email_id != "")
     $model->app_email_send('19',"Team",$backoffice_email_id, $content, $subject);
 }
-
-
 public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_id,$particular){
     $customer_id = $_POST['customer_id'];
 	$basic_cost = $_POST['basic_cost'];
@@ -466,8 +612,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 		if($payment_mode == 'Credit Card'){
 
 			//////Customer Credit charges///////
-			$module_name = "Bus Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Bus Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -479,8 +625,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
 			//////Credit charges ledger///////
-			$module_name = "Bus Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Bus Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -507,8 +653,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$credit_company_amount = intval($payment_amount1) - intval($finance_charges);
 
 			//////Finance charges ledger///////
-			$module_name = "Bus Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Bus Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $finance_charges;
 			$payment_date = $payment_date1;
@@ -519,8 +665,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$clearance_status = ($payment_mode=="Cheque"||$payment_mode=="Credit Card") ? "Pending" : "";
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 			//////Credit company amount///////
-			$module_name = "Bus Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Bus Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_company_amount;
 			$payment_date = $payment_date1;
@@ -533,8 +679,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 		}
 		else{
 
-			$module_name = "Bus Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Bus Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -547,8 +693,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 		}
 
 		//////Customer Payment Amount///////
-		$module_name = "Bus Booking";
-		$module_entry_id = $booking_id;
+		$module_name = "Bus Booking Payment";
+		$module_entry_id = $payment_id;
 		$transaction_id = $transaction_id1;
 		$payment_amount = $payment_amount1;
 		$payment_date = $payment_date1;
@@ -560,9 +706,6 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 		$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 	}
 }
-
-
-
 public function bank_cash_book_save($booking_id, $payment_id, $branch_admin_id)
 {
 
@@ -607,7 +750,7 @@ public function bank_cash_book_save($booking_id, $payment_id, $branch_admin_id)
       $customer_id = $sq_max['max'];
     }
 
-	$module_name = "Bus Booking";
+	$module_name = "Bus Booking Payment";
 
 	$module_entry_id = $payment_id;
 
@@ -634,8 +777,6 @@ public function bank_cash_book_save($booking_id, $payment_id, $branch_admin_id)
 	$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
 
 }
-
-
 
 public function booking_update()
 
@@ -819,9 +960,6 @@ public function finance_update($sq_booking_info, $row_spec, $particular)
 	global $transaction_master;
 
     $bus_sale_amount = $basic_cost ;
-    //get total payment against bus id
-    $sq_bus = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from bus_booking_payment_master where booking_id='$booking_id'"));
-    $balance_amount = $net_total - $sq_bus['payment_amount'];
 
     //Getting customer Ledger
     $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -841,7 +979,7 @@ public function finance_update($sq_booking_info, $row_spec, $particular)
     $payment_side = "Credit";
     $clearance_status = "";
     $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
-  
+
     ////////////service charge/////////////
     $module_name = "Bus Booking";
     $module_entry_id = $booking_id;
@@ -977,6 +1115,9 @@ public function whatsapp_send(){
   else{
    $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
   }
+  $customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : 
+  $sq_customer['first_name'].' '.$sq_customer['last_name'];
+
    $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
   
    $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
@@ -987,7 +1128,7 @@ public function whatsapp_send(){
 	 $contact = $sq_emp_info['mobile_no'];
    }
    
-   $whatsapp_msg = rawurlencode('Hello Dear '.$sq_customer['first_name'].',
+   $whatsapp_msg = rawurlencode('Dear '.$customer_name.',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : '.get_date_user($booking_date).'
   

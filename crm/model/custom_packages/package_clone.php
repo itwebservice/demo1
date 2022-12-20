@@ -35,7 +35,7 @@ public function package_clone_save(){
 			}
 			$insertSQL .= ")";
 			mysqlQuery($insertSQL);
-			$sq_update  = mysqlQuery("update custom_package_master set clone='yes',update_flag='0' where package_id='$package_max'");
+			$sq_update  = mysqlQuery("update custom_package_master set clone='yes',update_flag='0',status='Active' where package_id='$package_max'");
 	}
 
 	$this->clone_program_entries($package_id, $package_max);

@@ -13,7 +13,7 @@ $customer_id = $_SESSION['customer_id'];
 			<th>Mode</th>
 			<th>Bank_Name</th>
 			<th>Cheque_No/ID</th>
-			<th class="success text-right">Amount</th>
+			<th class="success">Amount</th>
 			<th>Receipt </th>
 		</tr>
 	</thead>
@@ -48,8 +48,6 @@ $customer_id = $_SESSION['customer_id'];
 		$total_payment=0;
 	
 		$sq_exc_payment = mysqlQuery($query);
-		
-
 		$sq_cancel_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from exc_payment_master where clearance_status='Cleared'"));
 	
 		$sq_pend_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from exc_payment_master where clearance_status='Pending'"));
@@ -64,7 +62,7 @@ $customer_id = $_SESSION['customer_id'];
 			$sq_pending_amount = 0;
 
 			$count++;
-			$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$row_exc_payment[exc_id]'"));
+			$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$row_exc_payment[exc_id]' and delete_status='0'"));
 			$total_sale = $sq_exc_info['exc_total_cost'];
 			$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from exc_payment_master where clearance_status!='Cancelled' and exc_id='$row_exc_payment[exc_id]'"));
 			$total_pay_amt = $sq_pay['sum'];
@@ -84,8 +82,12 @@ $customer_id = $_SESSION['customer_id'];
 			else if($row_exc_payment['clearance_status']=="Cancelled"){ $bg='danger';
 				$sq_cancel_amount = $row_exc_payment['payment_amount']+$row_exc_payment['credit_charges'];
 			}		
+			if($row_exc_payment['clearance_status']=="Cleared"){ $bg='success';
+			}
+			if($row_exc_payment['clearance_status']==""){ $bg=''; }
 			
 			$sq_paid_amount = $sq_paid_amount + $row_exc_payment['payment_amount']+$row_exc_payment['credit_charges'];
+			
 
 			$payment_id_name = "Activity Payment ID";
 			$payment_id = get_exc_booking_payment_id($row_exc_payment['payment_id'],$year1);
@@ -101,7 +103,7 @@ $customer_id = $_SESSION['customer_id'];
 			$bank_name = $row_exc_payment['bank_name'];
 			$receipt_type = "Activity Receipt";			
 
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=exc_payment_master&customer_field=exc_id&in_customer_id=$row_exc_payment[exc_id]&currency_code=$sq_exc_info[currency_code]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=exc_payment_master&customer_field=exc_id&in_customer_id=$row_exc_payment[exc_id]&currency_code=$sq_exc_info[currency_code]&status=$row_payment[status]";
 
 			$total_paid = currency_conversion($currency,$sq_exc_info['currency_code'],floatval($row_exc_payment['payment_amount'])+ floatval($row_exc_payment['credit_charges']));
 			
@@ -122,7 +124,7 @@ $customer_id = $_SESSION['customer_id'];
 				<td><?= $row_exc_payment['payment_mode'] ?></td>
 				<td><?= $row_exc_payment['bank_name']; ?></td>
 				<td><?= $row_exc_payment['transaction_id']; ?></td>
-				<td class="text-right success"><?= $total_paid ?></td>
+				<td class="success"><?= $total_paid ?></td>
 				<td>
 					<a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 				</td>

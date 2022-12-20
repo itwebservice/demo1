@@ -14,7 +14,7 @@ include "../../../../model/model.php";
 			<select name="exc_id" id="exc_id" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
 		        <?php 
-		        $sq_exc = mysqlQuery("select * from excursion_master where exc_id in ( select exc_id from excursion_master_entries where status='Cancel')order by exc_id desc");
+		        $sq_exc = mysqlQuery("select * from excursion_master where exc_id in ( select exc_id from excursion_master_entries where status='Cancel') and delete_status='0' order by exc_id desc");
 		        while($row_exc = mysqli_fetch_assoc($sq_exc)){
 
 					$date = $row_exc['created_at'];

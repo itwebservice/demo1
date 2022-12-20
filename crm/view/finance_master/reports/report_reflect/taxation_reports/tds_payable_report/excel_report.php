@@ -192,23 +192,23 @@ $rcount = $row_count++;
 $row_count++;
 $count = 1;
 //Hotel
-     $query = "select * from vendor_estimate where status =''";
-     if($from_date != '' && $to_date != ''){
-      $from_date = get_date_db($from_date);
-      $to_date = get_date_db($to_date);
-      $query .= " and DATE(purchase_date) between '$from_date' and '$to_date'";    
-     }
-     if($branch_status=='yes'){
-        if($role=='Branch Admin'){
-        $query .= " and branch_admin_id = '$branch_admin_id'";
-        } 
-        elseif($role!='Admin' && $role!='Branch Admin'){
-          $query .= " and emp_id='$emp_id'";
-          }
-     }
-     $sq_query = mysqlQuery($query);
-     while($row_query = mysqli_fetch_assoc($sq_query))
-     {
+    $query = "select * from vendor_estimate where status ='' and delete_status='0' ";
+    if($from_date != '' && $to_date != ''){
+    $from_date = get_date_db($from_date);
+    $to_date = get_date_db($to_date);
+    $query .= " and DATE(purchase_date) between '$from_date' and '$to_date'";    
+    }
+    if($branch_status=='yes'){
+    if($role=='Branch Admin'){
+    $query .= " and branch_admin_id = '$branch_admin_id'";
+    } 
+    elseif($role!='Admin' && $role!='Branch Admin'){
+        $query .= " and emp_id='$emp_id'";
+        }
+    }
+    $sq_query = mysqlQuery($query);
+    while($row_query = mysqli_fetch_assoc($sq_query))
+    {
         $tds_on_amount = floatval($row_query['basic_cost']) + floatval($row_query['non_recoverable_taxes']) + floatval($row_query['service_charge']) + floatval($row_query['other_charges']);
       $supp_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
       $supp_pan_no = get_vendor_pan_report($row_query['vendor_type'],$row_query['vendor_type_id']);

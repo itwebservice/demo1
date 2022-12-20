@@ -65,6 +65,7 @@ $branch_status = $sq['branch_status'];
     </div>
   </div>
 </div>
+<script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>
 
 <script>
 $('#entity_save_modal').modal('show');

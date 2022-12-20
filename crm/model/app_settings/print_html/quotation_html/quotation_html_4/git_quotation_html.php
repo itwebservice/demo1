@@ -1,10 +1,16 @@
 <?php
 //Generic Files
-include "../../../../model.php"; 
+include "../../../../model.php";
 include "printFunction.php";
 
 $quotation_id = $_GET['quotation_id'];
 global $app_quot_img,$currency;
+
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/group_tour/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 
 $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Group Quotation' and active_flag ='Active'"));
 
@@ -17,7 +23,7 @@ $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp
 
 $quotation_date = $sq_quotation['quotation_date'];
 $yr = explode("-", $quotation_date);
-$year =$yr[0];
+$year = $yr[0];
 $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 
 if($sq_emp_info['first_name']==''){
@@ -43,12 +49,13 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
       <div class="ladingPageBottom main_block side_pad">
         <div class="row">
           <div class="col-md-12 mg_tp_30">
-              <h3 class="customerFrom">Prepared for</h3>
+              <h3 class="customerFrom">PREPARED FOR</h3>
           </div>
           <div class="col-md-5">
             <div class="landigPageCustomer">
               <span class="customerName mg_tp_10"><i class="fa fa-user"></i> : <?= $sq_quotation['customer_name'] ?></span><br>
-              <span class="customerMail mg_tp_10"><i class="fa fa-envelope"></i> : <?= $sq_quotation['email_id'] ?></span><br>              
+              <span class="customerMail mg_tp_10"><i class="fa fa-envelope"></i> : <?= $sq_quotation['email_id'] ?></span><br>   
+              <span class="customerMail mg_tp_10"><i class="fa fa-phone"></i> : <?= $sq_quotation['mobile_number'] ?></span><br>
             </div>
           </div>
           <div class="col-md-7 text-right">
@@ -73,25 +80,6 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               </div>
             </div>
 
-            <!-- <div class="detailBlock text-center">
-              <div class="detailBlockIcon detailBlockYellow">
-                <i class="fa fa-users"></i>
-              </div>
-              <div class="detailBlockContent">
-                <h3 class="contentValue"><?= $sq_quotation['total_passangers'] ?></h3>
-                <span class="contentLabel">TOTAL GUEST</span>
-              </div>
-            </div> -->
-
-            <div class="detailBlock text-center">
-              <div class="detailBlockIcon detailBlockRed">
-                <i class="fa fa-tag"></i>
-              </div>
-              <div class="detailBlockContent">
-                <h3 class="contentValue"><?= $currency_amount1 ?></h3>
-                <span class="contentLabel">PRICE</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -117,11 +105,11 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 <table class="table tableTrnasp no-marg" id="tbl_emp_list">
                   <thead>
                     <tr class="table-heading-row">
-                      <th>From</th>
-                      <th>To</th>
+                      <th>From_location</th>
+                      <th>To_location</th>
                       <th>Class</th>
-                      <th>Departure</th>
-                      <th>Arrival</th>
+                      <th>Departure_D/T</th>
+                      <th>Arrival_D/T</th>
                     </tr>
                   </thead>
                   <tbody>  
@@ -159,11 +147,11 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 <table class="table tableTrnasp no-marg" id="tbl_emp_list">
                   <thead>
                     <tr class="table-heading-row">
-                      <th>From</th>
-                      <th>To</th>
+                      <th>From_Sector</th>
+                      <th>To_Sector</th>
                       <th>Airline</th>
-                      <th>Departure</th>
-                      <th>Arrival</th>
+                      <th>Departure_D/T</th>
+                      <th>Arrival_D/T</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -202,8 +190,8 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 <table class="table tableTrnasp no-marg" id="tbl_emp_list">
                   <thead>
                     <tr class="table-heading-row">
-                      <th>Departure</th>
-                      <th>Arrival</th>
+                      <th>Departure_D/T</th>
+                      <th>Arrival_D/T</th>
                       <th>Route</th>
                       <th>Cabin</th>
                       <th>Sharing</th>
@@ -237,6 +225,8 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
     <?php 
       $count = 1;
       $checkPageEnd = 0;
+      $i = 0;
+      $dates = (array) get_dates_for_tour_itineary($quotation_id);
       while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
         if($checkPageEnd%2==0 || $checkPageEnd==0){
           $go = $checkPageEnd + 2;
@@ -282,7 +272,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               </div>
               <div class="itneraryText">
                 <div class="itneraryDayInfo">
-                  <i class="fa fa-map-marker" aria-hidden="true"></i><span> Day <?= $count ?> : <?= $row_itinarary['attraction'] ?> </span>
+                  <i class="fa fa-map-marker" aria-hidden="true"></i><span> Day <?= $count ?> <b>(<?php echo $dates[$i++] ?>) </b>: <?= $row_itinarary['attraction'] ?> </span>
                 </div>
                 <div class="itneraryDayPlan">
                   <p><?= $row_itinarary['day_wise_program'] ?></p>
@@ -318,7 +308,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
             <?php if($sq_quotation['incl'] != ''){?>
               <div class="col-md-6 mg_tp_30">
                 <div class="incluExcluTermsTabPanel main_block">
-                    <h3 class="incexTitle">Inclusions</h3>
+                    <h3 class="incexTitle">INCLUSIONS</h3>
                     <div class="tabContent">
                         <pre class="real_text"><?= $sq_quotation['incl'] ?></pre>      
                     </div>
@@ -328,7 +318,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
             <?php if($sq_quotation['excl'] != ''){ ?>
               <div class="col-md-6 mg_tp_30">
                 <div class="incluExcluTermsTabPanel main_block">
-                    <h3 class="incexTitle">Exclusions</h3>
+                    <h3 class="incexTitle">EXCLUSIONS</h3>
                     <div class="tabContent">
                         <pre class="real_text"><?= $sq_quotation['excl'] ?></pre>      
                     </div>
@@ -354,7 +344,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
           
           <div class="col-md-12 mg_tp_30">
             <div class="incluExcluTermsTabPanel main_block">
-                <h3 class="incexTitle">Terms & Conditions</h3>
+                <h3 class="incexTitle">TERMS AND CONDITIONS</h3>
                 <div class="tncContent">
                     <pre class="real_text"><?php echo $sq_terms_cond['terms_and_conditions']; ?></pre>      
                 </div>
@@ -375,7 +365,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
           
           <!-- Guest Detail -->
           <div class="col-md-12 passengerPanel endPagecenter mg_bt_30">
-                <h3 class="endingPageTitle text-center">Total Guest</h3>
+                <h3 class="endingPageTitle text-center">TOTAL GUEST</h3>
                 <div class="col-md-3 text-center mg_bt_30">
                   <div class="icon">
                     <img src="<?= BASE_URL ?>images/quotation/p4/adult.png" class="img-responsive">
@@ -439,7 +429,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
         <div class="row constingBankingPanelRow">
           <!-- Costing -->
           <div class="col-md-12 constingBankingPanel constingPanel">
-                <h3 class="costBankTitle text-center">Costing Details</h3>
+                <h3 class="costBankTitle text-center">COSTING DETAILS</h3>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/tourCost.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= $newBasic1 ?></h4>
@@ -461,7 +451,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
 
           <!-- Bank Detail -->
           <div class="col-md-12 constingBankingPanel BankingPanel">
-                <h3 class="costBankTitle text-center">Bank Details</h3>
+                <h3 class="costBankTitle text-center">BANK DETAILS</h3>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/bankName.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= $bank_name_setting ?></h4>
@@ -469,13 +459,13 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/branchName.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_branch_name ?></h4>
-                  <p>BRANCH</p>
+                  <h4 class="no-marg"><?= ($bank_branch_name != '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?>)</h4>
+          <p>BRANCH</p>
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= $acc_name ?></h4>
-                  <p>A/C NAME</p>
+                  <p>A/C TYPE</p>
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
@@ -484,14 +474,22 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_ifsc_code ?></h4>
-                  <p>IFSC</p>
+                  <h4 class="no-marg"><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></h4>
+          <p>BANK ACCOUNT NAME</p>
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= $bank_swift_code ?></h4>
                   <p>SWIFT CODE</p>
                 </div>
+                <?php 
+              if(check_qr()) { ?>
+                <div class="col-md-12 text-center" style="margin-top:20px; margin-bottom:20px;">
+                  <?= get_qr('Protrait Creative') ?>
+                  <br>
+                  <h4 class="no-marg">Scan & Pay </h4>
+          </div>
+          <?php } ?>
           </div>
           
         
@@ -510,24 +508,24 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
           </div>
         <div class="companyContactDetail">
             <h3><?= $app_name ?></h3>
-            <?php if($app_address != ''){?>
+            <?php //if($app_address != ''){?>
             <div class="contactBlock">
               <i class="fa fa-map-marker"></i>
-              <p><?php echo $app_address; ?></p>
+              <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
             </div>
-            <?php } ?>
-            <?php if($app_contact_no != ''){?>
+            <?php //} ?>
+            <?php //if($app_contact_no != ''){?>
             <div class="contactBlock">
               <i class="fa fa-phone"></i>
-              <p><?php echo $app_contact_no; ?></p>
+              <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
             </div>
-            <?php } ?>
-            <?php if($app_email_id != ''){?>
+            <?php //} ?>
+            <?php //if($app_email_id != ''){?>
             <div class="contactBlock">
               <i class="fa fa-envelope"></i>
-              <p><?php echo $app_email_id; ?></p>
+              <p><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
             </div>
-            <?php } ?>
+            <?php //} ?>
             <?php if($app_website != ''){?>
             <div class="contactBlock">
               <i class="fa fa-globe"></i>
@@ -536,7 +534,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
             <?php } ?>
             <div class="contactBlock">
               <i class="fa fa-pencil-square-o"></i>
-              <p>Prepared By : <?= $emp_name?></p>
+              <p>PREPARED BY : <?= $emp_name?></p>
             </div>
         </div>
       </section>

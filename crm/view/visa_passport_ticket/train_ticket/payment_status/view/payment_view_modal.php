@@ -29,11 +29,12 @@ $train_ticket_id = $_POST['train_ticket_id'];
                       $sq_query = mysqlQuery("SELECT * FROM train_ticket_payment_master WHERE train_ticket_id = '$train_ticket_id' and payment_amount!='0'");
                       while($row_entry = mysqli_fetch_assoc($sq_query))
                       {
+                        $bg = '';
                         if($row_entry['clearance_status']=="Pending")
                           $bg='warning';
                         else if($row_entry['clearance_status']=="Cancelled")
                           $bg='danger';		
-                        else
+                        else if($row_entry['clearance_status']=="Cleared")
                           $bg='success';
                         $count++;
                           ?>

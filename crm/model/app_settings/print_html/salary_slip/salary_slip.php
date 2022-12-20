@@ -73,8 +73,7 @@ $sq_salary = mysqli_fetch_assoc(mysqlQuery("select * from employee_salary_master
 		<tr>
 			<td>Basic Pay</td>
 			<td class="text-right" style="border-right: 1px solid #ddd !important"><?= $sq_salary['basic_pay']?></td>
-			<td>Employer PF</td>
-			<td class="text-right" style="border-right: 1px solid #ddd !important"><?= $sq_salary['employer_pf']?></td>
+			
 		</tr>
 		<tr>
 			<td>Dearness Allowance</td>
@@ -141,10 +140,17 @@ $sq_salary = mysqli_fetch_assoc(mysqlQuery("select * from employee_salary_master
 		<tr class="active">
 			<th class="text-right" colspan="2">Total Salary : <?= $sq_salary['gross_salary']?></th>
 			<th class="text-right" colspan="2"> Total Deductions : <?= $sq_salary['deduction']?></th>
+			
 		</tr>
 		<tr class="active">
-			<th colspan="4" class=" text-right">Net Salary : <?= $sq_salary['net_salary']?></th>
+		<th colspan="4" class="text-right" > Employer PF : <?= $sq_salary['employer_pf']?></th>
+
+	</tr>
+		<tr class="active">
+				
+		<th colspan="4" class=" text-right">Net Salary : <?= $sq_salary['net_salary']?></th>
 		</tr>
+
 	</tfoot>
 </table>
 <section class="print_sec main_block inv_rece_footer_top">

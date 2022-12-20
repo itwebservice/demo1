@@ -6,13 +6,13 @@ include "../../../../model/model.php";
 		<select name="booking_id" id="booking_id" style="width:100%" onchange="hotel_entries_reflect()">
 	        <option value="">Select Booking</option>
 	        <?php 
-	        $sq_hotel = mysqlQuery("select * from hotel_booking_master");
+	        $sq_hotel = mysqlQuery("select * from hotel_booking_master where delete_status='0'");
 	        while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
 
 	          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_hotel[customer_id]'"));
-	          ?>
-	          <option value="<?= $row_hotel['booking_id'] ?>"><?= get_hotel_booking_id($row_hotel['booking_id']).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-	          <?php
+			?>
+			<option value="<?= $row_hotel['booking_id'] ?>"><?= get_hotel_booking_id($row_hotel['booking_id']).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+			<?php
 	        }
 	        ?>
 	    </select>

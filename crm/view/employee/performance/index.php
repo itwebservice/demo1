@@ -137,7 +137,7 @@ function report_reflect()
 	var emp_id = $('#emp_id_filterpr1').val();
 
 	$.post('report_reflect.php', { year : year,month : month,  emp_id : emp_id }, function(data){
-	    pagination_load(data, column, true, false, 20, 'emp_perf');
+	    pagination_load(data, column, true, false, 20, 'emp_perf',true);
 	});
 }
 report_reflect();

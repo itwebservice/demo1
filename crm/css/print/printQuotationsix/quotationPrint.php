@@ -1,8 +1,7 @@
-<?php 
+<?php
 include_once('../../../model/model.php');
 header("Content-type: text/css");
 ?>
-
 .landingPageTop {
     position: relative;
 }
@@ -49,7 +48,7 @@ h1.landingpageTitle:before {
 .landigPageCustomer {
     background-color: #51514f !important;
     -webkit-print-color-adjust: exact;
-    width: 90%;
+    width: 100%;
     margin: 0 auto -20px;
     z-index: 1;
     position: relative;
@@ -185,6 +184,16 @@ h3.customerFrom {
     -webkit-print-color-adjust: exact;
     border: 0 !important;
     font-size:12px!important;
+}
+table th, .modal table.dataTable th{
+    font-size: 12px !important;
+	padding-left: 28px !important;
+    text-transform: uppercase;
+    font-weight: 600 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #ddd !important;
+    border-top: 1px solid #ddd !important;
+    color:<?= $theme_color ?> !important;
 }
 
 .transportDetails_costing {
@@ -368,8 +377,6 @@ h3.endingPageTitle {
     color: #51514f !important;
 }
 
-
-
 .constingBankingPanel {
     background-color: #51514f !important;
     -webkit-print-color-adjust: exact;
@@ -388,7 +395,7 @@ h3.costBankTitle {
 }
 .constingBankingPanel h4 {
     color: #fff !important;
-    line-height: 30px;
+    line-height: 15px;
 }
 .constingBankingPanel p {
     font-size: 12px;
@@ -456,9 +463,6 @@ h3.costBankTitle {
 .vitinerary_div a{
     text-decoration:underline !important;
 }
-
-
-
 @media print {
     table tr.table-heading-row th, table tfoot tr td{
         -webkit-print-color-adjust: exact; 

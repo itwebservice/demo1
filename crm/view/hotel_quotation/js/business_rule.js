@@ -83,7 +83,7 @@ function get_auto_values(booking_date, sub_total, payment_mode, service_charge, 
             $('#car_markup').val(markup_amount_rules_array[0].ledger_id);
         }
         if (markup_amount_rules_array.length && markup_amount_rules_array[0].type === "Automatic")
-            $('#' + markup).attr({ 'disabled': 'disabled' });
+            $('#' + markup).attr({ 'readonly': 'true' });
         else
             $('#' + markup).removeAttr('disabled');
         /////////////////Markup End///////////////////////

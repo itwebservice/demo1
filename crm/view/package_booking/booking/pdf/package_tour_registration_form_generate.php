@@ -258,7 +258,7 @@ if($sq_count > 0)
     }
 }
 
-$sq_entry = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+$sq_entry = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 
     $transport_agency_id = $sq_entry['transport_agency_id'];
     $transport_bus_id = $sq_entry['transport_bus_id'];

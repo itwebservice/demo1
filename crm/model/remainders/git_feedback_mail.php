@@ -20,7 +20,7 @@ if($sq_tour_group>0){
 			$tour_name = $row_tour1['tour_name'];
 			$journey_date = date('d-m-Y',strtotime($row_tour['from_date'])).' To '.date('d-m-Y',strtotime($row_tour['to_date']));
 
-			$sq_bookings = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id='$tour_group_id'");
+			$sq_bookings = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id='$tour_group_id' and delete_status='0'");
 			while($row_bookings = mysqli_fetch_assoc($sq_bookings)){
 
 				$tourwise_traveler_id = $row_bookings['id'];

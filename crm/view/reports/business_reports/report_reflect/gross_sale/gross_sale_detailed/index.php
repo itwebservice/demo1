@@ -29,8 +29,8 @@ $month = date('m', strtotime($current_date));
                 <td><?= $current_finance_yr ?></td>
             </tr>
             <?php
-            $sq_group_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and tour_group_status!='Cancel'"));
-            $sq_group_pre_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$pre_financial_year_id' and tour_group_status!='Cancel'"));
+            $sq_group_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and delete_status='0' and tour_group_status!='Cancel'"));
+            $sq_group_pre_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$pre_financial_year_id' and delete_status='0' and tour_group_status!='Cancel'"));
             if($sq_group_count!="0" || $sq_group_pre_count!='0'){
                 $grp_ledger_arr = array();
                 ?>
@@ -40,7 +40,7 @@ $month = date('m', strtotime($current_date));
                     <td></td><td></td><td></td><td></td>
                 </tr>
                 <?php
-                $sql_grp = mysqlQuery("select * from tourwise_traveler_details");
+                $sql_grp = mysqlQuery("select * from tourwise_traveler_details where delete_status='0'");
                 while($row=mysqli_fetch_assoc($sql_grp)){
 
                     $customer_id = $row['customer_id'];
@@ -74,8 +74,8 @@ $month = date('m', strtotime($current_date));
                 } 
             } ?><!-- Package Booking -->
             <?php
-            $sq_package_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$financial_year_id'"));
-            $sq_package_pre_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_package_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_package_pre_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             
             if($sq_package_count!="0" || $sq_package_pre_count!='0'){
             ?>
@@ -85,7 +85,7 @@ $month = date('m', strtotime($current_date));
             </tr>
             <?php
            $pckg_ledger_arr = array();
-            $sql_package = mysqlQuery("select * from package_tour_booking_master");
+            $sql_package = mysqlQuery("select * from package_tour_booking_master where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_package)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -116,8 +116,8 @@ $month = date('m', strtotime($current_date));
                 }
             } ?>
             <?php
-             $sq_hotel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$financial_year_id'"));
-             $sq_hotel_pre_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$pre_financial_year_id'"));
+             $sq_hotel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+             $sq_hotel_pre_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_hotel_count!="0" || $sq_hotel_pre_count!='0'){
             ?>
             <tr> 
@@ -126,7 +126,7 @@ $month = date('m', strtotime($current_date));
             </tr>
             <?php
             $hotel_ledger_arr = array();
-            $sql_hotel = mysqlQuery("select * from hotel_booking_master");
+            $sql_hotel = mysqlQuery("select * from hotel_booking_master where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_hotel)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -155,8 +155,8 @@ $month = date('m', strtotime($current_date));
                 } }
             }
             // Bus Booking
-            $sq_bus_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$financial_year_id'"));
-            $sq_bus_pre_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_bus_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_bus_pre_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_bus_count!="0" || $sq_bus_pre_count!='0'){
                 ?>
                 <tr> 
@@ -165,7 +165,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $bus_ledger_arr = array();
-            $sql_bus = mysqlQuery("select * from bus_booking_master");
+            $sql_bus = mysqlQuery("select * from bus_booking_master where 1 and delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_bus)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -194,8 +194,8 @@ $month = date('m', strtotime($current_date));
                             </tr>
                     <?php }} }
             // Flight Booking
-            $sq_flight_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$financial_year_id'"));
-            $sq_flight_pre_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_flight_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_flight_pre_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_flight_count!="0" || $sq_flight_pre_count!='0'){
                 ?>
                 <tr> 
@@ -204,7 +204,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $flight_ledger_arr = array();
-            $sql_flight = mysqlQuery("select * from ticket_master");
+            $sql_flight = mysqlQuery("select * from ticket_master where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_flight)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -233,8 +233,8 @@ $month = date('m', strtotime($current_date));
                             </tr>
                     <?php } } }
             // <!-- Train Booking -->
-            $sq_train_count = mysqli_num_rows(mysqlQuery("select * from  train_ticket_master where financial_year_id='$financial_year_id'"));
-            $sq_train_pre_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_train_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_train_pre_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_train_count!="0" || $sq_train_pre_count!='0'){
                 ?>
                 <tr> 
@@ -243,7 +243,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $train_ledger_arr = array();
-            $sql_flight = mysqlQuery("select * from train_ticket_master");
+            $sql_flight = mysqlQuery("select * from train_ticket_master where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_flight)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -272,8 +272,8 @@ $month = date('m', strtotime($current_date));
                             </tr>
                     <?php } } }
             // <!-- Visa Booking -->
-            $sq_visa_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$financial_year_id'"));
-            $sq_visa_pre_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_visa_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_visa_pre_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_visa_count!="0" || $sq_visa_pre_count!='0'){
                 ?>
                 <tr> 
@@ -282,7 +282,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $visa_ledger_arr = array();
-            $sql_visa = mysqlQuery("select * from visa_master");
+            $sql_visa = mysqlQuery("select * from visa_master where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_visa)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -311,8 +311,8 @@ $month = date('m', strtotime($current_date));
                             </tr>
                     <?php }  }  }
             // <!-- Car Rental Booking -->
-            $sq_car_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$financial_year_id'"));
-            $sq_car_pre_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$pre_financial_year_id'"));
+            $sq_car_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_car_pre_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_car_count!="0" || $sq_car_pre_count!='0'){
                 ?>
                 <tr>
@@ -321,7 +321,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $car_ledger_arr = array();
-            $sql_car = mysqlQuery("select * from car_rental_booking");
+            $sql_car = mysqlQuery("select * from car_rental_booking where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_car)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id'"));
@@ -350,8 +350,8 @@ $month = date('m', strtotime($current_date));
                             </tr>
                     <?php } } }
             // <!-- Activity Booking -->
-            $sq_exc_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$financial_year_id'"));
-            $sq_exc_pre_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_exc_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_exc_pre_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_exc_count!="0" || $sq_exc_pre_count!='0'){
                 ?>
                 <tr> 
@@ -360,7 +360,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $misc_ledger_arr = array();
-            $sql_exc = mysqlQuery("select * from excursion_master");
+            $sql_exc = mysqlQuery("select * from excursion_master where delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_exc)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -389,8 +389,8 @@ $month = date('m', strtotime($current_date));
                             </tr>
                     <?php } } }
             // <!-- misc Booking -->
-            $sq_misc_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$financial_year_id'"));
-            $sq_misc_pre_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$pre_financial_year_id'"));
+            $sq_misc_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+            $sq_misc_pre_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
             if($sq_misc_count!="0" || $sq_misc_pre_count!='0'){
                 ?>
                 <tr> 
@@ -399,7 +399,7 @@ $month = date('m', strtotime($current_date));
                 </tr>
                 <?php
             $misc_ledger_arr = array();
-            $sql_misc = mysqlQuery("select * from miscellaneous_master");
+            $sql_misc = mysqlQuery("select * from miscellaneous_master where 1 and delete_status='0'");
             while($row=mysqli_fetch_assoc($sql_misc)){
                 $customer_id = $row['customer_id'];
                 $ledger_name = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));

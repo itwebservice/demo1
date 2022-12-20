@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -83,7 +83,7 @@ $from_date = $_GET['from_date'];
 $to_date = $_GET['to_date'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -144,7 +144,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
 
 
 
-$query = "select * from ticket_master where financial_year_id='$financial_year_id' ";
+$query = "select * from ticket_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
     $query .= " and customer_id='$customer_id'";
 }
@@ -188,14 +188,16 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('G'.$row_count, "Booking Amount")
         ->setCellValue('H'.$row_count, "Cancellation Charges")
         ->setCellValue('I'.$row_count, "Total Amount")
-        ->setCellValue('J'.$row_count, "Created By");
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray); 
+        ->setCellValue('J'.$row_count, "Paid Amount")
+        ->setCellValue('K'.$row_count, "Created By");
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray); 
 
 $row_count++;
 
 while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
+	$ticket_id = $row_ticket['ticket_id'];
     $sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_ticket[emp_id]'"));
     $emp_name = ($row_ticket['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
     $date = $row_ticket['created_at'];
@@ -210,7 +212,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     }
     $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
 
-    $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(credit_charges) as sumc from ticket_payment_master where ticket_id='$row_ticket[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+    $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(credit_charges) as sumc from ticket_payment_master where ticket_id='$ticket_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
     $credit_card_charges = $sq_paid_amount['sumc'];
         
     $sale_amount = $row_ticket['ticket_total_cost'] - $row_ticket['cancel_amount'] + $credit_card_charges;
@@ -224,6 +226,11 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     $total_cancelation_amount = $total_cancelation_amount + $cancel_amt;
     $total_balance = $total_balance + $sale_amount;
 
+
+    //Paid
+$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from ticket_payment_master where ticket_id='$ticket_id' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
+$paid_amount = $query['sum']+$charge;
+$paid_amount = ($paid_amount == '')?'0':$paid_amount;
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $row_ticket['invoice_pr_id'])
         ->setCellValue('C'.$row_count, get_ticket_booking_id($ticket_id,$year))
@@ -233,9 +240,10 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
         ->setCellValue('G'.$row_count, number_format($row_ticket['ticket_total_cost']+$credit_card_charges,2))
         ->setCellValue('H'.$row_count, number_format($cancel_amt,2))
         ->setCellValue('I'.$row_count, number_format(($row_ticket['ticket_total_cost'] - $cancel_amt+$credit_card_charges), 2))
-        ->setCellValue('J'.$row_count,$emp_name);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);  
+        ->setCellValue('J'.$row_count,$paid_amount)
+        ->setCellValue('K'.$row_count,$emp_name);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);  
 
 
     $row_count++;
@@ -249,10 +257,11 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
     ->setCellValue('G'.$row_count, $total_sale)
     ->setCellValue('H'.$row_count, $total_cancelation_amount)
     ->setCellValue('I'.$row_count, $total_balance)
-    ->setCellValue('J'.$row_count,'');
+    ->setCellValue('J'.$row_count,'')
+    ->setCellValue('K'.$row_count,'');
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);
 }
 //////////////////////////****************Content End**************////////////////////////////////
 // Rename worksheet

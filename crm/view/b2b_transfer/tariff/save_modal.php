@@ -13,7 +13,7 @@ include "../../../model/model.php";
           
           <div class="row mg_bt_20">
               <div class="col-md-3 col-sm-6 col-xs-12">
-                  <select id="vehicle_id" name="vehicle_id" style="width:100%" title="Select Vehcile" data-toggle="tooltip" required>
+                  <select id="vehicle_id" name="vehicle_id" style="width:100%" title="Select Vehicle" data-toggle="tooltip" required>
                       <option value="">*Select Vehicle</option>
                       <?php
                       $sq_query = mysqlQuery("select entry_id,vehicle_name from b2b_transfer_master where status!='Inactive' order by vehicle_name");
@@ -38,7 +38,8 @@ include "../../../model/model.php";
           <div class="row mg_bt_10">
           <legend class="mg_tp_20 main_block text-center">Seasonal Tariff</legend>
             <div class="col-md-12 text-right text_center_xs">
-            <?php include_once 'get_tariff_rows.php'; ?>
+            <?php
+            include_once 'get_tariff_rows.php'; ?>
 
           <div class="row text-center mg_tp_20"> <div class="col-md-12">
             <button class="btn btn-sm btn-success" id="tariff_save"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>            

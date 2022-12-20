@@ -11,18 +11,20 @@ $customer_id = $_SESSION['customer_id'];
         		<select name="tourwise_traveler_idtr" id="tourwise_traveler_idtr" title="Select Booking" onchange="refund_list_reflect()" class="form-control">
         			<option value="">Select Booking</option>
                     <?php 
-                        $sq_tourwise_traveler_det = mysqlQuery("select id, traveler_group_id,form_date from tourwise_traveler_details where customer_id='$customer_id'");
+                        $sq_tourwise_traveler_det = mysqlQuery("select id, traveler_group_id,form_date from tourwise_traveler_details where customer_id='$customer_id' and delete_status='0'");
                         while($row_tourwise_traveler_details = mysqli_fetch_assoc( $sq_tourwise_traveler_det ))
                         {
+                          $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_tourwise_traveler_details[traveler_group_id]'"));
+                          $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_tourwise_traveler_details[traveler_group_id]' and status='Cancel'"));
                           $date = $row_tourwise_traveler_details['form_date'];
                           $yr = explode("-", $date);
                           $year =$yr[0];
                           $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
-                          ?>
-                          <option value="<?= $row_tourwise_traveler_details['id'] ?>"><?= get_group_booking_id($row_tourwise_traveler_details['id'],$year) ?> : <?= $sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-                          <?php
-                         ?>
-                         <?php      
+                          if($pass_count==$cancelpass_count){
+                            ?>
+                            <option value="<?= $row_tourwise_traveler_details['id'] ?>"><?= get_group_booking_id($row_tourwise_traveler_details['id'],$year) ?> : <?= $sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+                            <?php
+                          }     
                         }
                     ?>
         		</select>

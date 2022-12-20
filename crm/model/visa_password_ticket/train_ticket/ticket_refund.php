@@ -24,9 +24,6 @@ public function ticket_refund_save()
 	$financial_year_id = $_SESSION['financial_year_id']; 
 	$branch_admin_id = $_SESSION['branch_admin_id'];
 
-	$bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $refund_amount);
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; } 
-
 	begin_t(); 
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(refund_id) as max from train_ticket_refund_master"));
@@ -36,8 +33,8 @@ public function ticket_refund_save()
 
 	if($refund_mode == 'Credit Note'){
 		$sq_sq_train_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
-  	    $customer_id = $sq_sq_train_info['customer_id'];
-  	    
+		$customer_id = $sq_sq_train_info['customer_id'];
+		
 		$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(id) as max from credit_note_master"));
 		$id = $sq_max['max'] + 1;
 
@@ -76,7 +73,7 @@ public function ticket_refund_save()
 		}
 		if($GLOBALS['flag']){
 			commit_t();
-			echo "Ticket refund has been successfully saved.";
+			echo "Train Ticket refund has been successfully saved.";
 			exit;
 		}
 		else{

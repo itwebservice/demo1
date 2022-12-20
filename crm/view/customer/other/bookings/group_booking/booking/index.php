@@ -10,7 +10,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="tourwise_traveler_id1" id="tourwise_traveler_id1" title="Select Booking" onchange="group_list_reflect()" style="width: 100%">
 					<option value="">Select Booking</option>
 					<?php 
-					$sq_booking = mysqlQuery("select * from tourwise_traveler_details where customer_id='$customer_id'");
+					$sq_booking = mysqlQuery("select * from tourwise_traveler_details where customer_id='$customer_id' and delete_status='0'");
 					while($row_booking = mysqli_fetch_assoc($sq_booking)){
 						$date = $row_booking['form_date'];
 						$yr = explode("-", $date);

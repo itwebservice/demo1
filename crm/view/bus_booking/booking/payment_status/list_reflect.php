@@ -14,7 +14,7 @@ $company_name = $_POST['company_name'];
 $booker_id = $_POST['booker_id'];
 $branch_id = $_POST['branch_id'];
 
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($booking_id!=""){
 	$query .= " and booking_id='$booking_id'";
 }
@@ -39,7 +39,7 @@ if($branch_id!=""){
 	$query .= " and emp_id in(select emp_id from emp_master where branch_id = '$branch_id')";
 }
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by booking_id desc";
+// $query .= " order by booking_id desc";
 
 $array_s = array();
 $temp_arr = array();
@@ -77,7 +77,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 		$sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
 		$branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-		$sq_total_member = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_entries where booking_id = '$row_booking[booking_id]' AND status!='Cancel'"));
+		$sq_total_member = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_entries where booking_id = '$row_booking[booking_id]'"));
 
 		$sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from bus_booking_payment_master where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 		$credit_card_charges = $sq_paid_amount['sumc'];
@@ -146,14 +146,14 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]'"));
+		$sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'"));
 		if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){		
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['cancel_amount'];
 			$total_purchase = $total_purchase + $purchase_amt;
 		}
-		$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]'"));		
+		$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'"));		
 		$vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
 		if($vendor_name == ''){ $vendor_name1 = 'NA';  }
 		else{ $vendor_name1 = $vendor_name; }
@@ -186,7 +186,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 			$email_id,
 			$sq_total_member,
 			get_date_user($row_booking['created_at']),
-			'<button class="btn btn-info btn-sm" onclick="bus_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+			'<button class="btn btn-info btn-sm" onclick="bus_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 			number_format($row_booking['basic_cost'],2),
 			number_format($row_booking['service_charge']+$row_booking['markup'],2),
 			number_format($service_tax_amount+$markupservice_tax_amount,2),
@@ -195,10 +195,10 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 			number_format($cancel_amount, 2),
 			number_format($total_bal, 2),
 			number_format($paid_amount, 2),
-			'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['booking_id'] .')"  data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+			'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 			number_format($bal_amount, 2),
 			number_format($total_purchase,2),
-			'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Detail"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+			'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 			$branch_name,
 			$emp_name,
 			number_format($sq_incentive['incentive_amount'],2)

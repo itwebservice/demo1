@@ -10,6 +10,7 @@ foreach($gallary_array as $val){
   array_push($dest_array,$val->dest_id);
 }
 $result = array_unique($dest_array);
+var_dump($gallary_array);
 ?>
 
 

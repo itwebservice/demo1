@@ -20,7 +20,7 @@ $role = $_SESSION['role'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $branch_status = $_GET['branch_status'];
 
-$query = "select * from tourwise_traveler_details where 1";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0'";
 
 if($role=='Sales'){
 	$query .=" and emp_id='$emp_id'";

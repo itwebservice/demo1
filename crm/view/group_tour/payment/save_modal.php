@@ -32,40 +32,54 @@ $branch_status = $_POST['branch_status'];
 
 		      		<select id="cmb_tourwise_traveler_id" name="cmb_tourwise_traveler_id" onchange="get_outstanding('group',this.id);" style="width:100%;" title="Booking ID">
 
-		              <?php // get_group_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id,$role_id);
+		              <?php
                   $financial_year_id = $_SESSION['financial_year_id'];
                   ?>
                   <option value="" >Select Booking</option>
                   <?php 
-                    $query = "select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and 1 ";
-                    include "branchwise_filteration.php";
-                    $query .= " and tour_group_status != 'Cancel'";
+                    $query = "select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and 1 and delete_status='0' ";
+                    include "../../../model/app_settings/branchwise_filteration.php";
                     $query .= " order by id desc";
                     $sq_booking = mysqlQuery($query);
                     while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
-                      $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[id]'"));
-                      $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[id]' and status='Cancel'"));
+                      $pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]'"));
+                      $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]' and status='Cancel'"));
                       
-                      if($row_booking['tour_group_status']!="Cancel" && $pass_count!=$cancelpass_count){
-                          $date = $row_booking['form_date'];
-                          $yr = explode("-", $date);
-                          $year =$yr[0];
-
-                          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-                          if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-                              ?>
-                              <option value="<?php echo $row_booking['id'] ?>"><?php echo get_group_booking_id($row_booking['id'],$year)."-"." ".$sq_customer['company_name']; ?></option>
-                              <?php }
-                              else{ ?> 
-
-                            <option value="<?= $row_booking['id'] ?>"><?= get_group_booking_id($row_booking['id'],$year) ?> : <?= $sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-                            <?php
-                          }
+                      if($row_booking['tour_group_status']=="Cancel" || $pass_count == $cancelpass_count){
+                        $status = '(Cancelled)';
+                        $sq_payment_total = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as sum from payment_master where tourwise_traveler_id='$row_booking[id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+                        $paid_amount = $sq_payment_total['sum'];
+                        
+                        $sq_est_count = mysqli_num_rows(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
+                        if($sq_est_count!='0'){
+                          $sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
+                          $cancel_tour_amount = $sq_tour_refund['cancel_amount'];
                         }
-                      }
-                    ?>
+                        else{
+                          $sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
+                          $cancel_tour_amount = $sq_tour_refund['cancel_amount'];
+                        }
 
+                        $balance = ($paid_amount > $cancel_tour_amount) ? 0 : floatval($cancel_tour_amount) - floatval($paid_amount);
+                        if($balance <= 0) continue;
+                      }
+                      $date = $row_booking['form_date'];
+                      $yr = explode("-", $date);
+                      $year =$yr[0];
+
+                      $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+                      if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
+                          ?>
+                          <option value="<?php echo $row_booking['id'] ?>"><?php echo get_group_booking_id($row_booking['id'],$year)."-"." ".$sq_customer['company_name'].' '.$status; ?></option>
+                          <?php }
+                          else{ ?> 
+
+                        <option value="<?= $row_booking['id'] ?>"><?= get_group_booking_id($row_booking['id'],$year) ?> : <?= $sq_customer['first_name'].' '.$sq_customer['last_name'].' '.$status ?></option>
+                        <?php
+                      }
+                  }
+                ?>
 		            </select>
 
 		      	</div>
@@ -143,6 +157,7 @@ $branch_status = $_POST['branch_status'];
         <div class="row">
           <div class="col-md-3 col-sm-3">
             <input type="text" id="outstanding" name="outstanding" class="form-control" placeholder="Outstanding" title="Outstanding" readonly/>
+            <input type="hidden" id="canc_status" name="canc_status" class="form-control"/>
           </div>
           <div class="col-md-9 col-sm-9">
             <span style="color: red;line-height: 35px;" data-original-title="" title="" class="note"><?= $txn_feild_note ?></span>
@@ -223,12 +238,13 @@ $(function(){
       var bank_id = $('#bank_id').val();
 
       var emp_id = $("#emp_id").val();  
- 
+
       var branch_admin_id = $('#branch_admin_id1').val();
 
       var credit_charges = $('#credit_charges').val();
-    var credit_card_details = $('#credit_card_details').val();
-       var outstanding = $('#outstanding').val();
+      var credit_card_details = $('#credit_card_details').val();
+      var outstanding = $('#outstanding').val();
+      var canc_status = $('#canc_status').val();
 
     if(payment_mode=="Credit Note"||payment_mode=="Advance"){
       error_msg_alert("Please select another payment mode.");
@@ -240,38 +256,37 @@ $(function(){
       $('#btn_payment_installment').prop('disabled',false);
       return false;
     }
-     
 
-      //Validation for booking and payment date in login financial year
-      var base_url = $('#base_url').val();
-      var check_date1 = $('#txt_payment_date').val();
-      $.post(base_url+'view/load_data/finance_date_validation.php', { check_date: check_date1 }, function(data){
-          if(data !== 'valid'){
-              error_msg_alert("The Payment date does not match between selected Financial year.");
-              $('#btn_payment_installment').prop('disabled',false);
-              return false;
-          }else{
-            
-            $('#btn_payment_installment').button('loading');
-            
-            $.post(
+    //Validation for booking and payment date in login financial year
+    var base_url = $('#base_url').val();
+    var check_date1 = $('#txt_payment_date').val();
+    $.post(base_url+'view/load_data/finance_date_validation.php', { check_date: check_date1 }, function(data){
+        if(data !== 'valid'){
+            error_msg_alert("The Payment date does not match between selected Financial year.");
+            $('#btn_payment_installment').prop('disabled',false);
+            return false;
+        }else{
+          
+          $('#btn_payment_installment').button('loading');
+          
+          $.post(
 
-                  base_url+"controller/group_tour/booking_payment/payment_installment_modify.php",
+                base_url+"controller/group_tour/booking_payment/payment_installment_modify.php",
 
-                  { tourwise_id : tourwise_id, payment_date : payment_date, payment_mode : payment_mode, payment_amount : payment_amount, bank_name : bank_name, transaction_id : transaction_id, payment_for : payment_for, p_travel_type : p_travel_type, bank_id : bank_id, emp_id : emp_id, branch_admin_id : branch_admin_id ,credit_charges:credit_charges,credit_card_details:credit_card_details},
+                { tourwise_id : tourwise_id, payment_date : payment_date, payment_mode : payment_mode, payment_amount : payment_amount, bank_name : bank_name, transaction_id : transaction_id, payment_for : payment_for, p_travel_type : p_travel_type, bank_id : bank_id, emp_id : emp_id, branch_admin_id : branch_admin_id ,credit_charges:credit_charges,credit_card_details:credit_card_details,canc_status:canc_status},
 
-                  function(data) {
-                    $('#btn_payment_installment').button('reset');
-                    msg_alert(data);
-                    list_reflect();
-                    $('#save_modal').modal('hide');
-                    $('#btn_payment_installment').prop('disabled',false);
-                    if($('#whatsapp_switch').val() == "on") whatsapp_send_r(tourwise_id, payment_amount, base_url);
-                  });
-            }
-            });
+                function(data) {
+                  $('#btn_payment_installment').button('reset');
+                  msg_alert(data);
+                  list_reflect();
+                  $('#save_modal').modal('hide');
+                  $('#btn_payment_installment').prop('disabled',false);
+                  if($('#whatsapp_switch').val() == "on") whatsapp_send_r(tourwise_id, payment_amount, base_url);
+                });
           }
-        });
+          });
+        }
+      });
 });
 
 </script>

@@ -38,14 +38,7 @@
 		                  <?php echo "<label>Alternative No <em>:</em></label> ".$sq_emp['mobile_no2']; ?>
 
 		            </span>        
-
-        	 		<span class="main_block">
-
-		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-
-		                  <?php echo "<label>Email <em>:</em></label> ".$sq_emp['email_id']; ?>
-
-		            </span>		            
+            
 
 		        </div>
 
@@ -75,37 +68,6 @@
 
 		            </span>
 
-		            <span class="main_block">
-
-		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-
-		                  <?php echo "<label>UAN <em>:</em></label> ".$sq_emp['uan_code']; ?>
-
-		            </span>
-
-		            
-
-		            <?php
-
-	                if($sq_emp['photo_upload_url']!=""){
-
-	                	$newUrl1 = preg_replace('/(\/+)/','/',$sq_emp['photo_upload_url']); 
-
-
-
-	                ?>	
-
-	                <span class="main_block">
-
-	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-
-	                  <?php echo "<label>Photo Proof <em>:</em></label> "?><a href="<?php echo $newUrl1; ?>" download title="Download Photo Proof"><i class="fa fa-id-card-o"></i></a> 
-
-	                </span>
-
-	                <?php }
-
-	                ?>
 
 		         
 	              
@@ -219,6 +181,29 @@
 
 	                </span>
 
+		            
+
+		            <?php
+
+	                if($sq_emp['photo_upload_url']!=""){
+
+	                	$newUrl1 = preg_replace('/(\/+)/','/',$sq_emp['photo_upload_url']); 
+
+
+
+	                ?>	
+
+	                <span class="main_block">
+
+	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+	                  <?php echo "<label>Photo Proof <em>:</em></label> "?><a href="<?php echo $newUrl1; ?>" download title="Download Photo Proof"><i class="fa fa-id-card-o"></i></a> 
+
+	                </span>
+
+	                <?php }
+
+	                ?>
 	                  <?php
 
 	                if($sq_emp['id_proof_url']!=""){
@@ -283,17 +268,16 @@
 					<?php echo "<label>SMTP Host <em>:</em></label> ".$sq_emp['app_smtp_host']; ?>
 
 					</span>
+        	 		<span class="main_block">
 
-					<span class="main_block">
+		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+		                  <?php echo "<label>Email <em>:</em></label> ".$sq_emp['email_id']; ?>
 
-					<?php echo "<label>SMTP Port <em>:</em></label> ".$sq_emp['app_smtp_port']; ?>
-
-					</span>
+		            </span>	
 				</div>
 
-				<div class="col-md-6">
+				<div class="col-md-6">	
 
 					<span class="main_block">
 
@@ -303,6 +287,7 @@
 
 					</span>
 
+
 					<span class="main_block">
 
 					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -310,6 +295,13 @@
 					<?php echo "<label>SMTP Method <em>:</em></label> ".$sq_emp['app_smtp_method']; ?>
 
 					</span>	
+					<span class="main_block">
+
+					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+					<?php echo "<label>SMTP Port <em>:</em></label> ".$sq_emp['app_smtp_port']; ?>
+
+					</span>
 
 				</div>
 
@@ -319,7 +311,7 @@
 		</div>	 
 	</div>
 
-	<div class="col-md-12 mg_tp_10">
+	<div class="col-md-12 mg_tp_10 hidden">
 
 	     <h3 class="editor_title">Visa Information</h3>
 		 <div class="panel panel-default panel-body app_panel_style">
@@ -361,7 +353,7 @@
 
 	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-	                  <?php echo "<label>Expire Date <em>:</em></label> ".get_date_user($sq_emp['expiry_date']); ?>
+	                  <?php echo "<label>Expiry Date <em>:</em></label> ".get_date_user($sq_emp['expiry_date']); ?>
 
 	                </span>	
 

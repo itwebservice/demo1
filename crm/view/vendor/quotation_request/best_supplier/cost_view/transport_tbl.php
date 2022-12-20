@@ -9,14 +9,13 @@
 							<th>S_No.</th>
 							<th>transport_cost</th>
 							<th>total_cost</th>
-							<th>currency_code</th>
+							<th>currency</th>
 						</tr>
 					</thead>
 					<tbody>
 			        	<?php
 			        	$count=0;
 						$query = "select * from vendor_reply_master where 1 ";
-						//$query.=" and supplier_id='$supplier_id'";
 						$query .=" and quotation_for='$quotation_for'";
 						$query .=" and request_id = '$request_id'";
 						$sq_req = mysqlQuery($query);

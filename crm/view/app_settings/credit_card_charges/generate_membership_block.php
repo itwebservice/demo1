@@ -24,5 +24,5 @@ if($dynamic_div_count!=0){
     <div class="row mg_tp_10">
         <div id="credit_identifier_block<?=$dynamic_div_count?>"></div>
     </div>
-</div>
 <hr/>
+</div>

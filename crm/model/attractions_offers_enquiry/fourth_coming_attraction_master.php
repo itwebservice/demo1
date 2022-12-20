@@ -10,12 +10,12 @@ class fourth_coming_attraction_master{
     $valid_date = date('Y-m-d', strtotime($valid_date));
     $created_at = date("Y-m-d");
   
-    $title = addslashes($title);
-    $description = addslashes($description);
+    $title1 = addslashes($title);
+    $description1 = addslashes($description);
     $max_id =  mysqli_fetch_assoc(mysqlQuery("select max(id) as max from fourth_coming_attraction_master"));
     $max_id = $max_id['max']+1;
     
-    $sq = mysqlQuery("insert into fourth_coming_attraction_master (id, title, description, valid_date, created_at) values ('$max_id', '$title', '$description', '$valid_date', '$created_at')");
+    $sq = mysqlQuery("insert into fourth_coming_attraction_master (id, title, description, valid_date, created_at) values ('$max_id', '$title1', '$description1', '$valid_date', '$created_at')");
     if(!$sq){
       echo "error--Error while saving.";
       exit;
@@ -39,10 +39,14 @@ class fourth_coming_attraction_master{
       echo "Sightseeing Attraction saved successfully.";
     } 
   
-    $sq_customer =mysqlQuery("select * from customer_master");
+    $sq_customer =mysqlQuery("select * from customer_master where active_flag='Active'");
     while($sq_row = mysqli_fetch_assoc($sq_customer))
     {
-      $name = $sq_row['first_name']." ". $sq_row['last_name']; 
+      if($sq_row['type']=='Corporate'||$sq_row['type'] == 'B2B'){
+        $name = $sq_row['company_name'];
+      }else{
+        $name = $sq_row['first_name'].' '.$sq_row['last_name'];
+      }
       $contact = $sq_row['contact_no'];
       $contact = $encrypt_decrypt->fnDecrypt($contact, $secret_key);
       $email= $sq_row['email_id'];
@@ -58,10 +62,10 @@ function fourth_coming_attraction_master_update($id, $title, $valid_date, $descr
   global $secret_key,$encrypt_decrypt;
   $valid_date = date('Y-m-d', strtotime($valid_date));
 
-  $title = addslashes($title);
-  $description = addslashes($description);
+  $title1 = addslashes($title);
+  $description1 = addslashes($description);
 
-  $sq = mysqlQuery("update fourth_coming_attraction_master set title='$title', valid_date='$valid_date', description='$description' where id='$id'");
+  $sq = mysqlQuery("update fourth_coming_attraction_master set title='$title1', valid_date='$valid_date', description='$description1' where id='$id'");
   if(!$sq)
   {
     echo "error--Error while saving.";
@@ -71,11 +75,14 @@ function fourth_coming_attraction_master_update($id, $title, $valid_date, $descr
   {
     echo "Sightseeing Attraction has been successfully updated.";
   }  
-  $sq_customer1 = mysqlQuery("select * from customer_master");
+  $sq_customer1 = mysqlQuery("select * from customer_master where active_flag='Active'");
   while($sq_row = mysqli_fetch_assoc($sq_customer1))
   {
-
-    $name = $sq_row['first_name']."". $sq_row['last_name']; 
+    if($sq_row['type']=='Corporate'||$sq_row['type'] == 'B2B'){
+      $name = $sq_row['company_name'];
+    }else{
+      $name = $sq_row['first_name'].' '.$sq_row['last_name'];
+    }
     $contact = $sq_row['contact_no'];
 		$contact = $encrypt_decrypt->fnDecrypt($contact, $secret_key);
     $email= $sq_row['email_id'];

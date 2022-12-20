@@ -7,7 +7,7 @@ include_once("../../../model/model.php");
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Add State</h4>
+        <h4 class="modal-title" id="myModalLabel">Add State/Country</h4>
       </div>
       <div class="modal-body">
         
@@ -25,7 +25,7 @@ include_once("../../../model/model.php");
               <tr>
                   <td><input id="chk_tour_group1" type="checkbox" checked></td>
                   <td><input maxlength="15" value="1" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
-                  <td><input type="text" id="cmb_state1" name="cmb_state" onchange="validate_state(this.id)"  placeholder="*State Name" title="State Name" class="form-control" /></td>
+                  <td><input type="text" id="cmb_state1" name="cmb_state" onchange="validate_state(this.id)"  placeholder="*State/Country Name" title="State/Country Name" class="form-control" /></td>
                   <td><select name="active_flag1" id="active_flag1" class="form-control hidden" title="Status">
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
@@ -77,7 +77,7 @@ function state_master_save()
  
       if(state_name1=="")
       {
-        error_msg_alert("Enter State name in row"+(i+1));
+        error_msg_alert("Enter State/Country name in row"+(i+1));
         return false;
       }  
 
@@ -98,7 +98,7 @@ function state_master_save()
 
   if(state_name.length==0)
   {
-    error_msg_alert("Select rows to save State names!");
+    error_msg_alert("Select rows to save State/Country names!");
     return false;
   }  
 

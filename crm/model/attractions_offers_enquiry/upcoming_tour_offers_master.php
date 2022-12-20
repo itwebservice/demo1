@@ -1,14 +1,13 @@
-<?php 
+<?php
 class upcoming_tour_offers_master{
 
 ///////////////////////***Upcoming Tour offers master save start*********//////////////
 
 function upcoming_tour_offers_master_save($title, $description, $valid_date)
 {
-  
   global $secret_key,$encrypt_decrypt;
-  $title = addslashes($title);
-  $description = addslashes($description);
+  $title1 = addslashes($title);
+  $description1 = addslashes($description);
   $valid_date = mysqlREString($valid_date);
 
   $valid_date = date("Y-m-d", strtotime($valid_date));
@@ -17,7 +16,7 @@ function upcoming_tour_offers_master_save($title, $description, $valid_date)
   $max_id = mysqli_fetch_assoc(mysqlQuery("select max(offer_id) as max from upcoming_tour_offers_master"));
   $max_id = $max_id['max']+1;
 
-  $sq_offers = mysqlQuery("insert into upcoming_tour_offers_master (offer_id, title, description, valid_date, entry_date) values ('$max_id', '$title', '$description', '$valid_date', '$entry_date')");
+  $sq_offers = mysqlQuery("insert into upcoming_tour_offers_master (offer_id, title, description, valid_date, entry_date) values ('$max_id', '$title1', '$description1', '$valid_date', '$entry_date')");
   if($sq_offers)
   {
     echo "Information has been successfully saved.";
@@ -27,11 +26,14 @@ function upcoming_tour_offers_master_save($title, $description, $valid_date)
     echo "error--Information not saved!";
     exit;
   }  
-  $sq_customer =mysqlQuery("select * from customer_master");
+  $sq_customer =mysqlQuery("select * from customer_master where active_flag='Active'");
   while($sq_row = mysqli_fetch_assoc($sq_customer))
   {
-
-    $name = $sq_row['first_name']."". $sq_row['last_name']; 
+    if($sq_row['type']=='Corporate'||$sq_row['type'] == 'B2B'){
+      $name = $sq_row['company_name'];
+    }else{
+      $name = $sq_row['first_name'].' '.$sq_row['last_name'];
+    }
     $contact = $sq_row['contact_no'];
     $contact = $encrypt_decrypt->fnDecrypt($contact, $secret_key);
     $email= $sq_row['email_id'];
@@ -74,13 +76,13 @@ function upcoming_tour_offers_master_update($offer_id, $title, $description, $va
 {
   global $secret_key,$encrypt_decrypt;
   $offer_id = mysqlREString($offer_id);
-  $title = addslashes($title);
-  $description = addslashes($description);
+  $title1 = addslashes($title);
+  $description1 = addslashes($description);
   $valid_date = mysqlREString($valid_date);
 
   $valid_date = date("Y-m-d", strtotime($valid_date));
 
-  $sq_offers = mysqlQuery("update upcoming_tour_offers_master set title='$title', description='$description', valid_date='$valid_date' where offer_id='$offer_id'");
+  $sq_offers = mysqlQuery("update upcoming_tour_offers_master set title='$title1', description='$description1', valid_date='$valid_date' where offer_id='$offer_id'");
   if($sq_offers)
   {
     echo "Information has been successfully updated";
@@ -91,11 +93,14 @@ function upcoming_tour_offers_master_update($offer_id, $title, $description, $va
     exit;
   }  
 
-  $sq_customer =mysqlQuery("select * from customer_master");
+  $sq_customer =mysqlQuery("select * from customer_master where active_flag='Active'");
   while($sq_row = mysqli_fetch_assoc($sq_customer))
   {
-
-    $name = $sq_row['first_name']." ". $sq_row['last_name']; 
+    if($sq_row['type']=='Corporate'||$sq_row['type'] == 'B2B'){
+      $name = $sq_row['company_name'];
+    }else{
+      $name = $sq_row['first_name'].' '.$sq_row['last_name'];
+    }
     $contact = $sq_row['contact_no'];
     $contact = $encrypt_decrypt->fnDecrypt($contact, $secret_key);
     $email= $sq_row['email_id'];

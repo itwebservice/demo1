@@ -16,7 +16,7 @@ public function dmc_save()
 	$active_flag = $_POST['active_flag'];
 	$service_tax_no = $_POST['service_tax_no'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -46,7 +46,7 @@ public function dmc_save()
   $dmc_address = mysqlREString($dmc_address);
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(dmc_id) as max from dmc_master"));
 	$dmc_id = $sq_max['max'] + 1;
-	$sq_dmc = mysqlQuery("insert into dmc_master (dmc_id, company_name, mobile_no, landline_no, email_id, contact_person_name,immergency_contact_no, dmc_address, country, website, opening_balance, service_tax_no, bank_name,account_name,account_no,branch,ifsc_code, active_flag, created_at, city_id,state_id,side,pan_no,as_of_date) values ('$dmc_id', '$company_name', '$mobile_no', '$landline_no', '$email_id', '$contact_person_name','$immergency_contact_no' ,'$dmc_address','$country','$website', '$opening_balance','$service_tax_no','$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$active_flag', '$created_at', '$cmb_city_id', '$state','$side','$supp_pan','$as_of_date') ");
+	$sq_dmc = mysqlQuery("insert into dmc_master (dmc_id, company_name, mobile_no, landline_no, email_id, contact_person_name,immergency_contact_no, dmc_address, website, opening_balance, service_tax_no, bank_name,account_name,account_no,branch,ifsc_code, active_flag, created_at, city_id,state_id,side,pan_no,as_of_date) values ('$dmc_id', '$company_name', '$mobile_no', '$landline_no', '$email_id', '$contact_person_name','$immergency_contact_no' ,'$dmc_address','$website', '$opening_balance','$service_tax_no','$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$active_flag', '$created_at', '$cmb_city_id', '$state','$side','$supp_pan','$as_of_date') ");
 	sundry_creditor_balance_update();
 
 	if($sq_dmc){
@@ -84,7 +84,7 @@ public function dmc_update()
 	$active_flag = $_POST['active_flag'];
 	$service_tax_no1 = $_POST['service_tax_no1'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -110,7 +110,7 @@ public function dmc_update()
 	}
   
   $dmc_address = mysqlREString($dmc_address);
-	$sq_dmc = mysqlQuery("update dmc_master set company_name='$company_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', city_id='$cmb_city_id1', dmc_address='$dmc_address', country='$country', website='$website', service_tax_no='$service_tax_no1', opening_balance='$opening_balance', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', active_flag='$active_flag', state_id='$state', side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where dmc_id='$dmc_id' ");
+	$sq_dmc = mysqlQuery("update dmc_master set company_name='$company_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', city_id='$cmb_city_id1', dmc_address='$dmc_address', website='$website', service_tax_no='$service_tax_no1', opening_balance='$opening_balance', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', active_flag='$active_flag', state_id='$state', side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where dmc_id='$dmc_id' ");
 	sundry_creditor_balance_update();
 	if($sq_dmc){
 		$vendor_login_master = new vendor_login_master;
@@ -169,18 +169,18 @@ public function vendor_csv_save()
                 $emergency_contact = $data[6];
                 $address = $data[7];
                 $state_id = $data[8];
-                $country = $data[9];
-                $website = $data[10];
-                $bank_name = $data[11];
-                $account_name = $data[12];
-                $account_no = $data[13];
-                $branch = $data[14];
-                $ifsc_code = $data[15];
-                $supp_pan = $data[16];
-                $gst_no = $data[17];
-                $opening_balance = '';
+                // $country = $data[9];
+                $website = $data[9];
+                $bank_name = $data[10];
+                $account_name = $data[11];
+                $account_no = $data[12];
+                $branch = $data[13];
+                $ifsc_code = $data[14];
+                $supp_pan = $data[15];
+                $gst_no = $data[16];
+                $opening_balance = $data[17];
                 $as_of_date = '';
-                $side = '';
+                $side = $data[18];
                 $as_of_date = get_date_db($as_of_date);
 
                 $created_at = date('Y-m-d H:i');
@@ -196,7 +196,8 @@ public function vendor_csv_save()
                           $email = $encrypt_decrypt->fnEncrypt($email, $secret_key);
                           $dmc_name = addslashes($dmc_name);
                           $address = mysqlREString($address);
-                          $sq_enquiry = mysqlQuery("insert into dmc_master (dmc_id, company_name, mobile_no, landline_no, email_id, contact_person_name,immergency_contact_no, dmc_address, country, website, opening_balance, service_tax_no, bank_name,account_name,account_no,branch,ifsc_code, active_flag, created_at, city_id,state_id,side,pan_no,as_of_date) values ('$dmc_id', '$dmc_name', '$mobile', '$landline', '$email', '$contact_person', '$emergency_contact', '$address', '$country', '$website', '$opening_balance', '$gst_no','$bank_name','$account_name','$account_no','$branch','$ifsc_code','Active','$created_at', '$city_id','$state_id','$side','$supp_pan','$as_of_date')");
+	                        $side = ($side == '') ? 'Credit' : $side;
+                          $sq_enquiry = mysqlQuery("insert into dmc_master (dmc_id, company_name, mobile_no, landline_no, email_id, contact_person_name,immergency_contact_no, dmc_address, website, opening_balance, service_tax_no, bank_name,account_name,account_no,branch,ifsc_code, active_flag, created_at, city_id,state_id,side,pan_no,as_of_date) values ('$dmc_id', '$dmc_name', '$mobile', '$landline', '$email', '$contact_person', '$emergency_contact', '$address',  '$website', '$opening_balance', '$gst_no','$bank_name','$account_name','$account_no','$branch','$ifsc_code','Active','$created_at', '$city_id','$state_id','$side','$supp_pan','$as_of_date')");
 
                           if($sq_enquiry){
                             $vendor_login_master = new vendor_login_master;
@@ -227,7 +228,7 @@ public function vendor_csv_save()
 
         fclose($handle);
 
-         if(isset($unprocessedArray) && !empty($unprocessedArray))
+        if(isset($unprocessedArray) && !empty($unprocessedArray))
         {
           $filePath='../../download/unprocessed_dmc_records'.$downloaded_at.'.csv';
           $save = preg_replace('/(\/+)/','/',$filePath);
@@ -236,8 +237,8 @@ public function vendor_csv_save()
           header("Content-Disposition: attachment; filename=file.csv");
           header("Pragma: no-cache");
           header("Expires: 0");
-          $output = fopen($save, "w");  
-          fputcsv($output, array('city_id' , 'DMC_Name' , 'Mobile' , 'landline' ,'Email', 'Contact Person' , 'Emergency Contact No' , 'Address' , 'state_id' , 'Country' , 'Website' , 'Bank Name' , 'Account Type' , 'Account No' , 'Branch', 'IFSC/swift Code' , 'PAN/TAN No' , 'Tax No'));
+          $output = fopen($save, "w");
+          fputcsv($output, array('City Id' , 'DMC Name' , 'Mobile' , 'landline' ,'Email', 'Contact Person' , 'Emergency Contact No' , 'Address' , 'State Id' , 'Website' , 'Bank Name' , 'Account Type' , 'Account No' , 'Branch', 'IFSC/swift Code' , 'PAN/TAN No' , 'Tax No','Opening Balance','Balance Side'));
           
           foreach($unprocessedArray as $row){
             fputcsv($output, $row);  

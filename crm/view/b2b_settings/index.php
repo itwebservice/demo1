@@ -18,7 +18,7 @@ if($setup_package == '4'){ ?>
 	    </label>
 	</div>
 </div>
-<div id="b2b_setting_content"></div>
+<div id="b2b_setting_content" class="b2b_setting_content"></div>
 
 
 <script>

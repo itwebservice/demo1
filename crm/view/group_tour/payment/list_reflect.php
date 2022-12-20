@@ -91,7 +91,7 @@ if($role == "B2b"){
 $query .= " and tourwise_traveler_id in (select tourwise_traveler_id from tourwise_traveler_details where emp_id ='$emp_id')";
 }
 include "../../../model/app_settings/branchwise_filteration.php";
-$query .=" order by payment_id desc";
+// $query .=" order by payment_id desc";
 $sq_payment = mysqlQuery($query);
 
 while($row_payment = mysqli_fetch_assoc($sq_payment)){
@@ -102,7 +102,50 @@ if($row_payment['amount'] != '0.00'){
 		$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as sum ,sum(credit_charges) as sumc from payment_master where clearance_status!='Cancelled' and tourwise_traveler_id='$row_payment[tourwise_traveler_id]'"));
 		$total_sale = $sq_booking['net_total']+$sq_pay['sumc'];
 		$total_pay_amt = $sq_pay['sum']+$sq_pay['sumc'];
-		$outstanding =  $total_sale - $total_pay_amt;
+
+		$pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_booking[traveler_group_id]'"));
+		$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_booking[traveler_group_id]' and status='Cancel'"));    
+		
+		if($sq_booking['tour_group_status'] == 'Cancel'){
+			//Group Tour cancel
+			$cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+			if($cancel_tour_count2 >= '1'){
+				$cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+				$cancel_amount = $cancel_tour['cancel_amount'];
+			}
+			else{ $cancel_amount = 0; }
+		}
+		else{
+			// Group booking cancel
+			$cancel_esti_count1=mysqli_num_rows(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+			if($pass_count==$cancelpass_count){
+				$cancel_esti1=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+				$cancel_amount = $cancel_esti1['cancel_amount'];
+			}
+			else{ $cancel_amount = 0; }
+		}
+		
+		$cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
+		if($sq_booking['tour_group_status'] == 'Cancel'){
+			if($cancel_amount > $total_pay_amt){
+				$balance_amount = $cancel_amount - $total_pay_amt;
+			}
+			else{
+				$balance_amount = 0;
+			}
+		}else{
+			if($pass_count==$cancelpass_count){
+				if($cancel_amount > $total_pay_amt){
+					$balance_amount = $cancel_amount - $total_pay_amt;
+				}
+				else{
+					$balance_amount = 0;
+				}
+			}
+			else{
+				$balance_amount = $total_sale - $total_pay_amt;
+			}
+		}
 
 		$date = $sq_booking['form_date'];
 		$yr = explode("-", $date);
@@ -164,9 +207,9 @@ if($row_payment['amount'] != '0.00'){
 
 		$group = get_date_user($sq_group['from_date']).' to '.get_date_user($sq_group['to_date']);
 
-		$receipt_type = ($row_payment['payment_for']=='Travelling') ? "Travel Receipt" : "Tour Receipt";
+		$receipt_type = ($row_payment['payment_for']=='Travelling') ? "Travel Receipt" : "Group Tour Receipt";
 
-		$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&tour=$tour&table_name=payment_master&customer_field=tourwise_traveler_id&in_customer_id=$row_payment[tourwise_traveler_id]&currency_code=$sq_booking[currency_code]";
+		$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$balance_amount&tour=$tour&table_name=payment_master&customer_field=tourwise_traveler_id&in_customer_id=$row_payment[tourwise_traveler_id]&currency_code=$sq_booking[currency_code]&status=$row_payment[status]";
 		$checshow = '';		
 		if($payment_mode=="Cash" || $payment_mode=="Cheque"){
 		
@@ -180,8 +223,10 @@ if($row_payment['amount'] != '0.00'){
 
 		if($row_payment['payment_mode'] == 'Credit Note' || ($row_payment['payment_mode'] == 'Credit Card' && $row_payment['clearance_status']=="Cleared")){
 			$edit_btn = '';
+			$delete_btn = '';
 		}else{
 			$edit_btn = '<button class="btn btn-info btn-sm" data-toggle="tooltip" onclick="update_modal('.$row_payment['payment_id'].')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+			$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 		}
 
 		// currency conversion
@@ -203,7 +248,7 @@ if($row_payment['amount'] != '0.00'){
 			$payshow,
 			number_format($payment_amount,2).$currency_amount,
 			'<a onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
-			'.$edit_btn
+			'.$edit_btn.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr); 
 		}

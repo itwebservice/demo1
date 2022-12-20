@@ -67,7 +67,7 @@ function report_reflect()
 	var emp_id = $('#actemp_id_filter').val();
 	var branch_status = $('#branch_status1').val();
 	$.post('report_reflect/daily_activity_report/report_reflect.php', { from_date : from_date, to_date : to_date, emp_id : emp_id, branch_status : branch_status}, function(data){
-		pagination_load(data, column, true, false, 20, 'daily_activity');
+		pagination_load(data, column, true, false, 20, 'daily_activity',true);
 	});
 }
 function excel_report()

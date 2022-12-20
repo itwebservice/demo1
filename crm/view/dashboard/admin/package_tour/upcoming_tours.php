@@ -12,7 +12,7 @@
 			<tbody>
 				<?php
 				$today = date('Y-m-d');
-				$sq_package_tours = mysqlQuery("select * from package_tour_booking_master where MONTH(tour_from_date)=MONTH(NOW()) and day(tour_from_date)>DAYOFMONTH('$today')");
+				$sq_package_tours = mysqlQuery("select * from package_tour_booking_master where MONTH(tour_from_date)=MONTH(NOW()) and day(tour_from_date)>DAYOFMONTH('$today') and delete_status='0'");
 				while($row_package_tours = mysqli_fetch_assoc($sq_package_tours)){
 					?>
 					<tr>

@@ -46,7 +46,8 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and train_ticket_id in (select train_ticket_id from train_ticket_master where emp_id='$emp_id' )";
 }
-$query .= " order by train_ticket_id desc";
+$query .= " and train_ticket_id in (select train_ticket_id from train_ticket_master where delete_status='0')";
+// $query .= " order by train_ticket_id desc";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
 	
@@ -65,12 +66,12 @@ $query .= " order by train_ticket_id desc";
 		</tr>
 	</thead>
 	<tbody>
-		<?php 
+		<?php
 		$count = 0;
 		$sq_ticket = mysqlQuery($query);
 		while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
-			$sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_ticket[train_ticket_id]'"));
+			$sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_ticket[train_ticket_id]' and delete_status='0'"));
 			$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_train_ticket[customer_id]'"));
 
 			$date = $sq_train_ticket['created_at'];
@@ -104,6 +105,7 @@ $query .= " order by train_ticket_id desc";
 </div> </div> </div>
 <script>
 	$('#tbl_train_ticket_report').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>

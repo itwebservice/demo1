@@ -25,7 +25,7 @@ $branch_status = $_POST['branch_status'];
 		<div class="col-md-3 mg_bt_10">
 			<select name="ticket_id_filter" id="ticket_id_filter" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
-		         <?php  $query = "select * from ticket_master where 1 ";
+		         <?php  $query = "select * from ticket_master where 1 and delete_status='0' ";
 		        include "../../../../model/app_settings/branchwise_filteration.php";
 		        $query .= " order by ticket_id desc ";
 		        $sq_ticket = mysqlQuery($query);

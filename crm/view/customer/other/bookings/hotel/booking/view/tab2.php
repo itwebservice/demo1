@@ -73,7 +73,7 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 					{
 						if($row_payment['payment_amount'] != '0'){
 						    $count++;
-							$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$row_payment[booking_id]'"));
+							$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$row_payment[booking_id]' and delete_status='0'"));
 			                $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
 			                
 			                $bg="";
@@ -84,7 +84,10 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 							else if($row_payment['clearance_status']=="Cancelled"){ 
 								$bg='danger';
 							}
-							else{ $bg = 'success';}
+							else if($row_payment['clearance_status']=="Cleared"){ 
+								$bg='success';
+							}
+							else{ $bg = '';}
 				
 							$paid_amount1 = currency_conversion($currency,$sq_booking['currency_code'],$row_payment['payment_amount'] + $row_payment['credit_charges']);
 

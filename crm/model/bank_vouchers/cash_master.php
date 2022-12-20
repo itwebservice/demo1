@@ -30,13 +30,13 @@ public function cash_deposit_save()
 		$this->bank_cash_book_save($deposit_id);
 
 	    if($GLOBALS['flag']){
-	      commit_t();
-	      echo "Payment has been successfully saved.";
-	      exit;
+			commit_t();
+			echo "Cash Deposit has been successfully saved.";
+			exit;
 	    }
 	    else{
-	      rollback_t();
-	      exit;
+			rollback_t();
+			exit;
 	    }
 	}
 	else{
@@ -45,7 +45,88 @@ public function cash_deposit_save()
 		exit;
 	}
 }
+function cash_deposit_delete(){
 
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$row_spec = 'bank';
+	$deposit_id = $_POST['deposit_id'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$deleted_date = date('Y-m-d');
+
+	$sq_deposit = mysqli_fetch_assoc(mysqlQuery("select * from cash_deposit_master where deposit_id='$deposit_id'"));
+	$sq_banks = mysqli_fetch_assoc(mysqlQuery("select bank_name,branch_name from bank_master where bank_id='$sq_deposit[bank_id]'"));
+	$bank_id = $sq_deposit['bank_id'];
+
+    //BANK Ledger
+    $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+    $pay_gl = $sq_bank['ledger_id'];
+
+	$delete_master->delete_master_entries('Bank Receipt','Cash Deposit',$deposit_id,$deposit_id,$sq_banks['bank_name'].' ('.$sq_banks['branch_name'].')',$sq_deposit['amount']);
+
+	//Finance Master
+    ////////////Basic deposit Amount/////////////
+    $module_name = "Cash Deposit";
+    $module_entry_id = $deposit_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = get_cash_deposit_particular($bank_id,$deleted_date);    
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = '20';
+    $payment_side = "Credit";
+    $clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,'BANK RECEIPT');
+
+    /////////Bank////////
+    $module_name = "Cash Deposit";
+    $module_entry_id = $deposit_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = get_cash_deposit_particular($bank_id,$deleted_date);
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = $pay_gl;
+    $payment_side = "Debit";
+    $clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,'BANK RECEIPT');
+
+	// Bank Cash Book Master
+	$module_name = "Cash Deposit";
+	$module_entry_id = $deposit_id;
+	$payment_date = $deleted_date;
+	$payment_amount = 0;
+	$payment_mode = '';
+	$bank_name = '';
+	$transaction_id = '';
+	$bank_id = $bank_id;
+	$particular = get_cash_deposit_particular($bank_id,$deleted_date);
+	$clearance_status = "";
+	$payment_side = "Credit";
+	$payment_type = "Cash";
+
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+
+	$module_name = "Cash Deposit";
+	$module_entry_id = $deposit_id;
+	$payment_date = $deleted_date;
+	$payment_amount = 0;
+	$payment_mode = '';
+	$bank_name = '';
+	$transaction_id = '';
+	$bank_id = $bank_id;
+	$particular = get_cash_deposit_particular($bank_id,$deleted_date);
+	$clearance_status = "";
+	$payment_side = "Debit";
+	$payment_type = "Bank";
+
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+
+	$sq_delete = mysqlQuery("update cash_deposit_master set amount = '0',delete_status = '1' where deposit_id='$deposit_id'");
+	if($sq_delete){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+}
 
 public function finance_save($deposit_id,$branch_admin_id)
 {
@@ -68,7 +149,6 @@ public function finance_save($deposit_id,$branch_admin_id)
     global $transaction_master;
 
     ////////////Basic deposit Amount/////////////
-
     $module_name = "Cash Deposit";
     $module_entry_id = $deposit_id;
     $transaction_id = "";
@@ -117,8 +197,8 @@ public function bank_cash_book_save($payment_id)
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount1;
 	$payment_mode = '';
-	$bank_name = $bank_name;
-	$transaction_id = $transaction_id;
+	$bank_name = '';
+	$transaction_id = '';
 	$bank_id = $bank_id;
 	$particular = get_cash_deposit_particular($bank_id,$payment_date);
 	$clearance_status = "";
@@ -132,7 +212,7 @@ public function bank_cash_book_save($payment_id)
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount1;
 	$payment_mode = '';
-	$bank_name = $bank_name;
+	$bank_name = '';
 	$transaction_id = $transaction_id;
 	$bank_id = $bank_id;
 	$particular = get_cash_deposit_particular($bank_id,$payment_date);
@@ -151,11 +231,8 @@ public function cash_deposit_update()
 	$payment_date = $_POST['payment_date'];
 	$payment_evidence_url = $_POST['payment_evidence_url'];
 
-	$due_date = get_date_db($due_date);
-    $booking_date = get_date_db($booking_date);
-
 	begin_t();
-	$sq_deposit_u = mysqlQuery("update cash_deposit_master set amount='$payment_amount',evidence_url='$payment_evidence_url' where deposit_id='$deposit_id'");
+	$sq_deposit_u = mysqlQuery("update cash_deposit_master set amount = '$payment_amount', evidence_url = '$payment_evidence_url' where deposit_id = '$deposit_id'");
 
 	if($sq_deposit_u){
 		//Finance save
@@ -165,7 +242,7 @@ public function cash_deposit_update()
 
 	    if($GLOBALS['flag']){
 			commit_t();
-			echo "Payment has been successfully updated.";
+			echo "Cash Deposit has been successfully updated.";
 			exit;
 		}
 		else{
@@ -178,7 +255,6 @@ public function cash_deposit_update()
 		echo "error--Deposit not updated!";
 		exit;
 	}
-
 }
 
 public function finance_update($deposit_id)
@@ -187,9 +263,8 @@ public function finance_update($deposit_id)
 	$bank_id = $_POST['bank_id'];
 	$payment_amount1 = $_POST['payment_amount'];
 	$payment_date = $_POST['payment_date'];
-	$payment_evidence_url = $_POST['payment_evidence_url'];
 	$payment_old_amount = $_POST['payment_old_amount'];
-
+	$branch_admin_id = $_SESSION['branch_admin_id'];
     $payment_date1 = date('Y-m-d', strtotime($payment_date));
 
     //BANK Ledger
@@ -240,10 +315,11 @@ public function bank_cash_book_update($payment_id)
 	$branch_admin_id = $_POST['branch_admin_id'];
 	$emp_id = $_POST['emp_id']; 
 	$financial_year_id = $_SESSION['financial_year_id'];
+	$payment_old_amount = $_POST['payment_old_amount'];
 
 	$payment_date = date("Y-m-d", strtotime($payment_date));
 	$year1 = explode("-", $payment_date);
-	$yr1 =$year1[0];
+	$yr1 = $year1[0];
 
     if($payment_amount1 == '0' && ($payment_old_amount != $payment_amount1))
     {
@@ -252,8 +328,8 @@ public function bank_cash_book_update($payment_id)
 		$payment_date = $payment_date;
 		$payment_amount = $payment_amount1;
 		$payment_mode = '';
-		$bank_name = $bank_name;
-		$transaction_id = $transaction_id;
+		$bank_name = '';
+		$transaction_id = '';
 		$bank_id = $bank_id;
 		$particular = get_cash_deposit_particular($bank_id,$payment_date);
 		$clearance_status = "";
@@ -267,8 +343,8 @@ public function bank_cash_book_update($payment_id)
 		$payment_date = $payment_date;
 		$payment_amount = $payment_amount1;
 		$payment_mode = '';
-		$bank_name = $bank_name;
-		$transaction_id = $transaction_id;
+		$bank_name = '';
+		$transaction_id = '';
 		$bank_id = $bank_id;
 		$particular = get_cash_deposit_particular($bank_id,$payment_date);
 		$clearance_status = "";
@@ -307,7 +383,7 @@ public function cash_withdraw_save()
 
 	    if($GLOBALS['flag']){
 	      commit_t();
-	      echo "Payment has been successfully saved.";
+	      echo "Cash Withdrawal has been successfully saved.";
 	      exit;
 	    }
 	    else{
@@ -322,6 +398,88 @@ public function cash_withdraw_save()
 	}
 }
 
+function cash_withdrawal_delete(){
+
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$row_spec = 'bank';
+	$withdraw_id = $_POST['withdraw_id'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$deleted_date = date('Y-m-d');
+
+	$sq_withdraw = mysqli_fetch_assoc(mysqlQuery("select * from cash_withdraw_master where withdraw_id='$withdraw_id'"));
+	$sq_banks = mysqli_fetch_assoc(mysqlQuery("select bank_name,branch_name from bank_master where bank_id='$sq_withdraw[bank_id]'"));
+	$bank_id = $sq_withdraw['bank_id'];
+
+    //BANK Ledger
+    $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+    $pay_gl = $sq_bank['ledger_id'];
+
+	$delete_master->delete_master_entries('Bank Payment','Cash Withdrawal',$withdraw_id,$withdraw_id,$sq_banks['bank_name'].' ('.$sq_banks['branch_name'].')',$sq_withdraw['amount']);
+
+	//Finance Master
+    ////////////Basic deposit Amount/////////////
+    $module_name = "Cash Withdraw";
+    $module_entry_id = $withdraw_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = get_cash_withdraw_particular($bank_id,$deleted_date);    
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = '20';
+    $payment_side = "Debit";
+    $clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,'BANK PAYMENT');
+
+    /////////Bank////////
+    $module_name = "Cash Withdraw";
+    $module_entry_id = $withdraw_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = get_cash_withdraw_particular($bank_id,$deleted_date);
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
+    $old_gl_id = $gl_id = $pay_gl;
+    $payment_side = "Credit";
+    $clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,'BANK PAYMENT');
+
+	// Bank Cash Book Master
+	$module_name = "Cash Withdraw";
+	$module_entry_id = $withdraw_id;
+	$payment_date = $deleted_date;
+	$payment_amount = 0;
+	$payment_mode = '';
+	$bank_name = '';
+	$transaction_id = '';
+	$bank_id = $bank_id;
+	$particular = get_cash_withdraw_particular($bank_id,$deleted_date);
+	$clearance_status = "";
+	$payment_side = "Debit";
+	$payment_type = "Cash";
+
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+
+	$module_name = "Cash Withdraw";
+	$module_entry_id = $withdraw_id;
+	$payment_date = $deleted_date;
+	$payment_amount = 0;
+	$payment_mode = '';
+	$bank_name = '';
+	$transaction_id = '';
+	$bank_id = $bank_id;
+	$particular = get_cash_withdraw_particular($bank_id,$deleted_date);
+	$clearance_status = "";
+	$payment_side = "Credit";
+	$payment_type = "Bank";
+
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+
+	$sq_delete = mysqlQuery("update cash_withdraw_master set amount = '0',delete_status = '1' where withdraw_id='$withdraw_id'");
+	if($sq_delete){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+}
 
 public function finance_save_withdraw($withdraw_id,$branch_admin_id)
 {
@@ -392,8 +550,8 @@ public function cbank_cash_book_save($payment_id)
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount1;
 	$payment_mode = '';
-	$bank_name = $bank_name;
-	$transaction_id = $transaction_id;
+	$bank_name = '';
+	$transaction_id = '';
 	$bank_id = $bank_id;
 	$particular = get_cash_withdraw_particular($bank_id,$payment_date);
 	$clearance_status = "";
@@ -426,9 +584,6 @@ public function cash_withdraw_update()
 	$payment_date = $_POST['payment_date'];
 	$payment_evidence_url = $_POST['payment_evidence_url'];
 
-	$due_date = get_date_db($due_date);
-    $booking_date = get_date_db($booking_date);
-
 	begin_t();
 	$sq_deposit_u = mysqlQuery("update cash_withdraw_master set amount='$payment_amount',evidence_url='$payment_evidence_url' where withdraw_id='$withdraw_id'");
 
@@ -439,7 +594,7 @@ public function cash_withdraw_update()
 
 	    if($GLOBALS['flag']){
 	      commit_t();
-	      echo "Payment has been successfully updated.";
+	      echo "Cash Withdrawal has been successfully updated.";
 	      exit;
 	    }
 	    else{
@@ -449,7 +604,7 @@ public function cash_withdraw_update()
 	}
 	else{
 		rollback_t();
-		echo "error--Withdrawal not updated!";
+		echo "error--Cash Withdrawal not updated!";
 		exit;
 	}
 
@@ -464,6 +619,7 @@ public function finance_update_withdraw($withdraw_id)
 	$payment_date = $_POST['payment_date'];
 	$payment_evidence_url = $_POST['payment_evidence_url'];
 	$payment_old_amount = $_POST['payment_old_amount'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
 
     $payment_date1 = date('Y-m-d', strtotime($payment_date));
 
@@ -514,6 +670,7 @@ public function cbank_cash_book_update($payment_id)
 	$branch_admin_id = $_POST['branch_admin_id'];
 	$emp_id = $_POST['emp_id']; 
 	$financial_year_id = $_SESSION['financial_year_id'];
+	$payment_old_amount = $_POST['payment_old_amount'];
 
 	$payment_date = date("Y-m-d", strtotime($payment_date));
 	$year1 = explode("-", $payment_date);
@@ -526,8 +683,8 @@ public function cbank_cash_book_update($payment_id)
 		$payment_date = $payment_date;
 		$payment_amount = $payment_amount1;
 		$payment_mode = '';
-		$bank_name = $bank_name;
-		$transaction_id = $transaction_id;
+		$bank_name = '';
+		$transaction_id = '';
 		$bank_id = $bank_id;
 		$particular = get_cash_withdraw_particular($bank_id,$payment_date);
 		$clearance_status = "";

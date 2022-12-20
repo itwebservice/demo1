@@ -462,9 +462,9 @@ function get_service_tax(result){
 			var tax_rule_array = [];
 			result &&
 			result.forEach((rule) => {
-					if (parseInt(tax_rule['entry_id']) === parseInt(rule['entry_id']) && rule['rule_id'])
-						tax_rule_array.push(rule);
-				});
+				if (parseInt(tax_rule['entry_id']) === parseInt(rule['entry_id']) && rule['rule_id'])
+					tax_rule_array.push(rule);
+			});
 			final_taxes_rules.push({ entry_id: tax_rule['entry_id'], tax_rule_array });
 		});
 		///////////////////////////
@@ -473,7 +473,6 @@ function get_service_tax(result){
 		final_taxes_rules.map((tax) => {
 			var entry_id_rules = tax['tax_rule_array'];
 			var flag = false;
-			var conditions_flag_array = [];
 			entry_id_rules &&
 				entry_id_rules.forEach((rule) => {
 
@@ -514,7 +513,11 @@ function get_service_tax(result){
 									flag = place_flag;
 							}
 						})
-						if(flag === true)applied_rules.push(rule);
+						if(flag === true){
+							if(applied_rules.length < 2){
+								applied_rules.push(rule);
+							}
+						}
 					});
 				});
 		////////////////////////////////////////
@@ -742,7 +745,12 @@ function add_to_cart (id,type){
 		var total_passengers = $('#total_passengers').val();
 		total_passengers = total_passengers.split('-');
 		var travel_date = $('#travelDate').val();
-		var note = document.getElementById("note"+id).textContent.replace(/\n/g, '');
+		var element = document.getElementById("note"+id);
+		if (element != null) {
+			var note = element.textContent.replace(/\n/g, '');
+		}else{
+			var note = '';
+		}
 
 		var result = get_other_rules ('Package Tour', travel_date);
 		var applied_taxes = get_service_tax(result);

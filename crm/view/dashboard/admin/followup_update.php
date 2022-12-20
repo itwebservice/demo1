@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once('../../../model/model.php');
 $enquiry_id = $_POST['enquiry_id'];
 ?>
@@ -8,7 +8,7 @@ $enquiry_id = $_POST['enquiry_id'];
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Followup Update</h4>
+        <h4 class="modal-title" id="myModalLabel" style="text-align:left!important;">Followup Update</h4>
       </div>
       <div class="modal-body">
       <input type="hidden" id="enquiry_id" name="enquiry_id" value="<?= $enquiry_id ?>" />
@@ -16,7 +16,6 @@ $enquiry_id = $_POST['enquiry_id'];
         <div class="col-md-3 col-sm-6 mg_bt_10">
           <select name="followup_status" id="followup_status" title="Followup Status" class="form-control" onchange="followup_type_reflect(this.value)">
             <option value="">*Status</option>
-            <option value="Active">Active</option>
 						<option value="In-Followup">In-Followup</option>
             <option value="Dropped">Dropped</option>
             <option value="Converted">Converted</option>
@@ -45,7 +44,7 @@ $enquiry_id = $_POST['enquiry_id'];
         <textarea id="followup_reply" name="followup_reply" onchange="validate_spaces(this.id);" placeholder="*Followup Description" class="form-control"></textarea>
       </div>		
       <div class="col-md-3 col-sm-6 mg_bt_10">
-          <select name="cust_state" id="cust_state" title="Select State" style="width : 100%" class="form-control">
+          <select name="cust_state" id="cust_state" title="Select State/Country" style="width : 100%" class="form-control">
             <?php get_states_dropdown() ?>
           </select>
       </div>
@@ -82,25 +81,12 @@ $enquiry_id = $_POST['enquiry_id'];
       var followup_stage = $('#followup_stage').val();
       var cust_state = $('#cust_state').val();
 
-      // if(followup_status=='Converted'){
-      //   if(cust_state=='' || cust_state==undefined){
-      //     error_msg_alert("Please select state");
-      //           return false;
-      //   }
-      // }
       var base_url = $('#base_url').val();
       $('#btn_followup_reply').button('loading');
-      // $.post( 
-      //   base_url+"controller/attractions_offers_enquiry/followup_reply_save.php",
-      //   { enquiry_id : enquiry_id, followup_reply : followup_reply, followup_date : followup_date, followup_type : followup_type, followup_status : followup_status, followup_stage : followup_stage },
-      //   function(data) {  
-      //     msg_alert(data);
-      //     $('#followup_save_modal').modal('hide');
-      //     followup_reflect();
-      // });
       if(followup_status=='Converted'){
         if(cust_state=='' || cust_state==undefined){
-          error_msg_alert("Please select state");
+          error_msg_alert("Please select state/country");
+          $('#btn_followup_reply').button('reset');
           $('#btn_followup_reply').prop('disabled', false);
           return false;
         }

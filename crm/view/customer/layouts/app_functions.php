@@ -7,7 +7,7 @@ function topbar_icon_list()
 {
     global $app_version;
     $customer_idd = $_SESSION['customer_id'];
-    $sq_cust = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_idd'"));
+    $sq_cust = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name,type,company_name from customer_master where customer_id='$customer_idd'"));
     if($sq_cust['type'] == 'Corporate' || $sq_cust['type'] == 'B2B'){
         $cname = $sq_cust['company_name'];
     }else{

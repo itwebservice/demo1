@@ -60,6 +60,7 @@ function booking_report_reflect()
 
 	$.post('report/booking_report_reflect.php', { customer_id : customer_id, booking_id : booking_id, from_date : from_date, to_date : to_date, cust_type : cust_type, company_name : company_name , branch_status : branch_status}, function(data){
 		$('#div_report_content').html(data);
+		
 	});	
 }
 function excel_report()

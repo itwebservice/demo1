@@ -106,21 +106,9 @@
             </div>
           </div>
           <div class="row mg_tp_10">
-              <div class="col-md-3 col-sm-6 mg_bt_10_xs">
-                <select class="form-control" id='country' title='Country' name='country' style='width:100%;'>
-                <?php if($sq_query['country']!=0){ $sq_coun = mysqli_fetch_assoc(mysqlQuery("select * from country_list_master where country_id='$sq_query[country]'"));?>
-                    <option value="<?= $sq_coun['country_id'] ?>"><?= $sq_coun['country_name'].'('.$sq_coun['country_code'].')' ?></option>
-                <?php } ?>
-                  <option value=''>Country</option>
-                  <?php
-                  $sq_country = mysqlQuery("select * from country_list_master where 1");
-                  while($row_country = mysqli_fetch_assoc($sq_country)){ ?>
-                    <option value="<?= $row_country['country_id'] ?>"><?= $row_country['country_name'].'('.$row_country['country_code'].')' ?></option>
-                  <?php } ?>
-                </select>
-              </div>
+             
               <div class="col-sm-3 col-xs-12">
-                <select name="cust_state" id="cust_state" title="Select State" style="width : 100%" required>
+                <select name="cust_state" id="cust_state" title="State/Country Name" style="width : 100%" required>
                   <?php
                   $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_query[state]'"));
                     if($sq_query['state']!=0){ ?>
@@ -157,6 +145,9 @@
               <input type="text" id="acc_name11" name="acc_name1" placeholder="A/c Type" title="A/c Type" value='<?=$sq_query['b_acc_name'] ?>'>
             </div>
             <div class="col-sm-3 mg_bt_10">
+              <input type="text" id="bank_acc_name1" name="bank_acc_name1" placeholder="A/c Name" title="A/c Name" value='<?=$sq_query['b_bank_account_name'] ?>'>
+            </div>
+            <div class="col-sm-3 mg_bt_10">
               <input type="text" id="bank_acc_no1" name="bank_acc_no" placeholder="A/c No" onchange="validate_accountNo(this.id)" title="A/c No" value='<?=$sq_query['b_acc_no'] ?>'>
             </div>
             <div class="col-sm-3 mg_bt_10">
@@ -178,7 +169,7 @@
 
 <script>
 $('#currency').select2();
-$('#country').select2({minimumInputLength:1});
+$('#cust_state').select2({minimumInputLength:1});
 city_lzloading('#city');
 upload_address_proof();
 

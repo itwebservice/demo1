@@ -178,15 +178,159 @@ class exc_master
 			}
 		}
 	}
+	public function exc_master_delete(){
 
+		global $delete_master,$transaction_master;
+		$exc_id = $_POST['booking_id'];
+
+		$deleted_date = date('Y-m-d');
+		$row_spec = "sales";
+	
+		$row_misc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+		$reflections = json_decode($row_misc['reflections']);
+		$service_tax_markup = $row_misc['service_tax_markup'];
+		$service_tax_subtotal = $row_misc['service_tax_subtotal'];
+		$customer_id = $row_misc['customer_id'];
+		$booking_date = $row_misc['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		
+		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+		if($sq_ct['type']=='Corporate' || $sq_ct['type'] == 'B2B'){
+			$cust_name = $sq_ct['company_name'];
+		}else{
+			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+		}
+		//Get Particular
+		$row_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master_entries where exc_id='$exc_id'"));
+		$total_adult = $row_exc['total_adult'];
+		$total_child = $row_exc['total_child'];
+		$e_exc_id = $row_exc['exc_name'];
+		$exc_date = get_date_user($row_exc['exc_date']);
+		$particular = $this->get_particular($customer_id, $e_exc_id, $total_adult, $total_child, $exc_date);
+
+		$delete_master->delete_master_entries('Invoice','Activity',$exc_id,get_exc_booking_id($exc_id,$year),$cust_name,$row_misc['exc_total_cost']);
+
+		//Getting customer Ledger
+		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+		$cust_gl = $sq_cust['ledger_id'];
+
+		////////////Sales/////////////
+		$module_name = "Excursion Booking";
+		$module_entry_id = $exc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+		$old_gl_id = $gl_id = 44;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		////////////Service charge/////////////
+		$module_name = "Excursion Booking";
+		$module_entry_id = $exc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->act_sc != '') ? $reflections[0]->act_sc : 192;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		/////////Service Charge Tax Amount////////
+		$service_tax_subtotal = explode(',', $service_tax_subtotal);
+		$tax_ledgers = explode(',', $reflections[0]->act_taxes);
+		for ($i = 0; $i < sizeof($service_tax_subtotal); $i++) {
+
+			$ledger = $tax_ledgers[$i];
+
+			$module_name = "Excursion Booking";
+			$module_entry_id = $exc_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		}
+
+		////////////Markup/////////////
+		$module_name = "Excursion Booking";
+		$module_entry_id = $exc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->act_markup != '') ? $reflections[0]->act_markup : 204;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		/////////Markup Tax Amount////////
+		// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+		$service_tax_markup = explode(',', $service_tax_markup);
+		$tax_ledgers = explode(',', $reflections[0]->act_markup_taxes);
+		for ($i = 0; $i < sizeof($service_tax_markup); $i++) {
+
+			$ledger = $tax_ledgers[$i];
+			$module_name = "Excursion Booking";
+			$module_entry_id = $exc_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '1', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		}
+
+		/////////Roundoff/////////
+		$module_name = "Excursion Booking";
+		$module_entry_id = $exc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+		$old_gl_id = $gl_id = 230;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+		////////Customer Amount//////
+		$module_name = "Excursion Booking";
+		$module_entry_id = $exc_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To', 'Excursion Sales');
+		$old_gl_id = $gl_id = $cust_gl;
+		$payment_side = "Debit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		
+		$sq_delete = mysqlQuery("update excursion_master set exc_issue_amount = '0',service_charge='0',markup='0',service_tax_subtotal='',service_tax_markup='',exc_total_cost='',roundoff='0',delete_status='1' where exc_id='$exc_id'");
+		if($sq_delete){
+			echo 'Entry deleted successfully!';
+			exit;
+		}
+	}
 	public function finance_save($exc_id, $payment_id, $row_spec, $branch_admin_id, $particular)
 	{
-
 		$customer_id = $_POST['customer_id'];
 		$exc_issue_amount = $_POST['exc_issue_amount'];
 		$service_charge = $_POST['service_charge'];
-		$taxation_type = $_POST['taxation_type'];
-		$taxation_id = $_POST['taxation_id'];
 		$service_tax = $_POST['service_tax'];
 		$service_tax_subtotal = $_POST['service_tax_subtotal'];
 		$exc_total_cost = $_POST['exc_total_cost'];
@@ -195,7 +339,6 @@ class exc_master
 		$payment_date = $_POST['payment_date'];
 		$payment_amount1 = $_POST['payment_amount'];
 		$payment_mode = $_POST['payment_mode'];
-		$bank_name = $_POST['bank_name'];
 		$transaction_id1 = $_POST['transaction_id'];
 		$bank_id1 = $_POST['bank_id'];
 		$booking_date = $_POST['balance_date'];
@@ -211,9 +354,6 @@ class exc_master
 		$payment_date1 = date('Y-m-d', strtotime($payment_date));
 		$year1 = explode("-", $booking_date);
 		$yr1 = $year1[0];
-		$year2 = explode("-", $payment_date1);
-		$yr2 = $year2[0];
-		$created_at = date("Y-m-d");
 		$bsmValues = json_decode(json_encode($_POST['bsmValues']));
 		foreach ($bsmValues[0] as $key => $value) {
 			switch ($key) {
@@ -230,10 +370,9 @@ class exc_master
 		}
 		$excursion_sale_amount = $exc_issue_amount;
 		$payment_amount1 = intval($payment_amount1) + intval($credit_charges);
-		$balance_amount = intval($exc_total_cost) - intval($payment_amount1);
 
 		//Get Customer id
-		if ($customer_id == '0') {
+		if($customer_id == '0'){
 			$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(customer_id) as max from customer_master"));
 			$customer_id = $sq_max['max'];
 		}
@@ -253,9 +392,7 @@ class exc_master
 		}
 
 		global $transaction_master;
-
 		////////////Sales/////////////
-
 		$module_name = "Excursion Booking";
 		$module_entry_id = $exc_id;
 		$transaction_id = "";
@@ -282,7 +419,6 @@ class exc_master
 		$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, 'INVOICE');
 
 		/////////Service Charge Tax Amount////////
-		$customer_amount = intval($exc_issue_amount) + intval($service_charge) + intval($markup);
 		$service_tax_subtotal = explode(',', $service_tax_subtotal);
 		$tax_ledgers = explode(',', $reflections[0]->act_taxes);
 		for ($i = 0; $i < sizeof($service_tax_subtotal); $i++) {
@@ -338,6 +474,7 @@ class exc_master
 			$clearance_status = "";
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '1', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, 'INVOICE');
 		}
+
 		////Roundoff Value
 		$module_name = "Excursion Booking";
 		$module_entry_id = $exc_id;
@@ -350,7 +487,6 @@ class exc_master
 		$payment_side = "Credit";
 		$clearance_status = "";
 		$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, 'INVOICE');
-
 
 		////////Customer Amount//////
 		$module_name = "Excursion Booking";
@@ -370,8 +506,8 @@ class exc_master
 			if ($payment_mode == 'Credit Card') {
 
 				//////Customer Credit charges///////
-				$module_name = "Excursion Booking";
-				$module_entry_id = $exc_id;
+				$module_name = "Excursion Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_charges;
 				$payment_date = $payment_date1;
@@ -383,8 +519,8 @@ class exc_master
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 
 				//////Credit charges ledger///////
-				$module_name = "Excursion Booking";
-				$module_entry_id = $exc_id;
+				$module_name = "Excursion Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_charges;
 				$payment_date = $payment_date1;
@@ -411,8 +547,8 @@ class exc_master
 				$credit_company_amount = intval($payment_amount1) - intval($finance_charges);
 
 				//////Finance charges ledger///////
-				$module_name = "Excursion Booking";
-				$module_entry_id = $exc_id;
+				$module_name = "Excursion Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $finance_charges;
 				$payment_date = $payment_date1;
@@ -423,8 +559,8 @@ class exc_master
 				$clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 				//////Credit company amount///////
-				$module_name = "Excursion Booking";
-				$module_entry_id = $exc_id;
+				$module_name = "Excursion Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $credit_company_amount;
 				$payment_date = $payment_date1;
@@ -436,8 +572,8 @@ class exc_master
 				$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 			} else {
 
-				$module_name = "Excursion Booking";
-				$module_entry_id = $exc_id;
+				$module_name = "Excursion Booking Payment";
+				$module_entry_id = $payment_id;
 				$transaction_id = $transaction_id1;
 				$payment_amount = $payment_amount1;
 				$payment_date = $payment_date1;
@@ -450,8 +586,8 @@ class exc_master
 			}
 
 			//////Customer Payment Amount///////
-			$module_name = "Excursion Booking";
-			$module_entry_id = $exc_id;
+			$module_name = "Excursion Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -463,24 +599,15 @@ class exc_master
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 		}
 	}
-
-
-
 	public function bank_cash_book_save($exc_id, $payment_id, $branch_admin_id)
-
 	{
 
 		global $bank_cash_book_master;
 		$customer_id = $_POST['customer_id'];
-
 		$payment_date = $_POST['payment_date'];
-
 		$payment_amount = $_POST['payment_amount'];
-
 		$payment_mode = $_POST['payment_mode'];
-
 		$bank_name = $_POST['bank_name'];
-
 		$transaction_id = $_POST['transaction_id'];
 		$credit_charges = $_POST['credit_charges'];
 		$credit_card_details = $_POST['credit_card_details'];
@@ -504,40 +631,23 @@ class exc_master
 			$customer_id = $sq_max['max'];
 		}
 
-		$module_name = "Excursion Booking";
-
+		$module_name = "Excursion Booking Payment";
 		$module_entry_id = $payment_id;
-
 		$payment_date = $payment_date;
-
 		$payment_amount = $payment_amount;
-
 		$payment_mode = $payment_mode;
-
 		$bank_name = $bank_name;
-
 		$transaction_id = $transaction_id;
-
 		$bank_id = $bank_id;
-
 		$particular = get_sales_paid_particular(get_exc_booking_payment_id($payment_id, $yr1), $payment_date, $payment_amount, $customer_id, $payment_mode, get_exc_booking_id($exc_id, $yr1), $bank_id, $transaction_id);
-
 		$clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
-
 		$payment_side = "Debit";
-
 		$payment_type = ($payment_mode == "Cash") ? "Cash" : "Bank";
-
-
-
 		$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
 	}
 
-
-
 	function get_particular($customer_id, $exc_name, $total_adults, $total_childs, $exc_date)
 	{
-
 		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
 		$cust_name = $sq_ct['first_name'] . ' ' . $sq_ct['last_name'];
 		$sq_t = mysqli_fetch_assoc(mysqlQuery("select excursion_name from excursion_master_tariff where entry_id='$exc_name'"));
@@ -545,8 +655,6 @@ class exc_master
 
 		return 'Towards the ' . $service_name . ' for ' . $cust_name . ' * ' . (intval($total_adults) + intval($total_childs)) . ' on Dt.' . get_date_user($exc_date);
 	}
-
-
 
 	public function exc_master_update()
 	{
@@ -917,7 +1025,7 @@ class exc_master
 		} else {
 			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 		}
-
+		$customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 		$contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
 		$sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
 		if ($emp_id == 0) {
@@ -926,7 +1034,7 @@ class exc_master
 			$contact = $sq_emp_info['mobile_no'];
 		}
 
-		$whatsapp_msg = rawurlencode('Hello Dear ' . $sq_customer['first_name'] . ',
+		$whatsapp_msg = rawurlencode('Dear ' . $customer_name . ',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : ' . get_date_user($booking_date) . '
 

@@ -19,7 +19,7 @@ function get_group_booking_dropdown($role, $branch_admin_id, $branch_status,$emp
   ?>
   <option value="" >Select Booking</option>
   <?php 
-    $query = "select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and 1 ";
+    $query = "select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and delete_status='0' ";
     include "branchwise_filteration.php";
     $query .= " and tour_group_status != 'Cancel'";
     $query .= " order by id desc";
@@ -48,7 +48,7 @@ function get_package_booking_dropdown($role, $branch_admin_id, $branch_status,$e
   ?>
   <option value="">*Select Booking</option>
   <?php
-      $query = "select * from package_tour_booking_master where 1 ";
+      $query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
       include "branchwise_filteration.php";
       $query .= " order by booking_id desc";
       $sq_booking = mysqlQuery($query);
@@ -130,10 +130,9 @@ function get_hotel_booking_dropdown($role, $branch_admin_id, $branch_status,$emp
 
 { ?>
 
-     <option value="">Select Booking</option>
-
-     <?php 
-      $query = "select * from hotel_booking_master where 1 ";
+    <option value="">Select Booking</option>
+    <?php 
+      $query = "select * from hotel_booking_master where 1 and delete_status='0' ";
       include "branchwise_filteration.php";
       $query .= " order by booking_id desc";
       $sq_booking = mysqlQuery($query);
@@ -170,7 +169,7 @@ function get_bus_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_i
 
     <option value="">Booking ID</option>
     <?php 
-      $query = "select * from bus_booking_master where 1 ";
+      $query = "select * from bus_booking_master where 1 and delete_status='0' ";
       include "branchwise_filteration.php";
       $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."' order by booking_id desc";
       $sq_booking = mysqlQuery($query);
@@ -178,18 +177,18 @@ function get_bus_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_i
       while($row_booking = mysqli_fetch_assoc($sq_booking))
 
       {
-          $date = $row_booking['created_at'];
-          $yr = explode("-", $date);
-          $year =$yr[0];
-          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-          if($sq_customer['type']=='Corporate'||$sq_customer['type']=='B2B'){ ?>
-            <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_bus_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['company_name']; ?></option>
-          <?php } 
-          else{ ?>
-            <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_bus_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name']; ?></option>
+        $date = $row_booking['created_at'];
+        $yr = explode("-", $date);
+        $year =$yr[0];
+        $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+        if($sq_customer['type']=='Corporate'||$sq_customer['type']=='B2B'){ ?>
+          <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_bus_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['company_name']; ?></option>
+        <?php } 
+        else{ ?>
+          <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_bus_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name']; ?></option>
 
-           <?php    
-         }
+          <?php
+        }
       }    
 
 }
@@ -197,74 +196,54 @@ function get_bus_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_i
 //Hotel Booking Dropdown
 function get_car_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id,$role_id='')
 { ?>
+    <option value="">*Booking ID</option>
+    <?php
+    $query = "select * from car_rental_booking where 1 and delete_status='0' ";
+    $query .= " and status!='Cancel'";
+    include "branchwise_filteration.php";
+    $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."' order by booking_id desc";
+    $sq_booking = mysqlQuery($query);
 
-     <option value="">*Booking ID</option>
+    while($row_booking = mysqli_fetch_assoc($sq_booking))
+    {
+      $date = $row_booking['created_at'];
+      $yr = explode("-", $date);
+      $year =$yr[0];
+      $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
 
-     <?php
-      $query = "select * from car_rental_booking where 1 ";
-      $query .= " and status!='Cancel'";
-      include "branchwise_filteration.php";
-      $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."' order by booking_id desc";
-      $sq_booking = mysqlQuery($query);
-
-      while($row_booking = mysqli_fetch_assoc($sq_booking))
-
-      {
-         $date = $row_booking['created_at'];
-         $yr = explode("-", $date);
-         $year =$yr[0];
-          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-
-           if($sq_customer['type']=='Corporate'||$sq_customer['type']=='B2B'){
-                  ?>
-                    <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year)." : ".$sq_customer['company_name'] ?></option>
-                  <?php }  else{ ?>
-                    <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year)." : ".$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-                  <?php } ?>
-
-           <?php    
-
-      }    
-
+        if($sq_customer['type']=='Corporate'||$sq_customer['type']=='B2B'){
+              ?>
+            <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year)." : ".$sq_customer['company_name'] ?></option>
+        <?php }  else{ ?>
+            <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year)." : ".$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+        <?php }
+      }
 }
 //Passport Booking Dropdown
 
-function get_passport_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id, $role_id='',$financial_year)
-
+function get_passport_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id, $role_id='',$financial_year='')
 { ?>
-
-     <option value="">Booking ID</option>
-
-     <?php 
+      <option value="">Booking ID</option>
+      <?php
       $query = "select * from passport_master where 1 ";
       include "branchwise_filteration.php";
       $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."'  order by passport_id desc";
       $sq_booking = mysqlQuery($query);
 
-      while($row_booking = mysqli_fetch_assoc($sq_booking))
-
-      {
-        $date = $row_booking['created_at'];
-                      $yr = explode("-", $date);
-                      $year =$yr[0];
+      while($row_booking = mysqli_fetch_assoc($sq_booking)){
+          $date = $row_booking['created_at'];
+          $yr = explode("-", $date);
+          $year =$yr[0];
           $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-
-           ?>
-
-           <option value="<?php echo $row_booking['passport_id'] ?>"><?php echo get_passport_booking_id($row_booking['passport_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name']; ?></option>
-
-           <?php    
-
-      }    
-
+          ?>
+            <option value="<?php echo $row_booking['passport_id'] ?>"><?php echo get_passport_booking_id($row_booking['passport_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name']; ?></option>
+          <?php
+      }
 }
 
 //**Forex Booking Dropdown
-
 function get_forex_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id,$role_id='')
-
 {
-
   ?>
 
   <option value="">Booking ID</option>
@@ -295,10 +274,9 @@ function get_excursion_booking_dropdown($role, $branch_admin_id, $branch_status,
 
 { ?>
 
-     <option value="">Booking ID</option>
-
-     <?php 
-      $query = "select * from excursion_master where 1 ";
+    <option value="">Booking ID</option>
+    <?php 
+      $query = "select * from excursion_master where 1 and delete_status='0'";
       include "branchwise_filteration.php";
       $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."'  order by exc_id desc";
       $sq_booking = mysqlQuery($query);
@@ -316,7 +294,7 @@ function get_excursion_booking_dropdown($role, $branch_admin_id, $branch_status,
 
            <option value="<?php echo $row_booking['exc_id'] ?>"><?php echo get_exc_booking_id($row_booking['exc_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name']; ?></option>
 
-           <?php    
+           <?php
 
       }    
 
@@ -360,7 +338,7 @@ function get_states_dropdown()
 
   ?>
 
-  <option value="">*State Name</option>
+  <option value="">*Select State/Country Name</option>
 
   <?php
 
@@ -502,40 +480,42 @@ function get_customer_hint(){
   if($branch_status=='yes' && $role!='Admin'){
     $sq_query = mysqlQuery("select * from customer_master where active_flag!='Inactive' and branch_admin_id='$branch_admin_id' order by customer_id desc");
     
-    while($row_cust = mysqli_fetch_assoc($sq_query))
+    while($row_cust_new = mysqli_fetch_assoc($sq_query))
     { 
+      $row_cust = $row_cust_new;
       $contact_no = $encrypt_decrypt->fnDecrypt($row_cust['contact_no'], $secret_key);
       $contact_no = str_replace($row_cust['country_code'],"",$contact_no);      
       $sq_code = mysqli_fetch_assoc(mysqlQuery("SELECT country_code FROM `country_list_master` where phone_code ='$row_cust[country_code]'"));
 
       $email_id = $encrypt_decrypt->fnDecrypt($row_cust['email_id'], $secret_key);
       if($row_cust['type']=='Corporate'||$row_cust['type']=='B2B'){
-        $to_be_push = array(
+        $to_be_push = [
           "value" => $row_cust['company_name'],
           "label" => $row_cust['company_name'],
           "contact_no" => $contact_no,
           "email_id" => $email_id,
           "country_code" => $sq_code['country_code'].' ('.$row_cust['country_code'].')',
           "country_id"=>$row_cust['country_code']
-        );
+        ];
       }
       else{
-        $to_be_push = array(
+        $to_be_push = [
           "value" =>$row_cust['first_name'].' '.$row_cust['last_name'],
           "label" =>$row_cust['first_name'].' '.$row_cust['last_name'],
           "contact_no" => $contact_no,
           "email_id" => $email_id,
           "country_code" => $sq_code['country_code'].' ('.$row_cust['country_code'].')',
           "country_id"=>$row_cust['country_code']
-        );
+        ];
       }
+      array_push($final_array, $to_be_push);
     }
-    array_push($final_array, $to_be_push);
 }
 else{
    $sq_query = mysqlQuery("select * from customer_master where active_flag!='Inactive' order by customer_id desc");
-    while($row_cust = mysqli_fetch_assoc($sq_query))
+    while($row_cust_new_2 = mysqli_fetch_assoc($sq_query))
     {
+      $row_cust = $row_cust_new_2;
       $contact_no = $encrypt_decrypt->fnDecrypt($row_cust['contact_no'], $secret_key);
       $contact_no = str_replace($row_cust['country_code'],"",$contact_no);      
       $sq_code = mysqli_fetch_assoc(mysqlQuery("SELECT country_code FROM `country_list_master` where phone_code ='$row_cust[country_code]'"));
@@ -748,21 +728,14 @@ function get_payment_mode_dropdown(){
 
 //Get Honorifics
 function get_hnorifi_dropdown()
-
 {
 
   ?>
 
   <option value="Mr."> Mr. </option>
-
   <option value="Mrs"> Mrs </option>
-
-  <option value="Mas"> Mas </option>
-
   <option value="Miss"> Miss </option>
-
   <option value="Smt"> Smt </option>
-
   <option value="Infant"> Infant </option>
 
   <?php
@@ -1026,13 +999,13 @@ function get_hotel_category_dropdown(){
 }
 function get_ferry_types(){
   echo '
-  <option value="">*Select Ferry Class</option>
+  <option value="">*Select Ferry/Cruise Class</option>
   <option value="Business Class">Business Class</option>
   <option value="Luxury Class">Luxury Class</option>
   <option value="Royal Class">Royal Class</option>
   <option value="Economy Class">Economy Class</option>
   <option value="Premium Class">Premium Class</option>
-  <option value="Premium Class Plus">Premium Plus Class</option>
+  <option value="Premium Plus Class">Premium Plus Class</option>
   <option value="Deluxe Class">Deluxe Class</option>';
 }
 function get_bike_types(){

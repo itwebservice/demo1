@@ -71,7 +71,7 @@ $enquiry_id = base64_decode($enquiry_id1);
 		<div class="col-md-2 no-pad">
 			<input type="text" class="form-control" id="txt_cost" name="txt_cost" placeholder="*Total Cost" title="Total Cost" readonly>
 		</div>
-		<div class="col-md-2 text-right"><label for="app_website">CURRENCY CODE</label></div>
+		<div class="col-md-2 text-right"><label for="app_website">CURRENCY</label></div>
 		<div class="col-md-2">
         <select name="currency_code" id="currency_code1" title="Currency" style="width:100%">
         <?php
@@ -101,7 +101,7 @@ $enquiry_id = base64_decode($enquiry_id1);
 		</div>
 	</div>
 	<div class="main_block mg_tp_20">
-		<div class="col-md-2 text-right"><label for="app_website">Created by</label></div>
+		<div class="col-md-2 text-right"><label for="app_website">Created By</label></div>
 		<div class="col-md-4 no-pad">
 			<input type="text" class="form-control" id="txt_creat" name="txt_creat" placeholder="*Created By" title="Created By"> 
 		</div>

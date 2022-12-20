@@ -7,7 +7,7 @@ $booking_id = $_POST['booking_id'];
 	<div class="col-md-10  col-md-offset-1 col-sm-12 col-xs-12">
 		<div class="widget_parent-bg-img bg-img-red">
 			<?php     
-				$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+				$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 				$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from hotel_booking_payment where booking_id='$booking_id' AND clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 				$service_tax_amount = 0;
 				if($sq_hotel_info['service_tax_subtotal'] !== 0.00 && ($sq_hotel_info['service_tax_subtotal']) !== ''){
@@ -26,7 +26,7 @@ $booking_id = $_POST['booking_id'];
 					}
 				}
 	            begin_widget();
-	                $title_arr = array("Booking Amount", "Service Charge", "Tax", "Markup","Markup Tax","Discount","TDS","Roundoff","Total Amount", "Paid Amount");
+	                $title_arr = array("Basic Amount", "Service Charge", "Tax", "Markup","Markup Tax","Discount","TDS","Roundoff","Total Amount", "Paid Amount");
 	                $content_arr = array( number_format($sq_hotel_info['sub_total'],2) , $sq_hotel_info['service_charge'], number_format($service_tax_amount, 2),$sq_hotel_info['markup'],number_format($markupservice_tax_amount,2),$sq_hotel_info['discount'],$sq_hotel_info['tds'], $sq_hotel_info['roundoff'],$sq_hotel_info['total_fee'],$sq_payment_info['sum'] );
 	                $percent = ($sq_hotel_info['total_fee'] != '0') ? ($sq_payment_info['sum']/$sq_hotel_info['total_fee'])*100 : 0;
 	                $percent = round($percent, 2);
@@ -96,7 +96,7 @@ $booking_id = $_POST['booking_id'];
 	<?php
 	$sq_cancel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id' and status='Cancel'"));
 	if($sq_cancel_count>0){
-		$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+		$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 		if($sq_hotel_info['cancel_amount'] == "0.00"){
 			$refund_amount = $sq_payment_info['sum'];
 		}else{
@@ -104,7 +104,11 @@ $booking_id = $_POST['booking_id'];
 		}
 		?>
 		<form id="frm_refund" class="mg_bt_150">
-
+		<div class="row">
+		<div class="col-md-12 text-center mt-5 mb-5" style="margin-bottom: 20px;">
+			<h4>Refund Estimate</h4>
+		</div>
+	</div>
 			<div class="row text-center">
 				<div class="col-md-3 col-md-offset-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 					<input type="text" name="cancel_amount" id="cancel_amount" class="text-right" placeholder="*Cancellation Charges" title="Cancellation Charges" onchange="validate_balance(this.id);calculate_total_refund()" value="<?= $sq_hotel_info['cancel_amount'] ?>">

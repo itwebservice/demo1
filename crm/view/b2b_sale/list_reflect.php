@@ -228,6 +228,8 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 	$payment_amount = $sq_payment_info['sum'];
 	$paid_amount +=$sq_payment_info['sum'];
 
+	$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2b_sale/index.php'"));
+	$branch_status = $sq['branch_status'];
 	//Invoice
 	$invoice_no = get_b2b_booking_id($row_customer['booking_id'],$yr[0]);
 	$booking_id = $row_customer['booking_id'];
@@ -238,9 +240,9 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 	$sac_code = $sq_sac['hsn_sac_code'];
 
 	if($app_invoice_format == 4)
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2b_tax_invoice.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&booking_id=$booking_id&sac_code=$sac_code";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2b_tax_invoice.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&booking_id=$booking_id&sac_code=$sac_code&branch_status=$branch_status";
 	else
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2b_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&booking_id=$booking_id&sac_code=$sac_code";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2b_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&booking_id=$booking_id&sac_code=$sac_code&branch_status=$branch_status";
 
 	//Receipt
 	$payment_id_name = "Receipt ID";

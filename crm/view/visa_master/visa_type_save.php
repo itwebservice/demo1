@@ -13,7 +13,7 @@ include "../../model/model.php";
         <form id="frm_visa_save">        
           <div class="row">
               <div class="col-md-12 mg_bt_10">
-                <input type="text" name="visa_type"  class="form-control" title="Visa Type" placeholder="*Visa Type" id="visa_type">
+                <input type="text" name="visa_type"  class="form-control" title="Visa Type" placeholder="*Visa Type" id="visa_type" required>
               </div>
           </div>
           <div class="row text-center mg_tp_20">

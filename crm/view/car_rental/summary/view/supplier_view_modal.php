@@ -27,7 +27,7 @@ $booking_id = $_POST['booking_id'];
                       <tbody>
                       <?php 
                       $count = 0;
-                      $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE estimate_type LIKE 'Car Rental' AND estimate_type_id = '$booking_id'");
+                      $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE status!='Cancel' and estimate_type LIKE  'Car Rental' AND estimate_type_id = '$booking_id' and delete_status='0'");
                       while($row_entry = mysqli_fetch_assoc($sq_query)){
 
                           $Supplier_name = get_vendor_name_report($row_entry['vendor_type'] ,$row_entry['vendor_type_id']);

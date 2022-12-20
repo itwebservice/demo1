@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="visa_id1" id="visa_id1" style="width:100%" onchange="refund_report_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_visa = mysqlQuery("select * from visa_master where customer_id='$customer_id' and  visa_id in ( select visa_id from visa_master_entries where status='Cancel')order by visa_id desc");
+			        $sq_visa = mysqlQuery("select * from visa_master where customer_id='$customer_id' and  visa_id in ( select visa_id from visa_master_entries where status='Cancel') and delete_status='0' order by visa_id desc");
 			        while($row_visa = mysqli_fetch_assoc($sq_visa)){
 						$date = $row_visa['created_at'];
 						$yr = explode("-", $date);

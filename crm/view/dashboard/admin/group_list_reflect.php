@@ -1,24 +1,21 @@
 <?php
 include "../../../model/model.php";
-
 $booking_id = $_POST['booking_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 
 $query = mysqli_fetch_assoc(mysqlQuery("select max(id) as booking_id from tourwise_traveler_details where financial_year_id='$financial_year_id'"));
 
 $sq_traveler = "select * from traveler_personal_info where  where financial_year_id='$financial_year_id' ";
-
-$query_package = "select * from package_tour_booking_master where  where financial_year_id='$financial_year_id'";
-
+$query_package = "select * from package_tour_booking_master where  where financial_year_id='$financial_year_id' and delete_status='0'";
 if($booking_id != ''){
-  $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'");
+  $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'");
 }
 else{
-   $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$query[booking_id]'");
+   $sq_entry = mysqlQuery("select * from tourwise_traveler_details where id='$query[booking_id]' and delete_status='0'");
 }
 $row_entry = mysqli_fetch_assoc($sq_entry);
- $sq_tour_name = mysqli_fetch_assoc(mysqlQuery("select  * from tour_master where tour_id = '$row_entry[tour_id]'"));
- $sq_traveler_personal_info = mysqli_fetch_assoc(mysqlQuery("select * from traveler_personal_info where tourwise_traveler_id='$query[booking_id]'"));
+$sq_tour_name = mysqli_fetch_assoc(mysqlQuery("select  * from tour_master where tour_id = '$row_entry[tour_id]'"));
+$sq_traveler_personal_info = mysqli_fetch_assoc(mysqlQuery("select * from traveler_personal_info where tourwise_traveler_id='$query[booking_id]'"));
 ?>
 <div class="col-md-7 col-sm-8 col-md-pull-3">
   <span class="tour_concern" style="margin-right: 30px;"><label>TOUR NAME  </label><em>:</em><?php echo $sq_tour_name['tour_name']; ?></span>
@@ -39,7 +36,7 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
                 </tr>
               </thead>
               <tbody>
-              <?php 
+              <?php
               $traveler_group_id = $row_entry['traveler_group_id'];
               $sq_entry = mysqlQuery("select * from travelers_details where traveler_group_id='$traveler_group_id'");
               while($row_entry1 = mysqli_fetch_assoc($sq_entry)){
@@ -104,21 +101,21 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
               $count++;
               $age = $row_entry1['age'];
               $exp = explode(":" , $age); //explode marks data
-              $mark1 = $exp[0];  
+              $mark1 = $exp[0];
               ?>
                 <tr class="<?= $bg ?>">
-                    <td><?php echo $count ?></td>
-                    <td><?php echo $row_entry1['m_honorific'].' '.$row_entry1['first_name']." ".$row_entry1['last_name']; ?></td>
-                    <td><?php echo get_date_user($row_entry1['birth_date']); ?></td>
-                    <td><?php echo $mark1; ?></td>
-                    <td>
-                      <button class="btn btn-info btn-sm" title="ID Proof" id="id-proof-<?= $count ?>" onclick="display_group_id_proof('<?php echo $row_entry1['id_proof_url']; ?>',<?= $count ?>)"><i class="fa fa-id-card-o"></i></button>
-                    </td>
+                  <td><?php echo $count ?></td>
+                  <td><?php echo $row_entry1['m_honorific'].' '.$row_entry1['first_name']." ".$row_entry1['last_name']; ?></td>
+                  <td><?php echo get_date_user($row_entry1['birth_date']); ?></td>
+                  <td><?php echo $row_entry1['age']; ?></td>
+                  <td>
+                    <button class="btn btn-info btn-sm" title="ID Proof" id="gid-proof-<?= $count ?>" onclick="display_group_id_proof('<?php echo $row_entry1['id_proof_url']; ?>',<?= $count ?>)"><i class="fa fa-id-card-o"></i></button>
+                  </td>
                 </tr>
-                  <?php } ?>
+                  <?php 
+              } ?>
               </tbody>
             </table>
-
           </div> 
         </div>
         <div class="col-sm-3 no-pad">
@@ -150,14 +147,14 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
 <div id="id_proof"></div>
 
 <script type="text/javascript">
-  function display_group_id_proof(id_proof_url,count)
-  { 
-      $('id-proof'+count).button('loading');
-      $('id-proof'+count).button('disabled','true');
-      $.post('admin/id_proof/group_booking_id.php', { id_proof_url : id_proof_url }, function(data){
-        $('#id_proof').html(data);
-        $('id-proof'+count).button('reset');
-        $('id-proof'+count).button('disabled','false');
-      });
-  }
+function display_group_id_proof(id_proof_url,count)
+{
+  $('#gid-proof-'+count).button('loading');
+  $('#gid-proof-'+count).button('disabled','true');
+  $.post('admin/id_proof/group_booking_id.php', { id_proof_url : id_proof_url }, function(data){
+    $('#id_proof').html(data);
+    $('#gid-proof-'+count).button('reset');
+    $('#gid-proof-'+count).button('disabled','false');
+  });
+}
 </script>

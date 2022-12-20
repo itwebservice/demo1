@@ -8,10 +8,11 @@ public function refund_estimate_update(){
   $ticket_id = $_POST['ticket_id'];
   $cancel_amount = $_POST['cancel_amount'];
   $total_refund_amount = $_POST['total_refund_amount'];
+  $estimate_arr = json_encode($_POST['estimate_arr']);
 
   begin_t();
 
-  $sq_refund = mysqlQuery("update ticket_master set cancel_amount='$cancel_amount', total_refund_amount='$total_refund_amount',cancel_flag='1' where ticket_id='$ticket_id'");
+  $sq_refund = mysqlQuery("update ticket_master set cancel_amount='$cancel_amount', total_refund_amount='$total_refund_amount',cancel_flag='1',cancel_estimate='$estimate_arr' where ticket_id='$ticket_id'");
 
   if($sq_refund){
 
@@ -41,6 +42,19 @@ public function finance_save($ticket_id,$row_spec)
 	$ticket_id = $_POST['ticket_id'];
   $cancel_amount = $_POST['cancel_amount'];
   $total_refund_amount = $_POST['total_refund_amount'];
+  $estimate_arr = json_decode(json_encode($_POST['estimate_arr']));
+
+  $basic_cost = $estimate_arr[0]->basic_cost;
+  $yq_tax = $estimate_arr[0]->yq_tax;
+  $other_taxes = $estimate_arr[0]->other_taxes;
+  $discount = $estimate_arr[0]->discount;
+  $service_charge = $estimate_arr[0]->service_charge;
+  $service_tax_subtotal = $estimate_arr[0]->service_tax_subtotal;
+  $markup = $estimate_arr[0]->markup;
+  $service_tax_markup = $estimate_arr[0]->service_tax_markup;
+  $tds = $estimate_arr[0]->tds;
+  $roundoff = $estimate_arr[0]->roundoff;
+  $ticket_total_cost = $estimate_arr[0]->ticket_total_cost;
 
   $created_at = date("Y-m-d");
 	$year1 = explode("-", $created_at);
@@ -48,46 +62,72 @@ public function finance_save($ticket_id,$row_spec)
 
   $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
   $customer_id = $sq_ticket['customer_id'];
-  $taxation_type = $sq_ticket['taxation_type'];
-  $service_tax_subtotal = $sq_ticket['service_tax_subtotal'];
-  $service_tax_markup = $sq_ticket['service_tax_markup'];
   $reflections = json_decode($sq_ticket['reflections']);
-  $roundoff = $sq_ticket['roundoff'];
+	$year2 = explode("-", $sq_ticket['created_at']);
+	$yr2 = $year2[0];
   //Getting customer Ledger
   $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
   $cust_gl = $sq_cust['ledger_id'];
 
-  $total_sale = $sq_ticket['basic_cost'] + $sq_ticket['yq_tax'] + $sq_ticket['other_taxes'];
-  //Particular
+  $total_sale = floatval($basic_cost) + floatval($yq_tax) + floatval($other_taxes);
   $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
   $cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
   $pax = $sq_ticket['adults'] + $sq_ticket['childrens'];
   
-  $sq_trip1 = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id'");
-  $i=0;
-  $sector = '';
-  while($sq_trip = mysqli_fetch_assoc($sq_trip1)){
+  // Full/Sectorwise
+  if($sq_ticket['cancel_type'] == 1 || $sq_ticket['cancel_type'] == 3){
 
-		$dep = explode('(',$sq_trip['departure_city']);
-		$arr = explode('(',$sq_trip['arrival_city']);
-    if($i == 0)
-      $sector .= str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
-    else
-      $sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+    $i=0;
+    $sector = '';
+    $flight_no = '';
+    $airline_pnr = '';
+    $sq_trip1 = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id' and status='Cancel'");
+    while($sq_trip = mysqli_fetch_assoc($sq_trip1)){
+  
+      $dep = explode('(',$sq_trip['departure_city']);
+      $arr = explode('(',$sq_trip['arrival_city']);
+      if($i == 0){
+        $sector .= str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+        $airline_pnr .= $sq_trip['airlin_pnr'];
+        $flight_no .= $sq_trip['flight_no'];
+      }
+      else{
+        $sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+        $airline_pnr .= '/'.$sq_trip['airlin_pnr'];
+        $flight_no .= '/'.$sq_trip['flight_no'];
+      }
       $i++;
+    }
+    $particular = 'Sales against ('.$sq_ticket['tour_type'].' Air Ticket) pax: '.$cust_name.' * '.$pax.' sector(s) '.$sector.', flight no ('.$flight_no.') /GDS PNR ('.$airline_pnr.') [Invoice no '.get_ticket_booking_id($ticket_id,$yr2).' '.get_date_user($sq_ticket['created_at']).']';
   }
-  $sq_trip2 = mysqli_fetch_assoc(mysqlQuery("select airlin_pnr from ticket_trip_entries where ticket_id='$ticket_id'"));
-  $pnr = $sq_trip2['airlin_pnr'];
-  $sq_trip3 = mysqli_fetch_assoc(mysqlQuery("select ticket_no from ticket_master_entries where ticket_id='$ticket_id'"));
-  $ticket_no = $sq_trip3['ticket_no'];
+  else if($sq_ticket['cancel_type'] == 2){ // Passengerwise
 
-  $particular = 'Against Invoice no '.get_ticket_booking_id($ticket_id,$yr1).' for '.$cust_name.' * '.$pax.' travelling for '.$sector.' against ticket no '.$ticket_no.'/PNR No '.$pnr;
+    $i=0;
+    $pnr = '';
+    $ticket_no = '';
+    $pass = '';
+    $sq_pax1 = mysqlQuery("select * from ticket_master_entries where ticket_id='$ticket_id' and status='Cancel'");
+    while($sq_trip = mysqli_fetch_assoc($sq_pax1)){
+      
+      if($i == 0){
+        $pass .= $sq_trip['first_name']." ".$sq_trip['last_name'];
+        $pnr .= $sq_trip['gds_pnr'];
+        $ticket_no .= $sq_trip['ticket_no'];
+      }
+      else{
+        $pass = $pass.'/'.$sq_trip['first_name']." ".$sq_trip['last_name'];
+        $pnr .= '/'.$sq_trip['gds_pnr'];
+        $ticket_no .= '/'.$sq_trip['ticket_no'];
+      }
+      $i++;
+    }
+    $particular = 'Sales against ('.$sq_ticket['tour_type'].' Air Ticket) pax: '.$cust_name.' * '.$pax.' passenger(s) '.$pass.', ticket no ('.$ticket_no.') /Airline PNR ('.$pnr.') [Invoice no '.get_ticket_booking_id($ticket_id,$yr2).' '.get_date_user($sq_ticket['created_at']).']';
+  }
 
   global $transaction_master;
 	$sale_gl = ($sq_ticket['tour_type'] == 'Domestic') ? 51 : 175;
 
     //////////Sales/////////////
-
     $module_name = "Air Ticket Booking";
     $module_entry_id = $ticket_id;
     $transaction_id = "";
@@ -95,7 +135,7 @@ public function finance_save($ticket_id,$row_spec)
     $payment_date = $created_at;
     $payment_particular = $particular;
     $ledger_particular = '';
-    $gl_id = 51;
+    $gl_id = $sale_gl;
     $payment_side = "Debit";
     $clearance_status = "";
     $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,'',$ledger_particular,'REFUND');
@@ -104,7 +144,7 @@ public function finance_save($ticket_id,$row_spec)
     $module_name = "Air Ticket Booking";
     $module_entry_id = $ticket_id;
     $transaction_id = "";
-    $payment_amount = $sq_ticket['service_charge'];
+    $payment_amount = $service_charge;
     $payment_date = $created_at;
     $payment_particular = $particular;
     $ledger_particular = '';
@@ -114,12 +154,10 @@ public function finance_save($ticket_id,$row_spec)
     $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,'',$ledger_particular,'REFUND');
 
 	  /////////Service Charge Tax Amount////////
-    $service_tax_subtotal = explode(',',$service_tax_subtotal);
     $tax_ledgers = explode(',',$reflections[0]->flight_taxes);
-    for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+    $tax_amount = (sizeof($tax_ledgers) == 1) ? $service_tax_subtotal : floatval($service_tax_subtotal)/sizeof($tax_ledgers);
+    for($i=0;$i<sizeof($tax_ledgers);$i++){
 
-      $service_tax = explode(':',$service_tax_subtotal[$i]);
-      $tax_amount = $service_tax[2];
       $ledger = $tax_ledgers[$i];
 
       $module_name = "Air Ticket Booking";
@@ -139,7 +177,7 @@ public function finance_save($ticket_id,$row_spec)
     $module_name = "Air Ticket Booking";
     $module_entry_id = $ticket_id;
     $transaction_id = "";
-    $payment_amount = $sq_ticket['markup'];
+    $payment_amount = $markup;
     $payment_date = $created_at;
     $payment_particular = $particular;
     $ledger_particular = '';
@@ -150,14 +188,11 @@ public function finance_save($ticket_id,$row_spec)
 
     /////////Markup Tax Amount////////
     // Eg. CGST:(9%):24.77, SGST:(9%):24.77
-    $service_tax_markup = explode(',',$service_tax_markup);
     $tax_ledgers = explode(',',$reflections[0]->flight_markup_taxes);
-    for($i=0;$i<sizeof($service_tax_markup);$i++){
+    $tax_amount = (sizeof($tax_ledgers) == 1) ? $service_tax_markup : floatval($service_tax_markup)/2;
+    for($i=0;$i<sizeof($tax_ledgers);$i++){
 
-      $service_tax = explode(':',$service_tax_markup[$i]);
-      $tax_amount = $service_tax[2];
       $ledger = $tax_ledgers[$i];
-
       $module_name = "Air Ticket Booking";
       $module_entry_id = $ticket_id;
       $transaction_id = "";
@@ -175,7 +210,7 @@ public function finance_save($ticket_id,$row_spec)
     $module_name = "Air Ticket Booking";
     $module_entry_id = $ticket_id;
     $transaction_id = "";
-    $payment_amount = $sq_ticket['tds'];
+    $payment_amount = $tds;
     $payment_date = $created_at;
     $payment_particular = $particular;
     $ledger_particular = '';
@@ -188,7 +223,7 @@ public function finance_save($ticket_id,$row_spec)
     $module_name = "Air Ticket Booking";
     $module_entry_id = $ticket_id;
     $transaction_id = "";
-    $payment_amount = $sq_ticket['basic_cost_discount'];
+    $payment_amount = $discount;
     $payment_date = $created_at;
     $payment_particular = $particular;
     $ledger_particular = '';
@@ -214,7 +249,7 @@ public function finance_save($ticket_id,$row_spec)
     $module_name = "Air Ticket Booking";
     $module_entry_id = $ticket_id;
     $transaction_id = "";
-    $payment_amount = $sq_ticket['ticket_total_cost'];
+    $payment_amount = $ticket_total_cost;
     $payment_date = $created_at;
     $payment_particular = $particular;
     $ledger_particular = '';
@@ -251,11 +286,5 @@ public function finance_save($ticket_id,$row_spec)
 
 }
 
-
-
-
-
-
 }
-
 ?>

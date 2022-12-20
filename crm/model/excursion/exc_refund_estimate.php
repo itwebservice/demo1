@@ -153,11 +153,11 @@ public function finance_save($exc_id,$row_spec)
     $module_name = "Excursion Booking";
     $module_entry_id = $exc_id;
     $transaction_id = "";
-    $payment_amount = $sq_sq_exc_info['roundoff'];
+    $payment_amount = $roundoff;
     $payment_date = $created_at;
     $payment_particular = get_cancel_sales_particular(get_exc_booking_id($exc_id,$yr1), $customer_id);
     $ledger_particular = '';
-    $gl_id = $cust_gl;
+    $gl_id = 230;
     $payment_side = "Debit";
     $clearance_status = "";
     $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,'',$ledger_particular,'REFUND');    

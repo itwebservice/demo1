@@ -102,9 +102,9 @@
                        	<th>Visa_Type</th>
                        	<th>Passport_Id</th>
                        	<th>Issue_Date</th>
-                       	<th>Expire_Date</th>
+                       	<th>Expiry_Date</th>
                        	<th>Nationality</th>
-                       	<th>Documents</th>
+                       	<!-- <th>Documents</th> -->
 						<th>Appointment_Date</th>
                        </tr>
                        </thead>
@@ -141,9 +141,9 @@
 								    <td><?php echo get_date_user($row_entry['issue_date']); ?></td>
 								    <td><?php echo get_date_user($row_entry['expiry_date']); ?></td>
 								    <td><?php echo $row_entry['nationality']; ?></td>
-								    <td>
+								    <!-- <td>
 								    	<?php echo $row_entry['received_documents'];  ?>
-								    </td>
+								    </td> -->
 									<td><?php echo get_date_user($row_entry['appointment_date']); ?></td>
 								</tr>  
 								<script>

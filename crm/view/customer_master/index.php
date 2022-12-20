@@ -25,9 +25,11 @@ $branch_status = $sq['branch_status'];
     </div>
     <div class="col-sm-6 text-right text_left_sm_xs">
         <?php if($role == 'Admin' || $role == 'Branch Admin'){?>
-        <button class="btn btn-excel btn-sm mg_bt_20" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
+        <button class="btn btn-excel btn-sm " onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
         <?php } ?>
-        <button class="btn btn-info btn-sm ico_left mg_bt_20" onclick="customer_save_modal('master')"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;Customer</button>
+        <span style="display: inline-block;">
+            <button class="btn btn-info btn-sm ico_left " onclick="customer_save_modal('master')"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;Customer</button>
+        </span>
     </div>
 </div>
 

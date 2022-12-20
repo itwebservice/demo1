@@ -4,6 +4,13 @@ include "../../../../model.php";
 include "printFunction.php";
 global $app_quot_img,$currency;
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='hotel_quotation/index.php'"));
+$branch_status = $sq['branch_status'];
+
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $quotation_id = $_GET['quotation_id'];
 $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Hotel Quotation' and active_flag ='Active'"));
 
@@ -164,20 +171,56 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
             </ul>
             <ul class="main_block">
               <li class="col-md-6 mg_tp_10 mg_bt_10"><span>CWOB : </span><?= $enquiryDetails['children_without_bed'] ?></li>
-              <li class="col-md-6 mg_tp_10 mg_bt_10"><span>Infant(s) : </span><?= $enquiryDetails['total_infant'] ?></li>
+              <li class="col-md-6 mg_tp_10 mg_bt_10"><span>INFANT(s) : </span><?= $enquiryDetails['total_infant'] ?></li>
             </ul>
             <ul class="main_block">
-              <li class="col-md-6 mg_tp_10 mg_bt_10"><span>Total : </span><?= $enquiryDetails['total_members'] ?></li>
+              <li class="col-md-6 mg_tp_10 mg_bt_10"><span>TOTAL GUEST(s) : </span><?= $enquiryDetails['total_members'] ?></li>
             </ul>
           </div>
         </div>
+      </div>
+
+      <div class="row">
+  <!-- bank -->
+  <div class="col-md-12">
+          <div class="section_heding">
+            <h2>BANK DETAILS</h2>
+            <div class="section_heding_img">
+              <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
+            </div>
+          </div>
+          <div class="print_info_block">
+          <div class="row"> 
+              <div class="col-md-6">
+              <ul class="main_block">
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK NAME : </span><?= ($bank_name_setting != '') ? $bank_name_setting : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C TYPE : </span><?= ($acc_name != '') ? $acc_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BRANCH : </span><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? strtoupper($bank_ifsc_code) : 'NA' ?>)</li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NO : </span><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK ACCOUNT NAME : </span><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>SWIFT CODE : </span><?= ($bank_swift_code != '') ? strtoupper($bank_swift_code) : 'NA' ?></li>
+            </ul>
+              </div>
+              <?php 
+              if(check_qr()) { ?>
+              <div class="col-md-6 text-center" style="margin-top:20px;">
+                     <?= get_qr('Protrait Standard') ?>
+                        <br>
+                        <h4 class="no-marg">Scan & Pay </h4>
+         
+              </div>
+              <?php } ?>
+            </div>  
+          </div>
+        </div>
+  <!-- bank -->
       </div>
     </section>
 
     <!-- Costing -->
     <section class="print_sec main_block side_pad mg_tp_30">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <div class="section_heding">
             <h2>COSTING</h2>
             <div class="section_heding_img">
@@ -193,7 +236,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               $markupservice_tax_amount_show = explode(' ',$markupservice_tax_amount_show);
               $markupservice_tax_amount_show1 = str_replace(',','',$markupservice_tax_amount_show[1]);
               ?>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TOTAL FARE : </span><?= $total_fare ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TOTAL COST : </span><?= $total_fare ?></li>
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TAX : </span><?= str_replace(',','',$name).$service_tax_amount_show[0].' '.number_format($service_tax_amount_show1 + $markupservice_tax_amount_show1,2) ?></li>
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>QUOTATION COST : </span><?= $currency_amount1 ?></li>
             </ul>
@@ -201,24 +244,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
         </div>
     
     <!-- Bank Detail -->
-        <div class="col-md-6">
-          <div class="section_heding">
-            <h2>BANK DETAILS</h2>
-            <div class="section_heding_img">
-              <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
-            </div>
-          </div>
-          <div class="print_info_block">
-            <ul class="main_block">
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK NAME : </span><?= ($bank_name_setting != '') ? $bank_name_setting : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NAME : </span><?= ($acc_name != '') ? $acc_name : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BRANCH : </span><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NO : </span><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>IFSC : </span><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>SWIFT CODE : </span><?= ($bank_swift_code != '') ? strtoupper($bank_swift_code) : 'NA' ?></li>
-            </ul>
-          </div>
-        </div>
+      
       </div>
     </section>
 
@@ -288,7 +314,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
             </div>
           </div>
           <div class="print_text_bolck">
-           <?php echo $sq_terms_cond['terms_and_conditions']; ?>
+          <?php echo $sq_terms_cond['terms_and_conditions']; ?>
           </div>
         </div>
       </div>

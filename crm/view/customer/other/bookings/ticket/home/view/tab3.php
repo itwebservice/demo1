@@ -14,7 +14,7 @@ $paid_amount = ($paid_amount == '') ? '0':$paid_amount;
 $sale_total_amount = $sq_visa_info['ticket_total_cost']+$charge;
 if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
 
-if($pass_count == $cancel_count){
+if($sq_visa_info['cancel_type'] == '1'){
 	if($paid_amount > 0){
 		if($cancel_amount >0){
 			if($paid_amount > $cancel_amount){
@@ -29,6 +29,9 @@ if($pass_count == $cancel_count){
 	else{
 		$balance_amount = $cancel_amount;
 	}
+}else if($sq_visa_info['cancel_type'] == '2'||$sq_visa_info['cancel_type'] == '3'){
+	$cancel_estimate = json_decode($sq_visa_info['cancel_estimate']);
+	$balance_amount = (($sale_total_amount - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_amount) - $paid_amount;
 }
 else{
 	$balance_amount = $sale_total_amount - $paid_amount;
@@ -69,8 +72,7 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 				<tbody>
 
 					<?php
-					$query = "select * from ticket_payment_master where ticket_id='$ticket_id' and payment_amount!='0'";		
-
+					$query = "select * from ticket_payment_master where ticket_id='$ticket_id' and payment_amount!='0'";
 					$count = 0;
 					$sq_pending_amount=0;
 					$sq_cancel_amount=0;
@@ -80,7 +82,7 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 					while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 
 						$count++;
-						$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]'"));
+						$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]' and delete_status='0'"));
 						$bg='';
 						$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket_info[customer_id]'"));
 
@@ -91,8 +93,11 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 						else if($row_ticket_payment['clearance_status']=="Cancelled"){ 
 							$bg='danger';
 						}
+						else if($row_ticket_payment['clearance_status']=="Cleared"){ 
+							$bg='success';
+						}
 
-						else{ $bg='success'; }
+						else{ $bg=''; }
 						?>
 						<tr class="<?= $bg?>">
 							<td><?= $count ?></td>

@@ -90,15 +90,17 @@ while($row_sale = mysqli_fetch_assoc($row_sale1)){
 	$coupon_amount = $costing_data[0]->coupon_amount;
     
 	$tax = $tax_string;
+	$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2b_sale/index.php'"));
+	$branch_status = $sq['branch_status'];
 	// Invoice PDF
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2c_invoice.php?invoice_no=$booking_id&invoice_date=$booking_date&customer_id=$customer_id&service_name=$service_name&sac_code=$sac_code&tour_name=$tour_name&booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&total_cost=$total_cost&tax_amount=$tax_amount&grand_total=$grand_total&coupon_amount=$coupon_amount&net_total=$net_total&tax=$tax&paid_amount=$paid_amount&total_pax=$total_pax";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2c_invoice.php?invoice_no=$booking_id&invoice_date=$booking_date&customer_id=$customer_id&service_name=$service_name&sac_code=$sac_code&tour_name=$tour_name&booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&total_cost=$total_cost&tax_amount=$tax_amount&grand_total=$grand_total&coupon_amount=$coupon_amount&net_total=$net_total&tax=$tax&paid_amount=$paid_amount&total_pax=$total_pax&branch_status=$branch_status";
 	// Booking Form
 	if($row_sale['service'] == 'Holiday'||$row_sale['service'] == 'Group Tour'){
-		$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/b2c_package_tour.php?booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges";
+		$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/b2c_package_tour.php?booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&branch_status=$branch_status";
 	}
 	// Receipt
 	$receipt_type = "B2C Sale Receipt";
-	$url = BASE_URL."model/app_settings/print_html/receipt_html/b2c_receipt_html.php?booking_id=$row_sale[booking_id]&customer_id=$customer_id&confirm_by=$app_name&receipt_type=$receipt_type";
+	$url = BASE_URL."model/app_settings/print_html/receipt_html/b2c_receipt_html.php?booking_id=$row_sale[booking_id]&customer_id=$customer_id&confirm_by=$app_name&receipt_type=$receipt_type&branch_status=$branch_status";
 	// Voucher
 	if($row_sale['service'] == 'Holiday'){
 		$voucher_modal = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_modal('.$row_sale['booking_id'].')" ><i class="fa fa-print" data-toggle="tooltip"></i></button>';

@@ -37,9 +37,9 @@ include "../../../../model/app_settings/branchwise_filteration.php";
 			<th>Date</th>
 			<th class="text-right">Amount</th>
 			<th>Payment_mode</th>
-			<th>Evidence</th>
+			<th>Payment Evidence</th>
 			<th>Created_by</th>
-			<th class="text-center">Edit</th>
+			<th class="text-center">Actions</th>
 		</tr>	
 	</thead>
 	<tbody>
@@ -76,9 +76,10 @@ include "../../../../model/app_settings/branchwise_filteration.php";
 					}
 					?>
 				</td>
-				<td><?= ($sq_emp['first_name'] !='')?$sq_emp['first_name'].' '.$sq_emp['last_name']:'Admin' ?></td>
+				<td><?= ($sq_emp['first_name'] !='') ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin' ?></td>
 				<td class="text-center">
 					<button class="btn btn-info btn-sm form-control" onclick="update_modal(<?= $row_deposit['id'] ?>)" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
+					<button class="<?= $delete_flag ?> btn btn-danger btn-sm" onclick="rp_delete_entry(<?=$row_deposit['id'] ?>)" title="Delete Entry"><i class="fa fa-trash"></i></button>
 				</td>
 			</tr>
 			<?php

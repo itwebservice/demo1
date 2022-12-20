@@ -11,8 +11,8 @@ $branch_status = $_POST['branch_status'];
       <div class="col-sm-4 col-sm-offset-4">
           <select id="cmb_traveler_id" name="cmb_traveler_id" title="Passenger Name" style="width:100%;" onchange="traveler_id_proof_info_reflect()" class="form-control" title="Passenger">
               <option value="">Passenger Name</option>
-              <?php 
-                  $query = "select * from tourwise_traveler_details where 1 ";
+              <?php
+                  $query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 
                   include "../../../model/app_settings/branchwise_filteration.php";
 
@@ -34,7 +34,7 @@ $branch_status = $_POST['branch_status'];
                     }
                   ?>
                   <?php
-                }    
+                }
               ?>
           </select>
       </div>

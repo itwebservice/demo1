@@ -8,9 +8,9 @@ $query = "select * from hotel_booking_refund_master where 1 ";
 if ($booking_id != "") {
 	$query .= " and booking_id='$booking_id'";
 }
-$query .= " and booking_id in ( select booking_id from hotel_booking_master where customer_id='$customer_id' )";
+$query .= " and booking_id in ( select booking_id from hotel_booking_master where customer_id='$customer_id' and delete_status='0' )";
 
-$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 
 $sq_payment_total = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from hotel_booking_payment where booking_id='$booking_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -33,7 +33,7 @@ $bal_amount = $paid_amount - $sale_amount;
 	<div class="col-md-12">
 		<div class="table-responsive">
 
-			<table class="table table-bordered table-hover" id="tbl_refund" style="margin: 20px 0 !important">
+			<table class="table table-bordered bg_white table-hover" id="tbl_refund" style="margin: 20px 0 !important">
 				<thead>
 					<tr>
 						<th>S_No.</th>
@@ -43,7 +43,7 @@ $bal_amount = $paid_amount - $sale_amount;
 						<th>Mode</th>
 						<th>Bank Name</th>
 						<th>Cheque_No/ID</th>
-						<th class="text-right success">Amount</th>
+						<th class="success">Amount</th>
 					</tr>
 				</thead>
 				<tbody>

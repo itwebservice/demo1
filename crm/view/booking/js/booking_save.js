@@ -155,11 +155,11 @@ $('#frm_tab_3').validate({
 
 		if (payment_mode1 == "Credit Note" && credit_amount != '') {
 			if (parseFloat(total_payment) > parseFloat(credit_amount)) {
-				error_msg_alert('Low Credit note balance');
+				error_msg_alert('Credit Note Balance is not available');
 				return false;
 			}
 		} else if (payment_mode1 == "Credit Note" && credit_amount == '') {
-			error_msg_alert(`You don't have Credit Note Amount.`);
+			error_msg_alert(`Credit Note Balance is not available.`);
 			return false;
 		}
 		if (total_payment > parseFloat($('#txt_total_tour_fee').val())) {

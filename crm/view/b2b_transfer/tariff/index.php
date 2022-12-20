@@ -1,8 +1,8 @@
 <div class="row mg_bt_20">
 
-<div class="col-md-12 text-right">
-  <button class="btn btn-info btn-sm ico_left" id="new_tariff_btn" onclick="tariff_save_modal()" data-toggle="tooltip" title="Add new Tariff"><i class="fa fa-plus"></i>&nbsp;&nbsp;Tariff</button>
-</div>
+  <div class="col-md-12 text-right">
+    <button class="btn btn-info btn-sm ico_left" id="new_tariff_btn" onclick="tariff_save_modal()" data-toggle="tooltip" title="Add new Tariff"><i class="fa fa-plus"></i>&nbsp;&nbsp;Tariff</button>
+  </div>
 </div>
 <div class="app_panel_content Filter-panel">
   <div class="row">
@@ -20,9 +20,9 @@
 <div id="div_tariffsave_modal"></div>
 <div id="div_request_list" class="main_block loader_parent">
 <div class="row mg_tp_20"> <div class="table-responsive">
-        <table id="b2b_tarrif_tab" class="table table-hover" style="width:100%;margin: 20px 0 !important;">         
-        </table>
-    </div></div></div>
+    <table id="b2b_tarrif_tab" class="table table-hover" style="width:100%;margin: 20px 0 !important;">         
+    </table>
+  </div></div></div>
 </div>
 
 <script>

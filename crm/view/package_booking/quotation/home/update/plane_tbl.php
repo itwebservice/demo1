@@ -30,8 +30,8 @@
 			                    <option value="Business">Business</option>
 			                    <option value="First Class">First Class</option>
 				            </select></td>
-		            <td><input type="text" id="txt_dapart1" name="txt_dapart1"  class="app_datetimepicker" placeholder="Departure Date and time" onchange="get_to_datetime(this.id,'txt_arrval1')" title="Departure Date and time" style="width:130px" /></td>	           
-		            <td><input type="text" id="txt_arrval1" name="txt_arrval1" class="app_datetimepicker" placeholder="Arrival Date and time" title="Arrival Date and time" style="width:130px" onchange="validate_validDatetime('txt_dapart1',this.id)"/></td>
+		            <td><input type="text" id="txt_dapart1" name="txt_dapart1"  class="app_datetimepicker" placeholder="Departure Date and time" onchange="get_to_datetime(this.id,'txt_arrval1')" title="Departure Date and time" style="width:180px" /></td>	           
+		            <td><input type="text" id="txt_arrval1" name="txt_arrval1" class="app_datetimepicker" placeholder="Arrival Date and time" title="Arrival Date and time" style="width:180px" onchange="validate_validDatetime('txt_dapart1',this.id)"/></td>
 					<td><input type="hidden" id="from_city-1"></td>
 					<td><input type="hidden" id="to_city-1"></td>
 		            <td><input type="hidden" id="txt_count1" name="txt_count1" value=""></td></tr>
@@ -81,8 +81,8 @@
 			                    <option value="First Class">First Class</option>
 			                <?php } ?> 
 				            </select></td>
-			            <td><input type="text" id="txt_dapart<?= $count ?>_1" name="txt_dapart" class="app_datetimepicker" placeholder="Departure Date and time" title="Departure Date and time" onchange="get_to_datetime(this.id,'txt_arrval<?= $count ?>_1')" value="<?= date('d-m-Y H:i', strtotime($row_q_plane['dapart_time'])) ?>" style="width:130px" /></td>
-			            <td><input type="text" id="txt_arrval<?= $count ?>_1" name="txt_arrval" class="app_datetimepicker" placeholder="Arrival Date and time" title="Arrival Date and time" value="<?= date('d-m-Y H:i', strtotime($row_q_plane['arraval_time'])) ?>" style="width:130px" onchange="validate_validDatetime('txt_dapart<?= $count ?>_1',this.id)"/></td>
+			            <td><input type="text" id="txt_dapart<?= $count ?>_1" name="txt_dapart" class="app_datetimepicker" placeholder="Departure Date and time" title="Departure Date and time" onchange="get_to_datetime(this.id,'txt_arrval<?= $count ?>_1')" value="<?= date('d-m-Y H:i', strtotime($row_q_plane['dapart_time'])) ?>" style="width:180px" /></td>
+			            <td><input type="text" id="txt_arrval<?= $count ?>_1" name="txt_arrval" class="app_datetimepicker" placeholder="Arrival Date and time" title="Arrival Date and time" value="<?= date('d-m-Y H:i', strtotime($row_q_plane['arraval_time'])) ?>" style="width:180px" onchange="validate_validDatetime('txt_dapart<?= $count ?>_1',this.id)"/></td>
 						<td><input type="hidden" id="from_city-<?= $count ?>_1" value="<?= $row_q_plane['from_city'] ?>"></td>
 						<td><input type="hidden" id="to_city-<?= $count ?>_1" value="<?= $row_q_plane['to_city'] ?>"></td>
 			            <td><input type="hidden" value="<?= $row_q_plane['id'] ?>"></td></tr>

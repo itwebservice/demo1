@@ -8,7 +8,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
         $from_date_filter = $_POST['from_date'];
         $to_date_filter = $_POST['to_date'];
 
-        $query1 = "select * from tourwise_traveler_details where emp_id = '$emp_id' and financial_year_id='$financial_year_id'";
+        $query1 = "select * from tourwise_traveler_details where emp_id = '$emp_id' and financial_year_id='$financial_year_id' and delete_status='0'";
         if($from_date_filter!="" && $to_date_filter!=""){
           $from_date_filter = date('Y-m-d', strtotime($from_date_filter));
           $to_date_filter = date('Y-m-d', strtotime($to_date_filter));
@@ -76,7 +76,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
         $from_date_filter = $_POST['from_date'];
         $to_date_filter = $_POST['to_date'];
 
-        $query2 = "select * from package_tour_booking_master where emp_id ='$emp_id' and financial_year_id='$financial_year_id' ";
+        $query2 = "select * from package_tour_booking_master where emp_id ='$emp_id' and financial_year_id='$financial_year_id' and delete_status='0' ";
         if($from_date_filter!="" && $to_date_filter!=""){
           $from_date_filter = date('Y-m-d', strtotime($from_date_filter));
           $to_date_filter = date('Y-m-d', strtotime($to_date_filter));

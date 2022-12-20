@@ -105,7 +105,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);
 
 
-$query = "select * from other_expense_payment_master where 1 ";
+$query = "select * from other_expense_payment_master where 1 and delete_status='0' ";
 if($financial_year_id!=""){
     $query .= " and financial_year_id='$financial_year_id'";
 }

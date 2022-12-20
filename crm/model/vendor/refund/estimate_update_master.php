@@ -9,7 +9,7 @@ public function estimate_update()
     $total_refund_amount = $_POST['total_refund_amount'];
     $branch_admin_id = $_SESSION['branch_admin_id'];
 
-    $sq_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id'"));
+    $sq_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id' and delete_status='0'"));
 
     $vendor_type = $sq_estimate['vendor_type'];
     $vendor_type_id = $sq_estimate['vendor_type_id'];
@@ -62,7 +62,7 @@ public function finance_save($vendor_type,$vendor_type_id,$taxation_type,$servic
 
     global $transaction_master;
 
-    $sq_supplier = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id'"));
+    $sq_supplier = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id' and delete_status='0'"));
     $purchase_amount =  floatval($sq_supplier['basic_cost']) + floatval($sq_supplier['non_recoverable_taxes']) + floatval($sq_supplier['service_charge']) + floatval($sq_supplier['other_charges']);
     $reflections = json_decode($sq_supplier['reflections']);
     $service_tax_subtotal = $sq_supplier['service_tax_subtotal'];

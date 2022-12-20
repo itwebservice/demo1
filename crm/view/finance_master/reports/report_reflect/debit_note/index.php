@@ -35,7 +35,7 @@ $branch_status = $sq['branch_status'];
 $('#gl_id_filter').select2();
 $('#from_date_filter, #to_date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
 var column = [
-	{ title: "S_No." },
+	{ title: "Debit_Note_ID" },
 	{ title: "date" },
 	{ title: "supplier_name" },
 	{ title: "Supplier_type" },

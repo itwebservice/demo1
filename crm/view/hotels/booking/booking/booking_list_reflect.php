@@ -14,7 +14,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
-$query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' ";
+$query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";
 }
@@ -53,13 +53,17 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 	$pass_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]'"));
 	$cancel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]' and status='Cancel'"));
-	if($pass_count==$cancel_count){
+	if($pass_count == $cancel_count){
 		$bg="danger";
 		$update_btn = '';
+		$delete_btn = '';
+		$serv_voucher = '';
 	}
 	else {
-		$bg="#fff";
+		$bg="";
 		$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="booking_update_modal('.$row_booking['booking_id'] .')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['booking_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
+		$serv_voucher = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_display('.$row_booking['booking_id'] .')" title="Update Details"><i class="fa fa-print"></i></button>';
 	}
 	$date = $row_booking['created_at'];
 	$yr = explode("-", $date);
@@ -81,13 +85,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 	$sale_bal = $row_booking['total_fee'] - $row_booking['cancel_amount'];
 	$paid_amount = $sq_payment_total['sum'];
 	$total_bal = $sale_bal - $paid_amount;
-	if($total_bal>=0)
-	{
-		$available_bal = $available_bal + $total_bal;
-	}else
-	{
-		$pending_bal = $pending_bal + ($total_bal);
-	}
+	
 	if($paid_amount==""){ $paid_amount = 0; }
 	$tot_amt=$row_booking['total_fee']+ $credit_card_charges;
 	$sale_amount=$tot_amt-$row_booking['cancel_amount'];
@@ -110,18 +108,18 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 	$service_tax_per = $row_booking['service_tax'];			
 	$service_tax = $row_booking['service_tax_subtotal'];
 	//**Basic Cost
-	$basic_cost = $row_booking['sub_total'] + $row_booking['cancel_amount'];
+	$basic_cost = $row_booking['sub_total'];
 	$service_charge = $row_booking['service_charge'];
 	//**Net Amount
 	$hotel_total_cost=$row_booking['total_fee'] + $credit_card_charges;
-	$net_amount = $hotel_total_cost - $row_booking['cancel_amount'];;
+	$net_amount = $hotel_total_cost;
 	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='Hotel / Accommodation'"));   
 	$sac_code = $sq_sac['hsn_sac_code'];
 
 	if($app_invoice_format == 4)
 	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/tax_invoice_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$paid_amount&balance_amount=$total_bal&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&pass_count=$pass_count&credit_card_charges=$credit_card_charges";
 	else
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/hotel_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$paid_amount&balance_amount=$total_bal&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/hotel_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$paid_amount&balance_amount=$total_bal&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges&canc_amount=$canc_amount&bg=$bg";
 	$total_sale = $total_sale+$hotel_total_cost;
 
 	// Currency conversion
@@ -142,11 +140,11 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		$emp_name,
 		'<a onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></a>
 
-		<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_display('.$row_booking['booking_id'] .')" title="Update Details"><i class="fa fa-print"></i></button>
+		'.$serv_voucher.'
 
 		'.$update_btn.'
 
-		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="booking_display_modal('. $row_booking['booking_id'] .')" title="View Details"><i class="fa fa-eye"></i></button>'
+		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="booking_display_modal('. $row_booking['booking_id'] .')" title="View Details"><i class="fa fa-eye"></i></button>'.$delete_btn
 	), "bg" =>$bg);
 	array_push($array_s,$temp_arr); 
 }
@@ -154,7 +152,7 @@ $footer_data = array("footer_data" => array(
 	'total_footers' => 5,
 	'foot0' => "Total",
 	'col0' => 4,
-	'class0' => "",
+	'class0' => "text-right",
 	'foot1' => number_format($total_sale, 2),
 	'col1' => 0,
 	'class1' => "info",

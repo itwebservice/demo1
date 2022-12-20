@@ -35,7 +35,6 @@ function list_reflect(){
 
     var active_flag = $('#active_flag_filter').val();
 	$.post('credit_card_charges/list_reflect.php', {active_flag:active_flag}, function(data){
-        console.log(data);
         $('#div_list_cr').html(data);
     });
 }

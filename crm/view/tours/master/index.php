@@ -15,20 +15,27 @@ require_once('../../layouts/admin_header.php');
 </div> 
 <div class="app_panel_content Filter-panel">
       <div class="col-md-3 col-sm-6">
-        <select id="tour_type"  name="tour_type" title="Tour Type" class="form-control" onchange="list_reflect()"  style="width:100%"> 
+        <select id="tour_type1"  name="tour_type1" title="Tour Type" class="form-control" onchange="list_reflect()"  style="width:100%"> 
           <option value="">Tour Type</option>
           <option>Domestic</option>
           <option>International</option>
         </select>
       </div>
       <div class="col-md-3 col-sm-6">
-        <select id="tour_name"  name="tour_name" title="Tour Name" class="form-control" onchange="list_reflect()"  style="width:100%"> 
+        <select id="tour_name1"  name="tour_name1" title="Tour Name" class="form-control" onchange="list_reflect()"  style="width:100%"> 
           <option value="">Tour Name</option>
           <?php 
           $sq_query = mysqlQuery("SELECT `tour_name`,`tour_id` from `tour_master` where `active_flag` != 'Inactive'"); 
           while($row = mysqli_fetch_assoc($sq_query)){ ?>
               <option value="<?php echo $row['tour_id']; ?>"><?php echo $row['tour_name']; ?></option>
               <?php } ?>
+        </select>
+      </div>
+      <div class="text-left col-md-3 col-sm-6">
+        <select id="status1" name="status1" title="Select Status" class="form-control" onchange="list_reflect()" style="width:100%"> 
+          <option value="">Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
         </select>
       </div>
 </div>
@@ -43,13 +50,14 @@ require_once('../../layouts/admin_header.php');
 <?= end_panel() ?>
 
 <script>
-$('#tour_name').select2();
+$('#tour_name1').select2();
 function list_reflect()
 {
-  var tour_type = $('#tour_type').val();
-  var tour_id = $('#tour_name').val();
+  var tour_type = $('#tour_type1').val();
+  var tour_id = $('#tour_name1').val();
+  var status = $('#status1').val();
   $('#div_tours_list').append('<div class="loader"></div>');
-	$.get('list_reflect.php', {tour_type : tour_type, tour_id : tour_id}, function(data){
+	$.get('list_reflect.php', {tour_type : tour_type, tour_id : tour_id,status:status}, function(data){
 		$('#div_tours_list').html(data);
 	});
 }
@@ -61,11 +69,10 @@ function update_modal(tour_id)
 		$('#div_modal_content').html(data);
 	});
 }
+
 function tour_master_validate( tour_type, tour_name, tour_cost, service_tax, adult_cost , children_cost, infant_cost, adnary_upload_dir, from_date, to_date, capacity)
 {
-  
   var count = 0;
-
   var table = document.getElementById("tbl_dynamic_tour_group");
   var rowCount = table.rows.length;
   for(var i=0; i<rowCount; i++)
@@ -97,11 +104,10 @@ function tour_master_validate( tour_type, tour_name, tour_cost, service_tax, adu
 
   }
 
-  if(count==0)
-  {
+  if(count==0){
     error_msg_alert("Select at least one tour group.");
     return false;
-  }  
+  }
   return true;
 
 }

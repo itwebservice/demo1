@@ -17,7 +17,7 @@ $booking_id = $_POST['booking_id'];
 						<th>Mode</th>
 						<th>Bank_Name</th>
 						<th>Cheque_No/ID</th>
-						<th class="text-right success">Amount</th>
+						<th class="success">Amount</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -27,7 +27,7 @@ $booking_id = $_POST['booking_id'];
 					if ($booking_id != "") {
 						$query .= " and booking_id='$booking_id'";
 					}
-					$query .= " and booking_id in ( select booking_id from bus_booking_master where customer_id='$customer_id' )";
+					$query .= " and booking_id in ( select booking_id from bus_booking_master where customer_id='$customer_id' and delete_status='0' )";
 
 					$count = 0;
 
@@ -41,7 +41,7 @@ $booking_id = $_POST['booking_id'];
 
 						$total_refund = $total_refund + $row_refund['refund_amount'];
 
-						$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_refund[booking_id]'"));
+						$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_refund[booking_id]' and delete_status='0'"));
 						$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_car_rental_info[customer_id]'"));
 
 						if ($row_refund['clearance_status'] == "Pending") {

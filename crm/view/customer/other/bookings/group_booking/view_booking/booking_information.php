@@ -1,7 +1,7 @@
 <!--////////////***************************************Actual Form content start**********************************************/////////////////-->
 <?php
 $tourwise_id = $_POST['tourwise_id'];
-$sq_tourwise_det = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+$sq_tourwise_det = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
 
 $tour_id = $sq_tourwise_det['tour_id'];
 $tour_group_id = $sq_tourwise_det['tour_group_id'];

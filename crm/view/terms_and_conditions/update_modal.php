@@ -18,7 +18,7 @@ $sq_dest = mysqli_fetch_assoc(mysqlQuery("select dest_id,dest_name from destinat
 
         <div class="row mg_bt_20">
           <div class="col-md-6">
-            <select id="type2" name="type2" style="width: 100%;" title="Select Type">
+            <select id="type2" name="type2" style="width: 100%;" title="Select Type" disabled>
               <option value="<?= $sq_terms['type'] ?>"><?= $sq_terms['type'] ?></option>
               <option value="">*Select Type</option>
               <option value="Package Quotation">Package Quotation</option>

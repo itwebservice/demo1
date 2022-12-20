@@ -127,11 +127,11 @@ function calculate_total_payable(offset='')
   total_addition = round_off_value(total_addition);
   $('#gross_salary'+offset).val(total_addition);
 
-var total_deduction = parseFloat(employee_pf) + parseFloat(esic) + parseFloat(pt) + parseFloat(labour_all) + parseFloat(employer_pf) + parseFloat(tds);
+var total_deduction =  parseFloat(employee_pf) + parseFloat(esic) + parseFloat(pt) + parseFloat(labour_all)  + parseFloat(tds);
   total_deduction = round_off_value(total_deduction);
   $('#txt_deduction'+offset).val(total_deduction);
   
-  var total_add_value =  parseFloat(total_addition) - parseFloat(total_deduction) + parseFloat(employer_pf) + parseFloat(employer_pf);
+  var total_add_value =  parseFloat(total_addition) - parseFloat(total_deduction) ;
   total_add_value = round_off_value(total_add_value);
   $('#net_salary'+offset).val(total_add_value);
 

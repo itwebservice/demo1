@@ -44,7 +44,7 @@ if($emp_id != '' || $year != '' || $month !=''){
               $p_count,
               ($sq_sal['gross_salary']!="") ? $sq_sal['gross_salary'] : number_format(0,2),
               ($sq_sal['salary_advance']!="") ? $sq_sal['salary_advance'] : number_format(0,2),
-              ($sq_sal['incentive']!="") ? $sq_sal['incentive'] : number_format(0,2),
+              
               ($sq_sal['employer_pf']!="") ? $sq_sal['employer_pf'] : number_format(0,2),
               ($sq_sal['employee_pf']!="") ? $sq_sal['employee_pf'] : number_format(0,2),
               ($sq_sal['esic']!="") ? $sq_sal['esic'] : number_format(0,2),

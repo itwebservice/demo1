@@ -15,7 +15,7 @@ if($from_date!='' && $to_date!=''){
 	$to_date = get_date_db($to_date);
 	$query .=" and payment_date between '$from_date' and '$to_date'";
 }
-$query .= 'order by refund_id desc';
+// $query .= 'order by refund_id desc';
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
 
@@ -40,7 +40,7 @@ $query .= 'order by refund_id desc';
 		$total_amount=0;
 		$sq_estimate = mysqlQuery($query);
 		while($row_refund = mysqli_fetch_assoc($sq_estimate)){
-			$query = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$row_refund[estimate_id]'"));
+			$query = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$row_refund[estimate_id]' and delete_status='0'"));
 			$date = $query['purchase_date'];
 			$yr = explode("-", $date);
 			$year =$yr[0];
@@ -89,7 +89,8 @@ $query .= 'order by refund_id desc';
 
 <script>
 $('#tbl_list').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>
 <script src="<?= BASE_URL ?>js/app/footer_scripts.js"></script>

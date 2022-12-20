@@ -14,7 +14,7 @@ public function vendor_save()
 	$address = $_POST['address'];
 	$active_flag = $_POST['active_flag'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -43,7 +43,7 @@ public function vendor_save()
 	$address = mysqlREString($address);
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(vendor_id) as max from insuarance_vendor"));
 	$vendor_id = $sq_max['max'] + 1;
-	$sq_vendor = mysqlQuery("insert into insuarance_vendor (vendor_id, vendor_name, mobile_no, landline_no, email_id, concern_person_name, immergency_contact_no, opening_balance, address, country, website,  bank_name, account_name,account_no, branch, ifsc_code, active_flag, created_at, service_tax_no,state_id,side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$mobile_no', '$landline_no', '$email_id', '$concern_person_name', '$immergency_contact_no','$opening_balance', '$address', '$country','$website', '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$active_flag', '$created_at', '$service_tax_no','$state','$side','$supp_pan','$as_of_date')");
+	$sq_vendor = mysqlQuery("insert into insuarance_vendor (vendor_id, vendor_name, mobile_no, landline_no, email_id, concern_person_name, immergency_contact_no, opening_balance, address, website,  bank_name, account_name,account_no, branch, ifsc_code, active_flag, created_at, service_tax_no,state_id,side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$mobile_no', '$landline_no', '$email_id', '$concern_person_name', '$immergency_contact_no','$opening_balance', '$address','$website', '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$active_flag', '$created_at', '$service_tax_no','$state','$side','$supp_pan','$as_of_date')");
 	sundry_creditor_balance_update();
 
 	if($sq_vendor){
@@ -76,7 +76,7 @@ public function vendor_update()
 	$email_id = $_POST['email_id'];
 	$concern_person_name = $_POST['concern_person_name'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -107,7 +107,7 @@ public function vendor_update()
 	}
 
 	$address = mysqlREString($address);
-	$sq_vendor = mysqlQuery("update insuarance_vendor set vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', concern_person_name='$concern_person_name', immergency_contact_no='$immergency_contact_no', opening_balance='$opening_balance', country='$country', website='$website', address='$address', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', service_tax_no='$service_tax_no1', state_id='$state_id',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
+	$sq_vendor = mysqlQuery("update insuarance_vendor set vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', concern_person_name='$concern_person_name', immergency_contact_no='$immergency_contact_no', opening_balance='$opening_balance', website='$website', address='$address', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', service_tax_no='$service_tax_no1', state_id='$state_id',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
 	sundry_creditor_balance_update();
 	
 	if($sq_vendor){

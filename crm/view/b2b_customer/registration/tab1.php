@@ -92,18 +92,9 @@
             </div>
           </div>
           <div class="row mg_tp_10">
-              <div class="col-md-3 col-sm-6 mg_bt_10_xs">
-                <select class="form-control" id='country' title='Country' name='country' style='width:100%;'>
-                  <option value=''>Country</option>
-                  <?php
-                  $sq_country = mysqlQuery("select * from country_list_master where 1");
-                  while($row_country = mysqli_fetch_assoc($sq_country)){ ?>
-                    <option value="<?= $row_country['country_id'] ?>"><?= $row_country['country_name'].'('.$row_country['country_code'].')' ?></option>
-                  <?php } ?>
-                </select>
-              </div>
+            
               <div class="col-md-3 col-xs-12">
-                <select name="cust_state" id="cust_state" title="Select State" style="width : 100%" required>
+                <select name="cust_state" id="cust_state" title="State/Country Name" style="width : 100%" required>
                   <?php get_states_dropdown() ?>
                 </select>
               </div>
@@ -173,7 +164,7 @@
 
 <script>
 $('#currency').select2();
-$('#city,#country').select2({minimumInputLength:1});
+$('#city').select2({minimumInputLength:1});
 
 upload_logo_proof();
 function upload_logo_proof(){
@@ -299,7 +290,7 @@ $('#frm_tab1').validate({
   var address1 = $("#address1").val(); 
   var address2 = $("#address2").val(); 
   var pincode = $("#pincode").val();
-  var country = $('#country').val();
+  // var country = $('#country').val();
   var cust_state = $('#cust_state').val();
   var timezone = $('#timezone').val(); 
   var address_upload_url = $('#address_upload_url').val();
@@ -319,7 +310,7 @@ $('#frm_tab1').validate({
       type:'post',
       url: '../../../controller/b2b_customer/reg_customer_save.php',
       data:{ company_name : company_name, acc_name : acc_name, iata_status : iata_status, iata_reg : iata_reg, nature : nature, currency : currency, telephone : telephone, latitude : latitude, turnover_slab : turnover_slab, skype_id : skype_id, website : website, 
-      address1 : address1,address2 : address2, city : city , pincode : pincode , country : country,state:cust_state, timezone : timezone, address_upload_url : address_upload_url,
+      address1 : address1,address2 : address2, city : city , pincode : pincode , state:cust_state, timezone : timezone, address_upload_url : address_upload_url,
       contact_personf : contact_personf , contact_personl : contact_personl,email_id:email_id, mobile_no : mobile_no, whatsapp_no : whatsapp_no, designation : designation, pan_card : pan_card, photo_upload_url : photo_upload_url,company_logo:company_logo},
       success: function(message){
         var data = message.split('--');

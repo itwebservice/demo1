@@ -44,8 +44,8 @@
 													    <option value="SL">SL</option>
 													    <option value="2S">2S</option>
 										            </select></td>
-										            <td class="col-md-2"><input type="text" id="train_departure_date" name="train_departure_date" placeholder="Departure Date and time" title="Departure Date and time" class="app_datetimepicker" onchange="get_to_datetime(this.id,'train_arrival_date')" value="<?= date('d-m-Y H:i') ?>"></td>
-										            <td class="col-md-2"><input type="text" id="train_arrival_date" name="train_arrival_date" placeholder="Arrival Date and time" title="Arrival Date and time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>" onchange="validate_validDatetime('train_departure_date',this.id);"></td>
+										            <td class="col-md-2"><input type="text" id="train_departure_date" name="train_departure_date" placeholder="Departure Date and time" title="Departure Date and time" class="form-control app_datetimepicker" onchange="get_to_datetime(this.id,'train_arrival_date')" value="<?= date('d-m-Y H:i') ?>" style="width:150px;"></td>
+										            <td class="col-md-2"><input type="text" id="train_arrival_date" name="train_arrival_date" placeholder="Arrival Date and time" title="Arrival Date and time" class="form-control app_datetimepicker" value="<?= date('d-m-Y H:i') ?>" onchange="validate_validDatetime('train_departure_date',this.id);" style="width:150px;"></td>
 									            </tr>                   
 									        </table>
 										</div>

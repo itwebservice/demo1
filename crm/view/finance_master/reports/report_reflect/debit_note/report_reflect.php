@@ -22,8 +22,9 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 {
 	$supplier_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
 	$total_amount += $row_query['payment_amount'];
+	$debit_note_id = get_debit_note_id($row_query['id']);
 	$temp_arr = array( "data" => array(
-		(int)($count++),
+		$debit_note_id,
 		get_date_user($row_query['created_at']),
 		$supplier_name,
 		$row_query['vendor_type'],
@@ -35,9 +36,8 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 $footer_data = array("footer_data" => array(
 	'total_footers' => 1,
 	'foot0' => "Total : ".number_format($total_amount,2),
-	'col0' => 6,
-	'foot1' => "",
-	'col1' => 1,
+	'col0' => 7,
+	'class0' =>"success text-right",
 	)
 );
 array_push($array_s, $footer_data);

@@ -3,7 +3,7 @@ include "../../../../../model/model.php";
 
 $ticket_id = $_POST['ticket_id'];
 
-$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
 $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from ticket_payment_master where ticket_id='$sq_ticket_info[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 $sq_refund_amount = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount)as sum from ticket_refund_master where ticket_id='$sq_ticket_info[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -20,7 +20,7 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 <input type="hidden" id="refund_amount_tobe" name="refund_amount_tobe" value="<?php echo $refund_amount ?>">
 
 <div class="row mg_tp_20 mg_bt_10">
-	<div class="col-md-4 col-md-offset-4 col-sm-6 col-xs-12 mg_bt_10_xs">
+	<div class="col-md-6 col-sm-6 col-xs-12 mg_bt_10_xs">
 		<div class="widget_parent-bg-img bg-green">
 			<div class="widget_parent">
 				<div class="stat_content main_block">
@@ -35,7 +35,15 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 					<span class="main_block content_span" data-original-title="" title="">
 			            <span class="stat_content-tilte pull-left" data-original-title="" title="">Cancellation Amount</span>
 			            <span class="stat_content-amount pull-right" data-original-title="" title=""><?= number_format($cancel_amount, 2); ?></span>
-			        </span>	        
+			        </span>	
+			    </div>	 
+			</div>
+		</div>		
+	</div>        
+	<div class="col-md-6 col-sm-6 col-xs-12 mg_bt_10_xs">
+		<div class="widget_parent-bg-img bg-green">
+			<div class="widget_parent">
+				<div class="stat_content main_block">
 					<span class="main_block content_span" data-original-title="" title="">
 			            <span class="stat_content-tilte pull-left" data-original-title="" title="">Refund Amount</span>
 			            <span class="stat_content-amount pull-right" data-original-title="" title=""><?php echo number_format($refund_amount, 2); ?></span>
@@ -47,7 +55,7 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 			    </div>	 
 			</div>
 		</div>		
-	</div>
+	</div>        
 </div>
 
 <hr>
@@ -85,14 +93,15 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 			<div class="row mg_bt_10">
 				<div class="col-xs-12">
 				  	<select name="entry_id" id="entry_id" multiple>
-				  		<?php 
-				  		$sq_ticket_entries = mysqlQuery("select * from ticket_master_entries where ticket_id='$ticket_id' and status='Cancel'");
-				  		while($row_entry = mysqli_fetch_assoc($sq_ticket_entries)){
+				  		<?php
+							$sq_ticket_info1 = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket_info[customer_id]'"));
+							if($sq_ticket_info1['type']=='Corporate'||$sq_ticket_info1['type'] == 'B2B'){
+								$customer_name = $sq_ticket_info1['company_name'];
+							}else{
+								$customer_name = $sq_ticket_info1['first_name'].' '.$sq_ticket_info1['last_name'];
+							}
 				  			?>
-							<option value="<?= $row_entry['entry_id'] ?>"><?= $row_entry['first_name'].' '.$row_entry['last_name'] ?></option>
-				  			<?php
-				  		}
-				  		?>
+							<option value="<?= $sq_ticket_info['customer_id'] ?>"><?= $customer_name ?></option>
 				  	</select>
 				 </div>
 			</div>
@@ -139,7 +148,7 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 
 					$total_refund = $total_refund+$row_ticket_refund['refund_amount'];
 
-					$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_refund[ticket_id]'"));
+					$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_refund[ticket_id]' and delete_status='0'"));
 
 					$traveler_name = "";
 
@@ -152,6 +161,7 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 						$yr = explode("-", $date);
 						$year =$yr[0];
 					}
+					$ticket_id = get_ticket_booking_id($sq_ticket_info['ticket_id'],$year);
 					$traveler_name = trim($traveler_name, ", ");
 
 					if($row_ticket_refund['clearance_status']=='Pending'){ $bg = "warning"; }
@@ -161,6 +171,34 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 					$date = $row_ticket_refund['refund_date'];
 					$yr = explode("-", $date);
 					$year1 =$yr[0];
+					if($sq_ticket_info['cancel_type'] == 1){
+						
+						$sq_entry_info = mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket_refund[ticket_id]' and status='Cancel'");
+						$canc_pass = '';
+						while($row_pass = mysqli_fetch_assoc($sq_entry_info)){
+							$canc_pass .= $row_pass['first_name'].' '.$row_pass['last_name'].', ';
+						}
+						$canc_pass = trim($canc_pass, ", ");
+						$cancel_type = 'Full ('.$canc_pass.')';
+					}
+					else if($sq_ticket_info['cancel_type'] == 2){
+						$sq_entry_info = mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket_refund[ticket_id]' and status='Cancel'");
+						$canc_pass = '';
+						while($row_pass = mysqli_fetch_assoc($sq_entry_info)){
+							$canc_pass .= $row_pass['first_name'].' '.$row_pass['last_name'].', ';
+						}
+						$canc_pass = trim($canc_pass, ", ");
+						$cancel_type = 'Passenger wise ('.$canc_pass.')';
+					}
+					else if($sq_ticket_info['cancel_type'] == 3){
+						$sq_entry_info = mysqlQuery("select * from ticket_trip_entries where ticket_id='$row_ticket_refund[ticket_id]' and status='Cancel'");
+						$canc_pass = '';
+						while($row_pass = mysqli_fetch_assoc($sq_entry_info)){
+							$canc_pass .= $row_pass['departure_city'].' -- '.$row_pass['arrival_city'].', ';
+						}
+						$canc_pass = trim($canc_pass, ", ");
+						$cancel_type = 'Sector wise ('.$canc_pass.')';
+					}
 
 					$v_voucher_no = get_ticket_booking_refund_id($row_ticket_refund['refund_id'],$year1);
 					$v_refund_date = $row_ticket_refund['refund_date'];
@@ -170,11 +208,18 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 					$v_payment_mode = $row_ticket_refund['refund_mode'];
 					$customer_id = $sq_ticket_info['customer_id'];
 					$refund_id = $row_ticket_refund['refund_id'];
-					$url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id";
+					
+					$url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&cancel_type=$cancel_type&booking_id=$ticket_id";
+					$sq_ticket_info1 = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+					if($sq_ticket_info1['type']=='Corporate'||$sq_ticket_info1['type'] == 'B2B'){
+						$customer_name = $sq_ticket_info1['company_name'];
+					}else{
+						$customer_name = $sq_ticket_info1['first_name'].' '.$sq_ticket_info1['last_name'];
+					}
 					?>
 					<tr class="<?= $bg;?>">			
 						<td><?= $count ?></td>
-						<td><?= $traveler_name ?></td>
+						<td><?= $customer_name ?></td>
 						<td><?= date('d-m-Y', strtotime($row_ticket_refund['refund_date'])) ?></td>
 						<td class="text-right"><?= number_format($row_ticket_refund['refund_amount'],2) ?></td>
 						<td><?= $row_ticket_refund['refund_mode'] ?></td>

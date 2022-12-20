@@ -11,14 +11,22 @@ class state_master{
 		$state_name = $_POST['state_name'];
 		$active_flag_arr = $_POST['active_flag_arr'];
 		begin_t();
+		
 
 		for($i=0; $i<sizeof($state_name); $i++){
+			
+			if(empty($state_name[$i]) || ctype_space($state_name[$i]))
+			{
+			  rollback_t();
+			  echo "error--State/Country Cannot Be Null!";
+			  exit;
+			} 
 			$state_name_temp = addslashes($state_name[$i]);
 			$sq_count = mysqli_num_rows(mysqlQuery("select id from state_master where state_name='$state_name_temp'"));
 			if($sq_count>0){
 
 				$GLOBALS['flag'] = false;
-				echo "error--".$state_name_temp." State already exists!";
+				echo "error--".$state_name_temp." State/Country already exists!";
 				exit;
 			}
 
@@ -37,7 +45,7 @@ class state_master{
 
 			commit_t();
 
-			echo "State has been successfully saved.";
+			echo "State/Country has been successfully saved.";
 
 			exit;
 
@@ -65,7 +73,12 @@ class state_master{
 
 		$active_flag = $_POST['active_flag'];
 
-
+		if(empty($state_name) || ctype_space($state_name))
+		{
+		  rollback_t();
+		  echo "error--State/Country Cannot Be Null!";
+		  exit;
+		} 
 		$state_name_t = addslashes($state_name);
 		$sq_count = mysqli_num_rows(mysqlQuery("select id from state_master where state_name='$state_name_t' and id != '$state_id'"));
 
@@ -73,7 +86,7 @@ class state_master{
 
 			$GLOBALS['flag'] = false;
 
-			echo "error--".$state_name_t." State already exists!";
+			echo "error--".$state_name_t." State/Country already exists!";
 			exit;
 
 		}
@@ -85,7 +98,7 @@ class state_master{
 
 		if($sq_airline){
 
-			echo "State has been successfully updated.";
+			echo "State/Country has been successfully updated.";
 
 			exit;
 

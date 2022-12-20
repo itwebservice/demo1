@@ -10,9 +10,9 @@ public function pnr_check(){
 
 	for($i=0; $i<sizeof($airlin_pnr_arr); $i++){
 		if($type=='save'){
-			$sq_count = mysqli_num_rows(mysqlQuery("select * from ticket_trip_entries where airlin_pnr='$airlin_pnr_arr[$i]' and airlin_pnr!=''"));
+			$sq_count = mysqli_num_rows(mysqlQuery("select * from ticket_trip_entries where airlin_pnr='$airlin_pnr_arr[$i]' and airlin_pnr!='' and status!='Cancel'"));
 		}else{
-			$sq_count = mysqli_num_rows(mysqlQuery("select * from ticket_trip_entries where airlin_pnr='$airlin_pnr_arr[$i]' and airlin_pnr!=''  and entry_id!='$entry_id[$i]'"));
+			$sq_count = mysqli_num_rows(mysqlQuery("select * from ticket_trip_entries where airlin_pnr='$airlin_pnr_arr[$i]' and airlin_pnr!=''  and entry_id!='$entry_id[$i]' and status!='Cancel'"));
 		}
 	}
 }
@@ -22,8 +22,8 @@ public function ticket_master_save(){
 	$customer_id = $_POST['customer_id'];
 	$emp_id = $_POST['emp_id'];
 	$tour_type = $_POST['tour_type'];
-	$type_of_tour = $_POST['type_of_tour'];
-	$branch_admin_id = $_POST['branch_admin_id'];
+	$guest_name = $_POST['guest_name'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
 	$financial_year_id = $_POST['financial_year_id'];
 
 	$adults = $_POST['adults'];
@@ -44,7 +44,6 @@ public function ticket_master_save(){
 	$due_date = $_POST['due_date'];
 	$booking_date = $_POST['booking_date'];
 	$ticket_total_cost = $_POST['ticket_total_cost'];
-	$quotation_id = $_POST['quotation_id'];
 	$ticket_reissue = $_POST['ticket_reissue'];
 
 	$payment_date = $_POST['payment_date'];
@@ -62,38 +61,18 @@ public function ticket_master_save(){
 	$ticket_no_arr = $_POST['ticket_no_arr'];
 	$gds_pnr_arr = $_POST['gds_pnr_arr'];
 	$baggage_info_arr = $_POST['baggage_info_arr'];
-	$from_city_id_arr = $_POST['from_city_id_arr'];
 	$main_ticket_arr = $_POST['main_ticket_arr'];
-
-	$arrival_terminal_arr = $_POST['arrival_terminal_arr'];
-	$departure_terminal_arr = $_POST['departure_terminal_arr'];
+	$trip_details_arr1 = $_POST['trip_details_arr1'];
 	$canc_policy = mysqlREString($_POST['canc_policy']);
-	$departure_datetime_arr = $_POST['departure_datetime_arr'];
-	$to_city_id_arr = $_POST['to_city_id_arr'];
-	$arrival_datetime_arr = $_POST['arrival_datetime_arr'];
-	$airlines_name_arr = $_POST['airlines_name_arr'];
-	$class_arr = $_POST['class_arr'];
+	
 	$flightClass_arr = $_POST['flightClass_arr'];
-	$flight_no_arr = $_POST['flight_no_arr'];
-	$airlin_pnr_arr = $_POST['airlin_pnr_arr'];
-	$departure_city_arr = $_POST['departure_city_arr'];
-	$arrival_city_arr = $_POST['arrival_city_arr'];
 	$meal_plan_arr = $_POST['meal_plan_arr'];
-	$luggage_arr = $_POST['luggage_arr'];
-	$special_note_arr = $_POST['special_note_arr'];
 	$roundoff = $_POST['roundoff'];
 	$credit_charges = $_POST['credit_charges'];
 	$credit_card_details = $_POST['credit_card_details'];
 	$control = $_POST['control'];
 	$entryidArray = $_POST['entryidArray'];
-
-	$sub_category_arr = $_POST['sub_category_arr'];
-	$no_of_pieces_arr = $_POST['no_of_pieces_arr'];
-	$aircraft_type_arr = $_POST['aircraft_type_arr'];
-	$operating_carrier_arr = $_POST['operating_carrier_arr'];
-	$frequent_flyer_arr = $_POST['frequent_flyer_arr'];
-	$ticket_status_arr = $_POST['ticket_status_arr'];
-	$guest_name = $_POST['guest_name'];
+	
 	$bsmValues = json_decode(json_encode($_POST['bsmValues']));
 	
 	foreach($bsmValues[0] as $key => $value){
@@ -144,7 +123,7 @@ public function ticket_master_save(){
     }
 
 	$bsmValues = json_encode($bsmValues);
-	$sq_ticket = mysqlQuery("INSERT INTO ticket_master (ticket_id,quotation_id, ticket_reissue,customer_id, branch_admin_id,financial_year_id, tour_type, type_of_tour, adults, childrens, infant, adult_fair, children_fair, infant_fair, basic_cost, markup, basic_cost_discount, yq_tax, other_taxes, service_charge , service_tax_subtotal, service_tax_markup, tds, due_date, ticket_total_cost, created_at,emp_id, reflections,roundoff,bsm_values, canc_policy,guest_name,invoice_pr_id) VALUES ('$ticket_id','$quotation_id' ,'$ticket_reissue','$customer_id','$branch_admin_id','$financial_year_id', '$tour_type', '$type_of_tour', '$adults', '$childrens', '$infant', '$adult_fair', '$children_fair', '$infant_fair', '$basic_cost','$markup', '$discount', '$yq_tax', '$other_taxes', '$service_charge', '$service_tax_subtotal', '$service_tax_markup' , '$tds', '$due_date', '$ticket_total_cost', '$booking_date','$emp_id','$reflections','$roundoff','$bsmValues', '$canc_policy','$guest_name','$invoice_pr_id')");
+	$sq_ticket = mysqlQuery("INSERT INTO ticket_master (ticket_id, ticket_reissue,customer_id, branch_admin_id,financial_year_id, tour_type, adults, childrens, infant, adult_fair, children_fair, infant_fair, basic_cost, markup, basic_cost_discount, yq_tax, other_taxes, service_charge , service_tax_subtotal, service_tax_markup, tds, due_date, ticket_total_cost, created_at,emp_id, reflections,roundoff,bsm_values, canc_policy,guest_name,invoice_pr_id) VALUES ('$ticket_id','$ticket_reissue','$customer_id','$branch_admin_id','$financial_year_id', '$tour_type', '$adults', '$childrens', '$infant', '$adult_fair', '$children_fair', '$infant_fair', '$basic_cost','$markup', '$discount', '$yq_tax', '$other_taxes', '$service_charge', '$service_tax_subtotal', '$service_tax_markup' , '$tds', '$due_date', '$ticket_total_cost', '$booking_date','$emp_id','$reflections','$roundoff','$bsmValues', '$canc_policy','$guest_name','$invoice_pr_id')");
 
 	if(!$sq_ticket){
 		$GLOBALS['flag'] = false;
@@ -153,47 +132,82 @@ public function ticket_master_save(){
 
 	//***Member information
 	for($i=0; $i<sizeof($first_name_arr); $i++){
+		
+		$trip_details_arr2 = json_decode($trip_details_arr1[$i]);
+		$trip_details_arr3 = json_decode($trip_details_arr2);
+		$ttour_type = $trip_details_arr3[0]->type_of_tour;
+
 		$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from ticket_master_entries"));
-		$entry_id = $sq_max['max'] + 1;
+		$pass_id = $sq_max['max'] + 1;
 
 		$first_name_arr[$i]    =  mysqlREString($first_name_arr[$i]);
 		$middle_name_arr[$i]   =  mysqlREString($middle_name_arr[$i]);
 		$last_name_arr[$i]     =  mysqlREString($last_name_arr[$i]);
 		$baggage_info_arr[$i]  =  mysqlREString($baggage_info_arr[$i]);
 
-		$sq_entry = mysqlQuery("insert into ticket_master_entries(entry_id, ticket_id, first_name, middle_name, last_name, adolescence,ticket_no, gds_pnr,baggage_info,seat_no,main_ticket,meal_plan) values('$entry_id', '$ticket_id', '$first_name_arr[$i]','$middle_name_arr[$i]','$last_name_arr[$i]', '$adolescence_arr[$i]', '$ticket_no_arr[$i]', '$gds_pnr_arr[$i]','$baggage_info_arr[$i]','$seat_no_arr[$i]','$main_ticket_arr[$i]','$meal_plan_arr[$i]')");
+		$sq_entry = mysqlQuery("insert into ticket_master_entries(entry_id, ticket_id, first_name, middle_name, last_name, adolescence,ticket_no, gds_pnr,baggage_info,seat_no,main_ticket,meal_plan,type_of_tour) values('$pass_id', '$ticket_id', '$first_name_arr[$i]','$middle_name_arr[$i]','$last_name_arr[$i]', '$adolescence_arr[$i]', '$ticket_no_arr[$i]', '$gds_pnr_arr[$i]','$baggage_info_arr[$i]','$seat_no_arr[$i]','$main_ticket_arr[$i]','$meal_plan_arr[$i]','$ttour_type')");
 
 		if(!$sq_entry){
 			$GLOBALS['flag'] = false;
-			echo "error--Error in member information!";
+			echo "error--Error in passenger information!";
+		}
+		$departure_datetime_arr = $trip_details_arr3[0]->departure_datetime_arr;
+		$arrival_datetime_arr = $trip_details_arr3[0]->arrival_datetime_arr;
+		$from_city_id_arr = $trip_details_arr3[0]->from_city_id_arr;
+		$to_city_id_arr = $trip_details_arr3[0]->to_city_id_arr;
+		$arrival_terminal_arr = $trip_details_arr3[0]->arrival_terminal_arr;
+		$departure_terminal_arr = $trip_details_arr3[0]->departure_terminal_arr;
+		$airlines_name_arr = $trip_details_arr3[0]->airlines_name_arr;
+		$class_arr = $trip_details_arr3[0]->class_arr;
+		$flight_no_arr = $trip_details_arr3[0]->flight_no_arr;
+		$airlin_pnr_arr = $trip_details_arr3[0]->airlin_pnr_arr;
+		$departure_city_arr = $trip_details_arr3[0]->departure_city_arr;
+		$arrival_city_arr = $trip_details_arr3[0]->arrival_city_arr;
+		$luggage_arr = $trip_details_arr3[0]->luggage_arr;
+		$special_note_arr = $trip_details_arr3[0]->special_note_arr;
+		$sub_category_arr = $trip_details_arr3[0]->sub_category_arr;
+		$no_of_pieces_arr = $trip_details_arr3[0]->no_of_pieces_arr;
+		$aircraft_type_arr = $trip_details_arr3[0]->aircraft_type_arr;
+		$operating_carrier_arr = $trip_details_arr3[0]->operating_carrier_arr;
+		$frequent_flyer_arr = $trip_details_arr3[0]->frequent_flyer_arr;
+		$ticket_status_arr = $trip_details_arr3[0]->ticket_status_arr;
+		$basic_fare_arr = $trip_details_arr3[0]->basic_fare_arr;
+		$flight_duration_arr = $trip_details_arr3[0]->flight_duration_arr;
+		$layover_time_arr = $trip_details_arr3[0]->layover_time_arr;
+		$refund_type_arr = $trip_details_arr3[0]->refund_type_arr;
+		$trip_data_check_arr = $trip_details_arr3[0]->trip_data_check_arr;
+		
+		for($j=0; $j<sizeof($departure_datetime_arr); $j++){
+			
+			if($trip_data_check_arr[$j]){
+				$filterAirline = explode('(',$airlines_name_arr[$j]);
+				$tempAirlineCode = substr($filterAirline[1],0,strlen($filterAirline[1])-1);
+				$airlineIdMain = mysqli_fetch_assoc(mysqlQuery('select * from airline_master where airline_code="'.$tempAirlineCode.'"'))['airline_id'];
+				$airline_id = $airlineIdMain;
+
+				$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from ticket_trip_entries"));
+				$entry_id = $sq_max['max'] + 1;
+				$sq_count = mysqli_num_rows(mysqlQuery("select * from ticket_trip_entries where airlin_pnr='$airlin_pnr_arr[$j]' and airlin_pnr!='' and status!='Cancel'"));
+
+				$departure_datetime_arr[$j] = get_datetime_db($departure_datetime_arr[$j]);
+				$arrival_datetime_arr[$j] = get_datetime_db($arrival_datetime_arr[$j]);
+
+				$special_note1 = addslashes($special_note_arr[$j]);
+				$sq_entry = mysqlQuery("insert into ticket_trip_entries(entry_id,passenger_id, ticket_id,airline_id, departure_datetime, arrival_datetime, airlines_name, class, flight_class,flight_no, airlin_pnr, from_city, to_city, departure_city, arrival_city,meal_plan,luggage, special_note, arrival_terminal, departure_terminal,sub_category,no_of_pieces,aircraft_type,operating_carrier,frequent_flyer,ticket_status,basic_fare,flight_duration,layover_time,refund_type) values ('$entry_id','$pass_id','$ticket_id','$airline_id','$departure_datetime_arr[$j]', '$arrival_datetime_arr[$j]','$airlines_name_arr[$j]', '$class_arr[$j]','$flightClass_arr[$j]','$flight_no_arr[$j]', '$airlin_pnr_arr[$j]','$from_city_id_arr[$j]','$to_city_id_arr[$j]','$departure_city_arr[$j]','$arrival_city_arr[$j]', '','$luggage_arr[$j]','$special_note1','$arrival_terminal_arr[$j]','$departure_terminal_arr[$j]','$sub_category_arr[$j]','$no_of_pieces_arr[$j]','$aircraft_type_arr[$j]','$operating_carrier_arr[$j]','$frequent_flyer_arr[$j]','$ticket_status_arr[$j]','$basic_fare_arr[$j]','$flight_duration_arr[$j]','$layover_time_arr[$j]','$refund_type_arr[$j]')");
+
+				$dep = explode('(',$departure_city_arr[$j]);
+				$arr = explode('(',$arrival_city_arr[$j]);
+				if($j == 0)
+					$sector = str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+				if($j>0)
+					$sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+				if(!$sq_entry){
+					$GLOBALS['flag'] = false;
+					echo "error--Error in ticket information!";
+				}
+			}
 		}
 	}
-	//***Trip information***
-	for($i=0; $i<sizeof($departure_datetime_arr); $i++){
-
-		$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from ticket_trip_entries"));
-		$entry_id = $sq_max['max'] + 1;
-
-		$sq_count = mysqli_num_rows(mysqlQuery("select * from ticket_trip_entries where airlin_pnr='$airlin_pnr_arr[$i]' and airlin_pnr!=''"));
-
-		$departure_datetime_arr[$i] = get_datetime_db($departure_datetime_arr[$i]);
-		$arrival_datetime_arr[$i] = get_datetime_db($arrival_datetime_arr[$i]);
-
-		$special_note1 = addslashes($special_note_arr[$i]);
-		$sq_entry = mysqlQuery("insert into ticket_trip_entries(entry_id, ticket_id, departure_datetime, arrival_datetime, airlines_name, class, flight_class,flight_no, airlin_pnr, from_city, to_city, departure_city, arrival_city,meal_plan,luggage, special_note, arrival_terminal, departure_terminal,sub_category,no_of_pieces,aircraft_type,operating_carrier,frequent_flyer,ticket_status) values('$entry_id', '$ticket_id', '$departure_datetime_arr[$i]', '$arrival_datetime_arr[$i]', '$airlines_name_arr[$i]', '$class_arr[$i]', '$flightClass_arr[$i]','$flight_no_arr[$i]', '$airlin_pnr_arr[$i]', '$from_city_id_arr[$i]', '$to_city_id_arr[$i]', '$departure_city_arr[$i]', '$arrival_city_arr[$i]', '', '$luggage_arr[$i]', '$special_note1', '$arrival_terminal_arr[$i]','$departure_terminal_arr[$i]','$sub_category_arr[$i]','$no_of_pieces_arr[$i]','$aircraft_type_arr[$i]','$operating_carrier_arr[$i]','$frequent_flyer_arr[$i]','$ticket_status_arr[$i]' )");
-
-		$dep = explode('(',$departure_city_arr[$i]);
-		$arr = explode('(',$arrival_city_arr[$i]);
-		if($i == 0)
-			$sector = str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
-		if($i>0)
-			$sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
-		if(!$sq_entry){
-			$GLOBALS['flag'] = false;
-			echo "error--Error in ticket information!";
-		}
-	}
-
 	//***Payment Information
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(payment_id) as max from ticket_payment_master"));
 	$payment_id = $sq_max['max'] + 1;
@@ -257,6 +271,199 @@ public function ticket_master_save(){
 	}
 	else{
 		rollback_t();
+		exit;
+	}
+}
+
+public function ticket_master_delete(){
+
+	global $delete_master,$transaction_master;
+	$ticket_id = $_POST['booking_id'];
+
+	$deleted_date = date('Y-m-d');
+	$row_spec = "sales";
+
+	$row_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+
+	$reflections = json_decode($row_ticket['reflections']);
+	$service_tax_markup = $row_ticket['service_tax_markup'];
+	$service_tax_subtotal = $row_ticket['service_tax_subtotal'];
+	$customer_id = $row_ticket['customer_id'];
+	$booking_date = $row_ticket['created_at'];
+	$yr = explode("-", $booking_date);
+	$year = $yr[0];
+	$sale_gl = ($row_ticket['tour_type'] == 'Domestic') ? 50 : 174;
+	
+	$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+	if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+		$cust_name = $sq_ct['company_name'];
+	}else{
+		$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+	}
+	$pax = $row_ticket['adults'] + $row_ticket['childrens'];
+
+	$i = 0;
+	$sq_master = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where ticket_id='$ticket_id'"));
+	$sq_trip = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'");
+	while($row_trip = mysqli_fetch_assoc($sq_trip)){
+		
+		$dep = explode('(',$row_trip['departure_city']);
+		$arr = explode('(',$row_trip['arrival_city']);
+		if($i == 0)
+			$sector = str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+		if($i>0)
+			$sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
+		$i++;
+	}
+	$sq_trip1 = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'"));
+
+	$particular = $this->get_particular($customer_id,$pax,$sector,$sq_master['ticket_no'],$sq_trip1['airlin_pnr']);
+	$delete_master->delete_master_entries('Invoice','Flight Ticket',$ticket_id,get_ticket_booking_id($ticket_id,$year),$cust_name,$row_ticket['ticket_total_cost']);
+
+	//Getting customer Ledger
+	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+	$cust_gl = $sq_cust['ledger_id'];
+
+    ////////////Sales/////////////
+    $module_name = "Air Ticket Booking";
+    $module_entry_id = $ticket_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+    $old_gl_id = $gl_id = $sale_gl;
+    $payment_side = "Credit";
+    $clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+	
+	////////////Service Charge/////////////
+	$module_name = "Air Ticket Booking";
+	$module_entry_id = $ticket_id;
+	$transaction_id = "";
+	$payment_amount = 0;
+	$payment_date = $deleted_date;
+	$payment_particular = $particular;
+	$ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+	$old_gl_id = $gl_id = ($reflections[0]->flight_sc != '') ? $reflections[0]->flight_sc : 187;
+	$payment_side = "Credit";
+	$clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+	  /////////Service Charge Tax Amount////////
+	// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+	$service_tax_subtotal = explode(',',$service_tax_subtotal);
+	$tax_ledgers = explode(',',$reflections[0]->flight_taxes);
+	for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+
+		$service_tax = explode(':',$service_tax_subtotal[$i]);
+		$tax_amount = $service_tax[2];
+		$ledger = $tax_ledgers[$i];
+
+		$module_name = "Air Ticket Booking";
+		$module_entry_id = $ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+		$old_gl_id = $gl_id = $ledger;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+	}
+
+    ////////////Markup/////////////
+	$module_name = "Air Ticket Booking";
+	$module_entry_id = $ticket_id;
+	$transaction_id = "";
+	$payment_amount = 0;
+	$payment_date = $deleted_date;
+	$payment_particular = $particular;
+	$ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+	$old_gl_id = $gl_id = ($reflections[0]->flight_markup != '') ? $reflections[0]->flight_markup : 199;
+	$payment_side = "Credit";
+	$clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+	
+	/////////Markup Tax Amount////////
+	// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+	$service_tax_markup = explode(',',$service_tax_markup);
+	$tax_ledgers = explode(',',$reflections[0]->flight_markup_taxes);
+	for($i=0;$i<sizeof($service_tax_markup);$i++){
+
+		$service_tax = explode(':',$service_tax_markup[$i]);
+		$tax_amount = $service_tax[2];
+		$ledger = $tax_ledgers[$i];
+	
+		$module_name = "Air Ticket Booking";
+		$module_entry_id = $ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+		$old_gl_id = $gl_id = $ledger;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '1',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+	}
+
+	/////////Roundoff/////////
+	$module_name = "Air Ticket Booking";
+	$module_entry_id = $ticket_id;
+	$transaction_id = "";
+	$payment_amount = 0;
+	$payment_date = $deleted_date;
+	$payment_particular = $particular;
+	$ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+	$old_gl_id = $gl_id = 230;	
+	$payment_side = "Credit";
+	$clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+    /////////TDS////////
+    $module_name = "Air Ticket Booking";
+    $module_entry_id = $ticket_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $booking_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+    $old_gl_id = $gl_id = ($reflections[0]->flight_tds != '') ? $reflections[0]->flight_tds : 127;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+	/////////Discount////////
+    $module_name = "Air Ticket Booking";
+    $module_entry_id = $ticket_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+    $old_gl_id = $gl_id = 36;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+	////////Customer Amount//////
+	$module_name = "Air Ticket Booking";
+	$module_entry_id = $ticket_id;
+	$transaction_id = "";
+	$payment_amount = 0;
+	$payment_date = $deleted_date;
+	$payment_particular = $particular;
+	$ledger_particular = get_ledger_particular('To','Flight Ticket Sales');
+	$old_gl_id = $gl_id = $cust_gl;
+	$payment_side = "Debit";
+	$clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+	$sq_delete = mysqlQuery("update ticket_master set adult_fair='0',children_fair='0',infant_fair='0', basic_cost = '0', service_charge='0', markup='0', service_tax_markup='', service_tax_subtotal='', tds='0', basic_cost_discount='0', yq_tax='0', other_taxes='0', ticket_total_cost='0', roundoff='0', delete_status='1' where ticket_id='$ticket_id'");
+	if($sq_delete){
+		echo 'Entry deleted successfully!';
 		exit;
 	}
 }
@@ -474,8 +681,8 @@ public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_i
 		if($payment_mode == 'Credit Card'){
 
 			//////Customer Credit charges///////
-			$module_name = "Air Ticket Booking";
-			$module_entry_id = $ticket_id;
+			$module_name = "Air Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -487,8 +694,8 @@ public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_i
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
 			//////Credit charges ledger///////
-			$module_name = "Air Ticket Booking";
-			$module_entry_id = $ticket_id;
+			$module_name = "Air Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -515,8 +722,8 @@ public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_i
 			$credit_company_amount = $payment_amount1 - $finance_charges;
 
 			//////Finance charges ledger///////
-			$module_name = "Air Ticket Booking";
-			$module_entry_id = $ticket_id;
+			$module_name = "Air Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $finance_charges;
 			$payment_date = $payment_date1;
@@ -528,8 +735,8 @@ public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_i
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
 			//////Credit company amount///////
-			$module_name = "Air Ticket Booking";
-			$module_entry_id = $ticket_id;
+			$module_name = "Air Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_company_amount;
 			$payment_date = $payment_date1;
@@ -542,8 +749,8 @@ public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_i
 		}
 		else{
 
-			$module_name = "Air Ticket Booking";
-			$module_entry_id = $ticket_id;
+			$module_name = "Air Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -556,8 +763,8 @@ public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_i
 		}
 
 		//////Customer Payment Amount///////
-		$module_name = "Air Ticket Booking";
-		$module_entry_id = $ticket_id;
+		$module_name = "Air Ticket Booking Payment";
+		$module_entry_id = $payment_id;
 		$transaction_id = $transaction_id1;
 		$payment_amount = $payment_amount1;
 		$payment_date = $payment_date1;
@@ -603,7 +810,7 @@ public function bank_cash_book_save($ticket_id, $payment_id, $branch_admin_id){
 		$customer_id = $sq_max['max'];
     }
 
-	$module_name = "Air Ticket Booking";
+	$module_name = "Air Ticket Booking Payment";
 	$module_entry_id = $payment_id;
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount;
@@ -618,10 +825,6 @@ public function bank_cash_book_save($ticket_id, $payment_id, $branch_admin_id){
 	$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
 }
 
-
-
-
-
 public function ticket_booking_email_send($ticket_id,$payment_amount)
 {
 	global $currency_logo,$encrypt_decrypt,$secret_key;
@@ -632,7 +835,7 @@ public function ticket_booking_email_send($ticket_id,$payment_amount)
 
 	$date = $sq_ticket['created_at'];
 	$yr = explode("-", $date);
-	$year =$yr[0];
+	$year = $yr[0];
 
 	$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket[customer_id]'"));
 	$customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
@@ -712,6 +915,7 @@ public function whatsapp_send(){
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 	}
 	$mobile_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
+	$customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 
 	$sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
 	if($emp_id == 0){
@@ -721,7 +925,7 @@ public function whatsapp_send(){
 		$contact = $sq_emp_info['mobile_no'];
 	}
 
-	$whatsapp_msg = rawurlencode('Hello Dear '.$sq_customer['first_name'].',
+	$whatsapp_msg = rawurlencode('Dear '.$customer_name.',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : '.get_date_user($booking_date).'
 

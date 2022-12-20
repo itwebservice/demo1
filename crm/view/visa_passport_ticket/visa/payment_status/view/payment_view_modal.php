@@ -30,8 +30,15 @@ $visa_id = $_POST['visa_id'];
                       while($row_entry = mysqli_fetch_assoc($sq_query)){
 
                           $count++;
+                          $bg = '';
+                          if($row_entry['clearance_status']=="Pending")
+                            $bg='warning';
+                          else if($row_entry['clearance_status']=="Cancelled")
+                            $bg='danger';		
+                          else if($row_entry['clearance_status']=="Cleared")
+                            $bg='success';
                       ?>
-                          <tr>
+                          <tr class="<?=$bg?>">
                             <td><?php echo $count; ?></td>
                             <td><?php echo get_date_user($row_entry['payment_date']); ?></td>
                             <td><?php echo $row_entry['payment_mode']; ?></td>

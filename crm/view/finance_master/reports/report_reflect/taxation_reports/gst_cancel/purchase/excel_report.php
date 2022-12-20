@@ -110,7 +110,7 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('C'.$row_count, "Service Name")
         ->setCellValue('D'.$row_count, "SAC/HSN Code")
         ->setCellValue('E'.$row_count, "Supplier Name")
-        ->setCellValue('F'.$row_count, "GSTIN/UIN")
+        ->setCellValue('F'.$row_count, "Tax_No")
         ->setCellValue('G'.$row_count, "Account State")
         ->setCellValue('H'.$row_count, "Purchase ID")
         ->setCellValue('I'.$row_count, "Purchase Date")
@@ -132,7 +132,7 @@ $row_count++;
 
 $count = 1;
 $tax_total = 0;
-$query = "select * from vendor_estimate where status='Cancel' ";
+$query = "select * from vendor_estimate where status='Cancel' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
     $from_date = get_date_db($from_date);
     $to_date = get_date_db($to_date);
@@ -150,6 +150,7 @@ $sq_setting = mysqli_fetch_assoc(mysqlQuery("select * from app_settings where se
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
+	$estimate_type_val = get_estimate_type_name($row_query['estimate_type'], $row_query['estimate_type_id']);
     $vendor_name = get_vendor_name($row_query['vendor_type'],$row_query['vendor_type_id']);
     $vendor_info = get_vendor_info($row_query['vendor_type'], $row_query['vendor_type_id']);
     $hsn_code = get_service_info($row_query['estimate_type']);
@@ -182,7 +183,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
         ->setCellValue('E'.$row_count, $vendor_name)
         ->setCellValue('F'.$row_count, ($vendor_info['service_tax'] == '') ? 'NA' : $vendor_info['service_tax'])
         ->setCellValue('G'.$row_count, ($sq_state['state_name'] == '') ? 'NA' : $sq_state['state_name'])
-        ->setCellValue('H'.$row_count, $row_query['estimate_id'])
+        ->setCellValue('H'.$row_count, $row_query['estimate_id'].' ('.$estimate_type_val.')')
         ->setCellValue('I'.$row_count, get_date_user($row_query['purchase_date']))
         ->setCellValue('J'.$row_count, ($vendor_info['service_tax'] == '') ? 'Unregistered' : 'Registered')
         ->setCellValue('K'.$row_count, ($sq_supply['state_name'] == '') ? 'NA' : $sq_supply['state_name'])

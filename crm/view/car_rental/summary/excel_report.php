@@ -100,7 +100,7 @@ else{
 
 if($booking_id!=""){
     
-    $row_car = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+    $row_car = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
     $date = $row_car['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];
@@ -171,7 +171,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
-$query = "select * from car_rental_booking where 1 ";
+$query = "select * from car_rental_booking where 1 and delete_status='0' ";
 if($customer_id!=""){
     $query .= " and customer_id='$customer_id'";
 }
@@ -340,14 +340,14 @@ $row_count =11;
         $purchase_amt = 0;
         $i=0;
         $p_due_date = '';
-        $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]'"));
+        $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]' and delete_status='0'"));
         if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-        $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]'");
+        $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]' and delete_status='0'");
         while($row_purchase = mysqli_fetch_assoc($sq_purchase)){     
             $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
             $total_purchase = $total_purchase + $purchase_amt;
         }
-        $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]'"));       
+        $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]' and delete_status='0'"));       
         $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
         if($vendor_name == ''){ $vendor_name1 = 'NA';  }
         else{ $vendor_name1 = $vendor_name; }   

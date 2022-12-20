@@ -78,23 +78,20 @@ public function finance_update($booking_id, $row_spec,$particular)
          }
        }
    
-   $total_sale_amount = $basic_amount;
-  // $total_sale_amount = $train_expense + $train_service_charge + $plane_expense + $plane_service_charge + $cruise_expense + $cruise_service_charge + $visa_amount + $visa_service_charge + $insuarance_amount + $insuarance_service_charge + $subtotal_with_rue;
-
-  // $tax_amount = $train_service_tax_subtotal + $plane_service_tax_subtotal + $cruise_service_tax_subtotal + $visa_service_tax_subtotal + $insuarance_service_tax_subtotal + $tour_service_tax_subtotal;
+  $total_sale_amount = $basic_amount;
+  
   ////////////Sales/////////////
-
-    $module_name = "Package Booking";
-    $module_entry_id = $booking_id;
-    $transaction_id = "";
-    $payment_amount = $total_sale_amount;
-    $payment_date = $booking_date;
-    $payment_particular = $particular;
-    $ledger_particular = get_ledger_particular('By','Cash/Bank');
-    $old_gl_id = $gl_id = 91;
-    $payment_side = "Credit";
-    $clearance_status = "";
-    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+  $module_name = "Package Booking";
+  $module_entry_id = $booking_id;
+  $transaction_id = "";
+  $payment_amount = $total_sale_amount;
+  $payment_date = $booking_date;
+  $payment_particular = $particular;
+  $ledger_particular = get_ledger_particular('By','Cash/Bank');
+  $old_gl_id = $gl_id = 91;
+  $payment_side = "Credit";
+  $clearance_status = "";
+  $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
 
     ////////////service charge/////////////
   $module_name = "Package Booking";

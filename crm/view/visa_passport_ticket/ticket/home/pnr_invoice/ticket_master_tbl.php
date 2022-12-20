@@ -11,7 +11,7 @@
         <option>Infant</option>
     </select></td>
     <td><input type="text" id="ticket_no1" style="text-transform: uppercase;" onchange="validate_spaces(this.id)" name="ticket_no" placeholder="Ticket No" title="Ticket No"/></td>
-    <td><input type="text" id="gds_pnr1" name="gds_pnr" style="text-transform: uppercase;" onchange="validate_spaces(this.id)" placeholder="GDS PNR" title="GDS PNR"></td>
+    <td><input type="text" id="gds_pnr1" name="gds_pnr" style="text-transform: uppercase;" onchange="validate_spaces(this.id)" placeholder="Airline PNR" title="Airline PNR"></td>
     <td><input type="hidden" id="conjunction1" name="conjunction"></td>
 </tr>
 

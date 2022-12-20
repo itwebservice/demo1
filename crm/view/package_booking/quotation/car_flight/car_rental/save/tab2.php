@@ -47,7 +47,7 @@
 		<input type="text" id="roundoff" name="roundoff" class="text-right form-control" placeholder="Round Off" title="Round Off" value="0.00" onchange="validate_balance(this.id)" readonly>
 	</div>
 	<div class="col-md-2">
-		<input type="text" id="total_tour_cost" name="total_tour_cost" class="text-right form-control" placeholder="Total" title="Total" value="0.00" onchange="validate_balance(this.id)" >
+		<input type="text" id="total_tour_cost" name="total_tour_cost" class="text-right form-control" placeholder="Total" title="Total" value="0.00" onchange="validate_balance(this.id)" readonly>
 	</div>
 </div>
 <div class="row mg_tp_20 text-center">

@@ -40,7 +40,7 @@ $sq_offer = mysqli_fetch_assoc(mysqlQuery("select * from upcoming_tour_offers_ma
 
 <script>
 $('#upcoming_tours_update_modal').modal('show');
-jQuery('#txt_tour_offer_valid_date1').datetimepicker({ timepicker:false, format:'d-m-Y' });
+jQuery('#txt_tour_offer_valid_date1').datetimepicker({ timepicker:false, format:'d-m-Y', minDate: new Date() });
 
 $(function(){
 

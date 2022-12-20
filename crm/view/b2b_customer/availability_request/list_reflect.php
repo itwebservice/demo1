@@ -23,6 +23,7 @@ $array_s = array();
 $temp_arr = array();
 $sq_request = mysqlQuery($query);
 while($row_request = mysqli_fetch_assoc($sq_request)){
+	
 	$row_reg = mysqli_fetch_assoc(mysqlQuery("select cp_first_name,cp_last_name,mobile_no,email_id from b2b_registration where register_id = '$row_request[register_id]'"));
 
 	$cart_data = ($row_request['cart_data'] != '' && $row_request['cart_data'] != 'null') ? json_decode($row_request['cart_data']) : array();

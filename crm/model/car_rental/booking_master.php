@@ -125,21 +125,13 @@ class booking_master
 
       //Advance payment
       $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(payment_id) as max from car_rental_payment"));
-
       $payment_id = $sq_max['max'] + 1;
-
-
 
       $sq_payment = mysqlQuery("INSERT into car_rental_payment(payment_id, booking_id, financial_year_id, branch_admin_id, emp_id, payment_date, payment_mode, payment_amount, bank_name, transaction_id, bank_id, clearance_status,created_at,credit_charges,credit_card_details) values ('$payment_id', '$booking_id', '$financial_year_id', '$branch_admin_id', '$emp_id',  '$payment_date', '$payment_mode', '$payment_amount', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$booking_date','$credit_charges','$credit_card_details')");
 
       if (!$sq_payment) {
-
         $GLOBALS['flag'] = false;
-
         echo "error--Sorry, Advance payment not done!";
-
-        //exit;
-
       }
 
       //Update customer credit note balance
@@ -217,6 +209,154 @@ class booking_master
     }
   }
 
+	public function car_booking_delete(){
+
+		global $delete_master,$transaction_master;
+		$booking_id = $_POST['booking_id'];
+
+		$deleted_date = date('Y-m-d');
+		$row_spec = "sales";
+	
+		$row_misc = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
+    $vehicle_name = $row_misc['vehicle_name'];
+    $traveling_date = get_date_user($row_misc['traveling_date']);
+		$reflections = json_decode($row_misc['reflections']);
+		$service_tax_markup = $row_misc['markup_cost_subtotal'];
+		$service_tax_subtotal = $row_misc['service_tax_subtotal'];
+		$customer_id = $row_misc['customer_id'];
+		$booking_date = $row_misc['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		
+		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+		if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+			$cust_name = $sq_ct['company_name'];
+		}else{
+			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+		}
+    $particular = $this->get_particular($customer_id, $vehicle_name, $traveling_date);
+
+		$delete_master->delete_master_entries('Invoice','Car Rental',$booking_id,get_car_rental_booking_id($booking_id,$year),$cust_name,$row_misc['total_fees']);
+
+		//Getting customer Ledger
+		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+		$cust_gl = $sq_cust['ledger_id'];
+
+    ////////////Sales/////////////
+    $module_name = "Car Rental Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+    $old_gl_id = $gl_id = 18;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+    ////////////service charge/////////////
+    $module_name = "Car Rental Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+    $old_gl_id = $gl_id = ($reflections[0]->car_sc != '') ? $reflections[0]->car_sc : 191;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+    /////////Service Charge Tax Amount////////
+    $service_tax_subtotal = explode(',', $service_tax_subtotal);
+    $tax_ledgers = explode(',', $reflections[0]->car_taxes);
+    for ($i = 0; $i < sizeof($service_tax_subtotal); $i++) {
+
+      $service_tax = explode(':', $service_tax_subtotal[$i]);
+      $tax_amount = $service_tax[2];
+      $ledger = $tax_ledgers[$i];
+
+      $module_name = "Car Rental Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+      $old_gl_id = $gl_id = $ledger;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+    }
+
+    ////////////markup/////////////
+    $module_name = "Car Rental Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+    $old_gl_id = $gl_id = ($reflections[0]->car_markup != '') ? $reflections[0]->car_markup : 203;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+    /////////Markup Tax Amount////////
+    // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+    $service_tax_markup = explode(',', $service_tax_markup);
+    $tax_ledgers = explode(',', $reflections[0]->car_markup_taxes);
+    for ($i = 0; $i < sizeof($service_tax_markup); $i++) {
+
+      $service_tax = explode(':', $service_tax_markup[$i]);
+      $ledger = $tax_ledgers[$i];
+
+      $module_name = "Car Rental Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+      $old_gl_id = $gl_id = $ledger;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '1', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+    }
+
+    /////////roundoff/////////
+    $module_name = "Car Rental Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+    $old_gl_id = $gl_id = 230;
+    $payment_side = "Credit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+
+    ////////Customer Amount//////
+    $module_name = "Car Rental Booking";
+    $module_entry_id = $booking_id;
+    $transaction_id = "";
+    $payment_amount = 0;
+    $payment_date = $deleted_date;
+    $payment_particular = $particular;
+    $ledger_particular = get_ledger_particular('To', 'Car Rental Sales');
+    $old_gl_id = $gl_id = $cust_gl;
+    $payment_side = "Debit";
+    $clearance_status = "";
+    $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id, '', $payment_side, $clearance_status, $row_spec, $ledger_particular, 'INVOICE');
+		
+		$sq_delete = mysqlQuery("update car_rental_booking set basic_amount = '0',markup_cost='0',markup_cost_subtotal='', service_tax_subtotal='',service_charge='0',permit_charges='0',toll_and_parking='0',state_entry_tax='0',other_charges='0', total_fees='0',total_cost='0', roundoff='0', delete_status='1' where booking_id='$booking_id'");
+		if($sq_delete){
+			echo 'Entry deleted successfully!';
+			exit;
+		}
+	}
 
   public function booking_sms($booking_id, $customer_id, $created_at)
   {
@@ -295,11 +435,10 @@ class booking_master
     }
     $roundoff = $_POST['roundoff'];
 
-    $car_sale_amount = intval($other_charges) + intval($driver_allowance) + intval($permit_charges) + intval($toll_and_parking) + intval($state_entry_tax) + intval($actual_cost);
+    $car_sale_amount = floatval($other_charges) + floatval($driver_allowance) + floatval($permit_charges) + floatval($toll_and_parking) + floatval($state_entry_tax) + floatval($actual_cost);
 
-    $payment_amount1 = intval($payment_amount1) + intval($credit_charges);
+    $payment_amount1 = floatval($payment_amount1) + floatval($credit_charges);
 
-    $balance_amount = intval($total_fees) - intval($payment_amount1);
 
     //Get Customer id
     if ($customer_id == '0') {
@@ -434,27 +573,14 @@ class booking_master
     $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, 'INVOICE');
 
 
-    // //////Payment Amount///////
-    // $module_name = "Car Rental Booking";
-    // $module_entry_id = $booking_id;
-    // $transaction_id = $transaction_id1;
-    // $payment_amount = $payment_amount1;
-    // $payment_date = $payment_date1;
-    // $payment_particular = get_sales_paid_particular(get_car_rental_booking_id($booking_id,$yr1), $payment_date1, $payment_amount1, $customer_id, $payment_mode, get_car_rental_booking_id($booking_id,$yr1),$bank_id,$transaction_id1);;
-    // $ledger_particular = get_ledger_particular('By','Cash/Bank');
-    // $gl_id = $pay_gl;
-    // $payment_side = "Debit";
-    // $clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
-    // $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
-
     //////////Payment Amount///////////
     if ($payment_mode != 'Credit Note') {
 
       if ($payment_mode == 'Credit Card') {
 
         //////Customer Credit charges///////
-        $module_name = "Car Rental Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Car Rental Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $credit_charges;
         $payment_date = $booking_date;
@@ -466,8 +592,8 @@ class booking_master
         $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
 
         //////Credit charges ledger///////
-        $module_name = "Car Rental Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Car Rental Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $credit_charges;
         $payment_date = $booking_date;
@@ -489,13 +615,13 @@ class booking_master
         $company_card_charges = ($sq_credit_charges['charges_in'] == 'Flat') ? $sq_credit_charges['credit_card_charges'] : ($payment_amount1 * ($sq_credit_charges['credit_card_charges'] / 100));
         //////company's tax on credit card charges
         $tax_charges = ($sq_credit_charges['tax_charges_in'] == 'Flat') ? $sq_credit_charges['tax_on_credit_card_charges'] : ($company_card_charges * ($sq_credit_charges['tax_on_credit_card_charges'] / 100));
-        $finance_charges = intval($company_card_charges) + intval($tax_charges);
+        $finance_charges = floatval($company_card_charges) + floatval($tax_charges);
         $finance_charges = number_format($finance_charges, 2);
-        $credit_company_amount = intval($payment_amount1) - intval($finance_charges);
+        $credit_company_amount = floatval($payment_amount1) - floatval($finance_charges);
 
         //////Finance charges ledger///////
-        $module_name = "Car Rental Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Car Rental Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $finance_charges;
         $payment_date = $booking_date;
@@ -506,8 +632,8 @@ class booking_master
         $clearance_status = ($payment_mode == "Cheque" || $payment_mode == "Credit Card") ? "Pending" : "";
         $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
         //////Credit company amount///////
-        $module_name = "Car Rental Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Car Rental Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $credit_company_amount;
         $payment_date = $booking_date;
@@ -519,8 +645,8 @@ class booking_master
         $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '', $payment_side, $clearance_status, $row_spec, $branch_admin_id, $ledger_particular, $type);
       } else {
 
-        $module_name = "Car Rental Booking";
-        $module_entry_id = $booking_id;
+        $module_name = "Car Rental Booking Payment";
+        $module_entry_id = $payment_id;
         $transaction_id = $transaction_id1;
         $payment_amount = $payment_amount1;
         $payment_date = $booking_date;
@@ -533,8 +659,8 @@ class booking_master
       }
 
       //////Customer Payment Amount///////
-      $module_name = "Car Rental Booking";
-      $module_entry_id = $booking_id;
+      $module_name = "Car Rental Booking Payment";
+      $module_entry_id = $payment_id;
       $transaction_id = $transaction_id1;
       $payment_amount = $payment_amount1;
       $payment_date = $booking_date;
@@ -547,38 +673,24 @@ class booking_master
     }
   }
 
-
-
   public function bank_cash_book_save($booking_id, $payment_id, $branch_admin_id)
-
   {
 
     global $bank_cash_book_master;
-
-
-
     $customer_id = $_POST['customer_id'];
-
     $payment_amount = $_POST['payment_amount'];
-
     $payment_date = $_POST['payment_date'];
-
     $payment_mode = $_POST['payment_mode'];
-
     $bank_name = $_POST['bank_name'];
-
     $transaction_id = $_POST['transaction_id'];
-
     $bank_id = $_POST['bank_id'];
-
     $credit_charges = $_POST['credit_charges'];
     $credit_card_details = $_POST['credit_card_details'];
-
     $payment_date = date("Y-m-d", strtotime($payment_date));
 
     if ($payment_mode == 'Credit Card') {
 
-      $payment_amount = intval($payment_amount) + intval($credit_charges);
+      $payment_amount = floatval($payment_amount) + floatval($credit_charges);
       $credit_card_details = explode('-', $credit_card_details);
       $entry_id = $credit_card_details[0];
       $sq_credit_charges = mysqli_fetch_assoc(mysqlQuery("select bank_id from credit_card_company where entry_id ='$entry_id'"));
@@ -593,7 +705,7 @@ class booking_master
       $customer_id = $sq_max['max'];
     }
 
-    $module_name = "Car Rental Booking";
+    $module_name = "Car Rental Booking Payment";
 
     $module_entry_id = $payment_id;
 
@@ -622,7 +734,6 @@ class booking_master
 
   public function booking_update()
   {
-
     $row_spec = 'sales';
     $booking_id = $_POST['booking_id'];
     $customer_id = $_POST['customer_id'];
@@ -768,16 +879,13 @@ class booking_master
     }
     $roundoff = $_POST['roundoff'];
 
-
     $booking_date = date('Y-m-d', strtotime($booking_date1));
-    $year1 = explode("-", $booking_date);
-    $yr1 = $year1[0];
 
     global $transaction_master;
-    $car_sale_amount = intval($other_charges) + intval($driver_allowance) + intval($permit_charges) + intval($toll_and_parking) + intval($state_entry_tax) + intval($actual_cost);
+    $car_sale_amount = floatval($other_charges) + floatval($driver_allowance) + floatval($permit_charges) + floatval($toll_and_parking) + floatval($state_entry_tax) + floatval($actual_cost);
     //get total payment against booking id
     $sq_booking = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from car_rental_payment where booking_id='$booking_id'"));
-    $balance_amount = intval($total_fees) - intval($sq_booking['payment_amount']);
+    $balance_amount = floatval($total_fees) - floatval($sq_booking['payment_amount']);
 
     //Getting customer Ledger
     $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -787,7 +895,6 @@ class booking_master
     global $transaction_master;
 
     ////////////Sales/////////////
-
     $module_name = "Car Rental Booking";
     $module_entry_id = $booking_id;
     $transaction_id = "";
@@ -908,9 +1015,9 @@ class booking_master
 
     $sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum ,sum(`credit_charges`) as sumc from car_rental_payment where clearance_status!='Cancelled' and booking_id='$booking_id'"));
     $credit_card_amount = $sq_pay['sumc'];
-    $total_amount = intval($sq_booking['total_fees']) + intval($credit_card_amount);
-    $total_pay_amt = intval($sq_pay['sum']) + intval($credit_card_amount);
-    $outstanding =  intval($total_amount) - intval($total_pay_amt);
+    $total_amount = floatval($sq_booking['total_fees']) + floatval($credit_card_amount);
+    $total_pay_amt = floatval($sq_pay['sum']) + floatval($credit_card_amount);
+    $outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 
     $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
     $email_id = $encrypt_decrypt->fnDecrypt($sq_customer['email_id'], $secret_key);
@@ -934,7 +1041,7 @@ class booking_master
       <tr><th colspan=2>Car Rental Details</th></tr>
       <tr><td style="text-align:left;border: 1px solid #888888;width:50%">Customer Name</td>   <td style="text-align:left;border: 1px solid #888888;" >' . $customer_name . '</td></tr>
 		  <tr><td style="text-align:left;border: 1px solid #888888;width:50%">Vehicle Type</td>   <td style="text-align:left;border: 1px solid #888888;" >' . $sq_booking['vehicle_name'] . '</td></tr>
-		  <tr><td style="text-align:left;border: 1px solid #888888;width:50%">Total Pax</td>   <td style="text-align:left;border: 1px solid #888888;">' . $sq_booking['total_pax'] . '</td></tr> 
+		  <tr><td style="text-align:left;border: 1px solid #888888;width:50%">Total Guest(s)</td>   <td style="text-align:left;border: 1px solid #888888;">' . $sq_booking['total_pax'] . '</td></tr> 
       <tr><td style="text-align:left;border: 1px solid #888888;width:50%">Total Days</td>   <td style="text-align:left;border: 1px solid #888888;">' . $sq_booking['days_of_traveling'] . '</td></tr>
       <tr><td style="text-align:left;border: 1px solid #888888;width:50%">Total Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >' . $currency_logo . ' ' . number_format($total_amount, 2) . '</td></tr>
 	<tr><td style="text-align:left;border: 1px solid #888888;width:50%">Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;">' . $currency_logo . ' ' . number_format($total_pay_amt, 2) . '</td></tr> 
@@ -990,6 +1097,7 @@ class booking_master
       $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
     }
     $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
+		$customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 
     $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
     if ($emp_id == 0) {
@@ -998,7 +1106,7 @@ class booking_master
       $contact = $sq_emp_info['mobile_no'];
     }
 
-    $whatsapp_msg = rawurlencode('Hello Dear ' . $sq_customer['first_name'] . ',
+    $whatsapp_msg = rawurlencode('Dear ' . $customer_name . ',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : ' . get_date_user($booking_date) . '
   

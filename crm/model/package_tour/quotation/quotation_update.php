@@ -1,4 +1,4 @@
-<?php 
+<?php
 class quotation_update{
 
 public function quotation_master_update()
@@ -19,6 +19,7 @@ public function quotation_master_update()
     $children_without_bed = $_POST['children_without_bed'];
     $children_with_bed = $_POST['children_with_bed'];
 	$quotation_date = $_POST['quotation_date'];
+	$active_flag = $_POST['active_flag'];
 	$booking_type = $_POST['booking_type'];
 	$train_cost = $_POST['train_cost'];
 	$flight_cost = $_POST['flight_cost'];
@@ -147,7 +148,7 @@ public function quotation_master_update()
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
 
-	$sq_quotation = mysqlQuery("update package_tour_quotation_master set tour_name = '$tour_name', from_date = '$from_date', to_date = '$to_date', total_days = '$total_days', customer_name = '$customer_name', email_id='$email_id',mobile_no='$mobile_no', total_adult = '$total_adult', total_infant = '$total_infant', total_passangers = '$total_passangers', children_without_bed = '$children_without_bed', children_with_bed = '$children_with_bed', quotation_date='$quotation_date', booking_type = '$booking_type', train_cost = '$train_cost', flight_cost = '$flight_cost',cruise_cost='$cruise_cost', visa_cost = '$visa_cost', guide_cost= '$guide_cost',misc_cost='$misc_cost', price_str_url= '$price_str_url', enquiry_id= '$enquiry_id',inclusions='$inclusions',exclusions='$exclusions',costing_type='$costing_type',currency_code='$currency_code',discount='$discount' where quotation_id = '$quotation_id'");
+	$sq_quotation = mysqlQuery("update package_tour_quotation_master set tour_name = '$tour_name', from_date = '$from_date', to_date = '$to_date', total_days = '$total_days', customer_name = '$customer_name', email_id='$email_id',mobile_no='$mobile_no', total_adult = '$total_adult', total_infant = '$total_infant', total_passangers = '$total_passangers', children_without_bed = '$children_without_bed', children_with_bed = '$children_with_bed', quotation_date='$quotation_date', booking_type = '$booking_type', train_cost = '$train_cost', flight_cost = '$flight_cost',cruise_cost='$cruise_cost', visa_cost = '$visa_cost', guide_cost= '$guide_cost',misc_cost='$misc_cost', price_str_url= '$price_str_url', enquiry_id= '$enquiry_id',inclusions='$inclusions',exclusions='$exclusions',costing_type='$costing_type',currency_code='$currency_code',discount='$discount',status='$active_flag' where quotation_id = '$quotation_id'");
 	
 	$sq_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_master where quotation_id = '$quotation_id'"));
 
@@ -468,7 +469,7 @@ public function costing_entries_update($tour_cost_arr,$transport_cost_arr, $basi
 				}
 		}
 		$bsmvaluesEach = json_encode($bsmValues[$i]);
-		$sq_plane = mysqlQuery("update package_tour_quotation_costing_entries set tour_cost='$tour_cost_arr[$i]',excursion_cost ='$excursion_cost_arr[$i]', basic_amount='$basic_cost',service_charge = ' $service_charge',service_tax_subtotal = '$service_tax_subtotal_arr[$i]',total_tour_cost = '$total_tour_cost_arr[$i]',transport_cost='$transport_cost_arr[$i]', bsmValues='$bsmvaluesEach' where id='$costing_id_arr[$i]'");
+		$sq_plane = mysqlQuery("update package_tour_quotation_costing_entries set tour_cost='$tour_cost_arr[$i]',excursion_cost ='$excursion_cost_arr[$i]', basic_amount='$basic_amount_arr[$i]',service_charge = ' $service_charge_arr[$i]',service_tax_subtotal = '$service_tax_subtotal_arr[$i]',total_tour_cost = '$total_tour_cost_arr[$i]',transport_cost='$transport_cost_arr[$i]', bsmValues='$bsmvaluesEach' where id='$costing_id_arr[$i]'");
 
 		if(!$sq_plane){
 			echo "error--Costing information not updated!";

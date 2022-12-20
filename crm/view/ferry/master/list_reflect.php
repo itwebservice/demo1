@@ -4,9 +4,10 @@ $active_flag = $_POST['active_flag'];
 $array_s = array();
 $temp_arr = array();
 $count = 0;
-$ferry = "select * from ferry_master where 1";
 if($active_flag != ''){
-	$ferry .= " and active_flag='$active_flag'";
+	$ferry = "select * from ferry_master where 1 and active_flag='$active_flag'";
+}else{
+	$ferry = "select * from ferry_master where 1 and active_flag='Active'";
 }
 $sq_ferry = mysqlQuery($ferry);
 while($row_ferry = mysqli_fetch_assoc($sq_ferry))

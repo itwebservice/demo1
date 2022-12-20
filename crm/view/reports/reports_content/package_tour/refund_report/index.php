@@ -34,7 +34,7 @@ $branch_status = $sq['branch_status'];
 	function refund_reflect(){
 		var booking_id = $('#booking_id_filter1').val();
 		$.post('reports_content/package_tour/refund_report/refund_report.php', {booking_id : booking_id}, function(data){
-			pagination_load(data, column, true, true, 20, 'gtc_tour_report');
+			pagination_load(data, column, true, true, 20, 'gtc_tour_report',true);
 	});
 	}
 	refund_reflect();

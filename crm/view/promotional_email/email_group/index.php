@@ -28,7 +28,7 @@ function email_group_list_reflect()
 {
     var branch_status = $('#branch_status').val();
 	$.post('email_group/email_group_list_reflect.php', { branch_status : branch_status  }, function(data){
-		pagination_load(data, column, true, false, 20, 'email_id');
+		pagination_load(data, column, true, false, 20, 'email_id',true);
 	});
 }
 email_group_list_reflect();

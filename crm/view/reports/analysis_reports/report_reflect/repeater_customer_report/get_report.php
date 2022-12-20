@@ -19,7 +19,9 @@ if(empty($fromdate) && empty($todate))
         $_SESSION['aRticket'] = "";        
         $_SESSION['aRtrain'] = "";        
         $_SESSION['aRtour'] = "";        
-        $_SESSION['aRpackage'] = "";}
+        $_SESSION['aRpackage'] = "";
+        $_SESSION['aRplane'] = "";
+}
 else
 {
     if(!empty($fromdate) && !empty($todate))
@@ -44,13 +46,21 @@ else
         $_SESSION['aRtrain'] .= "and train_ticket_master.created_at between '".$fromdate."' and '".$todate."' ";        
         $_SESSION['aRtour'] .= "and tourwise_traveler_details.form_date between '".$fromdate."' and '".$todate."' ";        
         $_SESSION['aRpackage'] .= "and package_tour_booking_master.booking_date between '".$fromdate."' and '".$todate."' ";        
+        $_SESSION['aRplane'] .= "and ticket_master.created_at between '".$fromdate."' and '".$todate."' ";        
     }
 }
 
+ function get_airline($customer)
+{
+        $qry = "SELECT count(*) as `total` FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id where customer_master.customer_id='$customer'".$_SESSION['aRplane'];
+        $sq_res = mysqli_fetch_assoc(mysqlQuery($qry))['total'];
+        return $sq_res;
+
+}
 
 function get_car_rental($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN car_rental_booking ON customer_master.customer_id = car_rental_booking.customer_id INNER JOIN vendor_estimate On car_rental_booking.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Car Rental' AND customer_master.customer_id='".$customer."'".$_SESSION['aRcar'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN car_rental_booking ON customer_master.customer_id = car_rental_booking.customer_id INNER JOIN vendor_estimate On car_rental_booking.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Car Rental' AND customer_master.customer_id='".$customer."'".$_SESSION['aRcar'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -63,7 +73,7 @@ function get_car_rental($customer){
 
 function get_car_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN car_rental_booking ON customer_master.customer_id = car_rental_booking.customer_id INNER JOIN vendor_estimate On car_rental_booking.booking_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRcar'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN car_rental_booking ON customer_master.customer_id = car_rental_booking.customer_id INNER JOIN vendor_estimate On car_rental_booking.booking_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRcar'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -75,7 +85,7 @@ function get_car_amount($customer){
 }
 function get_car_profit($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN car_rental_booking ON customer_master.customer_id = car_rental_booking.customer_id INNER JOIN vendor_estimate On car_rental_booking.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Car Rental' AND  customer_master.customer_id='".$customer."'".$_SESSION['aRcar'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN car_rental_booking ON customer_master.customer_id = car_rental_booking.customer_id INNER JOIN vendor_estimate On car_rental_booking.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Car Rental' AND  customer_master.customer_id='".$customer."'".$_SESSION['aRcar'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -89,7 +99,7 @@ function get_car_profit($customer){
 
 function get_visa($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master  INNER JOIN visa_master ON customer_master.customer_id = visa_master.customer_id INNER JOIN vendor_estimate On visa_master.visa_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Visa Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRvisa'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master  INNER JOIN visa_master ON customer_master.customer_id = visa_master.customer_id INNER JOIN vendor_estimate On visa_master.visa_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Visa Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRvisa'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -101,7 +111,7 @@ function get_visa($customer){
 }
 function get_visa_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master  INNER JOIN visa_master ON customer_master.customer_id = visa_master.customer_id INNER JOIN vendor_estimate On visa_master.visa_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRvisa'];
+    $query1 = "SELECT * FROM customer_master  INNER JOIN visa_master ON customer_master.customer_id = visa_master.customer_id INNER JOIN vendor_estimate On visa_master.visa_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRvisa'];
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -114,7 +124,7 @@ function get_visa_amount($customer){
 
 function get_visa_profit($customer){
    
-    $query1 = "SELECT * FROM Customer_master  INNER JOIN visa_master ON customer_master.customer_id = visa_master.customer_id INNER JOIN vendor_estimate On visa_master.visa_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Visa Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRvisa'];
+    $query1 = "SELECT * FROM customer_master  INNER JOIN visa_master ON customer_master.customer_id = visa_master.customer_id INNER JOIN vendor_estimate On visa_master.visa_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Visa Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRvisa'];
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -127,7 +137,7 @@ function get_visa_profit($customer){
 
 function get_bus($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master  INNER JOIN bus_booking_master ON customer_master.customer_id =  bus_booking_master.customer_id  INNER JOIN vendor_estimate On bus_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Bus Booking' AND  customer_master.customer_id='".$customer."'".$_SESSION['aRbus'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master  INNER JOIN bus_booking_master ON customer_master.customer_id =  bus_booking_master.customer_id  INNER JOIN vendor_estimate On bus_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Bus Booking' AND  customer_master.customer_id='".$customer."'".$_SESSION['aRbus'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -140,7 +150,7 @@ function get_bus($customer){
 
 function get_bus_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN bus_booking_master ON customer_master.customer_id =  bus_booking_master.customer_id INNER JOIN vendor_estimate On bus_booking_master.booking_id = vendor_estimate.estimate_type_id  where customer_master.customer_id='".$customer."'".$_SESSION['aRbus'];
+    $query1 = "SELECT * FROM customer_master INNER JOIN bus_booking_master ON customer_master.customer_id =  bus_booking_master.customer_id INNER JOIN vendor_estimate On bus_booking_master.booking_id = vendor_estimate.estimate_type_id  where customer_master.customer_id='".$customer."'".$_SESSION['aRbus'];
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -154,7 +164,7 @@ function get_bus_amount($customer){
 
 function get_bus_profit($customer){
     
-    $query1 = "SELECT bus_booking_master.net_total as total_cost,vendor_estimate.net_total FROM Customer_master INNER JOIN bus_booking_master ON customer_master.customer_id =  bus_booking_master.customer_id INNER JOIN vendor_estimate On bus_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Bus Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRbus'];
+    $query1 = "SELECT bus_booking_master.net_total as total_cost,vendor_estimate.net_total FROM customer_master INNER JOIN bus_booking_master ON customer_master.customer_id =  bus_booking_master.customer_id INNER JOIN vendor_estimate On bus_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Bus Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRbus'];
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -168,7 +178,7 @@ function get_bus_profit($customer){
 
 function get_excursion($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master  INNER JOIN  excursion_master ON customer_master.customer_id = excursion_master.customer_id  INNER JOIN vendor_estimate on excursion_master.exc_id = vendor_estimate.estimate_type_id  where vendor_estimate.estimate_type = 'Excursion Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRexcursion'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master  INNER JOIN  excursion_master ON customer_master.customer_id = excursion_master.customer_id  INNER JOIN vendor_estimate on excursion_master.exc_id = vendor_estimate.estimate_type_id  where vendor_estimate.estimate_type = 'Excursion Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRexcursion'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -181,7 +191,7 @@ function get_excursion($customer){
 
 function get_excursion_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master  INNER JOIN  excursion_master ON customer_master.customer_id = excursion_master.customer_id INNER JOIN vendor_estimate on excursion_master.exc_id = vendor_estimate.estimate_type_id  where customer_master.customer_id='".$customer."'".$_SESSION['aRexcursion'];
+    $query1 = "SELECT * FROM customer_master  INNER JOIN  excursion_master ON customer_master.customer_id = excursion_master.customer_id INNER JOIN vendor_estimate on excursion_master.exc_id = vendor_estimate.estimate_type_id  where customer_master.customer_id='".$customer."'".$_SESSION['aRexcursion'];
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -194,7 +204,7 @@ function get_excursion_amount($customer){
 
 function get_excursion_profit($customer){
    
-    $query1 = "SELECT * FROM Customer_master  INNER JOIN  excursion_master ON customer_master.customer_id = excursion_master.customer_id  INNER JOIN vendor_estimate on excursion_master.exc_id = vendor_estimate.estimate_type_id  where vendor_estimate.estimate_type = 'Excursion Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRexcursion'];
+    $query1 = "SELECT * FROM customer_master  INNER JOIN  excursion_master ON customer_master.customer_id = excursion_master.customer_id  INNER JOIN vendor_estimate on excursion_master.exc_id = vendor_estimate.estimate_type_id  where vendor_estimate.estimate_type = 'Excursion Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRexcursion'];
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -207,7 +217,7 @@ function get_excursion_profit($customer){
 
 function get_misc($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN miscellaneous_master ON customer_master.customer_id = miscellaneous_master.customer_id INNER JOIN vendor_estimate on miscellaneous_master.misc_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Miscellaneous Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRmiscellaneous'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN miscellaneous_master ON customer_master.customer_id = miscellaneous_master.customer_id INNER JOIN vendor_estimate on miscellaneous_master.misc_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Miscellaneous Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRmiscellaneous'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -220,7 +230,7 @@ function get_misc($customer){
 
 function get_misc_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN miscellaneous_master ON customer_master.customer_id = miscellaneous_master.customer_id INNER JOIN vendor_estimate on miscellaneous_master.misc_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRmiscellaneous'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN miscellaneous_master ON customer_master.customer_id = miscellaneous_master.customer_id INNER JOIN vendor_estimate on miscellaneous_master.misc_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRmiscellaneous'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -232,7 +242,7 @@ function get_misc_amount($customer){
 }
 function get_misc_profit($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN miscellaneous_master ON customer_master.customer_id = miscellaneous_master.customer_id INNER JOIN vendor_estimate on miscellaneous_master.misc_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Miscellaneous Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRmiscellaneous'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN miscellaneous_master ON customer_master.customer_id = miscellaneous_master.customer_id INNER JOIN vendor_estimate on miscellaneous_master.misc_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Miscellaneous Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRmiscellaneous'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -246,7 +256,7 @@ function get_misc_profit($customer){
 
 function get_hotel($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN hotel_booking_master ON customer_master.customer_id = hotel_booking_master.customer_id INNER JOIN vendor_estimate on hotel_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Hotel Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRhotel'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN hotel_booking_master ON customer_master.customer_id = hotel_booking_master.customer_id INNER JOIN vendor_estimate on hotel_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Hotel Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRhotel'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -259,7 +269,7 @@ function get_hotel($customer){
 
 function get_hotel_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN hotel_booking_master ON customer_master.customer_id = hotel_booking_master.customer_id INNER JOIN vendor_estimate on hotel_booking_master.booking_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRhotel'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN hotel_booking_master ON customer_master.customer_id = hotel_booking_master.customer_id INNER JOIN vendor_estimate on hotel_booking_master.booking_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRhotel'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -271,7 +281,7 @@ function get_hotel_amount($customer){
 }
 function get_hotel_profit($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN hotel_booking_master ON customer_master.customer_id = hotel_booking_master.customer_id INNER JOIN vendor_estimate on hotel_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Hotel Booking' AND  customer_master.customer_id='".$customer."'".$_SESSION['aRhotel'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN hotel_booking_master ON customer_master.customer_id = hotel_booking_master.customer_id INNER JOIN vendor_estimate on hotel_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Hotel Booking' AND  customer_master.customer_id='".$customer."'".$_SESSION['aRhotel'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -284,7 +294,7 @@ function get_hotel_profit($customer){
 
 function get_ticket($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN ticket_master ON customer_master.customer_id = ticket_master.customer_id INNER JOIN vendor_estimate on ticket_master.ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRticket'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN ticket_master ON customer_master.customer_id = ticket_master.customer_id INNER JOIN vendor_estimate on ticket_master.ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRticket'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -297,7 +307,7 @@ function get_ticket($customer){
 
 function get_ticket_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN ticket_master ON customer_master.customer_id = ticket_master.customer_id INNER JOIN vendor_estimate on ticket_master.ticket_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRticket'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN ticket_master ON customer_master.customer_id = ticket_master.customer_id INNER JOIN vendor_estimate on ticket_master.ticket_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRticket'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -309,7 +319,7 @@ function get_ticket_amount($customer){
 }
 function get_ticket_profit($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN ticket_master ON customer_master.customer_id = ticket_master.customer_id INNER JOIN vendor_estimate on ticket_master.ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRticket'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN ticket_master ON customer_master.customer_id = ticket_master.customer_id INNER JOIN vendor_estimate on ticket_master.ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRticket'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -322,7 +332,7 @@ function get_ticket_profit($customer){
 
 function get_train($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN train_ticket_master ON customer_master.customer_id = train_ticket_master.customer_id INNER JOIN vendor_estimate on train_ticket_master.train_ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Train Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtrain'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN train_ticket_master ON customer_master.customer_id = train_ticket_master.customer_id INNER JOIN vendor_estimate on train_ticket_master.train_ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Train Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtrain'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -335,7 +345,7 @@ function get_train($customer){
 
 function get_train_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN train_ticket_master ON customer_master.customer_id = train_ticket_master.customer_id INNER JOIN vendor_estimate on train_ticket_master.train_ticket_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRtrain'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN train_ticket_master ON customer_master.customer_id = train_ticket_master.customer_id INNER JOIN vendor_estimate on train_ticket_master.train_ticket_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRtrain'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -347,7 +357,7 @@ function get_train_amount($customer){
 }
 function get_train_profit($customer){
    
-    $query1 = "SELECT train_ticket_master.net_total as total_cost,vendor_estimate.net_total FROM Customer_master INNER JOIN train_ticket_master ON customer_master.customer_id = train_ticket_master.customer_id INNER JOIN vendor_estimate on train_ticket_master.train_ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Train Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtrain'];  
+    $query1 = "SELECT train_ticket_master.net_total as total_cost,vendor_estimate.net_total FROM customer_master INNER JOIN train_ticket_master ON customer_master.customer_id = train_ticket_master.customer_id INNER JOIN vendor_estimate on train_ticket_master.train_ticket_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Train Ticket Booking' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtrain'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -360,7 +370,7 @@ function get_train_profit($customer){
 
 function get_tourwise($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN tourwise_traveler_details ON customer_master.customer_id = tourwise_traveler_details.customer_id INNER JOIN vendor_estimate on tourwise_traveler_details.id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Group Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtour'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN tourwise_traveler_details ON customer_master.customer_id = tourwise_traveler_details.customer_id INNER JOIN vendor_estimate on tourwise_traveler_details.id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Group Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtour'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -373,7 +383,7 @@ function get_tourwise($customer){
 
 function get_tourwise_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN tourwise_traveler_details ON customer_master.customer_id = tourwise_traveler_details.customer_id INNER JOIN vendor_estimate on tourwise_traveler_details.id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRtour'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN tourwise_traveler_details ON customer_master.customer_id = tourwise_traveler_details.customer_id INNER JOIN vendor_estimate on tourwise_traveler_details.id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRtour'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -385,7 +395,7 @@ function get_tourwise_amount($customer){
 }
 function get_tourwise_profit($customer){
    
-    $query1 = "SELECT tourwise_traveler_details.net_total as total_cost,vendor_estimate.net_total FROM Customer_master INNER JOIN tourwise_traveler_details ON customer_master.customer_id = tourwise_traveler_details.customer_id INNER JOIN vendor_estimate on tourwise_traveler_details.id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Group Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtour'];  
+    $query1 = "SELECT tourwise_traveler_details.net_total as total_cost,vendor_estimate.net_total FROM customer_master INNER JOIN tourwise_traveler_details ON customer_master.customer_id = tourwise_traveler_details.customer_id INNER JOIN vendor_estimate on tourwise_traveler_details.id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Group Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRtour'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -398,7 +408,7 @@ function get_tourwise_profit($customer){
 
 function get_package($customer){
    
-    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM Customer_master INNER JOIN package_tour_booking_master ON customer_master.customer_id = package_tour_booking_master.customer_id INNER JOIN vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Package Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRpackage'];
+    $query1 = "SELECT customer_master.customer_id, count(*) as booking FROM customer_master INNER JOIN package_tour_booking_master ON customer_master.customer_id = package_tour_booking_master.customer_id INNER JOIN vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Package Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRpackage'];
     $res = mysqlQuery($query1);
     $booking = 0; 
     $count = mysqli_num_rows($res);
@@ -411,7 +421,7 @@ function get_package($customer){
 
 function get_package_amount($customer){
    
-    $query1 = "SELECT * FROM Customer_master INNER JOIN package_tour_booking_master ON customer_master.customer_id = package_tour_booking_master.customer_id INNER JOIN vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRpackage'];  
+    $query1 = "SELECT * FROM customer_master INNER JOIN package_tour_booking_master ON customer_master.customer_id = package_tour_booking_master.customer_id INNER JOIN vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where customer_master.customer_id='".$customer."'".$_SESSION['aRpackage'];  
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -423,7 +433,7 @@ function get_package_amount($customer){
 }
 function get_package_profit($customer){
    
-    $query1 = "SELECT package_tour_booking_master.net_total as total_cost,vendor_estimate.net_total FROM Customer_master INNER JOIN package_tour_booking_master ON customer_master.customer_id = package_tour_booking_master.customer_id INNER JOIN vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Package Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRpackage'];  
+    $query1 = "SELECT package_tour_booking_master.net_total as total_cost,vendor_estimate.net_total FROM customer_master INNER JOIN package_tour_booking_master ON customer_master.customer_id = package_tour_booking_master.customer_id INNER JOIN vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where vendor_estimate.estimate_type = 'Package Tour' AND customer_master.customer_id='".$customer."'".$_SESSION['aRpackage'];  
     $res = mysqlQuery($query1);
     $profit = 0.00; 
     $count = mysqli_num_rows($res);
@@ -443,11 +453,11 @@ $main = array();
 //Airline
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM Customer_master";
+    $query=  "SELECT * FROM customer_master";
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM Customer_master";
+    $query=  "SELECT * FROM customer_master";
 }
 
 $result = mysqlQuery($query);
@@ -455,7 +465,7 @@ $count = 1;
 while($db = mysqli_fetch_assoc($result))
 {
      
-    $totalBookings = get_car_rental($db['customer_id']) + get_visa($db['customer_id']) +  get_bus($db['customer_id']) +  get_excursion($db['customer_id']) + get_misc($db['customer_id']) + get_hotel($db['customer_id']) + get_ticket($db['customer_id'])  + get_train($db['customer_id']) + get_tourwise($db['customer_id']) + get_package($db['customer_id']);
+    $totalBookings = (int) get_car_rental($db['customer_id']) + (int) get_visa($db['customer_id']) +  (int) get_bus($db['customer_id']) +  (int) get_excursion($db['customer_id']) + (int) get_misc($db['customer_id']) + (int) get_hotel($db['customer_id']) + (int) get_ticket($db['customer_id'])  + (int) get_train($db['customer_id']) + (int) get_tourwise($db['customer_id']) + (int) get_package($db['customer_id']) + (int) get_airline($db['customer_id']);
     if($totalBookings >= 1)
     {
     $temparr = array("data" => array
@@ -463,7 +473,7 @@ while($db = mysqli_fetch_assoc($result))
                 (int) ($count++),
                 $db['first_name'].' '.$db['last_name'] ,
                 $totalBookings,
-                get_car_amount($db['customer_id']) + get_visa_amount($db['customer_id']) + get_bus_amount($db['customer_id']) + get_excursion_amount($db['customer_id']) + get_misc_amount($db['customer_id']) + get_hotel_amount($db['customer_id']) + get_ticket_amount($db['customer_id']) + get_train_amount($db['customer_id']) + get_tourwise_amount($db['customer_id']) + get_package_amount($db['customer_id']),
+                 get_car_amount($db['customer_id']) + get_visa_amount($db['customer_id']) + get_bus_amount($db['customer_id']) + get_excursion_amount($db['customer_id']) + get_misc_amount($db['customer_id']) + get_hotel_amount($db['customer_id']) + get_ticket_amount($db['customer_id']) + get_train_amount($db['customer_id']) + get_tourwise_amount($db['customer_id']) + get_package_amount($db['customer_id']),
 
                 get_car_profit($db['customer_id'])+ get_visa_profit($db['customer_id']) + get_bus_profit($db['customer_id']) + get_excursion_profit($db['customer_id']) + get_misc_profit($db['customer_id']) + get_hotel_profit($db['customer_id']) + get_ticket_profit($db['customer_id']) + get_train_profit($db['customer_id']) + get_tourwise_profit($db['customer_id']) + get_package_profit($db['customer_id']),
                 

@@ -210,34 +210,34 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('E'.$row_count, "Gross_Salary")
 
         ->setCellValue('F'.$row_count, "Salary_Advance")
-        ->setCellValue('G'.$row_count, "Incentive")
-        ->setCellValue('H'.$row_count, "Employer_PF")
+        // ->setCellValue('G'.$row_count, "Incentive")
+        ->setCellValue('G'.$row_count, "Employer_PF")
 
-        ->setCellValue('I'.$row_count, "Employee_PF")
+        ->setCellValue('H'.$row_count, "Employee_PF")
 
-        ->setCellValue('J'.$row_count, "ESIC_Deduction")
+        ->setCellValue('I'.$row_count, "ESIC_Deduction")
 
-        ->setCellValue('K'.$row_count, "PT_Deduction")
+        ->setCellValue('J'.$row_count, "PT_Deduction")
 
-        ->setCellValue('L'.$row_count, "LWF_Deduction")
+        ->setCellValue('K'.$row_count, "LWF_Deduction")
 
-        ->setCellValue('M'.$row_count, "TDS_deduction")
+        ->setCellValue('L'.$row_count, "TDS_deduction")
 
-        ->setCellValue('N'.$row_count, "Surcharge_deduction")
+        ->setCellValue('M'.$row_count, "Surcharge_deduction")
 
-        ->setCellValue('O'.$row_count, "Cess_deduction")
+        ->setCellValue('N'.$row_count, "Cess_deduction")
 
-        ->setCellValue('P'.$row_count, "leave_deduction")
+        ->setCellValue('O'.$row_count, "leave_deduction")
 
-        ->setCellValue('Q'.$row_count, "Total_Deduction")
+        ->setCellValue('P'.$row_count, "Total_Deduction")
 
-        ->setCellValue('R'.$row_count, "Net_Salary");
+        ->setCellValue('Q'.$row_count, "Net_Salary");
 
 
 
-$objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':R'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':Q'.$row_count)->applyFromArray($header_style_Array);
 
-$objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':R'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':Q'.$row_count)->applyFromArray($borderArray);    
 
 
 
@@ -276,23 +276,23 @@ if($emp_id!=''){
 
         ->setCellValue('E'.$row_count, ($sq_sal['gross_salary']!="") ? $sq_sal['gross_salary'] : number_format(0,2))
         ->setCellValue('F'.$row_count, ($sq_sal['salary_advance']!="") ? $sq_sal['salary_advance'] : number_format(0,2))
-        ->setCellValue('G'.$row_count, ($sq_sal['incentive']!="") ? $sq_sal['incentive'] : number_format(0,2))
-        ->setCellValue('H'.$row_count, ($sq_sal['employer_pf']!="") ? $sq_sal['employer_pf'] : number_format(0,2))
-        ->setCellValue('I'.$row_count, ($sq_sal['employee_pf']!="") ? $sq_sal['employee_pf'] : number_format(0,2))
-        ->setCellValue('J'.$row_count, ($sq_sal['esic']!="") ? $sq_sal['esic'] : number_format(0,2))
-        ->setCellValue('K'.$row_count, ($sq_sal['pt']!="") ? $sq_sal['pt']  : number_format(0,2))
-        ->setCellValue('L'.$row_count, ($sq_sal['labour_all']!="") ?$sq_sal['labour_all'] : number_format(0,2))
-        ->setCellValue('M'.$row_count, ($sq_sal['tds']!="") ? $sq_sal['tds'] : number_format(0,2))
-        ->setCellValue('N'.$row_count, ($sq_sal['surcharge_deduction']!="") ? $sq_sal['surcharge_deduction'] : number_format(0,2))
-        ->setCellValue('O'.$row_count, ($sq_sal['cess_deduction']!="") ? $sq_sal['cess_deduction'] : number_format(0,2))
-        ->setCellValue('P'.$row_count, ($sq_sal['leave_deduction']!="") ? $sq_sal['leave_deduction'] : number_format(0,2))
-        ->setCellValue('Q'.$row_count, ($sq_sal['deduction']!="") ? $sq_sal['deduction'] : number_format(0,2))
-        ->setCellValue('R'.$row_count, ($sq_sal['net_salary']!="") ? $sq_sal['net_salary'] : number_format(0,2));
+        // ->setCellValue('G'.$row_count, ($sq_sal['incentive']!="") ? $sq_sal['incentive'] : number_format(0,2))
+        ->setCellValue('G'.$row_count, ($sq_sal['employer_pf']!="") ? $sq_sal['employer_pf'] : number_format(0,2))
+        ->setCellValue('H'.$row_count, ($sq_sal['employee_pf']!="") ? $sq_sal['employee_pf'] : number_format(0,2))
+        ->setCellValue('I'.$row_count, ($sq_sal['esic']!="") ? $sq_sal['esic'] : number_format(0,2))
+        ->setCellValue('J'.$row_count, ($sq_sal['pt']!="") ? $sq_sal['pt']  : number_format(0,2))
+        ->setCellValue('K'.$row_count, ($sq_sal['labour_all']!="") ?$sq_sal['labour_all'] : number_format(0,2))
+        ->setCellValue('L'.$row_count, ($sq_sal['tds']!="") ? $sq_sal['tds'] : number_format(0,2))
+        ->setCellValue('M'.$row_count, ($sq_sal['surcharge_deduction']!="") ? $sq_sal['surcharge_deduction'] : number_format(0,2))
+        ->setCellValue('N'.$row_count, ($sq_sal['cess_deduction']!="") ? $sq_sal['cess_deduction'] : number_format(0,2))
+        ->setCellValue('O'.$row_count, ($sq_sal['leave_deduction']!="") ? $sq_sal['leave_deduction'] : number_format(0,2))
+        ->setCellValue('P'.$row_count, ($sq_sal['deduction']!="") ? $sq_sal['deduction'] : number_format(0,2))
+        ->setCellValue('Q'.$row_count, ($sq_sal['net_salary']!="") ? $sq_sal['net_salary'] : number_format(0,2));
 
 
-    $objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':R'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':Q'.$row_count)->applyFromArray($content_style_Array);
 
-	$objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':R'.$row_count)->applyFromArray($borderArray);    
+	$objPHPExcel->getActiveSheet()->getStyle('A'.$row_count.':Q'.$row_count)->applyFromArray($borderArray);    
 
 
 

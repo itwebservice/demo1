@@ -19,7 +19,7 @@ public function reference_save()
 
 	$sq_insert = mysqlQuery("insert into references_master ( reference_id, reference_name, created_at, active_flag ) values ( '$reference_id', '$reference_name1', '$created_at', '$status' )");
 	if($sq_insert){
-		echo "References has been successfully saved.";
+		echo "Reference has been successfully saved.";
 		exit;
 	}
 	else{
@@ -44,7 +44,7 @@ public function reference_update()
 
 	$sq_insert = mysqlQuery("update references_master set reference_name='$reference_name1' , active_flag='$active_flag'  where reference_id='$reference_id'");
 	if($sq_insert){
-		echo "References has been successfully updated.";
+		echo "Reference has been successfully updated.";
 		exit;
 	}
 	else{

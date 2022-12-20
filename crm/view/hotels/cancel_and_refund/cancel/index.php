@@ -8,7 +8,7 @@ include "../../../../model/model.php";
 			<select name="booking_id" id="booking_id" style="width:100%" title="Select Booking" onchange="content_reflect()">
 		        <option value="">Select Booking</option>
 		        <?php 
-		        $sq_hotel = mysqlQuery("select * from hotel_booking_master order by booking_id desc");
+		        $sq_hotel = mysqlQuery("select * from hotel_booking_master where delete_status='0' order by booking_id desc");
 		        while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
 
 		          $date = $row_hotel['created_at'];

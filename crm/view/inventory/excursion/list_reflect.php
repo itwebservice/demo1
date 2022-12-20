@@ -44,12 +44,12 @@ include "../../../model/app_settings/branchwise_filteration.php";
 			$sq_exc = mysqli_fetch_assoc(mysqlQuery("select entry_id, excursion_name from excursion_master_tariff where entry_id='$row_ser[exc_id]'"));
 
 			//Excursion Booking
-			$sq_hotel_c = mysqlQuery("select total_adult, total_child from excursion_master_entries where city_id= '$row_ser[city_id]' and exc_name = '$row_ser[exc_id]' and status!='Cancel' and (exc_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]')");
+			$sq_hotel_c = mysqlQuery("select total_adult, total_child from excursion_master_entries where city_id= '$row_ser[city_id]' and exc_name = '$row_ser[exc_id]' and (exc_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]') and status!='Cancel' and exc_id in(select exc_id from excursion_master where delete_status='0')");
 			while($row_hotel_c = mysqli_fetch_assoc($sq_hotel_c)){
 				$total_pax += $row_hotel_c['total_adult'] + $row_hotel_c['total_child'];
 			}
 			//Package booking
-			$sq_hotel_c1 = mysqlQuery("select * from package_tour_excursion_master where city_id= '$row_ser[city_id]' and exc_id = '$row_ser[exc_id]' and booking_id in(select booking_id from package_tour_booking_master where tour_from_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]')");
+			$sq_hotel_c1 = mysqlQuery("select * from package_tour_excursion_master where city_id= '$row_ser[city_id]' and exc_id = '$row_ser[exc_id]' and booking_id in(select booking_id from package_tour_booking_master where tour_from_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]' and delete_status='0')");
 
 			while($row_hotel_c1= mysqli_fetch_assoc($sq_hotel_c1)){
 				
@@ -73,7 +73,14 @@ include "../../../model/app_settings/branchwise_filteration.php";
 				<td>
 					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_ser['entry_id'] ?>)" title="Update"><i class="fa fa-pencil-square-o"></i></button></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="excel_report(<?= $row_ser['entry_id'] ?>)" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button></td>
+					<?php
+					if($row_ser['total_tickets'] != $total_avail){
+						?>
+					<button class="btn btn-info btn-sm" onclick="excel_report(<?= $row_ser['entry_id'] ?>)" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>
+				<?php }else{
+					echo 'NA';
+				} ?>
+				</td>
 			</tr>
 			<?php } ?>
 	</tbody>

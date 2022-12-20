@@ -1,4 +1,4 @@
-<?php 
+<?php
 //Sale
 $sale_total_amount=$sq_booking['total_fees'];
 if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
@@ -52,18 +52,20 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 				</thead>
 				<tbody>
 				<?php
-				 $count = 0;
-				 $query = "SELECT * from car_rental_payment where booking_id='$booking_id'";		
-				 $sq_visa_payment = mysqlQuery($query);	
-				 $bg="";
+				$count = 0;
+				$query = "SELECT * from car_rental_payment where booking_id='$booking_id'";		
+				$sq_visa_payment = mysqlQuery($query);	
+				$bg="";
 
-				 while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
-				 	if($row_visa_payment['payment_amount'] != '0'){
+				while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
+					if($row_visa_payment['payment_amount'] != '0'){
 						$count++;
 						$bg = '';
 						if($row_visa_payment['clearance_status']=="Pending"){ $bg="warning";}
 					    else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg="danger";} 
-					    else { $bg = 'success';}
+						else if ($row_visa_payment['clearance_status'] == "Cleared") {
+							$bg = "success";
+						}
 						?>
 
 						<tr class="<?php echo $bg; ?>">

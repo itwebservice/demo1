@@ -3,7 +3,7 @@ include "../../../model/model.php";
 
 $payment_id = $_POST['payment_id'];
 $sq_payment = mysqli_fetch_assoc(mysqlQuery("select * from payment_master where payment_id='$payment_id'"));
-$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$sq_payment[tourwise_traveler_id]'"));
+$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$sq_payment[tourwise_traveler_id]' and delete_status='0'"));
 $date = $sq_tour['form_date'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -163,6 +163,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
             </div>
           </div>
           <?php } ?>
+            <input type="hidden" id="canc_status1" name="canc_status1" class="form-control" value="<?=$sq_payment['status']?>"/>
 
 
 		      <div class="row text-center mg_tp_20 mg_bt_10">
@@ -207,14 +208,14 @@ $(function(){
 
   $('#frm_payment_update').validate({
     rules:{
-            txt_payment_date : { required : true },
-            cmb_payment_mode : { required : true },
-            txt_amount : { required : true },
-            cmb_payment_of_type : { required : true },
-            cmb_travel_of_type : { required : true },
-            txt_bank_name : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-            txt_transaction_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-            bank_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+      txt_payment_date : { required : true },
+      cmb_payment_mode : { required : true },
+      txt_amount : { required : true },
+      cmb_payment_of_type : { required : true },
+      cmb_travel_of_type : { required : true },
+      txt_bank_name : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
+      txt_transaction_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+      bank_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
     },
 
     submitHandler:function(form){
@@ -234,52 +235,32 @@ $(function(){
       var credit_card_details = $('#credit_card_details1').val();
       var credit_charges_old = $('#credit_charges_old').val();
       var outstanding = $('#outstanding').val();
+      var canc_status = $('#canc_status1').val();
 
       if(!check_updated_amount(payment_old_value,payment_amount)){
-      error_msg_alert("You can update receipt to 0 only!");
-      return false;
-    }
+        error_msg_alert("You can update receipt to 0 only!");
+        return false;
+      }
 
-    if(payment_amount>outstanding){
-      error_msg_alert("Payment amount cannot be greater than outstanding amount.");
-      return false;
-    }
-
+      if(payment_amount>outstanding){
+        error_msg_alert("Payment amount cannot be greater than outstanding amount.");
+        return false;
+      }
       $('#btn_payment_installment').button('loading');
 
-
-
       $.post( 
+        base_url()+"controller/group_tour/booking_payment/payment_master_update.php",
+        { tourwise_traveler_id : tourwise_traveler_id, payment_id : payment_id, payment_date : payment_date, payment_mode : payment_mode, payment_amount : payment_amount, bank_name : bank_name, transaction_id : transaction_id, payment_for : payment_for, p_travel_type : p_travel_type, bank_id : bank_id, payment_old_value : payment_old_value ,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,canc_status:canc_status },
 
-             base_url()+"controller/group_tour/booking_payment/payment_master_update.php",
+        function(data) { 
 
-             { tourwise_traveler_id : tourwise_traveler_id, payment_id : payment_id, payment_date : payment_date, payment_mode : payment_mode, payment_amount : payment_amount, bank_name : bank_name, transaction_id : transaction_id, payment_for : payment_for, p_travel_type : p_travel_type, bank_id : bank_id, payment_old_value : payment_old_value ,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old },
-
-             function(data) { 
-
-                $('#btn_payment_installment').button('reset');                   
-
-                 msg_alert(data);
-
-                 list_reflect();
-
-                 $('#update_modal').modal('hide');
-
-             });
-
-
-
-          
-
-
-
-
-
+          $('#btn_payment_installment').button('reset');                   
+            msg_alert(data);
+            list_reflect();
+            $('#update_modal').modal('hide');
+        });
     }
-
   });
-
-
 
 });
 

@@ -14,7 +14,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
-$query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' ";
+$query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";
 }
@@ -33,7 +33,7 @@ if($company_name != ""){
 	$query .= " and customer_id in (select customer_id from customer_master where company_name = '$company_name')";
 }
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by booking_id desc";
+// $query .= " order by booking_id desc";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
 	
@@ -100,7 +100,8 @@ $query .= " order by booking_id desc";
 </div> </div> </div>
 <script>
 $('#tbl_report').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 function hotel_service_voucher(entry_id)
 {

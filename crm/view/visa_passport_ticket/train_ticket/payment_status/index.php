@@ -29,7 +29,7 @@ $branch_status_r = $sq['branch_status'];
 				<select name="train_ticket_id_filter" id="train_ticket_id_filter" style="width: 100%;" title="Booking ID">
 			        <option value="">Booking ID</option>
 			        <?php 
-			        $query = "select * from train_ticket_master where 1 ";
+			        $query = "select * from train_ticket_master where 1 and delete_status='0' ";
 			        include "../../../../model/app_settings/branchwise_filteration.php";
 			        $query .= " order by train_ticket_id desc ";
 			        $sq_ticket = mysqlQuery($query);
@@ -125,7 +125,7 @@ $branch_status_r = $sq['branch_status'];
 		var branch_status_r = $('#branch_status_r').val();
 		$.post(base_url+'view/visa_passport_ticket/train_ticket/payment_status/list_reflect.php', { train_ticket_id : train_ticket_id, customer_id : customer_id, from_date : from_date, to_date : to_date, cust_type : cust_type, company_name : company_name,booker_id:booker_id,branch_id : branch_id , branch_status : branch_status_r  }, function(data){
 			// $('#div_list_reflect').html(data);
-			pagination_load(data, column, true, true, 20, 'train_tour_report');
+			pagination_load(data, column, true, true, 20, 'train_tour_report',true);
 			$('.loader').remove();
 		});
 	}

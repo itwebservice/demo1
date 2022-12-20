@@ -176,7 +176,7 @@ else{
 }
 
 if($booking_id!=""){
-  $query = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+  $query = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
   $date = $query['booking_date'];
   $yr = explode("-", $date);
   $year =$yr[0];
@@ -253,7 +253,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_
 
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
 
-$query = "select * from package_tour_booking_master where financial_year_id='$financial_year_id'";
+$query = "select * from package_tour_booking_master where financial_year_id='$financial_year_id' and delete_status='0'";
 
   if($customer_id!=""){
 
@@ -312,9 +312,9 @@ $objPHPExcel->setActiveSheetIndex(0)
 
         ->setCellValue('B'.$row_count, "Invoice_No")
         ->setCellValue('C'.$row_count, "Booking ID")
-        ->setCellValue('D'.$row_count, "Tour")
+        ->setCellValue('D'.$row_count, "Customer Name")
         ->setCellValue('E'.$row_count, "Tour Date")
-        ->setCellValue('F'.$row_count, "Customer Name")
+        ->setCellValue('F'.$row_count, "Tour")
         ->setCellValue('G'.$row_count, "Total PAX")
         ->setCellValue('H'.$row_count, "Train Amount")
         ->setCellValue('I'.$row_count, "Flight Amount")
@@ -409,9 +409,9 @@ $sq_booking = mysqlQuery($query);
     $objPHPExcel->setActiveSheetIndex(0)
       ->setCellValue('B'.$row_count, $row_booking['invoice_pr_id'])
       ->setCellValue('C'.$row_count, get_package_booking_id($row_booking['booking_id'],$year))
-      ->setCellValue('D'.$row_count, $row_booking['tour_name'])
+      ->setCellValue('D'.$row_count, $customer_name)
       ->setCellValue('E'.$row_count,get_date_user($row_booking['tour_from_date']).' to '.get_date_user($row_booking['tour_to_date']))
-      ->setCellValue('F'.$row_count, $customer_name)
+      ->setCellValue('F'.$row_count, $row_booking['tour_name'])
       ->setCellValue('G'.$row_count, $sq_total_members)
       ->setCellValue('H'.$row_count, number_format($row_booking['total_train_expense'],2))
       ->setCellValue('I'.$row_count, number_format($row_booking['total_plane_expense'],2))

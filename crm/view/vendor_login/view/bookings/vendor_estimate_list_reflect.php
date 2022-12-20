@@ -5,7 +5,7 @@ include_once('vendor_generic_functions.php');
 
 $user_id = $_SESSION['user_id'];
 $vendor_type = $_SESSION['vendor_type'];
-$query = "select * from vendor_estimate where 1 ";
+$query = "select * from vendor_estimate where 1 and delete_status='0' ";
 $query .= " and vendor_type='$vendor_type'";
 $query .= " and vendor_type_id='$user_id'";
 ?>

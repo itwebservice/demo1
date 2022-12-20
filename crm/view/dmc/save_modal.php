@@ -45,13 +45,13 @@ include "../../model/model.php";
 
               <div class="row">
                 <div class="col-sm-3 col-xs-6 mg_bt_10">
-                    <select name="state" id="state" title="Select State" style="width:100%" required>
+                    <select name="state" id="state" title="Select State/Country Name" style="width:100%" required>
                       <?php get_states_dropdown() ?>
                     </select>
                 </div> 
-                <div class="col-md-3 col-sm-6 mg_bt_10">
+                <!-- <div class="col-md-3 col-sm-6 mg_bt_10">
                     <input type="text" id="country" name="country" placeholder="Country" title="Country">
-                </div>             
+                </div>              -->
                   
                 <div class="col-md-3 col-sm-6 mg_bt_10">
                     <input type="text" id="website" name="website" placeholder="Website" title="Website">
@@ -84,17 +84,17 @@ include "../../model/model.php";
                   <div class="col-md-3 col-sm-6 mg_bt_10">
                       <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)";  placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
                   </div>
-                 <div class="col-md-3 col-sm-6 mg_bt_10">
-                      <input type="hidden" id="opening_balance" name="opening_balance" placeholder="Opening Balance" title="Opening Balance" value="0.00" onchange="validate_balance(this.id)">
-                  </div>
-                  <div class="col-sm-3 mg_bt_10">
-                    <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
+                  <div class="col-md-3 col-sm-6 mg_bt_10">
+                      <input type="number" id="opening_balance" value="0" name="opening_balance" placeholder="*Opening Balance" title="Opening Balance">
                   </div>
                   <div class="col-md-3 col-sm-6 mg_bt_10">
-                    <select class="hidden" name="side" id="side" title="Select side">
+                    <select class="form-control" name="side" id="side" title="Balance side" data-toggle="tooltip">
                       <option value="Credit">Credit</option>
                       <option value="Debit">Debit</option>
                     </select>
+                  </div>
+                  <div class="col-sm-3 mg_bt_10">
+                    <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
                   </div>
               </div> 
               <div class="row">
@@ -124,14 +124,12 @@ $('#as_of_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
 $(function(){
   $('#frm_dmc_save').validate({
     rules:{
-            company_name:{ required:true },
-           
-            cmb_city_id:{ required:true },
-          
-            side : { required : true },
-			      as_of_date : { required : true },
+      company_name:{ required:true },
+      cmb_city_id:{ required:true },
+      side : { required : true },
+      as_of_date : { required : true },
+      opening_balance : { required : true }
     },
-
     submitHandler:function(form){
         var company_name = $('#company_name').val();
         var mobile_no = $('#mobile_no').val();
@@ -144,7 +142,7 @@ $(function(){
         var active_flag = $('#active_flag').val();
         var service_tax_no = $('#service_tax_no').val();
         var immergency_contact_no = $("#immergency_contact_no").val();
-        var country = $("#country").val();
+        // var country = $("#country").val();
         var website = $("#website").val();
         var bank_name = $("#bank_name").val();
         var branch = $("#branch").val();
@@ -154,7 +152,8 @@ $(function(){
         var base_url = $('#base_url').val();
         var state = $('#state').val();
         var side = $('#side').val();
-        var supp_pan = $('#supp_pan').val();
+        var supp_pan1 = $('#supp_pan').val();
+        var supp_pan = supp_pan1.toUpperCase();
         var as_of_date = $('#as_of_date').val();
 
         var add = validate_address('dmc_address');
@@ -167,7 +166,7 @@ $(function(){
         $.post( 
                base_url+"controller/dmc/dmc_save.php",
 
-               { company_name : company_name, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, contact_person_name : contact_person_name,immergency_contact_no : immergency_contact_no, cmb_city_id : cmb_city_id, dmc_address : dmc_address, country : country, website : website, opening_balance : opening_balance, active_flag : active_flag, service_tax_no : service_tax_no, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, state : state,side :side,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date},
+               { company_name : company_name, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, contact_person_name : contact_person_name,immergency_contact_no : immergency_contact_no, cmb_city_id : cmb_city_id, dmc_address : dmc_address, website : website, opening_balance : opening_balance, active_flag : active_flag, service_tax_no : service_tax_no, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, state : state,side :side,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date},
                function(data) {                 
                   msg_alert(data);
                   $('#dmc_save_modal').modal('hide');

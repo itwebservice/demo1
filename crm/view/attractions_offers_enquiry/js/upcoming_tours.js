@@ -1,4 +1,4 @@
-jQuery('#txt_tour_offer_valid_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
+jQuery('#txt_tour_offer_valid_date').datetimepicker({ timepicker:false, format:'d-m-Y', minDate: new Date() });
 
 
 function upcoming_tour_offsers_list_reflect()

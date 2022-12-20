@@ -65,6 +65,7 @@ function history_modal(purchase_id)
 	$('#hhistory'+purchase_id).prop('disabled', true);
 	$('#hhistory'+purchase_id).button('loading');
 	$.post('excursion/history_modal.php', {purchase_id : purchase_id}, function(data){
+		console.log(data);
 		$('#div_modal').html(data);
 		$('#hhistory'+purchase_id).button('reset');
 		$('#hhistory'+purchase_id).prop('disabled', false);

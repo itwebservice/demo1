@@ -7,7 +7,7 @@ $tourwise_id = $_POST['tourwise_id'];
 
 $sq_personal_info = mysqli_fetch_assoc(mysqlQuery("select * from traveler_personal_info where tourwise_traveler_id='$tourwise_id'"));
 
-$sq_tourwise =  mysqli_fetch_assoc( mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'") );
+$sq_tourwise =  mysqli_fetch_assoc( mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'") );
 $traveler_group_id = $sq_tourwise['traveler_group_id'];
 
 $sq_total_tour_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as sum from payment_master where tourwise_traveler_id='$tourwise_id' and payment_for='tour' "));

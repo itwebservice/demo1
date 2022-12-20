@@ -1,8 +1,13 @@
 <form id="frm_tab3">
 
+<div class="app_panel">
+
+<div class="">
+	<div class="container-fluid">
+        <div class="app_panel_content Filter-panel">
 
 
-	<div class="row">
+	<div class="row mg_tp_20">
 
 
 
@@ -16,19 +21,19 @@
 				<div class="row mg_bt_10">
 
 					<div class="col-sm-4 col-xs-12 mg_bt_10">
-						<span data-original-title="" title="">Adults</span>
+						<span data-original-title="" title="">Adult(s)</span>
 						<input type="text" id="adults" name="adults" placeholder="Adults" title="Adults" readonly value="<?= $sq_ticket['adults'] ?>" onchange="get_auto_values('booking_date1','basic_cost','payment_mode','service_charge','markup','update','true','service_charge','discount');">
 
 					</div>
 
 					<div class="col-sm-4 col-xs-12 mg_bt_10">
-						<span data-original-title="" title="">Child</span>
+						<span data-original-title="" title="">Child(ren)</span>
 						<input type="text" id="childrens" name="childrens" placeholder="Childrens" title="Childrens" readonly value="<?= $sq_ticket['childrens'] ?>" onchange="get_auto_values('booking_date1','basic_cost','payment_mode','service_charge','markup','update','true','service_charge','discount');">
 
 					</div>
 
 					<div class="col-sm-4 col-xs-12 mg_bt_10">
-						<span data-original-title="" title="">Infants</span>
+						<span data-original-title="" title="">Infant(s)</span>
 						<input type="text" id="infant" name="infant" placeholder="Infant" title="Infant" readonly value="<?= $sq_ticket['infant'] ?>">
 
 					</div>			
@@ -190,25 +195,17 @@
 		</div>
 	</div>
 
-
 	<div class="row text-center mg_tp_20">
-
 		<div class="col-xs-12">
-
 			<button class="btn btn-info btn-sm ico_left" type="button" onclick="switch_to_tab2()"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Previous</button>
-
 			&nbsp;&nbsp;
-
 			<button class="btn btn-sm btn-success" id="btn_ticket_save"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Update</button>
-
 		</div>
-
 	</div>
-
-
-
-
-
+</div>
+</div>
+</div>
+</div>
 </form>
 
 
@@ -245,7 +242,8 @@ $(function(){
 		submitHandler:function(form,e){
 			e.preventDefault();
 				
-
+			
+				$('#btn_ticket_save').prop('disabled', true);
 				var ticket_id = $('#ticket_id').val();
 
 				var customer_id = $('#customer_id').val();
@@ -292,84 +290,60 @@ $(function(){
 
 				var ticket_total_cost = $('#ticket_total_cost').val();
 
+				var first_name_arr = []; 
 
+				var middle_name_arr = []; 
 
-				var first_name_arr = new Array(); 
+				var last_name_arr = []; 
 
-				var middle_name_arr = new Array(); 
+				var adolescence_arr = []; 
 
-				var last_name_arr = new Array(); 
+				var ticket_no_arr = []; 
 
-				// var birth_date_arr = new Array(); 
+				var gds_pnr_arr = []; 
 
-				var adolescence_arr = new Array(); 
+				var baggage_info_arr = []; 
 
-				var ticket_no_arr = new Array(); 
+				var entry_id_arr = []; 
 
-				var gds_pnr_arr = new Array(); 
-
-				var baggage_info_arr = new Array(); 
-
-				var entry_id_arr = new Array(); 
-
-				var main_ticket_arr = new Array();
-				var seat_no_arr = new Array();
+				var main_ticket_arr = [];
+				var seat_no_arr = [];
 				var meal_plan_arr = [];
-
-
+				var trip_details_arr1 = [];
+				var checked_arr = [];
 
 		        var table = document.getElementById("tbl_dynamic_ticket_master");
-
 		        var rowCount = table.rows.length;
-
-		        
-
 		        for(var i=0; i<rowCount; i++)
-
 		        {
 
-		          var row = table.rows[i];
-
-		           
-
-		          if(row.cells[0].childNodes[0].checked)
-
-		          {
-
-
-
+					var row = table.rows[i];
+					// if(row.cells[0].childNodes[0].checked)
+					{
 					var first_name = row.cells[2].childNodes[0].value;
-
 					var middle_name = row.cells[3].childNodes[0].value;
-
 					var last_name = row.cells[4].childNodes[0].value;
-
-
 					var adolescence = row.cells[6].childNodes[0].value;
-
 					var ticket_no = row.cells[7].childNodes[0].value;
-
 					var gds_pnr = row.cells[8].childNodes[0].value;
-
 					var baggage_info = row.cells[9].childNodes[0].value;
 					var seat_no = row.cells[10].childNodes[0].value;
 					var meal_plan = row.cells[11].childNodes[0].value;
-
 					var main_ticket = row.cells[12].childNodes[0].value;
+					var first_name_id = row.cells[2].childNodes[0].id;
+					var count = first_name_id.substring(10);
+					var trip_details = $('#flight_details'+count).html();
 
-					if(row.cells[13]){
+					if(row.cells[15]){
 
-					var entry_id = row.cells[13].childNodes[0].value;
+						var entry_id = row.cells[15].childNodes[0].value;
 
 					}
-
 					else{
 
-					var entry_id = "";
+						var entry_id = "";
 
 					}
-
-					
 
 					first_name_arr.push(first_name);
 
@@ -390,6 +364,8 @@ $(function(){
 					main_ticket_arr.push(main_ticket);
 					seat_no_arr.push(seat_no);
 					meal_plan_arr.push(meal_plan);
+					trip_details_arr1.push(trip_details);
+					checked_arr.push(row.cells[0].childNodes[0].checked);
 
 		        }      
 
@@ -449,13 +425,14 @@ $(function(){
 					"discount" : $('#discount_show').find('span').text(),
 				});
 				var roundoff = $('#roundoff').val();
-		
+				var ticket_reissue = $('#reissue_check1:checked').length;
 			//Validation for booking and payment date in login financial year
 			var base_url = $('#base_url').val();
 			var check_date1 = $('#booking_date1').val();
 			$.post(base_url+'view/load_data/finance_date_validation.php', { check_date: check_date1 }, function(data){
 				if(data !== 'valid'){
 					error_msg_alert("The Booking date does not match between selected Financial year.");
+					$('#btn_ticket_save').prop('disabled', false);
 					return false;
 				}else{
 							$('#btn_ticket_save').button('loading');
@@ -464,7 +441,7 @@ $(function(){
 									type:'post',
 
 									url: base_url+'controller/visa_passport_ticket/ticket/ticket_master_update.php',
-									data:{ ticket_id : ticket_id, customer_id : customer_id, tour_type : tour_type, type_of_tour : type_of_tour, adults : adults, childrens : childrens, infant : infant, adult_fair : adult_fair, children_fair : children_fair, infant_fair : infant_fair, basic_cost : basic_cost, markup : markup, discount : discount, yq_tax : yq_tax, service_charge : service_charge,service_tax_markup : service_tax_markup, service_tax_subtotal : service_tax_subtotal, tds : tds, due_date : due_date, ticket_total_cost : ticket_total_cost, first_name_arr : first_name_arr, middle_name_arr : middle_name_arr, last_name_arr : last_name_arr, adolescence_arr : adolescence_arr, ticket_no_arr : ticket_no_arr, gds_pnr_arr : gds_pnr_arr, baggage_info_arr : baggage_info_arr,entry_id_arr : entry_id_arr, departure_datetime_arr : departure_datetime_arr, arrival_datetime_arr : arrival_datetime_arr, airlines_name_arr : airlines_name_arr, class_arr : class_arr, flight_no_arr : flight_no_arr, airlin_pnr_arr : airlin_pnr_arr, departure_city_arr : departure_city_arr, arrival_city_arr : arrival_city_arr, special_note_arr : special_note_arr, trip_entry_id_arr : trip_entry_id_arr,booking_date1 : booking_date1, meal_plan_arr : meal_plan_arr, luggage_arr : luggage_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr, other_taxes : other_taxes, reflections : reflections, roundoff : roundoff, bsmValues : bsmValues, main_ticket_arr : main_ticket_arr, seat_no_arr : seat_no_arr, arrival_terminal_arr : arrival_terminal_arr, departure_terminal_arr : departure_terminal_arr, canc_policy : canc_policy,sub_category_arr:sub_category_arr, no_of_pieces_arr:no_of_pieces_arr, aircraft_type_arr:aircraft_type_arr, operating_carrier_arr:operating_carrier_arr, frequent_flyer_arr:frequent_flyer_arr,ticket_status_arr:ticket_status_arr,guest_name:guest_name},
+									data:{ ticket_id : ticket_id, customer_id : customer_id, tour_type : tour_type, type_of_tour : type_of_tour, adults : adults, childrens : childrens, infant : infant, adult_fair : adult_fair, children_fair : children_fair, infant_fair : infant_fair, basic_cost : basic_cost, markup : markup, discount : discount, yq_tax : yq_tax, service_charge : service_charge,service_tax_markup : service_tax_markup, service_tax_subtotal : service_tax_subtotal, tds : tds, due_date : due_date, ticket_total_cost : ticket_total_cost, first_name_arr : first_name_arr, middle_name_arr : middle_name_arr, last_name_arr : last_name_arr, adolescence_arr : adolescence_arr, ticket_no_arr : ticket_no_arr, gds_pnr_arr : gds_pnr_arr, baggage_info_arr : baggage_info_arr,entry_id_arr : entry_id_arr, departure_datetime_arr : departure_datetime_arr, arrival_datetime_arr : arrival_datetime_arr, airlines_name_arr : airlines_name_arr, class_arr : class_arr, flight_no_arr : flight_no_arr, airlin_pnr_arr : airlin_pnr_arr, departure_city_arr : departure_city_arr, arrival_city_arr : arrival_city_arr, special_note_arr : special_note_arr, trip_entry_id_arr : trip_entry_id_arr,booking_date1 : booking_date1, meal_plan_arr : meal_plan_arr, luggage_arr : luggage_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr, other_taxes : other_taxes, reflections : reflections, roundoff : roundoff, bsmValues : bsmValues, main_ticket_arr : main_ticket_arr, seat_no_arr : seat_no_arr, arrival_terminal_arr : arrival_terminal_arr, departure_terminal_arr : departure_terminal_arr, canc_policy : canc_policy,sub_category_arr:sub_category_arr, no_of_pieces_arr:no_of_pieces_arr, aircraft_type_arr:aircraft_type_arr, operating_carrier_arr:operating_carrier_arr, frequent_flyer_arr:frequent_flyer_arr,ticket_status_arr:ticket_status_arr,guest_name:guest_name,trip_details_arr1:trip_details_arr1,checked_arr:checked_arr,ticket_reissue:ticket_reissue },
 
 									success:function(result){
 
@@ -475,16 +452,13 @@ $(function(){
 										if(msg[0]=="error"){
 
 											msg_alert(result);
-
+											$('#btn_ticket_save').button('reset');
+											$('#btn_ticket_save').prop('disabled', false);
 										}
 
 										else{
 
-											msg_alert(result);
-
-											$('#ticket_save_modal').modal('hide');
-
-											ticket_customer_list_reflect();
+											booking_save_message(result);
 
 										}
 
@@ -501,8 +475,28 @@ $(function(){
 	});
 
 });
+function booking_save_message(data) {
+	
+	var base_url = $('#base_url').val();
+	$('#vi_confirm_box').vi_confirm_box({
+		false_btn: false,
+		message: data,
+		true_btn_text: 'Ok',
+		callback: function (data1) {
+			if (data1 == 'yes') {
+				window.location.href = base_url+'view/visa_passport_ticket/ticket/index.php';
+			}
+		}
+	});
+}
 
-function switch_to_tab2(){ $('a[href="#tab2"]').tab('show'); }
+function switch_to_tab2(){ 
+	$('#tab_3_head').addClass('done');
+	$('#tab_1_head').addClass('active');
+	$('.bk_tab').removeClass('active');
+	$('#tab1').addClass('active');
+	$('html, body').animate({ scrollTop: $('.bk_tab_head').offset().top }, 200);
+}
 
 </script>
 

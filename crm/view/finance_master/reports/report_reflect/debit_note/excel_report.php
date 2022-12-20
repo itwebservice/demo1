@@ -110,13 +110,13 @@ $sq_query = mysqlQuery($query);
 $row_count = 6;
 
 $objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, "Sr. No")
+        ->setCellValue('B'.$row_count, "Debit Note ID")
         ->setCellValue('C'.$row_count, "Date")
         ->setCellValue('D'.$row_count, "Supplier Name")
         ->setCellValue('E'.$row_count, "Supplier Type")
         ->setCellValue('F'.$row_count, "Purchase ID")
         ->setCellValue('G'.$row_count, "Amount");
-         
+
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
 
@@ -128,9 +128,10 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 {
     $supplier_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
 	$total_amount += $row_query['payment_amount'];
+	$debit_note_id = get_debit_note_id($row_query['id']);
 
-  $objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, ++$count)
+    $objPHPExcel->setActiveSheetIndex(0)
+        ->setCellValue('B'.$row_count, $debit_note_id)
         ->setCellValue('C'.$row_count, get_date_user($row_query['created_at']))
         ->setCellValue('D'.$row_count, $supplier_name)
         ->setCellValue('E'.$row_count, $row_query['vendor_type'])

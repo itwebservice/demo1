@@ -214,10 +214,12 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('N'.$row_count, "Company") 
         ->setCellValue('O'.$row_count, "Tax No")
         ->setCellValue('P'.$row_count, "PAN No/TAN No")
-        ->setCellValue('Q'.$row_count, "Status");
+        ->setCellValue('Q'.$row_count, "Opening Balance")
+        ->setCellValue('R'.$row_count, "Balance Side")
+        ->setCellValue('S'.$row_count, "Status");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Q'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Q'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
@@ -280,10 +282,12 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
         ->setCellValue('N'.$row_count, $row_customer['company_name'])
         ->setCellValue('O'.$row_count, $row_customer['service_tax_no'])
         ->setCellValue('P'.$row_count, strtoupper($row_customer['pan_no']))
-        ->setCellValue('Q'.$row_count, $row_customer['active_flag']);
+        ->setCellValue('Q'.$row_count, number_format($row_customer['op_balance'],2))
+        ->setCellValue('R'.$row_count, $row_customer['balance_side'])
+        ->setCellValue('S'.$row_count, $row_customer['active_flag']);
 
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Q'.$row_count)->applyFromArray($content_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Q'.$row_count)->applyFromArray($borderArray);    
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($content_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($borderArray);    
 
         $row_count++;
 }

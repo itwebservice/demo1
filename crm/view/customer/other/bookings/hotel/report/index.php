@@ -12,16 +12,16 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="booking_id_filter" id="booking_id_filter" style="width:100%" onchange="booking_report_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_booking = mysqlQuery("select * from hotel_booking_master where customer_id='$customer_id'");
+			        $sq_booking = mysqlQuery("select * from hotel_booking_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 						$date = $row_booking['created_at'];
 						$yr = explode("-", $date);
 						$year =$yr[0];
-			          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-			          ?>
-			          <option value="<?= $row_booking['booking_id'] ?>"><?= get_hotel_booking_id($row_booking['booking_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
-			          <?php
+						$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+						?>
+						<option value="<?= $row_booking['booking_id'] ?>"><?= get_hotel_booking_id($row_booking['booking_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+			        	<?php
 			        }
 			        ?>
 			    </select>

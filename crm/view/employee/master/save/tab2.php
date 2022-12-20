@@ -75,12 +75,11 @@
           <span>Deductions</span>
           <br>
           <div class="row mg_tp_10">
-            <div class="col-md-3 col-sm-6 mg_bt_10">
-                <input type="text" id="employer_pf" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="calculate_total_payable();validate_balance(this.id);">
-            </div> 
-            <div class="col-md-3 col-sm-6 mg_bt_10">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
                 <input class="form-control" id="employee_pf" name="employee_pf" type="text" placeholder="Employee PF" title="Employee PF" onchange="calculate_total_payable();validate_balance(this.id);" />
             </div> 
+          
+           
             <div class="col-md-3 col-sm-6 mg_bt_10">
                 <input class="form-control" id="txt_esic" name="txt_esic" type="text" placeholder="ESIC" title="ESIC" onchange="calculate_total_payable();validate_balance(this.id)"/>
             </div> 
@@ -96,6 +95,9 @@
              <div class="col-md-3 col-sm-6 mg_bt_10">
                 <input class="form-control" id="txt_deduction" name="txt_deduction" type="text" placeholder="Total Deductions" title="Total Deductions" disabled/>
             </div>
+            <div class="col-md-3 col-sm-6 mg_bt_10">
+                <input type="text" id="employer_pf" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="calculate_total_payable();validate_balance(this.id);">
+            </div> 
           </div>
           <div class="row mg_tp_10">
             <div class="col-md-2 mg_tp_20"><label for="net_salary">Net Salary</label></div>

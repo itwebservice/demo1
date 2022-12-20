@@ -92,7 +92,7 @@ $sq_task = mysqli_fetch_assoc(mysqlQuery("select * from tasks_master where task_
                 <?php 
                     if($hidden_state==""){
 
-                      $sq_booking = mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_task[task_type_field_id]'");
+                      $sq_booking = mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_task[task_type_field_id]' and delete_status='0'");
                       while($row_booking = mysqli_fetch_assoc($sq_booking))
                       {
                         $pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]'"));
@@ -116,7 +116,7 @@ $sq_task = mysqli_fetch_assoc(mysqlQuery("select * from tasks_master where task_
                     ?>
                     <option value="">Select Booking ID</option>
                     <?php
-                      $query = "select * from package_tour_booking_master where 1 ";
+                      $query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
                       include "../../model/app_settings/branchwise_filteration.php";
                       $sq_booking = mysqlQuery($query);
                       while($row_booking = mysqli_fetch_assoc($sq_booking)){

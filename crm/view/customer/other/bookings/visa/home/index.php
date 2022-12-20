@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="visa_id_filter" id="visa_id_filter" class="form-control" onchange="visa_customer_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_visa = mysqlQuery("select * from visa_master where customer_id='$customer_id'");
+			        $sq_visa = mysqlQuery("select * from visa_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_visa = mysqli_fetch_assoc($sq_visa)){
 						$date = $row_visa['created_at'];
 						$yr = explode("-", $date);
@@ -41,9 +41,11 @@ $('#visa_id_filter').select2();
 	visa_customer_list_reflect();
 	
 	function visa_display_modal(visa_id)
-	{
+	{	
+    	$('#visa-'+visa_id).button('loading');
 		$.post('bookings/visa/home/view/index.php', { visa_id : visa_id }, function(data){
 			$('#div_visa_content_display').html(data);
+			$('#visa-'+visa_id).button('reset');
 		});
 	}
 </script>

@@ -47,7 +47,6 @@ function get_hotelenquiry_details(offset = '') {
 				
 				$('#customer_name' + offset).val(result.name);
 				$('#email_id' + offset).val(result.email_id);
-				$('#mobile_no' + offset).val(result.landline_no);
 				$('#total_adult' + offset).val(result.total_adult);
 				$('#total_infant' + offset).val(result.total_infant);
 				$('#total_adult' + offset).val(result.total_adult);
@@ -60,8 +59,9 @@ function get_hotelenquiry_details(offset = '') {
 					initialContent: ''
 				});
 				var whatsapp = result.landline_no;
-				whatsapp = whatsapp.split(result.country_code)[1];
-				$('#whatsapp_no' + offset).val(result.landline_no);
+				var country_code = result.country_code;
+				var ret = whatsapp.replace(country_code,'');
+				$('#whatsapp_no' + offset).val(ret);
 				$('#country_code' + offset).val(result.country_code);
 				$('#country_code').trigger('change');
 

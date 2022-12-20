@@ -55,7 +55,7 @@ $sq_info = mysqli_fetch_assoc(mysqlQuery("select * from fourth_coming_attraction
 
 <script src="<?= BASE_URL ?>js/ajaxupload.3.5.js"></script>
 <script>
-	$('#txt_valid_date1').datetimepicker({ timepicker:false, format:'d-m-Y' });
+	$('#txt_valid_date1').datetimepicker({ timepicker:false, format:'d-m-Y', minDate: new Date() });
 	$('#fouth_coming_attractions_update_modal').modal('show');
 
 	upload_hotel_pic_attch();

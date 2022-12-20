@@ -21,7 +21,7 @@ function dateSort($a,$b){
 }
 
 $group_booking_arr = array();
-$query = "select * from tourwise_traveler_details where 1 and tour_group_status != 'Cancel' ";
+$query = "select * from tourwise_traveler_details where 1 and tour_group_status != 'Cancel' and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query .= " and emp_id='$emp_id_filter' ";	
 }
@@ -33,7 +33,7 @@ if($from_date_filter!="" && $to_date_filter!=""){
 }
 
 include "../../model/app_settings/branchwise_filteration.php";
-$query .= " order by date(form_date) asc";
+// $query .= " order by date(form_date) asc";
 $sq_group_bookings = mysqlQuery($query);
 while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings)){
 
@@ -74,7 +74,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id='$row_group_bookings[tour_group_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id='$row_group_bookings[tour_group_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){		
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -100,7 +100,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings)){
 
 $package_booking_arr = array();
 
-$query = "select * from package_tour_booking_master where 1  and tour_status != 'Cancel'";
+$query = "select * from package_tour_booking_master where 1 and tour_status != 'Cancel' and delete_status='0'";
 if($emp_id_filter!=""){
 	$query .= " and emp_id='$emp_id_filter'";	
 }
@@ -135,7 +135,7 @@ while($row_package_booking = mysqli_fetch_assoc($sq_package_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id='$row_package_booking[booking_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id='$row_package_booking[booking_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -170,7 +170,7 @@ while($row_package_booking = mysqli_fetch_assoc($sq_package_booking)){
 // Hotel booking
 $hotel_booking_arr = array();
 
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query .= " and emp_id='$emp_id_filter'";	
 }
@@ -191,10 +191,11 @@ while($row_hotel_booking = mysqli_fetch_assoc($sq_hotel_booking)){
 	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id = '$row_hotel_booking[booking_id]' and status='Cancel'"));
 	if($sq_pass_count != $sq_pass_cancel)
 	{
+		$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_entries where booking_id = '$row_hotel_booking[booking_id]'"));
 		$booking_id = $row_hotel_booking['booking_id'];
 		$emp_id = $row_hotel_booking['emp_id'];
 		$tour_name = $row_hotel_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_hotel_booking['tour_from_date']));
+		$tour_date = date('d-m-Y', strtotime($sq_hotel['check_in']));
 		$booking_date = $row_hotel_booking['created_at'];
 		$tour_type = "Hotel Booking";
 		$file_no = get_hotel_booking_id($row_hotel_booking['booking_id'],$year);
@@ -204,7 +205,7 @@ while($row_hotel_booking = mysqli_fetch_assoc($sq_hotel_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Hotel Booking' and estimate_type_id='$row_hotel_booking[booking_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Hotel Booking' and estimate_type_id='$row_hotel_booking[booking_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -237,7 +238,7 @@ while($row_hotel_booking = mysqli_fetch_assoc($sq_hotel_booking)){
 // Bus Booking
 $bus_booking_arr = array();
 
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query .= " and emp_id='$emp_id_filter'";	
 }
@@ -258,10 +259,11 @@ while($row_bus_booking = mysqli_fetch_assoc($sq_bus_booking)){
 	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id = '$row_bus_booking[booking_id]' and status='Cancel'"));
 	if($sq_pass_count != $sq_pass_cancel)
 	{
+		$sq_bus = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_entries where booking_id = '$row_bus_booking[booking_id]'"));
 		$booking_id = $row_bus_booking['booking_id'];
 		$emp_id = $row_bus_booking['emp_id'];
 		$tour_name = $row_bus_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_bus_booking['tour_from_date']));
+		$tour_date = date('d-m-Y', strtotime($sq_bus['date_of_journey']));
 		$booking_date = $row_bus_booking['created_at'];
 		$tour_type = "Bus Booking";
 		$file_no = get_bus_booking_id($row_bus_booking['booking_id'],$year);
@@ -271,13 +273,13 @@ while($row_bus_booking = mysqli_fetch_assoc($sq_bus_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_bus_booking[booking_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_bus_booking[booking_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
 		}
 		$sq_booker = mysqli_fetch_assoc( mysqlQuery("select first_name, last_name from emp_master where emp_id='$emp_id'") );
-		 
+
 		if($sq_booker['first_name']==''){
 			$booker_name = 'Admin';
 		}
@@ -304,7 +306,7 @@ while($row_bus_booking = mysqli_fetch_assoc($sq_bus_booking)){
 // Car Rental Booking
 $car_booking_arr = array();
 
-$query = "select * from car_rental_booking where 1  and status!='Cancel'";
+$query = "select * from car_rental_booking where 1 and status!='Cancel' and delete_status='0'";
 if($emp_id_filter!=""){
 	$query .= " and emp_id='$emp_id_filter'";	
 }
@@ -321,14 +323,14 @@ while($row_car_booking = mysqli_fetch_assoc($sq_car_booking)){
 	$date = $row_car_booking['created_at'];
     $yr = explode("-", $date);
 	$year =$yr[0];
-	$sq_pass_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where booking_id = '$row_car_booking[booking_id]'"));
-	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where booking_id = '$row_car_booking[booking_id]' and status='Cancel'"));
+	$sq_pass_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where booking_id = '$row_car_booking[booking_id]' and delete_status='0'"));
+	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where booking_id = '$row_car_booking[booking_id]' and status='Cancel' and delete_status='0'"));
 	if($sq_pass_count != $sq_pass_cancel)
 	{
 		$booking_id = $row_car_booking['booking_id'];
 		$emp_id = $row_car_booking['emp_id'];
 		$tour_name = $row_car_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_car_booking['tour_from_date']));
+		$tour_date = date('d-m-Y', strtotime($row_car_booking['from_date']));
 		$booking_date = $row_car_booking['created_at'];
 		$tour_type = "Car Rental";
 		$file_no = get_car_rental_booking_id($row_car_booking['booking_id'],$year);
@@ -338,7 +340,7 @@ while($row_car_booking = mysqli_fetch_assoc($sq_car_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Car Rental' and estimate_type_id='$row_car_booking[booking_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and estimate_type_id='$row_car_booking[booking_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -371,7 +373,7 @@ while($row_car_booking = mysqli_fetch_assoc($sq_car_booking)){
 //Excursion Rental Booking
 $exc_booking_arr = array();
 
-$query = "select * from excursion_master where 1  ";
+$query = "select * from excursion_master where 1 and delete_status='0'  ";
 if($emp_id_filter!=""){
 	$query.= " and emp_id='$emp_id_filter'";	
 }
@@ -392,10 +394,11 @@ while($row_exc_booking = mysqli_fetch_assoc($sq_exc_booking)){
 	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from excursion_master_entries where exc_id = '$row_exc_booking[exc_id]' and status='Cancel'"));
 	if($sq_pass_count != $sq_pass_cancel)
 	{
+		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master_entries	where exc_id = '$row_exc_booking[exc_id]'"));
 		$booking_id = $row_exc_booking['exc_id'];
 		$emp_id = $row_exc_booking['emp_id'];
 		$tour_name = $row_exc_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_exc_booking['tour_from_date']));
+		$tour_date = date('d-m-Y', strtotime($sq_ticket['exc_date']));
 		$booking_date = $row_exc_booking['created_at'];
 		$tour_type = "Activity Booking";
 		$file_no = get_exc_booking_id($row_exc_booking['exc_id'],$year);
@@ -405,13 +408,13 @@ while($row_exc_booking = mysqli_fetch_assoc($sq_exc_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Activity Booking' and estimate_type_id='$row_exc_booking[exc_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Excursion Booking' and estimate_type_id='$row_exc_booking[exc_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
 		}
 		$sq_booker = mysqli_fetch_assoc( mysqlQuery("select first_name, last_name from emp_master where emp_id='$emp_id'") );
-		 
+
 		if($sq_booker['first_name']==''){
 			$booker_name = 'Admin';
 		}
@@ -438,7 +441,7 @@ while($row_exc_booking = mysqli_fetch_assoc($sq_exc_booking)){
 //Misc Rental Booking
 $misc_booking_arr = array();
 
-$query = "select * from miscellaneous_master where 1  ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query.= " and emp_id='$emp_id_filter'";	
 }
@@ -457,8 +460,7 @@ while($row_misc_booking = mysqli_fetch_assoc($sq_misc_booking)){
     $yr = explode("-", $date);
 	$year =$yr[0];
 	$sq_pass_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries	where misc_id = '$row_misc_booking[misc_id]'"));
-	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries
-	where misc_id = '$row_misc_booking[misc_id]' and status='Cancel'"));
+	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id = '$row_misc_booking[misc_id]' and status='Cancel'"));
 	
 	if($sq_pass_count != $sq_pass_cancel)
 	{
@@ -475,7 +477,7 @@ while($row_misc_booking = mysqli_fetch_assoc($sq_misc_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Miscellaneous Booking' and estimate_type_id='$row_misc_booking[misc_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Miscellaneous Booking' and estimate_type_id='$row_misc_booking[misc_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -508,7 +510,7 @@ while($row_misc_booking = mysqli_fetch_assoc($sq_misc_booking)){
 //Ticket  Booking
 $ticket_booking_arr = array();
 
-$query = "select * from ticket_master where 1  ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query.= " and emp_id='$emp_id_filter'";	
 }
@@ -531,10 +533,11 @@ while($row_ticket_booking = mysqli_fetch_assoc($sq_ticket_booking)){
 	
 	if($sq_pass_count != $sq_pass_cancel)
 	{
+		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id = '$row_ticket_booking[ticket_id]'"));
 		$booking_id = $row_ticket_booking['ticket_id'];
 		$emp_id = $row_ticket_booking['emp_id'];
 		$tour_name = $row_ticket_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_ticket_booking['tour_from_date']));
+		$tour_date = date('d-m-Y', strtotime($sq_ticket['departure_datetime']));
 		$tour_type = "Ticket Booking";
 		$file_no = get_ticket_booking_id($row_ticket_booking['ticket_id'],$year);
 		$booking_amount = $row_ticket_booking['ticket_total_cost'];
@@ -543,13 +546,13 @@ while($row_ticket_booking = mysqli_fetch_assoc($sq_ticket_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Ticket Booking' and estimate_type_id='$row_ticket_booking[ticket_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and estimate_type_id='$row_ticket_booking[ticket_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
 		}
 		$sq_booker = mysqli_fetch_assoc( mysqlQuery("select first_name, last_name from emp_master where emp_id='$emp_id'") );
-		 
+
 		if($sq_booker['first_name']==''){
 			$booker_name = 'Admin';
 		}
@@ -557,25 +560,25 @@ while($row_ticket_booking = mysqli_fetch_assoc($sq_ticket_booking)){
 			$booker_name = $sq_booker['first_name'].' '.$sq_booker['last_name'];;
 		}
 		$array1 = array(
-						'booking_date' => $booking_date,
-						'other' => array(
-										'booking_id' => $booking_id,
-										'emp_id' => $emp_id,
-										'booker_name' => $booker_name,
-										'tour_type' => $tour_type,
-										'file_no' => $file_no,							
-										'tour_name' => $tour_name,
-										'tour_date' => $tour_date,		
-										'booking_amount' => $booking_amount,	
-										'total_purchase' => $total_purchase,				
-								  )
-					   );
+		'booking_date' => $booking_date,
+		'other' => array(
+						'booking_id' => $booking_id,
+						'emp_id' => $emp_id,
+						'booker_name' => $booker_name,
+						'tour_type' => $tour_type,
+						'file_no' => $file_no,							
+						'tour_name' => $tour_name,
+						'tour_date' => $tour_date,		
+						'booking_amount' => $booking_amount,	
+						'total_purchase' => $total_purchase,				
+					)
+		);
 		array_push($ticket_booking_arr, $array1);	
 	}
 }
 //Train Ticket Booking
 $train_booking_arr = array();
-$query = "select * from train_ticket_master where 1  ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query.= " and emp_id='$emp_id_filter'";	
 }
@@ -598,10 +601,11 @@ while($row_train_booking = mysqli_fetch_assoc($sq_misc_booking1)){
 	
 	if($sq_pass_count != $sq_pass_cancel)
 	{
+		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id = '$row_train_booking[train_ticket_id]'"));
 		$booking_id = $row_train_booking['train_ticket_id'];
 		$emp_id = $row_train_booking['emp_id'];
 		$tour_name = $row_train_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_train_booking['tour_from_date']));
+		$tour_date = date('d-m-Y', strtotime($sq_ticket['travel_datetime']));
 		$booking_date = $row_train_booking['created_at'];
 		$tour_type = "Train Ticket Booking";
 		$file_no = get_train_ticket_booking_id($row_train_booking['train_ticket_id'],$year);
@@ -611,7 +615,7 @@ while($row_train_booking = mysqli_fetch_assoc($sq_misc_booking1)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Train Ticket Booking' and estimate_type_id='$row_train_booking[train_ticket_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Train Ticket Booking' and estimate_type_id='$row_train_booking[train_ticket_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -644,7 +648,7 @@ while($row_train_booking = mysqli_fetch_assoc($sq_misc_booking1)){
 //Visa Booking
 $visa_booking_arr = array();
 
-$query = "select * from visa_master where 1  ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($emp_id_filter!=""){
 	$query.= " and emp_id='$emp_id_filter'";	
 }
@@ -662,15 +666,15 @@ while($row_visa_booking = mysqli_fetch_assoc($sq_visa_booking)){
     $yr = explode("-", $date);
 	$year =$yr[0];
 	$sq_pass_count = mysqli_num_rows(mysqlQuery("select * from visa_master_entries	where visa_id = '$row_visa_booking[visa_id]'"));
-	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from visa_master_entries
-	where visa_id = '$row_visa_booking[visa_id]' and status='Cancel'"));
+	$sq_pass_cancel = mysqli_num_rows(mysqlQuery("select * from visa_master_entries	where visa_id = '$row_visa_booking[visa_id]' and status='Cancel'"));
 	
 	if($sq_pass_count != $sq_pass_cancel)
 	{
+		$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_entries where visa_id = '$row_visa_booking[visa_id]'"));
 		$booking_id = $row_visa_booking['visa_id'];
 		$emp_id = $row_visa_booking['emp_id'];
-		$tour_name = $row_visa_booking['tour_name'];
-		$tour_date = date('d-m-Y', strtotime($row_visa_booking['tour_from_date']));
+		$tour_name = $sq_visa['visa_country_name'];
+		$tour_date = date('d-m-Y', strtotime($sq_visa['appointment_date']));
 		$tour_type = "Visa Booking";
 		$file_no = get_visa_booking_id($row_visa_booking['visa_id'],$year);
 		$booking_amount = $row_visa_booking['visa_total_cost'];
@@ -679,7 +683,7 @@ while($row_visa_booking = mysqli_fetch_assoc($sq_visa_booking)){
 		$purchase_amt = 0;
 		$i=0;
 		$p_due_date = '';
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Visa Booking' and estimate_type_id='$row_visa_booking[visa_id]'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Visa Booking' and estimate_type_id='$row_visa_booking[visa_id]' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
 			$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
 			$total_purchase = $total_purchase + $purchase_amt;
@@ -772,7 +776,7 @@ $incentive_total = 0; $paid_amount = 0; $balance_amount = 0;
 			if($role== 'Admin' || $role=='Branch Admin' || $role=='Accountant'){ 
 				$booking_id = $other_data_arr['booking_id'];
 				$incentive_count = mysqli_num_rows(mysqlQuery("select * from booker_sales_incentive where booking_id='$booking_id' and emp_id='$emp_id'  and service_type='$other_data_arr[tour_type]'"));
-				if($incentive_count==0 && ($role== 'Admin' || $role=='Branch Admin' || $role=='Accountant')){
+				if($other_data_arr['tour_type']!="Group Tour" && $incentive_count==0 && ($role== 'Admin' || $role=='Branch Admin' || $role=='Accountant')){
 					$edit='<a href="javascript:void(0)" onclick="incentive_edit_modal(\''.$other_data_arr['booking_id'] .'\',\''. $other_data_arr['emp_id'] .'\',\''.$other_data_arr['tour_type'].'\')" class="btn btn-info btn-sm" data-toggle="tooltip" title="Edit this Incentive"><i class="fa fa-pencil-square-o"></i></a>';
 					
 				}else{
@@ -798,10 +802,13 @@ $incentive_total = 0; $paid_amount = 0; $balance_amount = 0;
 					
 		}
 		$footer_data = array("footer_data" => array(
-			'total_footers' => 1,
-					
+			'total_footers' => 2,
+
 			'foot0' => "Total Incentive :".number_format($incentive_total, 2),
 			'col0' => 11,
+			'class0' => "text-right"		,
+			'foot1' => "",
+			'col1' => 1,
 			'class0' => "text-right"		
 			)
 		);

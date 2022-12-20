@@ -12,10 +12,17 @@ $branch_status = $_POST['branch_status'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 $branch_id = $_POST['branch_id'];
+$status = $_POST['status'];
 
 global $app_quot_format,$currency;
+if($status != ''){
 
-$query = "select * from package_tour_quotation_master where financial_year_id='$financial_year_id' ";
+	$query = "select * from package_tour_quotation_master where financial_year_id='$financial_year_id' and status='$status'";
+}else{
+
+	$query = "select * from package_tour_quotation_master where financial_year_id='$financial_year_id' and status='1' ";
+}
+
 if($from_date!='' && $to_date!=""){
 
 	$from_date = date('Y-m-d', strtotime($from_date));
@@ -56,7 +63,6 @@ $array_s = array();
 $temp_arr = array();
 while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 	
-	$bg = ($row_quotation['clone'] == 'yes') ? 'warning' : '';
 	$sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_quotation[emp_id]'"));
 	$emp_name = ($row_quotation['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
 	$quotation_date = $row_quotation['quotation_date'];
@@ -149,6 +155,27 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		$url1 = BASE_URL."model/app_settings/print_html/quotation_html/quotation_html_1/fit_quotation_html.php?quotation_id=$quotation_id";
 	}
 	$whatsapp_tooltip_change = ($whatsapp_switch == "on") ? 'Email and What\'sApp Quotation to Customer' : "Email Quotation to Customer";
+	if($row_quotation['status'] == '0') {
+		$bg = 'danger';
+		$pdf_show = '';
+		$whatsapp_show = '';
+		$email_show = '';
+		$copy_btn = '';
+	}else{
+		if($row_quotation['clone'] == 'yes'){
+			$bg = 'warning';
+		} else{
+			$bg = '';
+		}
+		$pdf_show = '<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>';
+		$whatsapp_show = '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>';
+		$email_show = '<a data-toggle="tooltip"  href="javascript:void(0)" id="btn_email_'.$count.'" class="btn btn-info btn-sm" onclick="quotation_email_send(this.id, '.$row_quotation['quotation_id'].',\''.$row_quotation['email_id'] .'\',\''.$row_quotation['mobile_no'].'\')" title="'.$whatsapp_tooltip_change.'"><i class="fa fa-envelope-o"></i></a>'.'
+
+		<a href="javascript:void(0)" id="btn_email1_'.$count.'" title="Email Quotation to Backoffice" class="btn btn-info btn-sm" onclick="quotation_email_send_backoffice_modal('.$row_quotation['quotation_id'].')"><i class="fa fa-paper-plane-o"></i></a>';
+		$copy_btn = '<button data-toggle="tooltip" style="display:inline-block" class="btn btn-warning btn-sm" onclick="quotation_clone('. $row_quotation['quotation_id'] .')" title="Create Copy of this Quotation"><i class="fa fa-files-o"></i></button>';
+	}
+	
+	
 	$temp_arr = array( "data" => array(
 		(int)(++$count),
 		get_quotation_id($row_quotation['quotation_id'],$year),
@@ -157,13 +184,7 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		get_date_user($row_quotation['quotation_date']),
 		number_format($quotation_cost,2).$currency_amount,
 		$emp_name,
-		'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>
-
-		<a data-toggle="tooltip"  href="javascript:void(0)" id="btn_email_'.$count.'" class="btn btn-info btn-sm" onclick="quotation_email_send(this.id, '.$row_quotation['quotation_id'].',\''.$row_quotation['email_id'] .'\',\''.$row_quotation['mobile_no'].'\')" title="'.$whatsapp_tooltip_change.'"><i class="fa fa-envelope-o"></i></a>
-
-		<button data-toggle="tooltip" style="display:inline-block" class="btn btn-warning btn-sm" onclick="quotation_clone('. $row_quotation['quotation_id'] .')" title="Create Copy of this Quotation"><i class="fa fa-files-o"></i></button>
-
-		<a href="javascript:void(0)" id="btn_email1_'.$count.'" title="Mail to Backoffice" class="btn btn-info btn-sm" onclick="quotation_email_send_backoffice_modal('.$row_quotation['quotation_id'].')"><i class="fa fa-paper-plane-o"></i></a>
+		$pdf_show.$email_show.$copy_btn.'
 
 		<form  style="display:inline-block" action="update/index.php" id="frm_booking_'.$count.'" method="POST">
 		<input  style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">

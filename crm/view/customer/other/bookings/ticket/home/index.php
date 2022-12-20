@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="ticket_id_filter" id="ticket_id_filter" style="width:100%" onchange="ticket_customer_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_ticket = mysqlQuery("select * from ticket_master where customer_id='$customer_id'");
+			        $sq_ticket = mysqlQuery("select * from ticket_master where customer_id='$customer_id' and delete_status='0' order by ticket_id desc");
 			        while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 						$date = $row_ticket['created_at'];
 						$yr = explode("-", $date);

@@ -8,10 +8,19 @@ $branch_status = $_POST['branch_status'];
 
 $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from exc_payment_master where payment_id='$payment_id'"));
 
-$sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$sq_payment_info[exc_id]'"));
+$sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$sq_payment_info[exc_id]' and delete_status='0'"));
 $date = $sq_exc['created_at'];
 $yr = explode("-", $date);
 $year = $yr[0];
+
+
+$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_exc[customer_id]'"));
+
+	if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type'] == 'B2B'){
+		$customer_name = $sq_customer_info['company_name'];
+	}else{
+		$customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
+	}
 
 $enable = ($sq_payment_info['payment_mode'] == "Cash" || $sq_payment_info['payment_mode'] == "Credit Note" || $sq_payment_info['payment_mode'] == "Credit Card"|| $sq_payment_info['payment_mode'] == "Advance") ? "disabled" : "";
 ?>
@@ -34,26 +43,13 @@ $enable = ($sq_payment_info['payment_mode'] == "Cash" || $sq_payment_info['payme
 
           <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-              <select name="customer_id1" id="customer_id1" title="Customer Name" style="width:100%" disabled onchange="exc_id_dropdown_load('customer_id1', 'exc_id1');">
-                <?php
-                $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_exc[customer_id]'"));
-                if ($sq_customer['type'] == 'Corporate'||$sq_customer['type'] == 'B2B') {
-                ?>
-                  <option value="<?= $sq_customer['customer_id'] ?>"><?= $sq_customer['company_name'] ?></option>
-                <?php } else { ?>
-                  <option value="<?= $sq_customer['customer_id'] ?>"><?= $sq_customer['first_name'] . ' ' . $sq_customer['last_name'] ?></option>
-                <?php } ?>
-                <?php get_customer_dropdown($role, $branch_admin_id, $branch_status); ?>
-              </select>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
               <select name="exc_id1" id="exc_id1" style="width:100%" title="Booking ID" disabled>
-                <option value="<?= $sq_exc['exc_id'] ?>"><?= get_exc_booking_id($sq_exc['exc_id'], $year) ?></option>
+                <option value="<?= $sq_exc['exc_id'] ?>"><?= get_exc_booking_id($sq_exc['exc_id'], $year) ?>(<?= $customer_name ?>) </option>
                 <?php
-                $sq_exc = mysqlQuery("select * from excursion_master where customer_id='$sq_exc[customer_id]'");
+                $sq_exc = mysqlQuery("select * from excursion_master where customer_id='$sq_exc[customer_id]' and delete_status='0'");
                 while ($row_exc = mysqli_fetch_assoc($sq_exc)) {
                 ?>
-                  <option value="<?= $row_exc['exc_id'] ?>"><?= get_exc_booking_id($row_exc['exc_id'], $year) ?></option>
+                  <option value="<?= $row_exc['exc_id'] ?>"><?= get_exc_booking_id($row_exc['exc_id'], $year) ?> (<?= $customer_name ?>)</option>
                 <?php
                 }
                 ?>
@@ -101,6 +97,7 @@ $enable = ($sq_payment_info['payment_mode'] == "Cash" || $sq_payment_info['payme
               </div>
             </div>
           <?php } ?>
+          <input type="hidden" id="canc_status1" name="canc_status" value="<?= $sq_payment_info['status'] ?>" class="form-control"/>
 
           <div class="row text-center mg_tp_20">
             <div class="col-md-12">
@@ -116,7 +113,7 @@ $enable = ($sq_payment_info['payment_mode'] == "Cash" || $sq_payment_info['payme
 </div>
 
 <script>
-  $('#customer_id1, #exc_id1').select2();
+  $('#exc_id1').select2();
   $('#payment_date1').datetimepicker({
     timepicker: false,
     format: 'd-m-Y'
@@ -184,6 +181,8 @@ $enable = ($sq_payment_info['payment_mode'] == "Cash" || $sq_payment_info['payme
         var credit_charges_old = $('#credit_charges_old').val();
         var payment_old_mode = $('#payment_mode_old').val();
         var payment_bank_old = $('#payment_bank_old').val();
+        var canc_status = $('#canc_status1').val();
+
         if (!check_updated_amount(payment_old_value, payment_amount)) {
           error_msg_alert("You can update receipt to 0 only!");
           return false;
@@ -207,7 +206,8 @@ $enable = ($sq_payment_info['payment_mode'] == "Cash" || $sq_payment_info['payme
             payment_bank_old: payment_bank_old,
             credit_charges: credit_charges,
             credit_card_details: credit_card_details,
-            credit_charges_old: credit_charges_old
+            credit_charges_old: credit_charges_old,
+            canc_status:canc_status
           },
           success: function(result) {
             var msg = result.split('-');

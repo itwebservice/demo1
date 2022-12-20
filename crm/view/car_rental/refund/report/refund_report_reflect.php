@@ -42,7 +42,7 @@ $to_date = $_POST['payment_to_date'];
 			$count++;
 			$total_refund = $total_refund+$row_car_rental_refund['refund_amount'];
 
-			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]'"));
+			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]' and delete_status='0'"));
 			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_car_rental_info[customer_id]'"));
 			if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
 				$cust_name = $sq_customer['company_name'];

@@ -19,7 +19,7 @@
 <tbody>
 <?php
 
-$query=" select * from tourwise_traveler_details where 1 ";
+$query=" select * from tourwise_traveler_details where 1 and delete_status='0' ";
 
 $count = 1;
 

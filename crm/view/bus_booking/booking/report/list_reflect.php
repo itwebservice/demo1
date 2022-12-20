@@ -46,7 +46,7 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and booking_id in (select booking_id from bus_booking_master where emp_id ='$emp_id')";
 }
-
+$query .= " and booking_id in (select booking_id from bus_booking_master where delete_status='0')";
 $query .= " order by booking_id desc";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
@@ -106,6 +106,7 @@ $query .= " order by booking_id desc";
 
 <script>
 $('#tbl_list').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 	});
 </script>

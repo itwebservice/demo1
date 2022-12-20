@@ -26,7 +26,7 @@
 				</span>
 				<span class="main_block">
 				    <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-				    <?php echo "<label>Passenger <em>:</em></label> ".$sq_booking['pass_name']; ?>
+				    <?php echo "<label>Guest Name <em>:</em></label> ".$sq_booking['pass_name']; ?>
 				</span>
 	    </div>
 	</div>
@@ -128,52 +128,3 @@
         </div>
     </div>
 </div>
-<?php
-$sq_vehicle_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking_vehicle_entries where booking_id='$booking_id'"));
-if($sq_vehicle_count!=0){
-?>
-<!-- <div class="row">    
-  	<div class="col-xs-12">
-  		<div class="profile_box main_block" style="margin-top: 25px">
-           	<h3 class="editor_title">Vehicle Details</h3>
-                <div class="table-responsive">
-                    <table id="tbl_dynamic_visa_update" name="tbl_dynamic_visa_update" class="table table-bordered no-marg">
-                     <thead>
-                       <tr class="table-heading-row">
-                       	<th>S_No.</th>
-                       	<th>Vehicle_Name</th>
-                       	<th>Vehicle_No</th>
-                       	<th>Driver_Name</th>
-                       	<th>Mobile_No</th>
-                       	<th>Type</th>
-                       </tr>
-                       </thead>
-                       <tbody>
-                       <?php 
-                        $count = 1;
-                       $sq_vehicle_entries = mysqlQuery("select * from car_rental_booking_vehicle_entries where booking_id='$booking_id'");
-					   while($row_vehicle = mysqli_fetch_assoc($sq_vehicle_entries)){				   	
-					   	
-						$sq_vehicle = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_vendor_vehicle_entries where vehicle_id='$row_vehicle[vehicle_id]'"));
-                       			?>
-								 <tr>
-								    <td><?php echo $count; ?></td>
-								    <td><?php echo$sq_vehicle['vehicle_name']; ?></td>
-								    <td><?php echo strtoupper($sq_vehicle['vehicle_no']) ?></td>
-									<td><?php echo $sq_vehicle['vehicle_driver_name']; ?></td>
-								    <td><?php echo $sq_vehicle['vehicle_mobile_no']; ?></td>
-								    <td><?php echo $sq_vehicle['vehicle_type']; ?></td>
-								</tr>   
-                       			<?php
-                       			$count++;
-                       }
-                       ?>
-                     </tbody>
-                    </table>
-                </div>
-                
-        </div>  
-    </div>
-</div> -->
-<?php } ?>
-           

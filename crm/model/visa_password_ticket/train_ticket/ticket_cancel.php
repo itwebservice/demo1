@@ -19,7 +19,7 @@ public function ticket_cancel_save()
 	//Cancelation notification sms send
 	$this->cancelation_message_send($entry_id_arr);
 
-	echo "Train ticket has been successfully cancelled.";
+	echo "Train ticket booking has been successfully cancelled.";
 }
 
 
@@ -28,7 +28,7 @@ public function cancel_mail_send($entry_id_arr){
 	global $model,$encrypt_decrypt,$secret_key;
 
 	$sq_entry = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where entry_id='$entry_id_arr[0]'"));
-	$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$sq_entry[train_ticket_id]'"));
+	$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$sq_entry[train_ticket_id]' and delete_status='0'"));
 
 	$date = $sq_train_ticket_info['created_at'];
     $yr = explode("-", $date);
@@ -72,7 +72,7 @@ public function cancelation_message_send($entry_id_arr){
 	global $secret_key,$encrypt_decrypt;
 
 	$sq_entry = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where entry_id='$entry_id_arr[0]'"));
-	$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$sq_entry[train_ticket_id]'"));
+	$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$sq_entry[train_ticket_id]' and delete_status='0'"));
 	$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_train_ticket_info[customer_id]'"));
 
 	$contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);

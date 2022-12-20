@@ -331,10 +331,10 @@ if($enquiry_type=="Flight Ticket"){
 				<tr>
 					<td><input id="check-btn-enq-<?= $count ?>" type="checkbox" checked ></td>
 					<td><input maxlength="15" type="text" name="username"  value="<?= $count+1 ?>" placeholder="Sr. No." disabled/></td>
-					<td><input type="text" id="travel_datetime-<?= $count ?>" style="width:125px" name="travel_datetime" placeholder="*Travel Date/Time" title="Travel Date/Time" value="<?= get_datetime_user($values['travel_datetime']) ?>" class="form-control"></td>
+					<td><input type="text" id="travel_datetime-<?= $count ?>" style="width:150px" name="travel_datetime" placeholder="*Travel Date/Time" title="Travel Date/Time" value="<?= get_datetime_user($values['travel_datetime']) ?>" class="form-control"></td>
 					<td><input type="text" style="width:365px" id="from_sector-<?= $count ?>" name="from_sector" placeholder="*Sector From" title="Sector From" value="<?= $values['sector_from'] ?>" class="form-control"></td>
 					<td><input type="text" style="width:365px" id="to_sector-<?= $count ?>" name="to_sector" placeholder="*Sector To" title="Sector To" value="<?= $values['sector_to'] ?>" class="form-control"></td>
-					<td><select id="preffered_airline-<?= $count ?>" name="preffered_airline" class="app_select2" style="width:100%" name="" title="Preferred Airline" class="form-control">
+					<td><select id="preffered_airline-<?= $count ?>" name="preffered_airline" class="app_select2" style="width:130px" name="" title="Preferred Airline" class="form-control">
 					<?php
 						if($values['preffered_airline'] != ''){
 							$sq_airline_show = mysqli_fetch_assoc(mysqlQuery("SELECT airline_name, airline_code from airline_master where airline_id = ".$values['preffered_airline']));
@@ -350,7 +350,7 @@ if($enquiry_type=="Flight Ticket"){
 						?>
 						</select>
 					</td>
-					<td><select name="class_type" id="class_type-<?= $count ?>" title="Class Type" class="form-control">
+					<td><select name="class_type" id="class_type-<?= $count ?>" title="Class Type" class="form-control" style="width:130px;">
 					<?php
 						if($values['class_type'] != ''){
 							echo '<option value="'.$values['class_type'].'">'.$values['class_type'].'</option>';
@@ -363,11 +363,11 @@ if($enquiry_type=="Flight Ticket"){
 							<option value="Other">Other</option>
 						</select>
 					</td>
-					<td><input type="text" id="total_adults_flight-<?= $count ?>" name="total_adults_flight" title="Total Adult(s)" class="form-control" value="<?= $values['total_adults_flight'] ?>" placeholder="Total Adult(s)">
+					<td><input type="text" id="total_adults_flight-<?= $count ?>" name="total_adults_flight" title="Total Adult(s)" class="form-control" style="width:110px" value="<?= $values['total_adults_flight'] ?>" placeholder="Total Adult(s)">
 					</td>
-					<td><input type="text" id="total_child_flight-<?= $count ?>" name="total_child_flight" title="Total Child(ren)" class="form-control" value="<?= $values['total_child_flight'] ?>" placeholder="Total Child(ren)">
+					<td><input type="text" id="total_child_flight-<?= $count ?>" name="total_child_flight" title="Total Child(ren)" class="form-control" style="width:120px" value="<?= $values['total_child_flight'] ?>" placeholder="Total Child(ren)">
 					</td>
-					<td><input type="text" id="total_infant_flight-<?= $count ?>" name="total_infant_flight" title="Total Infant(s)" class="form-control" value="<?= $values['total_infant_flight'] ?>" placeholder="Total Infant(s)">
+					<td><input type="text" id="total_infant_flight-<?= $count ?>" name="total_infant_flight" title="Total Infant(s)" class="form-control" style="width:120px" value="<?= $values['total_infant_flight'] ?>" placeholder="Total Infant(s)">
 					</td>
 					<td><input type="hidden" id="from_city-<?= $count ?>" value="<?= $values['from_city_id_flight'] ?>">
 					</td>
@@ -683,7 +683,7 @@ if($enquiry_type=="Hotel"){
 </div>
 <div class="row mg_bt_10">
 	<div class="col-md-4 col-sm-6 mg_bt_10_sm_xs">
-        <input type="text" id="total_adult" name="total_adult" onchange="validate_balance(this.id); total_members_calculate()" placeholder="*Total Adults" title="Total Adults" value="<?= $sq_c['total_adult'] ?>" class="form-control">            
+        <input type="text" id="total_adult" name="total_adult" onchange="validate_balance(this.id); total_members_calculate()" placeholder="*Total Adult(s)" title="Total Adult(s)" value="<?= $sq_c['total_adult'] ?>" class="form-control">            
     </div>
 	<div class="col-md-4 col-sm-6 mg_bt_10_sm_xs">
         <input type="text" id="total_cwb" name="total_cwb" onchange="validate_balance(this.id); total_members_calculate()" placeholder="*Total Child With Bed" title="Total Child With Bed" value="<?= $sq_c['total_cwb'] ?>" class="form-control">            
@@ -694,10 +694,10 @@ if($enquiry_type=="Hotel"){
 </div>
 <div class="row mg_bt_10">
 	<div class="col-md-4 col-sm-6 mg_bt_10_sm_xs">
-        <input type="text" id="total_infant" name="total_infant" onchange="validate_balance(this.id); total_members_calculate()" placeholder="*Total Infant" title="Total Infant" value="<?= $sq_c['total_infant'] ?>" class="form-control">            
+        <input type="text" id="total_infant" name="total_infant" onchange="validate_balance(this.id); total_members_calculate()" placeholder="*Total Infant(s)" title="Total Infant(s)" value="<?= $sq_c['total_infant'] ?>" class="form-control">            
     </div>
 	<div class="col-md-4">
-		<input type="text" id="total_members" name="total_members" placeholder="Total Passenger" title="Total Passenger" value="<?= $sq_c['total_members'] ?>" class="form-control" readonly>
+		<input type="text" id="total_members" name="total_members" placeholder="Total Guest(s)" title="Total Guest(s)" value="<?= $sq_c['total_members'] ?>" class="form-control" readonly>
 	</div>
 	<div class="col-md-4 col-sm-6 mg_bt_10">
 	    <input type="text" id="budget" name="budget" onchange="validate_balance(this.id)" placeholder="Budget" title="Budget" value="<?= $sq_c['budget'] ?>" class="form-control">

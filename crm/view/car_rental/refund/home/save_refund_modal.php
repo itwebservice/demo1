@@ -1,5 +1,5 @@
 <?php
-    $sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+    $sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
     $refund_amount = $sq_car_rental_info['total_refund_amount'];
 
     $sq_total_pay = mysqli_fetch_array(mysqlQuery("SELECT sum(refund_amount) as sum from car_rental_refund_master where booking_id='$booking_id'"));
@@ -47,7 +47,7 @@
             </div>
             <div class="row text-center mg_tp_20">
               <div class="col-xs-12">
-                  <button id="btn_refund_save" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>
+                  <button id="btn_refund_save" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save Refund</button>
               </div>
             </div>
           </form>

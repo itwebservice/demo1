@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="misc_id_filter" id="misc_id_filter" class="form-control" onchange="misc_customer_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_misc = mysqlQuery("select * from miscellaneous_master where customer_id='$customer_id'");
+			        $sq_misc = mysqlQuery("select * from miscellaneous_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_misc = mysqli_fetch_assoc($sq_misc)){
 							$date = $row_misc['created_at'];
 							$yr = explode("-", $date);
@@ -31,20 +31,22 @@ $customer_id = $_SESSION['customer_id'];
 <div id="div_misc_content_display" class="main_block"></div>
 <script>
 $('#misc_id_filter').select2();
-	function misc_customer_list_reflect()
-	{
-		var misc_id = $('#misc_id_filter').val()
-		$.post('bookings/miscellaneous/home/misc_list_reflect.php', { misc_id : misc_id }, function(data){
-			$('#div_misc_customer_list_reflect').html(data);
-		});
-	}
-	misc_customer_list_reflect();
-	
-	function misc_display_modal(misc_id)
-	{
-		$.post('bookings/miscellaneous/home/view/index.php', { misc_id : misc_id }, function(data){
-			$('#div_misc_content_display').html(data);
-		});
-	}
+function misc_customer_list_reflect()
+{
+	var misc_id = $('#misc_id_filter').val()
+	$.post('bookings/miscellaneous/home/misc_list_reflect.php', { misc_id : misc_id }, function(data){
+		$('#div_misc_customer_list_reflect').html(data);
+	});
+}
+misc_customer_list_reflect();
+
+function misc_display_modal(misc_id)
+{
+	$('#misc-'+misc_id).button('loading');
+	$.post('bookings/miscellaneous/home/view/index.php', { misc_id : misc_id }, function(data){
+		$('#div_misc_content_display').html(data);
+		$('#misc-'+misc_id).button('reset');
+	});
+}
 </script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

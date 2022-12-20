@@ -31,9 +31,7 @@ function airport_reflect(city_id) {
   var base_url = $('#base_url').val();
   var city_id = $('#from_city-' + offset[1]).val();
   $.get(base_url + "view/load_data/airport_reflect.php", { city_id: city_id }, function (data) {
-
     $('#plane_from_location-' + offset[1]).html(data);
-
   });
 }
 //To airport
@@ -43,27 +41,23 @@ function airport_reflect1(city_id) {
   var city_id = $('#to_city-' + offset[1]).val();
 
   $.get(base_url + "view/load_data/airport_reflect.php", { city_id: city_id }, function (data) {
-
     $('#plane_to_location-' + offset[1]).html(data);
   });
 }
 /////// Show Airport reflect  End/////////////////////////////////////////////////
 
-
 /////// Show Tour Groups dynamic Start/////////////////////////////////////////////////
 function tour_group_dynamic_reflect(id, goup_id,booking_id='') {
+  
   var base_url = $('#base_url').val();
   var tour_id = document.getElementById(id).value;
-  if(booking_id!=''){
-    $("#"+booking_id).html('<option value="">Select Booking ID</option>');
-  }
+
+  // $("#"+booking_id).html('<option value="">Select Booking ID</option>');
   $.get(base_url + "view/load_data/tour_group_reflect.php", { tour_id: tour_id }, function (data) {
-    $('#' + goup_id).html(data);
+    $('#'+goup_id).html(data);
   });
 }
 /////// Show Tour Groups dynamic end/////////////////////////////////////////////////
-
-
 
 /////// Auto select all entries in Add row///////////////////////////////////////////////
 function select_all(id, id1) {
@@ -84,8 +78,6 @@ function select_all(id, id1) {
   }
 }
 
-
-
 /////// Payment Installment data reflect///////////////////////////////////////////////
 function payment_installment_reflect() {
   var base_url = $('#base_url').val();
@@ -97,7 +89,6 @@ function payment_installment_reflect() {
     $("#cmb_traveler_group_id").html(data);
     document.getElementById("div_cancelation_update").style.display = "none";
   });
-
 }
 
 function payment_installment_enable_disable_fields(offset = '') {
@@ -135,16 +126,10 @@ function generate_dates(id) {
   });
 }
 
-
-
-
 //*************************************************************Reports Ends *********************************************************************\\
 //************************************************************* **********************************************************************************\\
 
-
-
 //***************************************************** Generate  vouchers start ************************************************************\\
-
 //Voucher for Traveler cancel refund
 //This function is called after traveler cancel and update and refund is done.
 function generate_voucher_for_cancelled_travelers(refund_id) {
@@ -153,12 +138,9 @@ function generate_voucher_for_cancelled_travelers(refund_id) {
   window.location.href = url;
 }
 
+//***************************************** Generate tour vouchers end***************************************************************\\
 
-
-//********************************************** Generate tour vouchers end **********************************************************************\\
-
-
-//***************************************** This Load filters for generating receipt start ****************************************************\\
+//************************* This Load filters for generating receipt start ********************************************\\
 
 function traveler_group_reflect() {
   var base_url = $('#base_url').val();
@@ -294,13 +276,21 @@ function transfer_payment_screen_reflect() {
 
 function get_outstanding(booking_type, booking_id) {
   var booking_id1 = $('#' + booking_id).val();
+  var sel = document.getElementById(booking_id);
+  var text = sel.options[sel.selectedIndex].text;
+  var status = text && text.split('(');
+  status = status[1] && status[1].replace(')','');
+
   var base_url = $('#base_url').val();
-  $.post(base_url + 'view/load_data/get_sale_outstanding.php', { booking_type: booking_type, booking_id: booking_id1 }, function (data) {
+  $.post(base_url + 'view/load_data/get_sale_outstanding.php', { booking_type: booking_type, booking_id: booking_id1 , status : status}, function (result) {
+    var result = result.split('-');
+    var data = result[0];
     if (parseFloat(data) > 0) {
       $('#outstanding').val(parseFloat(data).toFixed(2));
     }
     else {
       $('#outstanding').val((0).toFixed(2));
     }
+    $('#canc_status').val(result[1]);
   });
 }

@@ -12,7 +12,7 @@ $emp_id = $_SESSION['emp_id'];
 		<select name="ticket_id_filter" id="ticket_id_filter" title="Select Booking" style="width:100%" onchange="ticket_upload_list_reflect()">
 	        <option value="">Select Booking ID</option>
 	        <?php 
-       		$query = "select * from ticket_master where 1 ";
+       		$query = "select * from ticket_master where 1 and delete_status='0' and cancel_type!=1 ";
 	        include "../../../../model/app_settings/branchwise_filteration.php";
 	        $query .= " order by ticket_id desc ";
 	        $sq_ticket = mysqlQuery($query);

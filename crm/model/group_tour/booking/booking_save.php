@@ -1,9 +1,5 @@
-<?php 
-
-
-
+<?php
 $flag = true;
-
 class booking_save{
 /////////////Start Complete Booking Information Save////////////////////////////////////////
 
@@ -1040,6 +1036,7 @@ function send_mail_to_traveler($tourwise_traveler_id, $tour_id, $tour_group_id, 
   $name = $m_first_name[0];  
   $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id'"));
 
+  $traveler_group_id = $sq_booking['traveler_group_id'];
   $date = $sq_booking['form_date'];
   $yr = explode("-", $date);
   $year =$yr[0];
@@ -1061,9 +1058,9 @@ function send_mail_to_traveler($tourwise_traveler_id, $tour_id, $tour_group_id, 
 
   $sq_total_paid = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as sum,sum(credit_charges) as sumc from payment_master where tourwise_traveler_id='$tourwise_traveler_id' and clearance_status!='Cancelled'"));
 
-  $passengers_infant = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from travelers_details where traveler_group_id = ".$tourwise_traveler_id." and adolescence = 'Infant'"));
-  $passengers_adult = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from travelers_details where traveler_group_id = ".$tourwise_traveler_id." and adolescence = 'Adult'"));
-  $passengers_child = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from travelers_details where traveler_group_id = ".$tourwise_traveler_id." and (adolescence = 'Child With Bed' or adolescence = 'Child Without Bed')"));
+  $passengers_infant = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from travelers_details where traveler_group_id = ".$traveler_group_id." and adolescence = 'Infant'"));
+  $passengers_adult = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from travelers_details where traveler_group_id = ".$traveler_group_id." and adolescence = 'Adult'"));
+  $passengers_child = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from travelers_details where traveler_group_id = ".$traveler_group_id." and (adolescence = 'Child With Bed' or adolescence = 'Child Without Bed')"));
 
   $credit_card_amount = $sq_total_paid['sumc'];
   $total_amount = $sq_booking['net_total'] + $credit_card_amount;
@@ -1118,6 +1115,8 @@ function booking_successfull_sms_send($m_mobile_no,$customer_id,$tour_id){
   $tour_name = $sq_tour['tour_name'];
   $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
   $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
+  
+  $customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 
   $tour_group1 = mysqli_fetch_assoc(mysqlQuery("select from_date, to_date from tour_groups where group_id= '$tour_group_id'"));
   $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
@@ -1128,7 +1127,7 @@ function booking_successfull_sms_send($m_mobile_no,$customer_id,$tour_id){
 		$contact = $sq_emp_info['mobile_no'];
 	}
 	
-	$whatsapp_msg = rawurlencode('Hello Dear '.$sq_customer['first_name'].',
+	$whatsapp_msg = rawurlencode('Dear '.$customer_name.',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Tour Name* : '.$tour_name.'
 *Travel Date* : '.get_date_user($tour_group1['from_date']).'

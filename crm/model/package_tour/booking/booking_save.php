@@ -469,7 +469,7 @@ function get_particular($customer_id,$tour_name,$tour_from_date,$total_tour_days
   $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
   $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
 
-  return $tour_name.' for '.$cust_name.' for '.$total_tour_days.' Nights starting from '.get_date_user($tour_from_date);
+  return $tour_name.' for '.$cust_name.' for '.$total_tour_days.' Night(s) starting from '.get_date_user($tour_from_date);
 }
 
 //////////////***Package tour travelers details master save start*****///////
@@ -1131,7 +1131,8 @@ public function whatsapp_send(){
 
   $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
   $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
-  $name = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id = ".$customer_id));
+  $customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
+
   $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
   if($emp_id == 0){
 		$contact = $app_contact_no;
@@ -1139,7 +1140,7 @@ public function whatsapp_send(){
 	else{
 		$contact = $sq_emp_info['mobile_no'];
 	}
-	$whatsapp_msg = rawurlencode('Hello Dear '.$name['first_name'].',
+	$whatsapp_msg = rawurlencode('Dear '.$customer_name.',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Tour Name* : '.$tour_name.'
 *Travel Date* : '.$tour_date.'

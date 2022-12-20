@@ -3,7 +3,7 @@ include "../../../../../model/model.php";
 
 $booking_id = $_POST['booking_id'];
 
-$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $date = $sq_hotel_info['created_at'];
 	        $yr = explode("-", $date);
 	        $year =$yr[0];

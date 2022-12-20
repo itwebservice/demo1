@@ -49,7 +49,7 @@ if($from_date!='' && $to_date!=''){
 				$sq_entry_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master_entries where entry_id='$row_refund_entry[entry_id]'"));
 
 				$traveler_name .= $sq_entry_info['first_name'].' '.$sq_entry_info['last_name'].', ';
-			$sq_entry_year = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$row_refund[visa_id]'"));
+			$sq_entry_year = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$row_refund[visa_id]' and delete_status='0'"));
 			$date = $sq_entry_year['created_at'];
 			$yr = explode("-", $date);
 			$year =$yr[0];

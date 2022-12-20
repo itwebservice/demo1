@@ -93,7 +93,7 @@
 		</div>	
 		<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
 		<small>&nbsp;</small>
-			<input type="text" id="net_total" name="net_total" placeholder="Net Total" title="Net Total" readonly value="<?= $sq_booking['net_total'] ?>">
+			<input class="form-control amount_feild_highlight" type="text" id="net_total" name="net_total" placeholder="Net Total" title="Net Total" readonly value="<?= $sq_booking['net_total'] ?>">
 		</div>
 		<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
 			<input type="text" id="payment_due_date" name="payment_due_date" placeholder="Due Date" title="Due Date" value="<?= get_date_user($sq_booking['payment_due_date']) ?>">

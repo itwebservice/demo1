@@ -13,7 +13,7 @@ $vehicle_name_id = $_POST['vehicle_name_id'];
         <div class="modal-body">
             <div class="row">
                 <div class="col-sm-4">
-                    <select id="vehicle_types" name="vehicle_types" style="width:100%" title="Vehcile Type" data-toggle="tooltip" class="form-control" required>
+                    <select id="vehicle_types" name="vehicle_types" style="width:100%" title="Vehicle Type" data-toggle="tooltip" class="form-control" required>
                         <?php get_vehicle_types(); ?>
                     </select>
                 </div>

@@ -20,9 +20,11 @@ $total_paid = $_GET['total_paid'];
 $balance_amount = $_GET['balance_amount'];
 $sac_code = $_GET['sac_code'];
 $credit_card_charges = $_GET['credit_card_charges'];
+$bg = $_GET['bg'];
+$canc_amount = $_GET['canc_amount'];
 
 $basic_cost = number_format($basic_cost1, 2);
-$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$booking_id'"));
+$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $roundoff = $sq_hotel['roundoff'];
 $bsmValues = json_decode($sq_hotel['bsm_values']);
 $tax_show = '';
@@ -46,7 +48,7 @@ if ($bsmValues[0]->service != '') {   //inclusive service charge
   $newBasic = $basic_cost1;
   $newSC = $service_tax_amount + $service_charge;
 } else {
-  $tax_show =  rtrim($name, ', ') . ' : ' . ($service_tax_amount);
+  $tax_show =  rtrim($name, ', ') . ' : ' . number_format($service_tax_amount,2);
   $newSC = $service_charge;
 }
 ////////////////////Markup Rules
@@ -63,15 +65,15 @@ if ($bsmValues[0]->markup != '') { //inclusive markup
   $tax_show = '';
 } else {
   $newBasic = $basic_cost1;
-  $newSC = intval($service_charge) + intval($sq_hotel['markup']);
-  $tax_show = rtrim($name, ', ') . ' : ' . ($markupservice_tax_amount + $service_tax_amount);
+  $newSC = intval($service_charge);
+  // $tax_show = rtrim($name, ', ') . ' : ' . ($markupservice_tax_amount + $service_tax_amount);
 }
 ////////////Basic Amount Rules
 if ($bsmValues[0]->basic != '') { //inclusive markup
 
   $newBasic = intval($basic_cost1) + intval($service_tax_amount) + intval($sq_hotel['markup']) + intval($markupservice_tax_amount);
 }
-
+$other_charges = $markupservice_tax_amount + intval($sq_hotel['markup']);
 
 $net_amount1 = 0;
 $net_amount1 =  (intval($basic_cost1) + intval($service_charge)  + intval($sq_hotel['markup']) + $markupservice_tax_amount + $service_tax_amount) + $roundoff;
@@ -90,7 +92,7 @@ if ($app_invoice_format == "Advance") {
 
 <hr class="no-marg">
 <div class="col-md-12 mg_tp_20">
-  <p class="border_lt"><span class="font_5">BUS : </span><?= $sq_vehicle['p_name']; ?></p>
+  <p class="border_lt"><span class="font_5">BUS DETAILS : </span><?= $sq_vehicle['p_name']; ?></p>
 </div>
 <div class="main_block inv_rece_table main_block">
   <div class="row">
@@ -114,8 +116,6 @@ if ($app_invoice_format == "Advance") {
             $count = 1;
             $sq_vehicle_entries = mysqlQuery("select * from bus_booking_entries where booking_id='$booking_id'");
             while ($row_vehicle = mysqli_fetch_assoc($sq_vehicle_entries)) {
-
-              //$sq_vehicle1 = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_entries where booking_id='$row_vehicle[booking_id]'"));
 
             ?>
               <tr class="odd">
@@ -145,29 +145,44 @@ if ($app_invoice_format == "Advance") {
     <div class="col-md-12">
       <div class="main_block inv_rece_calculation border_block">
         <div class="col-md-6">
-          <p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?= $currency_code . " " . number_format($newBasic, 2) ?></span></p>
+          <p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?= $currency_code . " " . number_format($newBasic, 2) ?></span></p>
         </div>
         <div class="col-md-6">
           <p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $currency_code . " " . number_format($net_amount1, 2) ?></span></p>
         </div>
-        <div class="col-md-6">
-          <p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $currency_code . " " . number_format($newSC, 2) ?></span></p>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">OTHER CHARGES AND TAXES </span><span class="float_r">
+            <?php  echo $currency_code." ".number_format($other_charges,2) ?></span></p>
         </div>
         <div class="col-md-6">
           <p class="border_lt"><span class="font_5">CREDIT CARD CHARGES </span><span class="float_r"><?= $currency_code . " " . number_format($charge, 2) ?></span></p>
         </div>
         <div class="col-md-6">
-          <p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= $currency_code . " " . $tax_show ?></span></p>
+          <p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $currency_code . " " . number_format($newSC, 2) ?></span></p>
         </div>
         <div class="col-md-6">
           <p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $currency_code . " " . number_format($total_paid, 2) ?></span></p>
         </div>
         <div class="col-md-6">
-          <p class="border_lt"><span class="font_5">RoundOff</span><span class="float_r"><?= $currency_code . " " . $roundoff ?></span></p>
+          <p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= $currency_code . " " . $tax_show ?></span></p>
         </div>
+        <?php
+        if($bg != ''){ ?>
+          <div class="col-md-6">
+            <p class="border_lt"><span class="font_5">CANCELLATION CHARGES </span><span class="font_5 float_r"><?= $currency_code . " " . number_format($canc_amount, 2) ?></span></p>
+          </div>
+          <div class="col-md-6">
+            <p class="border_lt"><span class="font_5">ROUNDOFF</span><span class="float_r"><?= $currency_code . " " . $roundoff ?></span></p>
+          </div>
+        <?php } ?>
         <div class="col-md-6">
           <p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $currency_code . " " . number_format($balance_amount, 2) ?></span></p>
         </div>
+        <?php
+        if($bg == ''){ ?>
+          <div class="col-md-6">
+            <p class="border_lt"><span class="font_5">RoundOff</span><span class="float_r"><?= $currency_code . " " . $roundoff ?></span></p>
+          </div>
+        <?php } ?>
       </div>
     </div>
   </div>

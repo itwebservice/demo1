@@ -110,7 +110,7 @@ $sq_query = mysqlQuery($query);
 $row_count = 6;
 
 $objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, "Sr. No")
+        ->setCellValue('B'.$row_count, "Credit Note ID")
         ->setCellValue('C'.$row_count, "Date")
         ->setCellValue('D'.$row_count, "Customer Name")
         ->setCellValue('E'.$row_count, "Booking Type")
@@ -143,8 +143,9 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	else
 		$module_name = $row_query['module_name'];
 
+    $credit_note_id = get_credit_note_id($row_query['id']);
     $objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, ++$count)
+        ->setCellValue('B'.$row_count, $credit_note_id)
         ->setCellValue('C'.$row_count, get_date_user($row_query['created_at']))
         ->setCellValue('D'.$row_count, $cust_name)
         ->setCellValue('E'.$row_count, $module_name)

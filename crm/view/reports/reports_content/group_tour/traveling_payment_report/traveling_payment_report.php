@@ -25,7 +25,7 @@
 $count = 1;
 $avalable_bal=0;
 $pending_refund=0;
-$sq1 = mysqlQuery("select * from tourwise_traveler_details where tour_group_status!='Cancel'");
+$sq1 = mysqlQuery("select * from tourwise_traveler_details where tour_group_status!='Cancel' and delete_status='0'");
 while($row1 = mysqli_fetch_assoc($sq1))
 {
 	$sq_tour_name = mysqlQuery("select tour_name from tour_master where tour_id='$row1[tour_id]'");

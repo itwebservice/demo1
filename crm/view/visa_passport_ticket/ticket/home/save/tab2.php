@@ -1,118 +1,127 @@
 <form id="frm_tab2">
-	<div class="row">
-		<div class="col-md-8 col-sm-12 col-xs-12 mg_bt_20_xs">
-			<strong>*Type Of Trip :</strong>&nbsp;&nbsp;&nbsp;
-			<input type="radio" name="type_of_tour" id="type_of_tour-one_way" value="One Way">&nbsp;&nbsp;<label for="type_of_tour-one_way">One Way</label>
-			&nbsp;&nbsp;&nbsp;
-			<input type="radio" name="type_of_tour" id="type_of_tour-round_trip" onclick="addSection(this.id);" value="Round Trip">&nbsp;&nbsp;<label for="type_of_tour-round_trip">Round Trip</label>
-			&nbsp;&nbsp;&nbsp;
-			<input type="radio" name="type_of_tour" id="type_of_tour-multi_city" onclick="addSection(this.id);" value="Multi City">&nbsp;&nbsp;<label for="type_of_tour-multi_city">Multi City</label>
-			&nbsp;&nbsp;&nbsp;
-		</div>
-		<div class="col-md-4 col-sm-12 col-xs-12 text-right">
-			<button type="button" class="btn btn-info btn-sm ico_left" onclick="addDyn('div_dynamic_ticket_info'); event_airport_s();copy_values()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Section</button>
-		</div>
-	</div>
-	<div class="dynform-wrap" id="div_dynamic_ticket_info" data-counter="1">
-		<div class="dynform-item">		
-			<div class="row">
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="departure_datetime-1" name="departure_datetime" class="app_datetimepicker departure_datetime" placeholder="*Departure Date-Time" title="Departure Date-Time" value="<?php echo date('d-m-Y H:i') ?>" data-dyn-valid="required">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="arrival_datetime-1" name="arrival_datetime" class="app_datetimepicker arrival_datetime" placeholder="*Arrival Date-Time" onchange="validate_validDatetimeFlight(this.id)" title="Arrival Date-Time" value="<?php echo date('d-m-Y H:i') ?>" data-dyn-valid="required">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<select id="airlines_name-1" name="airlines_name" title="Airlines Name" style="width:100%" data-dyn-valid="required" class="app_select" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount');">
-						<option value="">Airline Name</option>
-					<?php $sq_airline = mysqlQuery("SELECT airline_name,airline_code FROM airline_master WHERE active_flag!='Inactive' ORDER BY airline_name ASC");
-						while($row_airline = mysqli_fetch_assoc($sq_airline)){
-					?>
-					    <option value="<?= $row_airline['airline_name'].' ('.$row_airline['airline_code'].')' ?>"><?= $row_airline['airline_name'].' ('.$row_airline['airline_code'].')' ?></option>
-					<?php
-					  }
-					?>
-				</select>
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<select name="class" id="class-1" title="Cabin" data-dyn-valid="required" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount');">
-						<option value="">Cabin</option>
-						<option value="Economy">Economy</option>
-						<option value="Business">Business</option>
-						<option value="First Class">First Class</option>
-						<option value="Other">Other</option>
-					</select>
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="sub_category-1" name="sub_category"  placeholder="Sub Category" title="Sub Category" >
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="flight_no-1" style="text-transform: uppercase;" name="flight_no" onchange="validate_specialChar(this.id)" placeholder="Flight No" title="Flight No" data-dyn-valid="">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="airlin_pnr-1" style="text-transform: uppercase;" onchange=" validate_specialChar(this.id)" name="airlin_pnr" placeholder="Airline PNR" title="Airline PNR" data-dyn-valid="">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input id="airpf-1" name="airpf" title="Enter Departure Airport" data-toggle="tooltip" class="form-control autocomplete airpf" placeholder="*Enter Departure Airport" data-dyn-valid="required">
-					<input type="hidden" name="from_city" id="from_city-1" data-dyn-valid="required"/>
-					<input type="hidden" name="departure_city" id="departure_city-1" data-dyn-valid="required">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="dterm-1" name="dterm" onchange="validate_specialChar(this.id)" placeholder="Departure Terminal" title="Departure Terminal" data-dyn-valid="">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 ">
-					<input id="airpt-1" name="airpt" class="form-control autocomplete airpt" title="Enter Arrival Airport" data-toggle="tooltip" placeholder="*Enter Arrival Airport" data-dyn-valid="required">
-					<input type="hidden" name="to_city" id="to_city-1" data-dyn-valid="required"/>
-					<input type="hidden" name="arrival_city" id="arrival_city-1" data-dyn-valid="required">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="aterm-1" name="aterm" onchange="validate_specialChar(this.id)" placeholder="Arrival Terminal" title="Arrival Terminal" data-dyn-valid="">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 hidden mg_bt_10">
-					<input type="hidden" id="meal_plan-1" name="meal_plan" onchange="validate_specialChar(this.id)" placeholder="Meal Plan" title="Meal Plan" data-dyn-valid="">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="luggage-1" name="luggage" onchange="validate_specialChar(this.id)" placeholder="Luggage" title="Luggage" data-dyn-valid="">
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="no_of_pieces-1" name="no_of_pieces"  placeholder="No of pieces" title="No of pieces" >
-				</div>
-				<div class="col-md-3 col-sm-12 col-xs-12">
-					<textarea name="special_note" id="special_note-1" onchange="validate_address(this.id)" rows="1" placeholder="Special Note" title="Special Note" data-dyn-valid=""></textarea>
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="aircraft_type-1" name="aircraft_type"  placeholder="Aircraft Type" title="Aircraft Type" >
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="operating_carrier-1" name="operating_carrier"  placeholder="Operating carrier" title="Operating carrier" >
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<input type="text" id="frequent_flyer-1" name="frequent_flyer"  placeholder="Frequent Flyer" title="Frequent Flyer" >
-				</div>
-				<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-					<select name="ticket_status" id="ticket_status-1" title="Status of ticket"  >
-						<option value="">Status of ticket</option>
-						<option value="Hold">Hold</option>
-						<option value="Confirmed">Confirmed</option>
-					</select>
-				</div>
+<div class="app_panel">
 
+    <div class="">
+    <div class="container">
+        <div class="app_panel_content Filter-panel">
+		<div class="row">
+			<div class="col-md-8 col-sm-12 col-xs-12 mg_bt_20_xs">
+				<strong>*Type Of Trip :</strong>&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="type_of_tour" id="type_of_tour-one_way" value="One Way">&nbsp;&nbsp;<label for="type_of_tour-one_way">One Way</label>
+				&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="type_of_tour" id="type_of_tour-round_trip" onclick="addSection(this.id);" value="Round Trip">&nbsp;&nbsp;<label for="type_of_tour-round_trip">Round Trip</label>
+				&nbsp;&nbsp;&nbsp;
+				<input type="radio" name="type_of_tour" id="type_of_tour-multi_city" onclick="addSection(this.id);" value="Multi City">&nbsp;&nbsp;<label for="type_of_tour-multi_city">Multi City</label>
+				&nbsp;&nbsp;&nbsp;
+			</div>
+			<div class="col-md-4 col-sm-12 col-xs-12 mg_bt_10 text-right">
+				<button type="button" class="btn btn-info btn-sm ico_left" onclick="addDyn('div_dynamic_ticket_info'); event_airport_s();copy_values()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Section</button>
 			</div>
 		</div>
-	</div>
-	<div class="row text-center mg_tp_20">
+		<div class="dynform-wrap" id="div_dynamic_ticket_info" data-counter="1">
+			<div class="dynform-item">		
+				<div class="row">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="departure_datetime-1" name="departure_datetime" class="app_datetimepicker departure_datetime" placeholder="*Departure Date-Time" title="Departure Date-Time" value="<?php echo date('d-m-Y H:i') ?>" data-dyn-valid="required">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="arrival_datetime-1" name="arrival_datetime" class="app_datetimepicker arrival_datetime" placeholder="*Arrival Date-Time" onchange="validate_validDatetimeFlight(this.id)" title="Arrival Date-Time" value="<?php echo date('d-m-Y H:i') ?>" data-dyn-valid="required">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<select id="airlines_name-1" name="airlines_name" title="Airlines Name" style="width:100%" data-dyn-valid="required" class="app_select" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount');">
+							<option value="">Airline Name</option>
+						<?php $sq_airline = mysqlQuery("SELECT airline_name,airline_code FROM airline_master WHERE active_flag!='Inactive' ORDER BY airline_name ASC");
+							while($row_airline = mysqli_fetch_assoc($sq_airline)){
+						?>
+							<option value="<?= $row_airline['airline_name'].' ('.$row_airline['airline_code'].')' ?>"><?= $row_airline['airline_name'].' ('.$row_airline['airline_code'].')' ?></option>
+						<?php
+						}
+						?>
+					</select>
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<select name="class" id="class-1" title="Cabin" data-dyn-valid="required" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount');">
+							<option value="">Cabin</option>
+							<option value="Economy">Economy</option>
+							<option value="Business">Business</option>
+							<option value="First Class">First Class</option>
+							<option value="Other">Other</option>
+						</select>
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="sub_category-1" name="sub_category"  placeholder="Sub Category" title="Sub Category" >
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="flight_no-1" style="text-transform: uppercase;" name="flight_no" onchange="validate_specialChar(this.id)" placeholder="Flight No" title="Flight No" data-dyn-valid="">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="airlin_pnr-1" style="text-transform: uppercase;" onchange=" validate_specialChar(this.id)" name="airlin_pnr" placeholder="Airline PNR" title="Airline PNR" data-dyn-valid="">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input id="airpf-1" name="airpf" title="Enter Departure Airport" data-toggle="tooltip" class="form-control autocomplete airpf" placeholder="*Enter Departure Airport" data-dyn-valid="required">
+						<input type="hidden" name="from_city" id="from_city-1" data-dyn-valid="required"/>
+						<input type="hidden" name="departure_city" id="departure_city-1" data-dyn-valid="required">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="dterm-1" name="dterm" onchange="validate_specialChar(this.id)" placeholder="Departure Terminal" title="Departure Terminal" data-dyn-valid="">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 ">
+						<input id="airpt-1" name="airpt" class="form-control autocomplete airpt" title="Enter Arrival Airport" data-toggle="tooltip" placeholder="*Enter Arrival Airport" data-dyn-valid="required">
+						<input type="hidden" name="to_city" id="to_city-1" data-dyn-valid="required"/>
+						<input type="hidden" name="arrival_city" id="arrival_city-1" data-dyn-valid="required">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="aterm-1" name="aterm" onchange="validate_specialChar(this.id)" placeholder="Arrival Terminal" title="Arrival Terminal" data-dyn-valid="">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 hidden mg_bt_10">
+						<input type="hidden" id="meal_plan-1" name="meal_plan" onchange="validate_specialChar(this.id)" placeholder="Meal Plan" title="Meal Plan" data-dyn-valid="">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="luggage-1" name="luggage" onchange="validate_specialChar(this.id)" placeholder="Cabin Baggage" title="Cabin Baggage" data-dyn-valid="">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="no_of_pieces-1" name="no_of_pieces"  placeholder="No of pieces" title="No of pieces" >
+					</div>
+					<div class="col-md-3 col-sm-12 col-xs-12">
+						<textarea name="special_note" id="special_note-1" onchange="validate_address(this.id)" rows="1" placeholder="Special Note" title="Special Note" data-dyn-valid=""></textarea>
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="aircraft_type-1" name="aircraft_type"  placeholder="Aircraft Type" title="Aircraft Type" >
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="operating_carrier-1" name="operating_carrier"  placeholder="Operated By" title="Operated By" >
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="frequent_flyer-1" name="frequent_flyer"  placeholder="Frequent Flyer" title="Frequent Flyer" >
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<select name="ticket_status" id="ticket_status-1" title="Status of ticket"  >
+							<option value="">Status of ticket</option>
+							<option value="Hold">Hold</option>
+							<option value="Confirmed">Confirmed</option>
+						</select>
+					</div>
 
-		<div class="col-xs-12">
+				</div>
+			</div>
+		</div>
+		<div class="row text-center mg_tp_20">
 
-			<button class="btn btn-info btn-sm ico_left" type="button" onclick="switch_to_tab1()"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Previous</button>
+			<div class="col-xs-12">
 
-			&nbsp;&nbsp;
+				<button class="btn btn-info btn-sm ico_left" type="button" onclick="switch_to_tab1()"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Previous</button>
 
-			<button class="btn btn-info btn-sm ico_right">Next&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+				&nbsp;&nbsp;
+
+				<button class="btn btn-info btn-sm ico_right">Next&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+
+			</div>
 
 		</div>
-
+        </div>
+    </div>
 	</div>
+</div>
 
 
 
@@ -121,11 +130,8 @@
 
 
 <script>
-
 $('#departure_datetime-1, #arrival_datetime-1').datetimepicker({ format:'d-m-Y H:i:s' });
-
 $('#airlines_name-1,#plane_from_location-1,#plane_to_location-1').select2();
-
 $('#frm_tab2').validate({
 	submitHandler:function(form, e){
 		e.preventDefault();
@@ -191,11 +197,23 @@ $('#frm_tab2').validate({
 				}
 			}
 		});
+		$('#tab_2_head').addClass('done');
+		$('#tab_3_head').addClass('active');
+		$('.bk_tab').removeClass('active');
+		$('#tab3').addClass('active');
+		$('html, body').animate({ scrollTop: $('.bk_tab_head').offset().top }, 200);
 	}
 
 });
 
-function switch_to_tab1(){ $('a[href="#tab1"]').tab('show'); }
+function switch_to_tab1(){
+
+	$('#tab_2_head').addClass('done');
+	$('#tab_1_head').addClass('active');
+	$('.bk_tab').removeClass('active');
+	$('#tab1').addClass('active');
+	$('html, body').animate({ scrollTop: $('.bk_tab_head').offset().top }, 200);
+}
 
 function event_airport_s(count = 2){
 	if(count == 1)	{id1 = "airpf-1"; id2 = "airpt-1"}
@@ -223,5 +241,65 @@ function addSection(id){
 		}
 		event_airport_s();
 	}
+}
+function airport_load_main_sale(ids){
+
+	var base_url = $('#base_url').val();
+	ids.forEach(function (id){
+		var object_id = Object.values(id)[0];
+		$("#"+object_id).autocomplete({
+			source: function(request, response){
+				$.ajax({
+					method:'get',
+					url : base_url+'view/visa_passport_ticket/ticket/home/airport_list.php',
+					dataType : 'json',
+					data : {request : request.term},
+					success : function(data){
+						response(data);
+					}
+				});
+			},
+			select: function (event, ui) {
+				var substr_id =  object_id.substr(6);
+				if(Object.keys(id)[0] == 'dep'){
+					$('#from_city-'+substr_id).val(ui.item.city_id);
+					$('#departure_city-'+substr_id).val(ui.item.value.split(" - ")[1]);
+				}
+				else{
+					$('#to_city-'+substr_id).val(ui.item.city_id);
+					$('#arrival_city-'+substr_id).val(ui.item.value.split(" - ")[1]);
+				}
+			},
+			open: function(event, ui) {
+				$(this).autocomplete("widget").css({
+					"width": document.getElementById(object_id).offsetWidth
+				});
+			},
+			minLength: 2,
+			change: function(event,ui){
+				var substr_id =  object_id.substr(6);
+				if(!ui.item) {
+					$(this).val('');
+					$('#from_city-'+substr_id).val("");
+					$('#departure_city-'+substr_id).val("");
+					error_msg_alert('Please select Airport from the list!!');
+					$(this).css('border','1px solid red;');
+					return;
+				}
+				if($('#'+ids[0].dep).val() == $("#"+ids[1].arr).val()){
+					$(this).val('');
+					$(this).css('border','1px solid red;');
+					$('#from_city-'+substr_id).val("");
+					$('#departure_city-'+substr_id).val("");
+					error_msg_alert('Same Arrival and Boarding Airport Not Allowed!!');
+				}
+	
+			}
+		}).data("ui-autocomplete")._renderItem = function(ul, item) {
+				return $("<li disabled>")
+				.append("<a>" + item.value.split(" -")[1] + "<br><b>" + item.value.split(" -")[0] + "<b></a>")
+				.appendTo(ul);
+			}
+	});	
 }
 </script>

@@ -116,7 +116,7 @@ public function fetch_mobile_no_from_system()
 		}
 	}
 
-	$query1 = "select * from package_tour_booking_master where 1";
+	$query1 = "select * from package_tour_booking_master where 1 and delete_status='0'";
 	if($branch_status=='yes' && $role=='Branch Admin'){
       $query1 .=" and branch_admin_id = '$branch_admin_id'";
     }

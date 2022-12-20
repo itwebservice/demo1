@@ -7,7 +7,7 @@ $branch_status = $_GET['branch_status'];
 $role = $_SESSION['role'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 
-$query = "select * from travelers_details where 1 and status='Active' and traveler_id='$tourist_id'";
+$query = "select * from travelers_details where 1 traveler_id='$tourist_id'";
 /*if($tourist_id != ''){
   $query .= " and traveler_id='$tourist_id' ";
 }
@@ -34,9 +34,9 @@ $sq = mysqlQuery($query);
 <?php
 if($row = mysqli_fetch_assoc($sq))
 {
-  $repeated_count = mysqli_num_rows(mysqlQuery("select traveler_id from travelers_details where first_name='$row[first_name]' and middle_name='$row[middle_name]' and last_name='$row[last_name]' and birth_date='$row[birth_date]' and status='Active' "));
+  $repeated_count = mysqli_num_rows(mysqlQuery("select traveler_id from travelers_details where first_name='$row[first_name]' and middle_name='$row[middle_name]' and last_name='$row[last_name]' and birth_date='$row[birth_date]' "));
 
-  $sq1 = mysqlQuery("select * from travelers_details where first_name='$row[first_name]' and middle_name='$row[middle_name]' and last_name='$row[last_name]' and birth_date='$row[birth_date]' and status='Active' ");
+  $sq1 = mysqlQuery("select * from travelers_details where first_name='$row[first_name]' and middle_name='$row[middle_name]' and last_name='$row[last_name]' and birth_date='$row[birth_date]' ");
   while($row1 = mysqli_fetch_assoc($sq1))
   {
     array_push($traveler_id_arr, $row1['traveler_group_id']);
@@ -67,12 +67,13 @@ paginate_table(repeated_table);
 <div id="travelr_details_popup"></div>
 
 <script>
-  function travelers_details(id)
-  {
-    var base_url = $('#base_url').val();
-    var traveler_group_id = $("#"+id).val();
-    $.get(base_url+'view/reports/repeater_tourist_report_filter_popup.php', { traveler_group_id : traveler_group_id }, function(data){
-        $('#travelr_details_popup').html(data);
-    });
-  } 
+  // function travelers_details(id)
+  // {
+  //   var base_url = $('#base_url').val();
+  //   var traveler_group_id = $("#"+id).val();
+  //   console.log(traveler_group_id);
+  //   $.get(base_url+'view/reports/repeater_tourist_report_filter_popup.php', { traveler_group_id : traveler_group_id }, function(data){
+  //       $('#travelr_details_popup').html(data);
+  //   });
+  // } 
 </script>

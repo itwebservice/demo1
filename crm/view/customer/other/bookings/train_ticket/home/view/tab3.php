@@ -85,18 +85,12 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 								$count++;
 
 								if ($row_train_ticket_payment['clearance_status'] == "Pending") {
-									$bg = "warning";
-								} else if ($row_train_ticket_payment['clearance_status'] == "Cancelled") {
-									$bg = "danger";
-								}
-
-								$sq_train_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_train_ticket_payment[train_ticket_id]'"));
-
-								if ($row_train_ticket_payment['clearance_status'] == "Pending") {
 									$bg = 'warning';
 								} else if ($row_train_ticket_payment['clearance_status'] == "Cancelled") {
 									$bg = 'danger';
-								} else {
+								} else if ($row_train_ticket_payment['clearance_status'] == "Cleared") {
+									$bg = "success";
+								}else {
 									$bg = '';
 								}
 

@@ -32,9 +32,6 @@ public function sales_payment_save()
 
 	$financial_year_id = $_SESSION['financial_year_id'];
 
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $payment_amount);
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }  
-
 	$invoice_no='';
 	$invoice_name='';
 	$module_entry_id='';
@@ -47,12 +44,12 @@ public function sales_payment_save()
 		if($purchase_type_arr[$i]=='Group Booking')
 		{
 			//Group Outstanding	
-			$query = "select * from tourwise_traveler_details where 1 and id='$purchase_id_arr[$i]'";
+			$query = "select * from tourwise_traveler_details where 1 and id='$purchase_id_arr[$i]' and delete_status='0'";
 			$booking_amt =0;
 			$pending_amt=0;
 			$sq_booking = mysqlQuery($query);
 			while($row_booking = mysqli_fetch_assoc($sq_booking)){
-				$pay_amount = 0;
+				
 				//Sale
 				$travel_amt = $row_booking['total_travel_expense'];
 				$tour_amt = $row_booking['total_tour_fee'];
@@ -88,12 +85,12 @@ public function sales_payment_save()
 				
 				$sq_payment= mysqlQuery(" insert into payment_master (payment_id, financial_year_id, branch_admin_id, emp_id, tourwise_traveler_id, date, payment_mode, amount, bank_name, transaction_id, payment_for, travel_type, bank_id, clearance_status,credit_charges,credit_card_details) values ('$max_payment_id', '$financial_year_id', '$branch_admin_id', '$emp_id', '$purchase_id_arr[$i]', '$payment_date', '$payment_mode_new', '$payment_amount_arr[$i]', '$bank_name', '$transaction_id', 'Tour', '', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 				$invoice_no .= get_group_booking_id($purchase_id_arr[$i],$yr1).',';
-				$invoice_name .= ' Group Booking,';
-				$module_entry_id .= $purchase_id_arr[$i].',';
+				$invoice_name .= ' Group Booking Payment,';
+				$module_entry_id .= $max_payment_id.',';
 				$invoice_no1 = get_group_booking_id($purchase_id_arr[$i],$yr1);
 				//Bank and Cash Book Save
 				if($payment_mode != 'Advance'){
-					$this->bank_cash_book_save($max_payment_id,'Group Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+					$this->bank_cash_book_save($max_payment_id,'Group Booking Payment',$max_payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 				}
 			}
 			
@@ -101,7 +98,7 @@ public function sales_payment_save()
 		if($purchase_type_arr[$i]=='Package Booking')
 		{
 			//Package Outstanding	
-			$query = "select * from package_tour_booking_master where 1 and booking_id='$purchase_id_arr[$i]'";
+			$query = "select * from package_tour_booking_master where 1 and booking_id='$purchase_id_arr[$i]' and delete_status='0'";
 			$booking_amt =0;
 			$pending_amt=0;
 			$sq_booking = mysqlQuery($query);
@@ -133,12 +130,12 @@ public function sales_payment_save()
 				$max_payment_id = $value['max'] + 1;
 				$sq_payment= mysqlQuery(" insert into package_payment_master (payment_id, booking_id, financial_year_id, branch_admin_id, emp_id, date, payment_mode, amount, bank_name, transaction_id, payment_for, travel_type, bank_id, clearance_status,credit_charges,credit_card_details) values ('$max_payment_id', '$purchase_id_arr[$i]', '$financial_year_id', '$branch_admin_id', '$emp_id', '$payment_date', '$payment_mode_new', '$payment_amount_arr[$i]', '$bank_name', '$transaction_id', 'Tour', 'All', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 				$invoice_no .= get_package_booking_id($purchase_id_arr[$i],$yr1).',';
-				$invoice_name .= ' Package Booking(Tour),';
-				$module_entry_id .= $purchase_id_arr[$i].',';
+				$invoice_name .= ' Package Booking Payment,';
+				$module_entry_id .= $max_payment_id.',';
 				$invoice_no1 = get_package_booking_id($purchase_id_arr[$i],$yr1);
 				//Bank and Cash Book Save
 				if($payment_mode != 'Advance'){
-					$this->bank_cash_book_save($max_payment_id,'Package Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+					$this->bank_cash_book_save($max_payment_id,'Package Booking Payment',$max_payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 				}
 			}
 
@@ -196,12 +193,12 @@ public function sales_payment_save()
 
 			$sq_payment = mysqlQuery("insert into visa_payment_master (payment_id, visa_id, branch_admin_id, financial_year_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$branch_admin_id', '$financial_year_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 			$invoice_no .= get_visa_booking_id($purchase_id_arr[$i],$yr1).',';
-		    $invoice_name .= ' Visa Booking,';
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $invoice_name .= ' Visa Booking Payment,';
+		    $module_entry_id .= $payment_id.',';
 		    $invoice_no1 = get_visa_booking_id($purchase_id_arr[$i],$yr1);
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Visa Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Visa Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 		
@@ -216,12 +213,12 @@ public function sales_payment_save()
 
 			$sq_payment = mysqlQuery("insert into miscellaneous_payment_master (payment_id, misc_id, branch_admin_id, financial_year_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$branch_admin_id', '$financial_year_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 			$invoice_no .= get_misc_booking_id($purchase_id_arr[$i],$yr1).',';
-		    $invoice_name .= ' Miscellaneous Booking,';
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $invoice_name .= ' Miscellaneous Booking Payment,';
+		    $module_entry_id .= $payment_id.',';
 		    $invoice_no1 = get_misc_booking_id($purchase_id_arr[$i],$yr1);
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Miscellaneous Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Miscellaneous Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 		if($purchase_type_arr[$i]=='Air Ticket Booking'){
@@ -235,12 +232,12 @@ public function sales_payment_save()
 
 			$sq_payment = mysqlQuery("insert into ticket_payment_master (payment_id, branch_admin_id, ticket_id, financial_year_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$branch_admin_id', '$purchase_id_arr[$i]', '$financial_year_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 			$invoice_no .= get_ticket_booking_id($purchase_id_arr[$i],$yr1).',';
-		    $invoice_name .= ' Air Ticket Booking,';
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $invoice_name .= ' Air Ticket Booking Payment,';
+		    $module_entry_id .= $payment_id.',';
 		    $invoice_no1 = get_ticket_booking_id($purchase_id_arr[$i],$yr1);
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Air Ticket Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Air Ticket Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 		if($purchase_type_arr[$i]=='Train Booking'){
@@ -254,12 +251,12 @@ public function sales_payment_save()
 			
 			$sq_payment = mysqlQuery("insert into train_ticket_payment_master (payment_id, train_ticket_id, branch_admin_id, financial_year_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$branch_admin_id', '$financial_year_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 			$invoice_no .= get_train_ticket_booking_id($purchase_id_arr[$i],$yr1).',';
-		    $invoice_name .= ' Train Ticket Booking,';
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $invoice_name .= ' Train Ticket Booking Payment,';
+		    $module_entry_id .= $payment_id.',';
 		    $invoice_no1 = get_train_ticket_booking_id($purchase_id_arr[$i],$yr1);
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Train Ticket Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Train Ticket Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 		if($purchase_type_arr[$i]=='Hotel Booking'){
@@ -273,11 +270,11 @@ public function sales_payment_save()
 			$sq_payment = mysqlQuery("insert into hotel_booking_payment(payment_id, booking_id, branch_admin_id, financial_year_id, payment_date, payment_mode, payment_amount, bank_name, transaction_id, bank_id, clearance_status, created_at,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$branch_admin_id', '$financial_year_id', '$payment_date', '$payment_mode_new', '$payment_amount_arr[$i]', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status', '$created_at','$credit_c','$credit_card_details')");
 			$invoice_no .= get_hotel_booking_id($purchase_id_arr[$i],$yr1).',';
 		    $invoice_no1 = get_hotel_booking_id($purchase_id_arr[$i],$yr1);
-		    $module_entry_id .= $purchase_id_arr[$i].',';
-		    $invoice_name .= ' Hotel Booking,';
+		    $module_entry_id .= $payment_id.',';
+		    $invoice_name .= ' Hotel Booking Payment,';
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Hotel Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Hotel Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 		if($purchase_type_arr[$i]=='Bus Booking'){
@@ -292,11 +289,11 @@ public function sales_payment_save()
 			$sq_payment = mysqlQuery("insert into bus_booking_payment_master (payment_id, booking_id, branch_admin_id, financial_year_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$branch_admin_id','$financial_year_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
 			$invoice_no .= get_bus_booking_id($purchase_id_arr[$i],$yr1).',';
 		    $invoice_no1 = get_bus_booking_id($purchase_id_arr[$i],$yr1);
-		    $invoice_name .= ' Bus Booking,';
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $invoice_name .= ' Bus Booking Payment,';
+		    $module_entry_id .= $payment_id.',';
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Bus Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Bus Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 		if($purchase_type_arr[$i]=='Car Rental Booking'){
@@ -310,34 +307,15 @@ public function sales_payment_save()
 			
 			$sq_payment = mysqlQuery("insert into car_rental_payment(payment_id, booking_id, financial_year_id, emp_id, branch_admin_id,  payment_date, payment_mode, payment_amount, bank_name, transaction_id, bank_id, clearance_status, created_at,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$financial_year_id', '$emp_id', '$branch_admin_id', '$payment_date', '$payment_mode_new', '$payment_amount_arr[$i]', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status', '$created_at','$credit_c','$credit_card_details')");
 			$invoice_no .= get_car_rental_booking_id($purchase_id_arr[$i],$yr1).',';
-		    $invoice_name .= 'Car Rental Booking,';
+		    $invoice_name .= 'Car Rental Booking Payment,';
 		    $invoice_no1 = get_car_rental_booking_id($purchase_id_arr[$i],$yr1);
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $module_entry_id .= $payment_id.',';
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Car Rental Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Car Rental Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
-		if($purchase_type_arr[$i]=='Forex Booking'){
-
-			if($payment_mode == 'Credit Card'){
-				//calculate credit card charges
-				$credit_c = $this->calculate_credit_charges($payment_amount_arr[$i]);
-			}
-			$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(payment_id) as max from forex_booking_payment_master"));
-			$payment_id = $sq_max['max'] + 1;
-
-			$sq_payment = mysqlQuery("insert into forex_booking_payment_master (payment_id, booking_id, branch_admin_id, financial_year_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$branch_admin_id', '$financial_year_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");
-			$invoice_no .= get_forex_booking_id($purchase_id_arr[$i],$yr1).',';
-		    $invoice_name .= ' Forex Booking,';
-		    $invoice_no1 = get_forex_booking_id($purchase_id_arr[$i],$yr1);
-		    $module_entry_id .= $purchase_id_arr[$i].',';
-			//Bank and Cash Book Save
-			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Forex Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
-			}
-		}
-		if($purchase_type_arr[$i]=='Excursion Booking'){
+		if($purchase_type_arr[$i]=='Activity Booking'){
 
 			if($payment_mode == 'Credit Card'){
 				//calculate credit card charges
@@ -348,12 +326,12 @@ public function sales_payment_save()
 
 			$sq_payment = mysqlQuery("insert into exc_payment_master (payment_id, exc_id, financial_year_id, branch_admin_id, payment_date, payment_amount, payment_mode, bank_name, transaction_id, bank_id, clearance_status,credit_charges,credit_card_details) values ('$payment_id', '$purchase_id_arr[$i]', '$financial_year_id', '$branch_admin_id', '$payment_date', '$payment_amount_arr[$i]', '$payment_mode_new', '$bank_name', '$transaction_id', '$bank_id', '$clearance_status','$credit_c','$credit_card_details') ");		
 			$invoice_no .= get_exc_booking_id($purchase_id_arr[$i],$yr1).',';	
-		    $invoice_name .= ' Excursion Booking,';
+		    $invoice_name .= ' Excursion Booking Payment,';
 		    $invoice_no1 = get_exc_booking_id($purchase_id_arr[$i],$yr1);
-		    $module_entry_id .= $purchase_id_arr[$i].',';
+		    $module_entry_id .= $payment_id.',';
 			//Bank and Cash Book Save
 			if($payment_mode != 'Advance'){
-				$this->bank_cash_book_save($payment_id,'Excursion Booking',$purchase_id_arr[$i],$payment_amount_arr[$i],$invoice_no1,$credit_c);
+				$this->bank_cash_book_save($payment_id,'Excursion Booking Payment',$payment_id,$payment_amount_arr[$i],$invoice_no1,$credit_c);
 			}
 		}
 	}

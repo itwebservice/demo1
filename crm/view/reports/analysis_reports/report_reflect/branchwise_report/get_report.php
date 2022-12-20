@@ -485,40 +485,42 @@ $count = 1;
 
 
 $footer_data = array("footer_data" => array(
-	'total_footers' => 11,
+	'total_footers' => 12,
 			
 	'foot0' => "Total :",
-	'class0' => "text-left info",
+	'class0' => "text-start info",
 	
     'foot1' => "",
-	'class1' => "text-left info",
+	'class1' => "text-start info",
 
 	'foot2' => get_branch_enq($id,'total'),
-	'class2' => "text-left success",
+	'class2' => "text-start success",
 
     'foot3' => get_enq_etr_active($id,'total'),
-	'class3' => "text-left success",
+	'class3' => "text-start success",
 
     'foot4' => get_enq_etr_infollow($id,'total'),
-	'class4' => "text-left success",
+	'class4' => "text-start success",
 
     'foot5' => get_enq_etr_dropped($id,'total'),
-	'class5' => "text-left success",
+	'class5' => "text-start success",
 
 	'foot6' => get_enq_etr_converted($id,'total'),
-	'class6' => "text-left success",
+	'class6' => "text-start success",
 
     'foot7' => get_enq_etr_budget($id,'total'),
-	'class7' => "text-left success",
+	'class7' => "text-start success",
 
     'foot8' => get_branch_enq_strong($id,'total'),
-	'class8' => "text-left success",
+	'class8' => "text-start success",
 
     'foot9' => get_branch_enq_hot($id,'total'),
-	'class9' => "text-left success",
+	'class9' => "text-start success",
 
     'foot10' => get_branch_enq_cold($id,'total'),
-	'class10' => "text-left success",
+	'class10' => "text-start success",
+    'foot11' => "",
+	'class11' => "text-start success",
 	)
 );
 

@@ -13,13 +13,13 @@ $sq = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$state
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update State</h4>
+        <h4 class="modal-title" id="myModalLabel">Update State/Country</h4>
       </div>
       <div class="modal-body text-center">
 
           <div class="row mg_bt_10">
             <div class="col-sm-6 mg_bt_10">
-              <label for="txt_state_name">State Name</label>
+              <label for="txt_state_name">State/Country Name</label>
               <input type="text" class="form-control" id="txt_state_name" onchange="validate_state(this.id)" name="txt_state_name" value="<?php echo $sq['state_name'] ?>" required>
             </div>
             <div class="col-sm-6 mg_bt_10">

@@ -83,7 +83,7 @@ $to_date = $_GET['to_date'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -143,7 +143,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
 
 
-$query = "select * from bus_booking_master where financial_year_id='$financial_year_id' ";
+$query = "select * from bus_booking_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($booking_id!=""){
     $query .= " and booking_id='$booking_id'";
 }
@@ -185,15 +185,20 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('I'.$row_count, "Total Sale")
         ->setCellValue('J'.$row_count, "Cancellation Charges")
         ->setCellValue('K'.$row_count, "Total Amount")
-        ->setCellValue('L'.$row_count, "Created By");
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);
+        ->setCellValue('L'.$row_count, "Paid Amount")
+        ->setCellValue('M'.$row_count, "Created By");
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);
 
 $row_count++;
 
 $count = 0;
         $sq_booking = mysqlQuery($query);
         while($row_booking = mysqli_fetch_assoc($sq_booking)){
+            $query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(credit_charges) as sumc from bus_booking_payment_master where booking_id='$row_booking[booking_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
+$paid_amount = $query['sum'] + $query['sumc'];
+$paid_amount = ($paid_amount == '')?'0':$paid_amount;
+
 			$sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_booking[emp_id]'"));
 			$emp_name = ($row_booking['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
 
@@ -234,9 +239,10 @@ $count = 0;
         ->setCellValue('I'.$row_count, number_format($row_booking['net_total']+$credit_card_charges,2))
         ->setCellValue('J'.$row_count, number_format($row_booking['cancel_amount'],2))
         ->setCellValue('K'.$row_count, number_format($row_booking['net_total'] - $row_booking['cancel_amount']+$credit_card_charges,2))
-        ->setCellValue('L'.$row_count,$emp_name);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('L'.$row_count,$paid_amount)
+        ->setCellValue('M'.$row_count,$emp_name);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
 
 		$row_count++;
 
@@ -251,10 +257,11 @@ $count = 0;
         ->setCellValue('I'.$row_count, number_format($total_sale,2))
         ->setCellValue('J'.$row_count, number_format($total_cancelation_amount,2))
         ->setCellValue('K'.$row_count, number_format($total_balance,2))
-        ->setCellValue('L'.$row_count, "");
+        ->setCellValue('L'.$row_count, "")
+        ->setCellValue('M'.$row_count, "");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);
 
 
 }

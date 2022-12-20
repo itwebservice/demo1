@@ -7,17 +7,13 @@ $todate = !empty($_POST['todate']) ? get_date_db($_POST['todate']) :null;
 $array_s = array();
 if(isset($_SESSION['dateqry']) && isset($_SESSION['package_qry']))
 {
-    unset( $_SESSION['dateqry']);
-   unset( $_SESSION['package_qry']);
-}
-
-if(empty($fromdate) && empty($todate) || empty($hotelid) || empty($cityid))
-{
     $_SESSION['dateqry'] = "";
     $_SESSION['package_qry'] = "";
 }
-else
+
+if(!empty($fromdate) || !empty($todate) || !empty($hotelid) || !empty($cityid))
 {
+    
     if(!empty($hotelid))
     {
         $_SESSION['dateqry'] .= "and hotel_master.hotel_id ='".$hotelid."'";    
@@ -130,11 +126,12 @@ $main = array();
 //hotel
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER JOIN hotel_booking_entries on hotel_master.hotel_id = hotel_booking_entries.hotel_id INNER JOIN hotel_booking_master on hotel_booking_entries.booking_id = hotel_booking_master.booking_id group by hotel_master.hotel_id ";
+    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER JOIN hotel_booking_entries on hotel_master.hotel_id = hotel_booking_entries.hotel_id INNER JOIN hotel_booking_master on hotel_booking_entries.booking_id = hotel_booking_master.booking_id where 1=1 ".$_SESSION['dateqry']." group by hotel_master.hotel_id ";
+ 
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER JOIN hotel_booking_entries on hotel_master.hotel_id = hotel_booking_entries.hotel_id INNER JOIN hotel_booking_master on hotel_booking_entries.booking_id = hotel_booking_master.booking_id ".$_SESSION['dateqry'];
+    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER JOIN hotel_booking_entries on hotel_master.hotel_id = hotel_booking_entries.hotel_id INNER JOIN hotel_booking_master on hotel_booking_entries.booking_id = hotel_booking_master.booking_id where 1=1 ".$_SESSION['dateqry']." group by hotel_master.hotel_id ";
 }
 $result = mysqlQuery($query);
 $count = 1;
@@ -153,12 +150,12 @@ while($dataHotel = mysqli_fetch_assoc($result))
 //package
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER Join package_hotel_accomodation_master on hotel_master.hotel_id = package_hotel_accomodation_master.hotel_id INNER JOIN package_tour_booking_master on package_hotel_accomodation_master.booking_id = package_tour_booking_master.booking_id inner join vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id group by hotel_master.hotel_id ";
+    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER Join package_hotel_accomodation_master on hotel_master.hotel_id = package_hotel_accomodation_master.hotel_id INNER JOIN package_tour_booking_master on package_hotel_accomodation_master.booking_id = package_tour_booking_master.booking_id inner join vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id where 1=1 ".$_SESSION['package_qry'] ."group by hotel_master.hotel_id ";
 
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER Join package_hotel_accomodation_master on hotel_master.hotel_id = package_hotel_accomodation_master.hotel_id INNER JOIN package_tour_booking_master on package_hotel_accomodation_master.booking_id = package_tour_booking_master.booking_id inner join vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id  where 1=1 ".$_SESSION['package_qry'];
+    $query=  "SELECT * FROM hotel_master INNER JOIN city_master on hotel_master.city_id = city_master.city_id INNER Join package_hotel_accomodation_master on hotel_master.hotel_id = package_hotel_accomodation_master.hotel_id INNER JOIN package_tour_booking_master on package_hotel_accomodation_master.booking_id = package_tour_booking_master.booking_id inner join vendor_estimate on package_tour_booking_master.booking_id = vendor_estimate.estimate_type_id  where 1=1 ".$_SESSION['package_qry']."group by hotel_master.hotel_id ";;
 
 }
 $result = mysqlQuery($query);
@@ -203,7 +200,7 @@ for($i=0;$i<=count($hotel_main)-1;$i++)
                 hotel_rooms($id_main[$i]) + package_hotel_rooms($id_main[$i]),
                 package_hotel_nights($id_main[$i]) +
                 get_nights($id_main[$i]),
-                get_amount($id_main[$i]) +get_package_amount($id_main[$i]) ,
+                // get_amount($id_main[$i]) +get_package_amount($id_main[$i]) ,
 			    '<button class="btn btn-info btn-sm" onclick="view_com_hotel_modal('. $id_main[$i] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>' 
         ),"bg" =>$bg );
       

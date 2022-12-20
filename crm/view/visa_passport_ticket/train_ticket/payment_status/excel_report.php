@@ -104,7 +104,7 @@ else{
 }       
 
 if($train_ticket_id!=""){
-    $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id'")) ;
+    $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id' and delete_status='0'")) ;
     $booking_date = $sql_booking_date['created_at'];
     $yr = explode("-", $booking_date);
     $year = $yr[0];
@@ -170,7 +170,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($customer_id!=""){
     $query .= " and customer_id='$customer_id'";
 }
@@ -270,7 +270,7 @@ $count = 0;
         
             $sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
             $branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-            $sq_total_member = mysqli_num_rows(mysqlQuery("select train_ticket_id from train_ticket_master_entries where train_ticket_id = '$row_ticket[train_ticket_id]' AND status!='Cancel'"));
+            $sq_total_member = mysqli_num_rows(mysqlQuery("select train_ticket_id from train_ticket_master_entries where train_ticket_id = '$row_ticket[train_ticket_id]'"));
         
             $sq_payment = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum_pay,sum(credit_charges) as sumc from train_ticket_payment_master where train_ticket_id='$row_ticket[train_ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
             $credit_card_charges = $sq_payment['sumc'];
@@ -321,14 +321,14 @@ $count = 0;
             $purchase_amt = 0;
             $i=0;
             $p_due_date = '';
-            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Train Ticket Booking' and estimate_type_id='$row_ticket[train_ticket_id]'"));
+            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Train Ticket Booking' and estimate_type_id='$row_ticket[train_ticket_id]' and delete_status='0'"));
             if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-            $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Train Ticket Booking' and estimate_type_id='$row_ticket[train_ticket_id]'");
+            $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Train Ticket Booking' and estimate_type_id='$row_ticket[train_ticket_id]' and delete_status='0'");
             while($row_purchase = mysqli_fetch_assoc($sq_purchase)){			
                 $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
                 $total_purchase = $total_purchase + $purchase_amt;
             }
-            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Train Ticket Booking' and estimate_type_id='$row_ticket[train_ticket_id]'"));		
+            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Train Ticket Booking' and estimate_type_id='$row_ticket[train_ticket_id]' and delete_status='0'"));		
             $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
             if($vendor_name == ''){ $vendor_name1 = 'NA';  }
             else{ $vendor_name1 = $vendor_name; }

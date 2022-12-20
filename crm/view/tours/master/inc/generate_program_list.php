@@ -11,6 +11,8 @@ $days = $daysLeft/(60 * 60 * 24);
 
 <?php 
 	for($i = 0; $i<=$days; $i++) { 
+
+		$dayNumber = $i + 1;
 ?>
 
 		<tr>
@@ -27,11 +29,11 @@ $days = $daysLeft/(60 * 60 * 24);
 			<td class='col-md-2 pad_8'><input type="text" id="overnight_stay<?php echo $i+1; ?>" name="overnight_stay" class="form-control mg_bt_10" placeholder="*Overnight Stay" onchange="validate_spaces(this.id);validate_onstay(this.id);" title="Overnight Stay"  value=""> 
 
 			</td>
-			<td class='col-md-1 pad_8'><select id="meal_plan<?php echo $i+1; ?>" title="Meal Plan" name="meal_plan" class="form-control">
+			<td class='col-md-1 pad_8'><select id="meal_plan<?php echo $i+1; ?>" title="Meal Plan" name="meal_plan" class="form-control" style="width:125px;">
 			<?php get_mealplan_dropdown(); ?>
 			</select>
 			</td>
-			<td class='col-md-1 pad_8'><button type="button" class="btn btn-excel" title="Add Itinerary" id="itinerary<?php echo $i; ?>" onClick="add_itinerary('dest_name_s','special_attaraction<?php echo $i+1; ?>','day_program<?php echo $i; ?>','overnight_stay<?php echo $i+1; ?>','Day-<?=$i?>')"><i class="fa fa-plus"></i></button>
+			<td class='col-md-1 pad_8'><button type="button" class="btn btn-excel" title="Add Itinerary" id="itinerary<?php echo $dayNumber; ?>" onClick="add_itinerary('dest_name_s','special_attaraction<?php echo $i+1; ?>','day_program<?php echo $i; ?>','overnight_stay<?php echo $i+1; ?>','Day-<?=$dayNumber?>')"><i class="fa fa-plus"></i></button>
 			</td>
 		</tr>
 

@@ -13,7 +13,7 @@ $sq_bank_info = mysqli_fetch_assoc(mysqlQuery("select * from cash_deposit_master
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Deposit</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Cash Deposit</h4>
       </div>
       <div class="modal-body">            
             <div class="row">
@@ -92,7 +92,7 @@ $('#frm_update').validate({
   },
   submitHandler:function(form){
 
-    var base_url = $('#base_url').val();          
+    var base_url = $('#base_url').val();
 
     var bank_id = $('#bank_id1').val();
     var deposit_id = $('#deposit_id').val();
@@ -101,11 +101,12 @@ $('#frm_update').validate({
     var payment_evidence_url = $('#payment_evidence_url1').val();
     var payment_old_amount =  $('#payment_old_amount').val();
 
-    if((payment_amount!=0) && (payment_old_amount != payment_amount))
-     { error_msg_alert("Can not update amount else make it 0"); return false;}
+    if((payment_amount!=0) && (payment_old_amount != payment_amount)){
+      error_msg_alert("Can not update amount else make it 0");
+      return false;
+    }
 
     $('#btn_update').button('loading');
-
     $.ajax({
       type:'post',
       url:base_url+'controller/bank_vouchers/cash_deposit_update.php',
@@ -117,10 +118,10 @@ $('#frm_update').validate({
           $('#update_modal').modal('hide');
           list_reflect();
         }
-      }     
+      }
     });
-
   }
+  
 });
 </script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

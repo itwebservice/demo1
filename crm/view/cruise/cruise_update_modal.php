@@ -18,7 +18,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise_info['email_id'], $secret_key
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Cruise Supplier Information</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Cruise Supplier Details</h4>
       </div>
       <div class="modal-body">
         <form id="frm_cruise_update">
@@ -29,7 +29,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise_info['email_id'], $secret_key
               <input type="hidden" id="vendor_login_id" name="vendor_login_id" value="<?= $sq_vendor_login['login_id'] ?>">
               <div class="row">
                   <div class="col-md-3 col-sm-6 mg_bt_10">
-                     <select id="cmb_city_id1" name="cmb_city_id1" style="width:100%" title="City Name">
+                    <select id="cmb_city_id1" name="cmb_city_id1" style="width:100%" title="City Name">
                         <?php $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_id,city_name from city_master where city_id='$sq_cruise_info[city_id]'")); ?>
                         <option value="<?php echo $sq_city['city_id']; ?>" selected="selected"><?php echo $sq_city['city_name']; ?></option>
                     </select>
@@ -61,7 +61,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise_info['email_id'], $secret_key
               </div>
             <div class="row">
               <div class="col-sm-3 col-xs-6 mg_bt_10">
-                <select name="state1" id="state1" title="Select State" style="width: 100%" required>
+                <select name="state1" id="state1" title="Select State/Country Name" style="width: 100%" required>
                   <?php if($sq_cruise_info['state']!='0'){
                   $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_cruise_info[state]'"));
                   ?>
@@ -70,12 +70,19 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise_info['email_id'], $secret_key
                   <?php get_states_dropdown() ?>
                 </select>
               </div> 
-              <div class="col-md-3 col-sm-6 mg_bt_10">
+              <!-- <div class="col-md-3 col-sm-6 mg_bt_10">
                 <input type="text" id="country1" name="country1" class="form-control" placeholder="Country" value="<?= $sq_cruise_info['country'] ?>" title="Country" >
-            </div>
+            </div> -->
             <div class="col-md-3 col-sm-6 mg_bt_10">
                 <textarea id="website1" name="website1" placeholder="Website" title="Website" class="form-control" rows="1"><?= $sq_cruise_info['website'] ?></textarea>
             </div> 
+            <div class="col-md-3 col-sm-6 mg_bt_10">
+              <select name="active_flag1" id="active_flag1" title="Status" class="form-control">
+                <option value="<?= $sq_cruise_info['active_flag'] ?>"><?= $sq_cruise_info['active_flag'] ?></option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
             </div>                
         </div>
         <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_30">
@@ -84,10 +91,10 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise_info['email_id'], $secret_key
             <div class="col-md-3 col-sm-6 mg_bt_10">
               <input type="text" name="bank_name1" id="bank_name1" class="bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_cruise_info['bank_name']?>">
             </div>
-           <div class="col-md-3 col-sm-6 mg_bt_10">
+            <div class="col-md-3 col-sm-6 mg_bt_10">
               <input type="text" name="account_name1" id="account_name1" placeholder="A/c Type" title="A/c Type" value="<?= $sq_cruise_info['account_name']?>">
             </div> 
-           <div class="col-md-3 col-sm-6 mg_bt_10">
+            <div class="col-md-3 col-sm-6 mg_bt_10">
               <input type="text" name="account_no1" id="account_no1" placeholder="A/c No"  onchange="validate_accountNo(this.id);" title="A/c No" value="<?= $sq_cruise_info['account_no']?>">
             </div> 
             <div class="col-md-3 col-sm-6 mg_bt_10">
@@ -99,37 +106,31 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise_info['email_id'], $secret_key
           <div class="col-md-3 col-sm-6 mg_bt_10">
               <input type="text" name="ifsc_code1" id="ifsc_code1" onchange="validate_IFSC(this.id);" placeholder="IFSC/SWIFT CODE" title="IFSC/SWIFT CODE" value="<?= $sq_cruise_info['ifsc_code']?>">
           </div>
-           <div class="col-md-3 col-sm-6 mg_bt_10">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
               <input type="text" name="service_tax_no1" id="service_tax_no1" onchange="validate_alphanumeric(this.id)" placeholder="Tax No" title="Tax No" value="<?= strtoupper($sq_cruise_info['service_tax_no'])?>" style="text-transform: uppercase;">
           </div> 
           <div class="col-md-3 col-sm-6 mg_bt_10">
-             <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" value="<?= $sq_cruise_info['pan_no']?>" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+            <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" value="<?= $sq_cruise_info['pan_no']?>" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
           </div> 
-           <div class="col-md-3 col-sm-6 mg_bt_10">
-              <input type="hidden" id="opening_balance1" name="opening_balance1" class="form-control" placeholder="Opening Balance" title="Opening Balance" value="<?= $sq_cruise_info['opening_balance'] ?>" <?= $value ?>  onchange="validate_balance(this.id)">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+              <input type="number" id="opening_balance1" name="opening_balance1" class="form-control" placeholder="*Opening Balance" title="Opening Balance" value="<?= $sq_cruise_info['opening_balance'] ?>">
+          </div> 
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <select class="form-control" data-oggle="tooltip" name="side1" id="side1" title="Balance Side">
+              <option value="<?= $sq_cruise_info['side']?>"><?= $sq_cruise_info['side']?></option>
+              <?php if($sq_cruise_info['side'] != 'Debit'){ ?>
+                <option value="Debit">Debit</option>
+              <?php }
+              if($sq_cruise_info['side'] != 'Credit'){ ?>
+              <option value="Credit">Credit</option>
+              <?php } ?>
+            </select>
           </div> 
           <div class="col-sm-3 mg_bt_10">
             <input type="hidden" id="as_of_date1" name="as_of_date1" placeholder="*As of Date" title="As of Date" value="<?= get_date_user($sq_cruise_info['as_of_date']) ?>">
           </div>
-          <div class="col-md-3 col-sm-6 mg_bt_10">
-            <select class="hidden" name="side1" id="side1" title="Select side" disabled>
-              <option value="<?= $sq_cruise_info['side']?>"><?= $sq_cruise_info['side']?></option>
-              <option value="">*Select Side</option>
-              <option value="Credit">Credit</option>
-              <option value="Debit">Debit</option>
-            </select>
-          </div> 
         </div>
-      </div>
-        <div class="row">
-          <div class="col-md-3 col-sm-6 mg_bt_10">
-              <select name="active_flag1" id="active_flag1" title="Status" class="form-control">
-                <option value="<?= $sq_cruise_info['active_flag'] ?>"><?= $sq_cruise_info['active_flag'] ?></option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>   
-        </div>  
+      </div> 
 
         <div class="row text-center mg_tp_20">
             <div class="col-md-12">
@@ -151,11 +152,11 @@ city_lzloading('#cmb_city_id1');
 $(function(){
   $('#frm_cruise_update').validate({
     rules:{
-
-            company_name1:{ required:true },
-            cmb_city_id1:{ required:true },  
-            side1 : { required : true },
-			      as_of_date1 : { required : true },
+      company_name1:{ required:true },
+      cmb_city_id1:{ required:true },  
+      side1 : { required : true },
+      as_of_date1 : { required : true },
+      opening_balance1 : { required : true },
     },
 
     submitHandler:function(form){
@@ -169,7 +170,7 @@ $(function(){
         var cmb_city_id1 = $('#cmb_city_id1').val();        
         var cruise_address = $('#cruise_address1').val();
         var immergency_contact_no = $('#immergency_contact_no1').val();
-        var country = $("#country1").val();
+        // var country = $("#country1").val();
         var website = $("#website1").val();
         var bank_name = $("#bank_name1").val();
          var account_name = $("#account_name1").val();
@@ -193,7 +194,7 @@ $(function(){
 
                $.post( 
                base_url+"controller/cruise/cruise_update.php",
-               { cruise_id : cruise_id, vendor_login_id : vendor_login_id, company_name : company_name, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, cmb_city_id1 : cmb_city_id1, cruise_address : cruise_address, country :country, website :website,  opening_balance : opening_balance, active_flag : active_flag,service_tax_no1:service_tax_no1,state : state, bank_name : bank_name, account_no:account_no, branch : branch, ifsc_code:ifsc_code,side :side,account_name : account_name ,supp_pan : supp_pan,as_of_date : as_of_date},
+               { cruise_id : cruise_id, vendor_login_id : vendor_login_id, company_name : company_name, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, cmb_city_id1 : cmb_city_id1, cruise_address : cruise_address, website :website,  opening_balance : opening_balance, active_flag : active_flag,service_tax_no1:service_tax_no1,state : state, bank_name : bank_name, account_no:account_no, branch : branch, ifsc_code:ifsc_code,side :side,account_name : account_name ,supp_pan : supp_pan,as_of_date : as_of_date},
 
                function(data) {                  
                   msg_alert(data);

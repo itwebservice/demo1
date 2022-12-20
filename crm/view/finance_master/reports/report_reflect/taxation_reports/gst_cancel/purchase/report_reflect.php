@@ -16,7 +16,7 @@ $count = 1;
 
 $sq_setting = mysqli_fetch_assoc(mysqlQuery("select * from app_settings where setting_id='1'"));
 
-$query = "select * from vendor_estimate where status='Cancel' ";
+$query = "select * from vendor_estimate where status='Cancel' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -26,6 +26,7 @@ include "../../../../../../../model/app_settings/branchwise_filteration.php";
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
+	$estimate_type_val = get_estimate_type_name($row_query['estimate_type'], $row_query['estimate_type_id']);
 	$vendor_name = get_vendor_name($row_query['vendor_type'],$row_query['vendor_type_id']);
 	$vendor_info = get_vendor_info($row_query['vendor_type'], $row_query['vendor_type_id']);
 	$hsn_code = get_service_info($row_query['estimate_type']);
@@ -57,7 +58,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 		$vendor_name ,
 		($vendor_info['service_tax'] == '') ? 'NA' : $vendor_info['service_tax'],
 		($sq_state['state_name'] == '') ? 'NA' : $sq_state['state_name'] ,
-		$row_query['estimate_id'] ,
+		$row_query['estimate_id'].' ('.$estimate_type_val.')' ,
 		get_date_user($row_query['purchase_date']) ,
 		($vendor_info['service_tax'] == '') ? 'Unregistered' : 'Registered',
 		($sq_supply['state_name'] == '') ? 'NA' : $sq_supply['state_name'],
@@ -78,7 +79,7 @@ $footer_data = array("footer_data" => array(
 	
 	'foot0' => 'Total TAX :'.number_format($tax_total,2),
 	'col0' => 14,
-	'class0' =>"info text-left",
+	'class0' =>"info text-right",
 
 	'foot1' => '',
 	'col1' => 1,

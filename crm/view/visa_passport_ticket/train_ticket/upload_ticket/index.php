@@ -12,7 +12,7 @@ $branch_status = $_POST['branch_status'];
 		<select name="train_ticket_id_filter" id="train_ticket_id_filter" style="width:100%" title="Booking ID" onchange="train_ticket_upload_list_reflect()">
 	        <option value="">Select Booking ID</option>
 	        <?php
-	        $query = "select * from train_ticket_master where 1 ";
+	        $query = "select * from train_ticket_master where 1 and delete_status='0' ";
 	        include "../../../../model/app_settings/branchwise_filteration.php";
 	        $query .= " order by train_ticket_id desc ";
 	        $sq_ticket = mysqlQuery($query);

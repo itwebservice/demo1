@@ -7,7 +7,7 @@ include "../../../../../model/model.php";
 			<select name="visa_id" id="visa_id" style="width:100%" onchange="content_reflect()" title="Select Booking">
 		        <option value="">Select Booking</option>
 		        <?php 
-		        $sq_visa = mysqlQuery("select * from visa_master where visa_id in ( select visa_id from visa_master_entries where status='Cancel')order by visa_id desc");
+		        $sq_visa = mysqlQuery("select * from visa_master where visa_id in ( select visa_id from visa_master_entries where status='Cancel') and delete_status='0' order by visa_id desc");
 		        while($row_visa = mysqli_fetch_assoc($sq_visa)){
 
 		         $date = $row_visa['created_at'];

@@ -9,10 +9,10 @@ $branch_status = $_POST['branch_status'];
 <div class="app_panel_content Filter-panel">
   <div class="row">
       <div class="col-sm-4 col-sm-offset-4">
-         <select id="pcmb_traveler_id" name="pcmb_traveler_id" title="Passenger Name" style="width:100%" onchange="traveler_id_proof_info_reflect()" title="Passenger"> 
+          <select id="pcmb_traveler_id" name="pcmb_traveler_id" title="Passenger Name" style="width:100%" onchange="traveler_id_proof_info_reflect()" title="Passenger"> 
               <option value="">Passenger Name</option>
               <?php 
-                  $query = "select * from package_tour_booking_master where 1 ";
+                  $query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
                     include "../../../model/app_settings/branchwise_filteration.php";
                     $query .= " order by booking_id desc"; 
                     $sq_booking = mysqlQuery($query);
@@ -24,12 +24,12 @@ $branch_status = $_POST['branch_status'];
                       $sq_traveler = mysqlQuery("select traveler_id, m_honorific, first_name, last_name from package_travelers_details where booking_id='$row_booking[booking_id]' and status!='Cancel'");
                       while($row_traveler = mysqli_fetch_assoc($sq_traveler))
                       {
-                       ?>
-                       <option value="<?php echo $row_traveler['traveler_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year).":".$row_traveler['m_honorific']." ".$row_traveler['first_name']." ".$row_traveler['last_name']; ?></option>
-                       <?php    
+                        ?>
+                        <option value="<?php echo $row_traveler['traveler_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year).":".$row_traveler['m_honorific']." ".$row_traveler['first_name']." ".$row_traveler['last_name']; ?></option>
+                        <?php    
                       }    
                   }    
-               ?>
+              ?>
           </select>
     </div>
 </div>

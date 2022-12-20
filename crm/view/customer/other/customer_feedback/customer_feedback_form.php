@@ -268,27 +268,25 @@ $tour_name = $_GET['tour_name'];
 <script>
 function sales_team_comment_reflect(){
     var sales_team = $('input[name="sales_team"]:checked').attr('id')
-    
-        if(sales_team=='none_of_these')
-        {
-          $('#sales_team_comment').removeClass('hidden');
-        }
+	if(sales_team=='none_of_these')
+	{
+        $('#sales_team_comment').removeClass('hidden');
+    }
 }
 $('#frm_save').validate({
-  rules:{
-          trip_overall : { required : true },
-  },
-  submitHandler:function(){
-      var booking_type = $('#tour_name').val();
+	rules:{
+			trip_overall : { required : true },
+	},
+	submitHandler:function(){
 
-      var booking_id = $('#booking_id').val();
-      
-        var sales_team1 = $('input[name="sales_team"]:checked').attr('id')
+	$('#form_send').prop('disabled',true);
+	var booking_type = $('#tour_name').val();
+	var booking_id = $('#booking_id').val();
+    var sales_team1 = $('input[name="sales_team"]:checked').attr('id')
     
-        if(sales_team1=='none_of_these')
-        {
-          var sales_team_comment = $('#sales_team_comment').val();
-        }
+	if(sales_team1=='none_of_these'){
+		var sales_team_comment = $('#sales_team_comment').val();
+	}
         var customer_id = $('#customer_id').val();
         var sales_team = $('input[name="sales_team"]:checked').val();
         var travel_agencies = $('input[name="travel_agencies"]:checked').val();
@@ -312,19 +310,17 @@ $('#frm_save').validate({
         //var base_url = $('#base_url').val();
 
         $('#form_send').button('loading');
-
         $.ajax({
-                  type : 'post',
-                  url : '../../../../controller/customer/customer_feedback.php',
-                  data: { customer_id : customer_id, sales_team : sales_team, travel_agencies : travel_agencies, vehicles_requested : vehicles_requested, pickup_time : pickup_time, vehicles_condition : vehicles_condition, driver_info : driver_info, ticket_info : ticket_info, hotel_request : hotel_request, hotel_clean : hotel_clean, hotel_quality : hotel_quality, siteseen : siteseen, siteseen_time : siteseen_time, tour_guide : tour_guide, booking_experience : booking_experience, travel_again : travel_again, hotel_recommend : hotel_recommend, quality_service : quality_service, trip_overall : trip_overall , sales_team_comment : sales_team_comment, add_comment : add_comment, booking_type : booking_type, booking_id : booking_id},
-                  success:function(result){
-                  	alert(result);
-                    $('#form_send').button('reset');     
-                  }
+		type : 'post',
+		url : '../../../../controller/customer/customer_feedback.php',
+		data: { customer_id : customer_id, sales_team : sales_team, travel_agencies : travel_agencies, vehicles_requested : vehicles_requested, pickup_time : pickup_time, vehicles_condition : vehicles_condition, driver_info : driver_info, ticket_info : ticket_info, hotel_request : hotel_request, hotel_clean : hotel_clean, hotel_quality : hotel_quality, siteseen : siteseen, siteseen_time : siteseen_time, tour_guide : tour_guide, booking_experience : booking_experience, travel_again : travel_again, hotel_recommend : hotel_recommend, quality_service : quality_service, trip_overall : trip_overall , sales_team_comment : sales_team_comment, add_comment : add_comment, booking_type : booking_type, booking_id : booking_id},
+		success:function(result){
+		alert(result);
+		$('#form_send').button('reset');     
+		$('#form_send').prop('disabled',false);
+		}
         });
-
-
-  }
+	}
 });
 </script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

@@ -9,7 +9,7 @@ $temp_arr = array();
 
 	$count = 1;
 	//Hotel
-	$query = "select * from vendor_estimate where status =''";
+	$query = "select * from vendor_estimate where status ='' and delete_status='0'";
 	if($from_date != '' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);

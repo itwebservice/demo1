@@ -2,7 +2,7 @@
 include "../../../../../model/model.php";
 
 $ticket_id = $_POST['ticket_id'];
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
 $date = $sql_booking_date['created_at'];
 $yr = explode("-", $date);
 $year = $yr[0];
@@ -20,7 +20,7 @@ $year = $yr[0];
               <div class="profile_box main_block">
                 <h3 class="editor_title">Passenger Details</h3>
                 <?php
-                $query = "select * from ticket_master where 1 and ticket_id='$ticket_id' ";
+                $query = "select * from ticket_master where 1 and ticket_id='$ticket_id' and delete_status='0'";
                 $mainTicket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where ticket_id = '$ticket_id'"));  
                 ?>
                 <div class="table-responsive">
@@ -31,11 +31,12 @@ $year = $yr[0];
                       <th>Name</th>
                       <th>Adolescence</th>
                       <th>Ticket_No.</th>
-                      <?php if($mainTicket['main_ticket']) echo  '<th>Main Ticket Number</th>'; ?> 
-                      <th>Baggage</th>
-                      <th>Gds_Pnr</th>
+                      <?php if($sql_booking_date['ticket_reissue']) echo  '<th>Main Ticket Number</th>'; ?> 
+                      <th>Check_In&Cabin_Baggage</th>
+                      <th>Airline_Pnr</th>
                       <th>Seat_No</th>
                       <th>Meal_plan</th>
+							        <th>Trip_Type</th>
                     </tr>
                     
                   </thead>
@@ -56,12 +57,13 @@ $year = $yr[0];
                           <td><?= ++$count ?></td>
                           <td><?= $row_entry['first_name']." ".$row_entry['last_name'] ?></td>
                           <td><?= $row_entry['adolescence'] ?></td>
-                          <td><?= $row_entry['ticket_no'] ?></td>
-                          <?php if($row_entry['main_ticket']) echo  '<td>'.$row_entry['main_ticket'].'</td>';?>
+                          <td><?= strtoupper($row_entry['ticket_no']) ?></td>
+                          <?php if($sql_booking_date['ticket_reissue']) echo  '<td>'.strtoupper($row_entry['main_ticket']).'</td>';?>
                           <td><?php echo $row_entry['baggage_info']; ?></td>
-                          <td><?= $row_entry['gds_pnr'] ?></td>
+                          <td><?= strtoupper($row_entry['gds_pnr']) ?></td>
                           <td><?= $row_entry['seat_no'] ?></td>
                           <td><?= $row_entry['meal_plan'] ?></td>
+									        <td><?= $row_entry['type_of_tour'] ?></td>
                         </tr>
                         <?php
                       }
@@ -77,7 +79,7 @@ $year = $yr[0];
           <div class="row mg_tp_10">
             <div class="col-xs-12">
               <h3 class="editor_title">Trip Details</h3>
-              <?php  	$query = "select * from ticket_master where 1 ";
+              <?php  	$query = "select * from ticket_master where 1 and delete_status='0' ";
               $query .=" and ticket_id='$ticket_id'";
               $tickect_query="select * from ticket_trip_entries where 1 and ticket_id='$ticket_id' ";
               ?>
@@ -88,22 +90,25 @@ $year = $yr[0];
                       <th>S_No</th>
                       <th>Departure_Date&Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                       <th>Arrival_Date&Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                      <th>Flight Duration</th>
+                      <th>Layover Time</th>
                       <th>Airline</th>
                       <th>Cabin</th>
                       <th>Sub-category</th>
                       <th>Flight_No.</th>
-                      <th>Airline_PNR</th>
+                      <th>GDS_PNR</th>
                       <th>From_City</th>
                       <th>Sector_From</th>
                       <th>To_City</th>
                       <th>Sector_To</th>
-                      <th>Luggage&nbsp;&nbsp;&nbsp;</th>
                       <th>No_of_pieces&nbsp;&nbsp;&nbsp;</th>
                       <th>Aircraft_type</th>
-                      <th>Operating_carrier&nbsp;&nbsp;</th>
+                      <th>Operated_By&nbsp;&nbsp;</th>
                       <th>Frequent_flyer&nbsp;&nbsp;&nbsp;</th>
                       <th>Ticket_status&nbsp;&nbsp;&nbsp;</th>
                       <th>Special_Note</th>
+							        <th>Basic Fare</th>
+							        <th>Refund_Type</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -122,12 +127,14 @@ $year = $yr[0];
                         while($row_entry1 = mysqli_fetch_assoc($sq_ticket1)) {
                           $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_entry1[from_city]'"));
                           $sq_city1 = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_entry1[to_city]'"));  
-                          $bg = ($row_entry['status']=='Cancel') ? 'danger' : '';
+                          $bg = ($row_entry1['status']=='Cancel') ? 'danger' : '';
                         ?>
                         <tr class="<?= $bg ?>">
                           <td><?= ++$count ?></td>
                           <td><?php echo get_datetime_user($row_entry1['departure_datetime']); ?> </td>
                           <td><?php echo get_datetime_user($row_entry1['arrival_datetime']); ?></td>
+                          <td><?php echo $row_entry1['flight_duration']; ?></td>
+                          <td><?php echo $row_entry1['layover_time']; ?></td>
                           <td><?php echo $row_entry1['airlines_name']; ?></td>
                           <td><?php echo $row_entry1['class']; ?></td>
                           <td><?php echo $row_entry1['sub_category']; ?></td>
@@ -137,13 +144,14 @@ $year = $yr[0];
                           <td><?php echo $row_entry1['departure_city']; ?></td>
                           <td><?php echo $sq_city1['city_name']; ?></td>
                           <td><?php echo $row_entry1['arrival_city']; ?></td>
-                          <td><?php echo $row_entry1['luggage']; ?></td>
                           <td><?php echo $row_entry1['no_of_pieces']; ?></td>
                           <td><?php echo $row_entry1['aircraft_type']; ?></td>
                           <td><?php echo $row_entry1['operating_carrier']; ?></td>
                           <td><?php echo $row_entry1['frequent_flyer']; ?></td>
                           <td><?php echo $row_entry1['ticket_status']; ?></td>
                           <td><?php echo $row_entry1['special_note']; ?></td>
+                          <td><?php echo $row_entry1['basic_fare']; ?></td>
+									        <td><?php echo $row_entry1['refund_type']; ?></td>
                         </tr>
                         <?php
                         }

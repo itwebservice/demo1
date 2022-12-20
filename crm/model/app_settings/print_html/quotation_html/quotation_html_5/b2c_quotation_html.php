@@ -4,6 +4,12 @@ include "../../../../model.php";
 include "printFunction.php";
 global $app_quot_img,$currency;
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2c/sales/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $quotation_id = $_GET['quotation_id'];
 $emp_id = $_SESSION['emp_id'];
 $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$emp_id'"));
@@ -99,7 +105,7 @@ if($type == '1'){
           </div>
 
           <div class="landigPageCustomer">
-            <h3 class="customerFrom">Prepared for</h3>
+            <h3 class="customerFrom">PREPARED FOR</h3>
             <span class="customerName"><em><i class="fa fa-user"></i></em> : <?= $sq_quotation['name'] ?></span><br>
             <span class="customerMail"><em><i class="fa fa-envelope"></i></em> : <?= $sq_quotation['email'] ?></span><br>
             <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['phone'] ?></span>
@@ -397,7 +403,7 @@ if($type == '1'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Terms & Conditions</h3>
+                      <h3 class="incexTitle">TERMS AND CONDITIONS</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_terms_cond['terms_and_conditions'] ?></pre>      
                       </div>
@@ -499,7 +505,7 @@ else if($type == '2'){
           </div>
 
           <div class="landigPageCustomer">
-            <h3 class="customerFrom">Prepared for</h3>
+            <h3 class="customerFrom">PREPARED FOR</h3>
             <span class="customerName"><em><i class="fa fa-user"></i></em> : <?= $sq_quotation['name'] ?></span><br>
             <span class="customerMail"><em><i class="fa fa-envelope"></i></em> : <?= $sq_quotation['email'] ?></span><br>
             <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['phone'] ?></span>
@@ -826,7 +832,7 @@ else if($type == '2'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Terms & Conditions</h3>
+                      <h3 class="incexTitle">TERMS AND CONDITIONS</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_terms_cond['terms_and_conditions'] ?></pre>      
                       </div>
@@ -924,7 +930,7 @@ else if($type == '2'){
               <tr>
                 <th>BANK NAME</th>
                 <th>BRANCH NAME</th>
-                <th>A/C NAME</th>
+                <th>A/C TYPE</th>
                 <th>A/C NO</th>
                 <th>IFSC</th>
                 <th>SWIFT CODE</th>
@@ -959,24 +965,24 @@ else if($type == '2'){
           </div>
           <div class="companyContactDetail">
               <h3><?= $app_name ?></h3>
-              <?php if($app_address != ''){?>
+              <?php //if($app_address != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-map-marker"></i>
-                <p><?php echo $app_address; ?></p>
+                <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
               </div>
-              <?php } ?>
-              <?php if($app_contact_no != ''){?>
+              <?php //}?>
+              <?php //if($app_contact_no != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-phone"></i>
-                <p><?php echo $app_contact_no; ?></p>
+                <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
               </div>
-              <?php } ?>
-              <?php if($app_email_id != ''){?>
+              <?php //}?>
+              <?php //if($app_email_id != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-envelope"></i>
-                <p><?php echo $app_email_id; ?></p>
+                <p><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
               </div>
-              <?php } ?>
+              <?php //}?>
               <?php if($app_website != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-globe"></i>
@@ -985,7 +991,7 @@ else if($type == '2'){
               <?php } ?>
               <div class="contactBlock">
                 <i class="fa fa-pencil-square-o"></i>
-                <p>Prepared By : <?= $emp_name?></p>
+                <p>PREPARED BY : <?= $emp_name?></p>
               </div>
           </div>
       </section>

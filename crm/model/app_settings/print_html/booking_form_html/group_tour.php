@@ -15,8 +15,8 @@ $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 
 $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Group Sale' and active_flag ='Active'"));
 
-$tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' "));
-$row_booking = mysqli_fetch_assoc(mysqlQuery( "select * from tourwise_traveler_details where id ='$tourwise_id' "));
+$tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0' "));
+$row_booking = mysqli_fetch_assoc(mysqlQuery( "select * from tourwise_traveler_details where id ='$tourwise_id' and delete_status='0' "));
 $booking_date = $row_booking['form_date'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -45,7 +45,7 @@ $total_days1=strtotime($tour_group1['to_date']) - strtotime($tour_group1['from_d
 $total_days = round($total_days1 / 86400);
 $booking_date =  date("d-m-Y", strtotime($tourwise_details['form_date']));
 
-$sq_total_mem = mysqli_num_rows(mysqlQuery("select traveler_id from travelers_details where traveler_group_id='$tourwise_details[id]'"));
+$sq_total_mem = mysqli_num_rows(mysqlQuery("select traveler_id from travelers_details where traveler_group_id='$traveler_group_id'"));
 
 $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$tourwise_details[customer_id]'"));
 if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
@@ -115,7 +115,7 @@ $net_amount1 = currency_conversion($currency,$tourwise_details['currency_code'],
           <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p>
           <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
           $branch_details['contact_no'] : $app_contact_no ?></p>
-          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></p>
+          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
         </div>
       </div>
     </section>
@@ -220,7 +220,7 @@ $net_amount1 = currency_conversion($currency,$tourwise_details['currency_code'],
             </thead>
             <tbody>
             <?php 
-             $sq_members1 = mysqlQuery("select * from travelers_details where traveler_group_id = '$tourwise_id'");
+             $sq_members1 = mysqlQuery("select * from travelers_details where traveler_group_id = '$traveler_group_id'");
              while($row_members1 = mysqli_fetch_assoc($sq_members1))
              { ?>   
                   <tr>
@@ -277,8 +277,8 @@ $net_amount1 = currency_conversion($currency,$tourwise_details['currency_code'],
           <table class="table table-bordered no-marg" id="tbl_emp_list">
             <thead>
               <tr class="table-heading-row">
-                <th>From</th>
-                <th>To</th>
+                <th>From_location</th>
+                <th>To_location</th>
                 <th>TRAIN</th>
                 <th>SEATS</th>
                 <th>CLASS</th>
@@ -325,12 +325,12 @@ $net_amount1 = currency_conversion($currency,$tourwise_details['currency_code'],
       </div>
       <div class="row">
         <div class="col-md-12">
-         <div class="table-responsive">
+          <div class="table-responsive">
           <table class="table table-bordered no-marg" id="tbl_emp_list">
             <thead>
               <tr class="table-heading-row">
-                <th>From</th>
-                <th>To</th>
+                <th>From_sector</th>
+                <th>To_sector</th>
                 <th>Airline</th>
                 <th>SEATS</th>
                 <th>DEPARTURE D/T</th>
@@ -440,7 +440,9 @@ $net_amount1 = currency_conversion($currency,$tourwise_details['currency_code'],
       </div>
     </section>
 
-<!-- Terms and Conditions -->
+    <?php
+    if($sq_terms_cond['terms_and_conditions']!=''){ ?>
+    <!-- Terms and Conditions -->
     <section class="print_sec main_block">
       <div class="row">
         <div class="col-md-12">
@@ -451,11 +453,12 @@ $net_amount1 = currency_conversion($currency,$tourwise_details['currency_code'],
             </div>
           </div>
           <div class="print_text_bolck">
-           <span><?= ($sq_terms_cond['terms_and_conditions']) ?><span>
+            <span><?= ($sq_terms_cond['terms_and_conditions']) ?><span>
           </div>
         </div>
       </div>
     </section>
+    <?php } ?>
 
     <!-- Booking Summary -->
     <section class="print_sec main_block">

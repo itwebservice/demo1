@@ -37,7 +37,7 @@ $('#date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
 var column = [
 	{ title: "S_No." },
 	{ title: "particulars" },
-	{ title: "description" },
+	{ title: "Transaction_type" },
 	{ title: "debit" , className : "danger"},
 	{ title: "credit" , className: "success"}
 ];

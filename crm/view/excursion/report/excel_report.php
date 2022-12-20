@@ -106,7 +106,7 @@ else{
 }
 
 if($exc_id != ''){
-    $query = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+    $query = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
     $date = $query['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];
@@ -149,7 +149,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
  
 
-$query = "select * from excursion_master where financial_year_id='$financial_year_id' ";
+$query = "select * from excursion_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
     $query .=" and customer_id='$customer_id'";
 }
@@ -178,6 +178,7 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
     $query .= " and emp_id='$emp_id'";
 }
+$query .= " order by exc_id desc";
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")

@@ -84,7 +84,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -217,8 +217,8 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 
             $sq_bus_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_payment[booking_id]'"));
             $date = $sq_bus_info['created_at'];
-                      $yr = explode("-", $date);
-                      $year =$yr[0];
+            $yr = explode("-", $date);
+            $year =$yr[0];
             $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_bus_info[customer_id]'"));
             if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type'] == 'B2B'){
                 $customer_name = $sq_customer_info['company_name'];

@@ -14,7 +14,7 @@ $estimate_type = $_POST['estimate_type'];
 $estimate_type_id = $_POST['estimate_type_id'];
 $array_s = array();
 $temp_arr = array();
-$query = "select * from vendor_payment_master where payment_amount!='0' ";
+$query = "select * from vendor_payment_master where payment_amount!='0' and delete_status='0'";
 if($financial_year_id!=""){
 	$query .= " and financial_year_id='$financial_year_id'";
 }
@@ -32,7 +32,7 @@ if($estimate_type_id!=""){
 }
 
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by payment_id desc ";
+// $query .= " order by payment_id desc ";
 $total_paid_amt = 0;
 $count = 0;
 
@@ -71,6 +71,11 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 	}else{
 		$evidence = '';
 	}
+	if($row_payment['payment_mode']!='Debit Note'){
+		$update_btn = '<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'].')"  title="Edit"><i class="fa fa-pencil-square-o"></i></button>';
+	}else{
+		$update_btn = '';
+	}
 	$temp_arr = array( "data" => array(
 		(int)(++$count),
 		($row_payment['estimate_type'] =='')? 'NA': $row_payment['estimate_type'],
@@ -82,10 +87,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$row_payment['payment_mode'],
 		$row_payment['bank_name'],
 		$row_payment['transaction_id'],
-		''.$evidence.'
-
-		<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'] .')" data-toggle="tooltip" title="Edit this payment"><i class="fa fa-pencil-square-o"></i></button>'
-	
+		''.$evidence.$update_btn.'<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="payment_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>'
 		), "bg" =>$bg);
 	array_push($array_s,$temp_arr); 
 	

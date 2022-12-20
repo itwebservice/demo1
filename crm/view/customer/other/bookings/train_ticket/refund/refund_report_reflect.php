@@ -8,9 +8,9 @@ $query = "select * from train_ticket_refund_master where 1 ";
 if($ticket_id!=""){
 	$query .=" and train_ticket_id='$ticket_id'";
 }
-$query .=" and train_ticket_id in ( select train_ticket_id from train_ticket_master where customer_id='$customer_id' )";
+$query .=" and train_ticket_id in ( select train_ticket_id from train_ticket_master where customer_id='$customer_id' and delete_status='0' )";
 
-$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$ticket_id'"));
+$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$ticket_id' and delete_status='0'"));
 
 $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from train_ticket_payment_master where train_ticket_id='$ticket_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -31,11 +31,12 @@ $bal_amount= $sq_paid_amount['sum'] - $sale_amount;
 		<tr class="table-heading-row">
 			<th>S_No.</th>
 			<th>Booking_ID</th>
+            <th>Passenger_Name&nbsp;&nbsp;&nbsp;&nbsp;</th>
 			<th>Refund_Date</th>
 			<th>Mode</th>
 			<th>Bank_Name</th>
 			<th>Cheque_No/ID</th>
-			<th class="text-right success">Amount</th>
+			<th class="success">Amount</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -95,12 +96,13 @@ $bal_amount= $sq_paid_amount['sum'] - $sale_amount;
 			?>
 			<tr class="<?= $bg?>">
 				<td><?= ++$count ?></td>
+                <td><?= $traveler_name ?></td>
 				<td><?= get_train_ticket_booking_id($row_refund['train_ticket_id'],$year); ?></td>
 				<td><?= date('d-m-Y', strtotime($row_refund['refund_date'])) ?></td>
 				<td><?= $row_refund['refund_mode'] ?></td>
 				<td><?= $row_refund['bank_name'] ?></td>
 				<td><?= $row_refund['transaction_id'] ?></td>
-				<td class="text-right success"><?= $row_refund['refund_amount'] ?></td>
+				<td class="success"><?= $row_refund['refund_amount'] ?></td>
 			</tr>
 			<?php
 		}

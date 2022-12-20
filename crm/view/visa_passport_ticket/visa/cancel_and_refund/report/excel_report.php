@@ -75,7 +75,7 @@ $from_date = $_GET['payment_from_date'];
 $to_date = $_GET['payment_to_date'];
 
 if($visa_id != ''){
-  $sq_entry_year = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id'"));
+  $sq_entry_year = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id' and delete_status='0'"));
   $date = $sq_entry_year['created_at'];
   $yr = explode("-", $date);
   $year = $yr[0];
@@ -164,7 +164,7 @@ while($row_refund_entry = mysqli_fetch_assoc($sq_refund_entries)){
       if($row_refund['clearance_status']==""){ $bg='';
         $sq_paid_amount = $sq_paid_amount + $row_refund['refund_amount'];
       }
-      $sq_entry_year = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$row_refund[visa_id]'"));
+      $sq_entry_year = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$row_refund[visa_id]' and delete_status='0'"));
       $date = $sq_entry_year['created_at'];
       $yr = explode("-", $date);
       $year = $yr[0];

@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -50,23 +50,23 @@ $content_style_Array = array(
 
 //This is border array
 $borderArray = array(
-          'borders' => array(
-              'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN
-              )
-          )
-      );
+    'borders' => array(
+        'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+        )
+    )
+);
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
+    ->setLastModifiedBy("Maarten Balliauw")
+    ->setTitle("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setKeywords("office 2007 openxml php")
+    ->setCategory("Test result file");
 
 //////////////////////////****************Content start**************////////////////////////////////
 
@@ -77,7 +77,7 @@ $financial_year_id = $_SESSION['financial_year_id'];
 
 if($income_type_id!=""){
 	$sq_income_type = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$income_type_id'"));
-  $income_str = $sq_income_type['ledger_name'];
+    $income_str = $sq_income_type['ledger_name'];
 }
 else{
 	$income_str = "";
@@ -100,12 +100,12 @@ else{
 
 // Add some data
 $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('B2', 'Report Name')
-            ->setCellValue('C2', 'Other Income')
-            ->setCellValue('B3', 'Income Type')
-            ->setCellValue('C3', $income_str)
-            ->setCellValue('B4', 'From-To Date')
-            ->setCellValue('C4', $date_str);
+    ->setCellValue('B2', 'Report Name')
+    ->setCellValue('C2', 'Other Income')
+    ->setCellValue('B3', 'Income Type')
+    ->setCellValue('C3', $income_str)
+    ->setCellValue('B4', 'From-To Date')
+    ->setCellValue('C4', $date_str);
 
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($borderArray);    
@@ -117,18 +117,18 @@ $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);
 
 
-$query = "select * from other_income_master where 1 ";
+$query = "select * from other_income_master where 1 and delete_status='0' ";
 if($from_date!="" && $to_date!=""){
-  $from_date = get_date_db($from_date);
-  $to_date = get_date_db($to_date);
+    $from_date = get_date_db($from_date);
+    $to_date = get_date_db($to_date);
 
-  $query .= " and receipt_date between '$from_date' and '$to_date'";
+    $query .= " and receipt_date between '$from_date' and '$to_date'";
 }
 if($income_type_id!=""){
-  $query .= " and income_type_id='$income_type_id' ";
+    $query .= " and income_type_id='$income_type_id' ";
 }
 if($financial_year_id!=""){
-  $query .=" and financial_year_id='$financial_year_id'";
+    $query .=" and financial_year_id='$financial_year_id'";
 }
 
 $row_count = 6;
@@ -154,7 +154,7 @@ while($row_income = mysqli_fetch_assoc($sq_income)){
 
     $sq_income_type_info = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$row_income[income_type_id]'"));
     $sq_paid = mysqli_fetch_assoc(mysqlQuery("select * from other_income_payment_master where income_type_id='$row_income[income_id]'"));
-	$paid_amount+=$sq_paid['payment_amount'];
+	$paid_amount += $sq_paid['payment_amount'];
     if($sq_paid['clearance_status']=="Pending"){ 
         $sq_pending_amount = $sq_pending_amount + $sq_paid['payment_amount'];
     }
@@ -172,11 +172,10 @@ while($row_income = mysqli_fetch_assoc($sq_income)){
         ->setCellValue('H'.$row_count, $row_income['particular'])
         ->setCellValue('I'.$row_count, number_format($sq_paid['payment_amount'],2));
 
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($content_style_Array);
 	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);    
 
-		$row_count++;
-
+	$row_count++;
 }
     $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "")
@@ -191,10 +190,7 @@ while($row_income = mysqli_fetch_assoc($sq_income)){
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);
 
-
 //////////////////////////****************Content End**************////////////////////////////////
-	
-
 // Rename worksheet
 $objPHPExcel->getActiveSheet()->setTitle('Simple');
 
@@ -203,10 +199,8 @@ for($col = 'A'; $col !== 'N'; $col++) {
     $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
 }
 
-
 // Set active sheet index to the first sheet, so Excel opens this as the first sheet
 $objPHPExcel->setActiveSheetIndex(0);
-
 
 // Redirect output to a client’s web browser (Excel5)
 header('Content-Type: application/vnd.ms-excel');

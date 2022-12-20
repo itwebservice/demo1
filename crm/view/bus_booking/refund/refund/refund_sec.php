@@ -111,7 +111,7 @@ $remaining=$refund_amount-$toal_refund_sum;
 			$customer_id = $sq_bus_info['customer_id'];
 			$refund_id = $row_refund['refund_id'];
 
-			$url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&currency_code=";
+			$url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&booking_id=".get_bus_booking_id($booking_id,$year)."&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&currency_code=";
 
 			?>
 			<tr class="<?= $bg ?>">			

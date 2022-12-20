@@ -26,11 +26,11 @@ $branch_status = $sq['branch_status'];
 					<option value="Package Tour">Package Tour</option>
 					<option value="Visa Booking">Visa Booking</option>     
 					<option value="Ticket Booking">Ticket Booking</option>
-					<option value="Train Booking">Train Booking</option>
+					<option value="Train Booking">Train Ticket Booking</option>
 					<option value="Hotel Booking">Hotel Booking</option>     
 					<option value="Bus Booking">Bus Booking</option>
 					<option value="Car Rental Booking">Car Rental Booking</option>
-					<option value="Activity Booking">Activity Booking</option>
+					<option value="Activity Booking">Excursion  Booking</option>
 					<option value="Miscellaneous Booking">Miscellaneous Booking</option>
 				</select>
 			</div>
@@ -122,7 +122,7 @@ $branch_status = $sq['branch_status'];
 		var to_date = $('#to_date').val();
 		var branch_status = $('#branch_status').val();
 		$.post('booking_list_reflect.php', { tour_type : tour_type, emp_id : emp_id, from_date : from_date, to_date : to_date , branch_status : branch_status}, function(data){
-			pagination_load(data, column, true, true, 20, 'sales_incentive');
+			pagination_load(data, column, true, true, 20, 'sales_incentive',true);
 			$('.loader').remove();
 			// console.log(data)
 		});

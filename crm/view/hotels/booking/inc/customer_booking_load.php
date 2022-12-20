@@ -3,7 +3,7 @@ include "../../../../model/model.php";
 $customer_id = $_POST['customer_id'];
 echo '<option value="">Select Booking</option>';
 
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";	
 }

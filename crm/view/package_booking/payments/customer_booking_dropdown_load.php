@@ -19,7 +19,7 @@ if($customer_id!=""){
 			}else{
 				$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 			}
-      $booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_booking[booking_id]'"));
+      $booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_booking[booking_id]' and delete_status='0'"));
       $date = $booking['booking_date'];
       $yr = explode("-", $date);
       $year =$yr[0];

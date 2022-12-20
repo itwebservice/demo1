@@ -174,7 +174,7 @@ $pdf->MultiCell(119, 8, "BANK NAME : ".$bank_name_setting, 1);
 
 $pdf->SetXY(129, 44);
 
-$pdf->MultiCell(70, 8, "A/C NAME : ".$acc_name, 1);
+$pdf->MultiCell(70, 8, "A/C TYPE : ".$acc_name, 1);
 
 
 $pdf->SetXY(10, 52);
@@ -200,7 +200,7 @@ $pdf->MultiCell(119, 8, "Customer Name : ". $sq_customer['first_name'].' '.$sq_c
 
 $pdf->SetFont('Arial','',9);
 
-if($sq_customer['type'] == 'Corporate'){ $company_name = '('.$sq_customer[company_name].')';}
+if($sq_customer['type'] == 'Corporate'){ $company_name = '('.$sq_customer['company_name'].')';}
 
 else{ $company_name = '';}
 
@@ -252,7 +252,7 @@ $sq_passenger = mysqlQuery("select * from ticket_master_entries where ticket_id 
 
 
 
-$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id'"));
+$sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'"));
 
 
 

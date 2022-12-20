@@ -2,10 +2,10 @@
 include_once('../model.php');
 $due_date=date('Y-m-d');
 
-$sq_hotel = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where due_date='$due_date'"));
+$sq_hotel = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where due_date='$due_date' and delete_status='0'"));
 if($sq_hotel>0){
 
-	$sq_hotel_details = mysqlQuery("select * from hotel_booking_master where due_date='$due_date'");
+	$sq_hotel_details = mysqlQuery("select * from hotel_booking_master where due_date='$due_date' and delete_status='0'");
 	while($row_hotel = mysqli_fetch_assoc($sq_hotel_details)){
 
 		$hotel_id = $row_hotel['booking_id'];

@@ -77,7 +77,7 @@
 		<input type="text" id="roundoff1" name="roundoff1" class="text-right form-control" placeholder="Round Off" title="Round Off" value="<?= $sq_quotation['roundoff'] ?>" onchange="validate_balance(this.id)" readonly>
 	</div>
 	<div class="col-md-2">
-	    <input type="text" id="total_tour_cost1" name="total_tour_cost1" class="text-right form-control" onchange="validate_balance(this.id);" placeholder="Total" title="Total" value="<?php echo $sq_quotation['total_tour_cost']; ?>" >
+	    <input type="text" id="total_tour_cost1" name="total_tour_cost1" class="text-right form-control" onchange="validate_balance(this.id);" placeholder="Total" title="Total" value="<?php echo $sq_quotation['total_tour_cost']; ?>" readonly>
 	</div>
 </div>
 	<div class="row mg_tp_20 text-center">
@@ -196,6 +196,8 @@ $('#frm_tab41_c').validate({
 		var state_entry = $('#state_entry1').val();
 		var markup_show = $('#markup_show1').val();
 		var roundoff = $('#roundoff1').val();
+		var active_flag = $('#active_flag1').val();
+
 		var bsmValues = [];
 		bsmValues.push({
 			"basic" : $('#basic_show1').find('span').text(),
@@ -219,7 +221,7 @@ $('#frm_tab41_c').validate({
 
 			url: base_url+'controller/package_tour/quotation/car_rental/quotation_update.php',
 
-			data:{quotation_id : quotation_id, enquiry_id : enquiry_id , total_pax : total_pax, days_of_traveling : days_of_traveling,traveling_date : traveling_date, travel_type : travel_type,vehicle_name : vehicle_name, from_date : from_date, to_date : to_date, route : route,extra_km_cost : extra_km_cost , extra_hr_cost : extra_hr_cost, subtotal : subtotal,markup_cost : markup_cost,markup_cost_subtotal : markup_cost_subtotal, taxation_id : taxation_id, service_charge : service_charge , service_tax_subtotal : service_tax_subtotal, permit : permit, toll_parking : toll_parking, driver_allowance : driver_allowance , total_tour_cost : total_tour_cost, customer_name : customer_name,quotation_date : quotation_date,email_id : email_id, mobile_no : mobile_no,other_charges:other_charges,state_entry:state_entry,capacity:capacity,total_hrs:total_hrs,total_km:total_km,rate:rate,total_max_km:total_max_km,local_places_to_visit:local_places_to_visit, roundoff : roundoff, bsmValues : bsmValues},
+			data:{quotation_id : quotation_id, enquiry_id : enquiry_id , total_pax : total_pax, days_of_traveling : days_of_traveling,traveling_date : traveling_date, travel_type : travel_type,vehicle_name : vehicle_name, from_date : from_date, to_date : to_date, route : route,extra_km_cost : extra_km_cost , extra_hr_cost : extra_hr_cost, subtotal : subtotal,markup_cost : markup_cost,markup_cost_subtotal : markup_cost_subtotal, taxation_id : taxation_id, service_charge : service_charge , service_tax_subtotal : service_tax_subtotal, permit : permit, toll_parking : toll_parking, driver_allowance : driver_allowance , total_tour_cost : total_tour_cost, customer_name : customer_name,quotation_date : quotation_date,email_id : email_id, mobile_no : mobile_no,other_charges:other_charges,state_entry:state_entry,capacity:capacity,total_hrs:total_hrs,total_km:total_km,rate:rate,total_max_km:total_max_km,local_places_to_visit:local_places_to_visit, roundoff : roundoff, bsmValues : bsmValues,active_flag:active_flag},
 			success: function(message){			
                 	$('#btn_quotation_update').button('reset');
                 	var msg = message.split('--');

@@ -3,6 +3,12 @@
 include "../../../../model.php";
 include "printFunction.php";
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/home/index.php'"));
+$branch_status = $sq['branch_status'];
+
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 global $app_quot_img,$similar_text,$quot_note,$currency;
 $quotation_id = $_GET['quotation_id'];
 
@@ -75,6 +81,11 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
   $tax_show = '';
 }
 ?>
+<style>
+.package_costing table tr:nth-child(even) {
+  background-color: #efefef !important;
+}
+</style>
 
     <section class="headerPanel main_block">
         <div class="headerImage">
@@ -121,13 +132,13 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                       <?= $sq_quotation['total_passangers'] ?><br>
                     </div>
                   </li>
-                  <!-- <li class="col-md-3 mg_tp_10 mg_bt_10">
+                  <li class="col-md-12 mg_tp_10 mg_bt_10">
                     <div class="print_quo_detail_block">
-                      <i class="fa fa-tags" aria-hidden="true"></i><br>
-                      <span>PRICE</span><br>
-                      <?= $currency_amount1 ?><br>
+                      <i class="fa fa-users" aria-hidden="true"></i>
+                      <span>PREPARED BY </span><br>
+                      <?= $emp_name?><br>
                     </div>
-                  </li> -->
+                  </li>
                 </ul>
               </div>
             </div>
@@ -174,19 +185,35 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
         <div class="col-md-12">
           <div class="section_heding">
             <h2>BANK DETAILS</h2>
+            
             <div class="section_heding_img">
               <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
             </div>
           </div>
           <div class="print_info_block">
-            <ul class="main_block">
+            <div class="row"> 
+              <div class="col-md-6">
+              <ul class="main_block">
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK NAME : </span><?= ($bank_name_setting != '') ? $bank_name_setting : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NAME : </span><?= ($acc_name != '') ? $acc_name : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BRANCH : </span><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C TYPE : </span><?= ($acc_name != '') ? $acc_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BRANCH : </span><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?>)</li>
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NO : </span><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>IFSC : </span><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK ACCOUNT NAME : </span><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></li>
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>SWIFT CODE : </span><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></li>
             </ul>
+              </div>
+              <?php 
+              if(check_qr()) { ?>
+              <div class="col-md-6 text-center" style="margin-top:30px;">
+                     <?= get_qr('Protrait Standard') ?>
+                        <br>
+                        <h4 class="no-marg">Scan & Pay </h4>
+         
+              </div>
+              <?php } ?>
+            </div>  
+        
+           
           </div>
         </div>
       </div>
@@ -211,11 +238,11 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
             if($sq_quotation['costing_type'] == 1){ ?>
               <thead>
                 <tr class="table-heading-row">
-                  <th>P_Type</th>
-                  <th>Tour Cost</th>
-                  <th>Tax</th>
-                  <th>Travel Cost</th>
-                  <th>Total Cost</th>
+                  <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">P_Type</th>
+                  <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Tour Cost</th>
+                  <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Tax</th>
+                  <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">TRAVEL/OTHER</th>
+                  <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Total Cost</th>
                 </tr>
               </thead>
               <tbody>
@@ -261,11 +288,11 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                 $travel_cost = currency_conversion($currency,$sq_quotation['currency_code'],$travel_cost);
                 ?>
                 <tr>
-                  <td><?php echo $sq_costing['package_type']?></td>
-                  <td><?= '<b>'.$newBasic.'</b>' ?></td>
-                  <td><?= str_replace(',','',$name).'<b>'.$service_tax_amount_show.'</b>' ?></td>
-                  <td><?= '<b>'.$travel_cost.'</b>' ?></td>
-                  <td><?= '<b>'.$currency_amount1.'</b>' ?></td>
+                  <td style="font-size: 14px !important; padding: 8px  20px !important;"><?php echo $sq_costing['package_type']?></td>
+                  <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= '<b>'.$newBasic.'</b>' ?></td>
+                  <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= str_replace(',','',$name).'<b>'.$service_tax_amount_show.'</b>' ?></td>
+                  <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= '<b>'.$travel_cost.'</b>' ?></td>
+                  <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= '<b>'.$currency_amount1.'</b>' ?></td>
                 </tr>
                 <?php
               }
@@ -274,12 +301,12 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
             <?php }
             else{ ?>
               <thead>
-                <tr>
+                <tr class="table-heading-row">
                   <th>P_Type</th>
                   <th>ADULT(PP)</th>
                   <th>CWB(PP)</th>
                   <th>CWOB(PP)</th>
-                  <th>INFANT(PP)</th>
+                  <th>INFANT</th>
                   <th>TAX</th>
                   <th>TRAVEL/OTHER</th>
                 </tr>
@@ -293,10 +320,10 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                   $total_pax = intval($sq_quotation['total_adult'])+intval($sq_quotation['children_with_bed'])+intval($sq_quotation['children_without_bed'])+intval($sq_quotation['total_infant']);
                   $per_service_charge = floatval($service_charge)/floatval($total_pax);
         
-                  $adult_cost = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['adult_cost']+floatval($per_service_charge))));
-                  $child_with = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_with']+floatval($per_service_charge))));
-                  $child_without = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_without']+floatval($per_service_charge))));
-                  $infant_cost = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['infant_cost']+floatval($per_service_charge))));
+                  $adult_cost = ($sq_quotation['total_adult']!='0')? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['adult_cost']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                  $child_with = ($sq_quotation['children_with_bed']!='0') ? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_with']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                  $child_without = ($sq_quotation['children_without_bed']!='0')? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_without']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                  $infant_cost = ($sq_quotation['total_infant']!='0') ? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['infant_cost']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
         
                   $tour_cost= $basic_cost + $service_charge;
                   $service_tax_amount = 0;
@@ -312,20 +339,20 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                     }
                   }
                   $service_tax_amount_show = currency_conversion($currency,$sq_quotation['currency_code'],$service_tax_amount);
-                  if($bsmValues[0]->service != ''){   //inclusive service charge
-                    $newBasic = $tour_cost + $service_tax_amount;
-                    $tax_show = '';
-                  }
-                  else{
-                    $tax_show =  rtrim($name, ', ').' : ' . ($service_tax_amount);
-                    $newBasic = $tour_cost;
-                  }
+                  // if($bsmValues[0]->service != ''){   //inclusive service charge
+                  //   $newBasic = $tour_cost + $service_tax_amount;
+                  //   $tax_show = '';
+                  // }
+                  // else{
+                  //   $tax_show =  rtrim($name, ', ').' : ' . ($service_tax_amount);
+                  //   $newBasic = $tour_cost;
+                  // }
                   
-                  ////////////Basic Amount Rules
-                  if($bsmValues[0]->basic != ''){ //inclusive markup
-                    $newBasic = $tour_cost + $service_tax_amount;
-                    $tax_show = '';
-                  }
+                  // ////////////Basic Amount Rules
+                  // if($bsmValues[0]->basic != ''){ //inclusive markup
+                  //   $newBasic = $tour_cost + $service_tax_amount;
+                  //   $tax_show = '';
+                  // }
 
                   $travel_cost = floatval($sq_quotation['train_cost']) + floatval($sq_quotation['flight_cost']) + floatval($sq_quotation['cruise_cost']) + floatval($sq_quotation['visa_cost']) + floatval($sq_quotation['guide_cost']) + floatval($sq_quotation['misc_cost']);
                   $travel_cost = currency_conversion($currency,$sq_quotation['currency_code'],$travel_cost);
@@ -336,10 +363,10 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                   ?>
                   <tr>
                     <td><?php echo $sq_costing['package_type'].' (<b>'.$currency_amount1.'</b>)' ?></td>
-                    <td><?= ($sq_quotation['total_adult']!='0')?'<b>'.$adult_cost.'</b>'.'</b>':number_format(0,2) ?></td>
-                    <td><?= ($sq_quotation['children_with_bed']!='0')?'<b>'.$child_with.'</b>':number_format(0,2) ?></td>
-                    <td><?= ($sq_quotation['children_without_bed']!='0')?'<b>'.$child_without.'</b>':number_format(0,2)  ?></td>
-                    <td><?= ($sq_quotation['total_infant']!='0')?'<b>'.$infant_cost.'</b>':number_format(0,2) ?></td>
+                    <td><?= $adult_cost ?></td>
+                    <td><?= $child_with ?></td>
+                    <td><?= $child_without  ?></td>
+                    <td><?= $infant_cost ?></td>
                     <td><?= str_replace(',','',$name).'<b>'.$service_tax_amount_show.'</b>' ?></td>
                     <td><?= '<b>'.$travel_cost.'</b>' ?></td>
                   </tr>
@@ -369,56 +396,9 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
   $sq_cruise_count = mysqli_num_rows(mysqlQuery("select * from package_tour_quotation_cruise_entries where quotation_id='$quotation_id'"));
   ?>
   <!-- print-detail -->    
-    <!-- Tour Itinenary -->
-    <?php if($sq_package_count != 0){ ?>
-    <section class="print_sec main_block side_pad mg_tp_30">
-      <div class="vitinerary_div">
-        <h6>Destination Guide Video</h6>
-        <img src="<?php echo BASE_URL.'images/quotation/youtube-icon.png'; ?>" class="itinerary-img img-responsive"><br/>
-        <a href="<?=$sq_dest['link']?>" class="no-marg" target="_blank"></a>
-      </div>
-
-      <div class="section_heding mg_tp_20">
-        <h2>TOUR ITINERARY</h2>
-        <div class="section_heding_img">
-          <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
-        </div>
-      </div>
-      <div class="">
-        <div class="col-md-12">
-          <div class="print_itinenary main_block no-pad no-marg">
-          <?php 
-            $count = 1;
-            while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
-              $last_child = ($sq_package_count == $count) ? 'last-child' : '';
-            ?>
-            <section class="print_single_itinenary main_block <?= $last_child ?>">
-              <div class="print_itinenary_count print_info_block">DAY - <?= $count ?></div>
-              <div class="print_itinenary_desciption print_info_block">
-              	<div class="print_itinenary_attraction">
-              		<span class="print_itinenary_attraction_icon"><i class="fa fa-map-marker"></i></span>
-              		<samp class="print_itinenary_attraction_location"><?= $row_itinarary['attraction'] ?></samp>
-              	</div>
-                <p><?= $row_itinarary['day_wise_program'] ?></p>
-              </div>
-              <div class="print_itinenary_details">
-                <div class="print_info_block">
-                  <ul class="main_block no-pad">
-                    <li class="col-md-12 mg_tp_10 mg_bt_10"><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
-                    <li class="col-md-12 mg_tp_10 mg_bt_10"><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
-                  </ul>
-                </div>
-              </div>
-            </section>
-            <?php $count++; } ?>
-            </div>
-        </div>
-      </div>
-    </section>
-    <?php } ?>
 
     <!-- Traveling Sections -->
-    <sectio class="print_sec main_block">
+    <section class="print_sec main_block">
         
           <!-- Accomodations -->
           <?php if($sq_hotel_count != 0){?>
@@ -631,9 +611,9 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                         <th>VEHICLE</th>
                         <th>T_START_DATE</th>
                         <th>T_END_DATE</th>
-                        <th>PICKUP</th>
-                        <th>DROP</th>
-                        <th>TOTAL_VEHICLES</th>
+                        <th>PICKUP location</th>
+                        <th>DROP location</th>
+                        <th>TOTAL VEHICLES</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -701,14 +681,14 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
                   <table class="table table-bordered no-marg" id="tbl_emp_list">
                     <thead>
                       <tr class="table-heading-row">
-                        <th>Activity Date&Time</th>
-                        <th>City Name</th>
-                        <th>Activity Name</th>
-                        <th>Transfer Option</th>
-                        <th>Adult(s)</th>
+                        <th>Date&Time</th>
+                        <th>City</th>
+                        <th>Activity</th>
+                        <th>Transfer</th>
+                        <th>Adult</th>
                         <th>CWB</th>
                         <th>CWOB</th>
-                        <th>Infant(s)</th>
+                        <th>Infant</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -742,38 +722,40 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
         <?php } ?>    
     </section>    
 
-    <!-- Inclusion -->
-    <section class="print_sec main_block side_pad mg_tp_30">
-      <div class="row">
-    <?php if($sq_quotation['inclusions'] != '' && $sq_quotation['inclusions'] != ' ' && $sq_quotation['inclusions'] != '<div><br></div>'){ ?>
-        <div class="col-md-6">
-          <div class="section_heding">
-            <h2>INCLUSIONS</h2>
-            <div class="section_heding_img">
-              <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
-            </div>
-          </div>
-          <div class="print_text_bolck">
-            <?= $sq_quotation['inclusions'] ?>
-          </div>
-        </div>
-    <?php } ?>
+    <section class="print_sec main_block">
+      <!-- Inclusion -->
+      <section class="print_sec main_block side_pad mg_tp_30">
+        <div class="row">
+          <?php if($sq_quotation['inclusions'] != '' && $sq_quotation['inclusions'] != ' ' && $sq_quotation['inclusions'] != '<div><br></div>'){ ?>
+              <div class="col-md-6">
+                <div class="section_heding">
+                  <h2>INCLUSIONS</h2>
+                  <div class="section_heding_img">
+                    <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
+                  </div>
+                </div>
+                <div class="print_text_bolck">
+                  <?= $sq_quotation['inclusions'] ?>
+                </div>
+              </div>
+          <?php } ?>
 
-    <!-- Exclusion -->
-    <?php if($sq_quotation['exclusions'] != '' && $sq_quotation['exclusions'] != ' ' && $sq_quotation['exclusions'] != '<div><br></div>'){ ?>
-        <div class="col-md-6">
-          <div class="section_heding">
-            <h2>EXCLUSIONS</h2>
-            <div class="section_heding_img">
-              <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
-            </div>
-          </div>
-          <div class="print_text_bolck">
-            <?= $sq_quotation['exclusions'] ?>
-          </div>
+          <!-- Exclusion -->
+          <?php if($sq_quotation['exclusions'] != '' && $sq_quotation['exclusions'] != ' ' && $sq_quotation['exclusions'] != '<div><br></div>'){ ?>
+              <div class="col-md-6">
+                <div class="section_heding">
+                  <h2>EXCLUSIONS</h2>
+                  <div class="section_heding_img">
+                    <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
+                  </div>
+                </div>
+                <div class="print_text_bolck">
+                  <?= $sq_quotation['exclusions'] ?>
+                </div>
+              </div>
+          <?php } ?>
         </div>
-    <?php } ?>
-      </div>
+      </section>
     </section>
 
     <!-- Terms and Conditions -->
@@ -810,23 +792,66 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
             </div>
           </div>
         <?php } ?>
-        <div class="row mg_tp_10">
-          <div class="col-md-12">
-            <?php echo $quot_note; ?>
-          </div>
-        </div>
     <?php } ?>
+    <div class="row mg_tp_10">
+      <div class="col-md-12">
+        <?php echo $quot_note; ?>
+      </div>
+    </div>
 
-      <div class="row mg_tp_30">
-        <div class="col-md-7"></div>
-        <div class="col-md-5 mg_tp_30">
-          <div class="print_quotation_creator text-center">
-            <span>PREPARED BY </span><br><?= $emp_name?>
-          </div>
+    </section>
+    <!-- Tour Itinenary -->
+    <?php if($sq_package_count != 0){ ?>
+    <section class="print_sec main_block side_pad mg_tp_30">
+      <div class="vitinerary_div">
+        <h6>Destination Guide Video</h6>
+        <img src="<?php echo BASE_URL.'images/quotation/youtube-icon.png'; ?>" class="itinerary-img img-responsive"><br/>
+        <a href="<?=$sq_dest['link']?>" class="no-marg" target="_blank"></a>
+      </div>
+
+      <div class="section_heding mg_tp_20">
+        <h2>TOUR ITINERARY</h2>
+        <div class="section_heding_img">
+          <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
+        </div>
+      </div>
+      <div class="">
+        <div class="col-md-12">
+          <div class="print_itinenary main_block no-pad no-marg">
+      
+          <?php 
+            $count = 1;
+            $i = 0;
+            $dates =(array) get_dates_for_package_itineary($_GET['quotation_id']);
+            while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
+              $last_child = ($sq_package_count == $count) ? 'last-child' : '';
+            ?>
+            <section class="print_single_itinenary main_block <?= $last_child ?>">
+              <div class="print_itinenary_count print_info_block" style="width:200px;">DAY - <?= $count ?>  <b>(<?php echo $dates[$i] ?>) </b></div>
+              <div class="print_itinenary_desciption print_info_block">
+              	<div class="print_itinenary_attraction">
+              		<span class="print_itinenary_attraction_icon"><i class="fa fa-map-marker"></i></span>
+              		<samp class="print_itinenary_attraction_location"><?= $row_itinarary['attraction'] ?></samp>
+              	</div>
+                <p><?= $row_itinarary['day_wise_program'] ?></p>
+              </div>
+              <div class="print_itinenary_details">
+                <div class="print_info_block">
+                  <ul class="main_block no-pad">
+                    <li class="col-md-12 mg_tp_10 mg_bt_10"><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
+                    <li class="col-md-12 mg_tp_10 mg_bt_10"><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+            <?php $count++;
+            $i++;
+            } ?>
+            </div>
         </div>
       </div>
     </section>
-
+    <?php } ?>
 
   </body>
 </html>

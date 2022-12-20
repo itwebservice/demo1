@@ -49,7 +49,7 @@
 		</div>	
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	      <input type="text" id="customer_name1" name="customer_name1" onchange="fname_validate(this.id)" placeholder="Customer Name" title="Customer Name" value="<?php echo $sq_quotation['customer_name'];?>" required>
+	    	<input type="text" id="customer_name1" name="customer_name1" onchange="fname_validate(this.id)" placeholder="Customer Name" title="Customer Name" value="<?php echo $sq_quotation['customer_name'];?>" required>
 
 	    </div>
 
@@ -95,7 +95,7 @@
 	    </div>
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	      <input type="text" id="capacity1" name="capacity1"  placeholder="Capacity" title="Capacity"  value="<?= $sq_quotation['capacity'] ?>" onchange="get_basic_amount();">
+	    	<input type="text" id="capacity1" name="capacity1"  placeholder="Capacity" title="Capacity"  value="<?= $sq_quotation['capacity'] ?>" onchange="get_basic_amount();">
 	    </div>
 	</div>
 	<div class="row">
@@ -155,6 +155,16 @@
 	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 	      	<input type="text" class="form-control" id="quotation_date1" name="quotation_date1" placeholder="Quotation Date" title="Quotation Date" onchange="get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','basic', true);" value="<?= get_date_user($sq_quotation['quotation_date']) ?>"> 
 	    </div>
+		<div class="col-md-3 col-sm-6">
+			<?php
+			$status = ($sq_quotation['status'] == '1') ? 'Active' : 'Inactive';
+			?>
+			<select class="<?= $active_inactive_flag ?>" name="active_flag1" id="active_flag1" title="Status">
+				<option  value="<?php echo $sq_quotation['status']; ?>"><?php echo $status; ?></option>
+				<option value="1">Active</option>
+				<option value="0">Inactive</option>
+			</select>
+		</div>
 	</div>
 	<br><br>
 	<div class="row text-center">

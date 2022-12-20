@@ -36,7 +36,7 @@ if($estimate_type=="Group Tour"){
         <?php 
         if($estimate_type_id==""){
         ?>
-        <option value=""> Select Tour Group </option>
+        <option value=""> Select Tour Date </option>
         <?php
         }
         else{
@@ -57,49 +57,48 @@ if($estimate_type=="Package Tour"){
 ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
     <select id="booking_id<?= $offset ?>" name="booking_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>')"> 
-          <?php 
-          if($estimate_type_id!=""){
+            <?php
+            if($estimate_type_id!=""){
 
-              $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$estimate_type_id' order by booking_id desc"));
-              $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
-              if($sq_customer_info['type'] == 'Corporate'||$sq_customer_info['type']=='B2B'){
-                $cust_name = $sq_customer_info['company_name'];
-              }else{
-                $cust_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
-              }
-              $created_at = $sq_booking['booking_date'];
-              $yr = explode("-", $created_at);
-              $year =$yr[0];      
-              ?>
-              <option value="<?php echo $estimate_type_id ?>"><?php echo get_package_booking_id($estimate_type_id,$year)." : ".$cust_name; ?></option>
-              <?php
-          } ?>
-          <option value="">Select Booking</option>
-          <?php
-          $query = "select * from package_tour_booking_master where 1 ";
-          include "../../../model/app_settings/branchwise_filteration.php";
-          $query .= " order by booking_id desc";
-          $sq_booking = mysqlQuery($query);
-          while($row_booking = mysqli_fetch_assoc($sq_booking))
+                $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$estimate_type_id' and delete_status='0' order by booking_id desc"));
+                $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
+                if($sq_customer_info['type'] == 'Corporate'||$sq_customer_info['type']=='B2B'){
+                  $cust_name = $sq_customer_info['company_name'];
+                }else{
+                  $cust_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
+                }
+                $created_at = $sq_booking['booking_date'];
+                $yr = explode("-", $created_at);
+                $year = $yr[0];      
+                ?>
+                <option value="<?php echo $estimate_type_id ?>"><?php echo get_package_booking_id($estimate_type_id,$year)." : ".$cust_name; ?></option>
+                <?php
+            } ?>
+            <option value="">Select Booking</option>
+            <?php
+            $query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
+            include "../../../model/app_settings/branchwise_filteration.php";
+            $query .= " order by booking_id desc";
+            $sq_booking = mysqlQuery($query);
+            while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
-          {
               $created_at = $row_booking['booking_date'];
               $yr = explode("-", $created_at);
-              $year =$yr[0];
+              $year = $yr[0];
               $sq_customer = mysqli_fetch_assoc(mysqlQuery("select first_name, middle_name, last_name,company_name,type from customer_master where customer_id='$row_booking[customer_id]'"));
               if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
                 $cust_name = $sq_customer['company_name'];
               }else{
                 $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
               }
-              ?>
-
-              <option value="<?php echo $row_booking['booking_id'] ?>" <?= $bg_color?>><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$cust_name; ?></option>
-
-              <?php    
-
-          }    
-
+              $pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]'"));
+              $cancle_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]' and status='Cancel'"));
+              if($pass_count != $cancle_count){
+                ?>
+                <option value="<?php echo $row_booking['booking_id'] ?>" <?= $bg_color?>><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$cust_name; ?></option>
+                <?php
+              }
+            }
           ?>
       </select>
   </div>
@@ -120,7 +119,7 @@ if($estimate_type=="Car Rental"){
             <?php
           }  
           else{
-            $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$estimate_type_id'"));
+            $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$estimate_type_id' and delete_status='0'"));
             $customer_id = $sq_booking['customer_id'];
             $created_at = $sq_booking['created_at'];
             $yr = explode("-", $created_at);
@@ -135,7 +134,7 @@ if($estimate_type=="Car Rental"){
             <option value="<?= $sq_booking['booking_id'] ?>"><?= get_car_rental_booking_id($sq_booking['booking_id'],$year).' : '.$cust_name ?></option>
             <?php
           }
-          $query = "select * from car_rental_booking where 1 ";
+          $query = "select * from car_rental_booking where 1 and delete_status='0' and status!='Cancel' ";
           include "../../../model/app_settings/branchwise_filteration.php";
           $query .= " order by booking_id desc";
           $sq_booking = mysqlQuery($query);
@@ -149,8 +148,7 @@ if($estimate_type=="Car Rental"){
               $cust_name = $sq_customer_info['company_name'];
             }else{
               $cust_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
-            }
-            
+            }         
             ?>
             <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year).' : '.$cust_name ?></option>
             <?php
@@ -175,7 +173,7 @@ if($estimate_type=="Visa Booking"){
             <?php
           }
           else{
-            $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$estimate_type_id' "));
+            $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$estimate_type_id' and delete_status='0' "));
             $created_at = $sq_visa['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -187,11 +185,11 @@ if($estimate_type=="Visa Booking"){
             }
             ?>
             <option value="<?= $sq_visa['visa_id'] ?>"><?= get_visa_booking_id($sq_visa['visa_id'],$year).' : '.$cust_name ?></option>
-            <?php 
+            <?php
           }
           ?>
           <?php
-          $query = "select * from visa_master where 1 ";
+          $query = "select * from visa_master where 1 and delete_status='0' ";
           include "../../../model/app_settings/branchwise_filteration.php";
           $query .= " order by visa_id desc";
           $sq_visa = mysqlQuery($query);
@@ -207,9 +205,13 @@ if($estimate_type=="Visa Booking"){
             }else{
               $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
             }
+            $sq_entries = mysqli_num_rows(mysqlQuery("select * from visa_master_entries where visa_id ='$row_visa[visa_id]'"));
+            $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from visa_master_entries where visa_id ='$row_visa[visa_id]' and status='Cancel'"));
+            if($sq_entries != $sq_entries_cancel){   
             ?>
             <option value="<?= $row_visa['visa_id'] ?>"><?= get_visa_booking_id($row_visa['visa_id'],$year).' : '.$cust_name ?></option>
             <?php
+            }
           }
       ?> 
     </select>     
@@ -219,64 +221,6 @@ if($estimate_type=="Visa Booking"){
   </script>
 <?php
 }
-
-
-if($estimate_type=="Passport Booking"){
-?>  
-  <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="passport_id<?= $offset ?>" id="passport_id<?= $offset ?>"  onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
-      <?php 
-          if($estimate_type_id==""){
-            ?>
-            <option value="">Select Booking</option>
-            <?php
-          }
-          else{
-            $sq_passport = mysqli_fetch_assoc(mysqlQuery("select * from passport_master where passport_id='$estimate_type_id'"));
-            $created_at = $sq_passport['created_at'];
-            $yr = explode("-", $created_at);
-            $year =$yr[0];
-            $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_passport[customer_id]'"));
-            if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-              $cust_name = $sq_customer['company_name'];
-            }else{
-              $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
-            }
-            ?>
-            <option value="<?= $sq_passport['passport_id'] ?>"><?= get_passport_booking_id($sq_passport['passport_id'],$year).' : '.$cust_name ?></option>
-            <?php 
-          }
-          ?>
-          <?php
-          $query = "select * from passport_master where 1 ";
-          include "../../../model/app_settings/branchwise_filteration.php";
-          $query .= " order by passport_id desc";
-          $sq_passport = mysqlQuery($query);
-          while($row_passport = mysqli_fetch_assoc($sq_passport)){
-
-            $created_at = $row_passport['created_at'];
-            $yr = explode("-", $created_at);
-            $year =$yr[0];
-
-            $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_passport[customer_id]'"));
-            if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-              $cust_name = $sq_customer['company_name'];
-            }else{
-              $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
-            }
-            ?>
-            <option value="<?= $row_passport['passport_id'] ?>"><?= get_passport_booking_id($row_passport['passport_id'],$year).' : '.$cust_name ?></option>
-            <?php
-          }
-      ?> 
-    </select>     
-  </div>
-  <script>
-    $('#passport_id<?= $offset ?>').select2();
-  </script>
-<?php
-}
-
 
 if($estimate_type=="Ticket Booking"){
 ?>  
@@ -289,7 +233,7 @@ if($estimate_type=="Ticket Booking"){
             <?php
           }
           else{
-            $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$estimate_type_id' "));
+            $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$estimate_type_id' and delete_status='0' "));
             $created_at = $sq_ticket['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -306,7 +250,7 @@ if($estimate_type=="Ticket Booking"){
           }
           ?>
           <?php
-          $query = "select * from ticket_master where 1 ";
+          $query = "select * from ticket_master where 1 and delete_status='0'";
           include "../../../model/app_settings/branchwise_filteration.php";
           $query .= " order by ticket_id desc";
           $sq_ticket = mysqlQuery($query);
@@ -322,9 +266,13 @@ if($estimate_type=="Ticket Booking"){
             }else{
               $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
             }
+            $sq_entries = mysqli_num_rows(mysqlQuery("select * from ticket_master_entries where ticket_id ='$row_ticket[ticket_id]'"));
+            $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from ticket_master_entries where ticket_id ='$row_ticket[ticket_id]' and status='Cancel'"));
+            if($sq_entries != $sq_entries_cancel){
             ?>
             <option value="<?= $row_ticket['ticket_id'] ?>"><?= get_ticket_booking_id($row_ticket['ticket_id'],$year).' : '.$cust_name ?></option>
             <?php
+            }
           }
       ?> 
     </select>     
@@ -346,7 +294,7 @@ if($estimate_type=="Train Ticket Booking"){
             <?php
           }
           else{
-            $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$estimate_type_id'"));
+            $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$estimate_type_id' and delete_status='0'"));
             $created_at = $sq_ticket['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -362,7 +310,7 @@ if($estimate_type=="Train Ticket Booking"){
           }
           ?>
           <?php
-          $query = "select * from train_ticket_master where 1 ";
+          $query = "select * from train_ticket_master where 1 and delete_status='0' ";
           include "../../../model/app_settings/branchwise_filteration.php";
           $query .= " order by train_ticket_id desc";
           $sq_ticket = mysqlQuery($query);
@@ -378,9 +326,13 @@ if($estimate_type=="Train Ticket Booking"){
             }else{
               $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
             }
+            $sq_entries = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id ='$row_ticket[train_ticket_id]'"));
+            $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id ='$row_ticket[train_ticket_id]' and status='Cancel'"));
+            if($sq_entries != $sq_entries_cancel){
             ?>
             <option value="<?= $row_ticket['train_ticket_id'] ?>"><?= get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year).' : '.$cust_name ?></option>
             <?php
+            }
           }
       ?> 
     </select>     
@@ -402,7 +354,7 @@ if($estimate_type=="Hotel Booking"){
             <?php
           }
           else{
-            $sq_hotel_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$estimate_type_id'"));
+            $sq_hotel_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$estimate_type_id' and delete_status='0'"));
             $created_at = $sq_hotel_booking['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -418,7 +370,7 @@ if($estimate_type=="Hotel Booking"){
           }
           ?>
           <?php
-          $query = "select * from hotel_booking_master where 1 ";
+          $query = "select * from hotel_booking_master where 1 and delete_status='0'";
           include "../../../model/app_settings/branchwise_filteration.php";
           $query .= " order by booking_id desc";
           $sq_hotel_booking = mysqlQuery($query);
@@ -434,10 +386,13 @@ if($estimate_type=="Hotel Booking"){
             }else{
               $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
             } 
-            
+            $sq_entries = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id ='$row_ticket[booking_id]'"));
+            $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id ='$row_ticket[booking_id]' and status='Cancel'"));  
+            if($sq_entries != $sq_entries_cancel){            
             ?>
             <option value="<?= $row_ticket['booking_id'] ?>"><?= get_hotel_booking_id($row_ticket['booking_id'],$year).' : '.$cust_name ?></option>
             <?php
+            }
           }
       ?> 
     </select>     
@@ -459,10 +414,10 @@ if($estimate_type=="Bus Booking"){
           <?php
         }
         else{
-          $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$estimate_type_id'"));
-            $created_at = $sq_booking['created_at'];
-            $yr = explode("-", $created_at);
-            $year =$yr[0];
+          $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$estimate_type_id' and delete_status='0'"));
+          $created_at = $sq_booking['created_at'];
+          $yr = explode("-", $created_at);
+          $year =$yr[0];
           $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
           if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
             $cust_name = $sq_customer['company_name'];
@@ -471,9 +426,9 @@ if($estimate_type=="Bus Booking"){
           }
           ?>
           <option value="<?= $sq_booking['booking_id'] ?>"><?= get_bus_booking_id($sq_booking['booking_id'],$year).' : '.$cust_name ?> </option>
-           <?php
+          <?php
         }
-        $query = "select * from bus_booking_master where 1 ";
+        $query = "select * from bus_booking_master where 1 and delete_status='0' ";
         include "../../../model/app_settings/branchwise_filteration.php";
         $query .= " order by booking_id desc";
         $sq_booking = mysqlQuery($query);
@@ -483,16 +438,20 @@ if($estimate_type=="Bus Booking"){
             $yr = explode("-", $created_at);
             $year =$yr[0];
 
-           $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-           if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-             $cust_name = $sq_customer['company_name'];
-           }else{
-             $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
-           }
-           ?>
-          <option value="<?= $row_booking['booking_id'] ?>"><?= get_bus_booking_id($row_booking['booking_id'],$year).' : '.$cust_name ?> </option>
-           <?php
-         }
+            $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+            if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
+              $cust_name = $sq_customer['company_name'];
+            }else{
+              $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+            }
+           $sq_entries = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id ='$row_booking[booking_id]'"));
+           $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from bus_booking_entries where booking_id ='$row_booking[booking_id]' and status='Cancel'"));  
+            if($sq_entries != $sq_entries_cancel){
+            ?>
+            <option value="<?= $row_booking['booking_id'] ?>"><?= get_bus_booking_id($row_booking['booking_id'],$year).' : '.$cust_name ?> </option>
+            <?php
+            }
+          }
       ?>
     </select>
   </div>
@@ -564,7 +523,7 @@ if($estimate_type=="Miscellaneous Booking"){
             <?php
         }
         else{
-          $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$estimate_type_id'"));
+          $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$estimate_type_id' and delete_status='0'"));
             $created_at = $sq_booking['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -578,7 +537,7 @@ if($estimate_type=="Miscellaneous Booking"){
           <option value="<?= $sq_booking['misc_id'] ?>"><?= get_misc_booking_id($sq_booking['misc_id'],$year).' : '.$cust_name ?></option>
           <?php
         }
-        $query = "select * from miscellaneous_master where 1 ";
+        $query = "select * from miscellaneous_master where 1 and delete_status='0'";
         include "../../../model/app_settings/branchwise_filteration.php";
         $query .= " order by misc_id desc";
         $sq_booking = mysqlQuery($query);
@@ -593,9 +552,13 @@ if($estimate_type=="Miscellaneous Booking"){
           }else{
             $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
           }
+          $sq_entries = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id ='$row_booking[misc_id]'"));
+          $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id ='$row_booking[misc_id]' and status='Cancel'"));
+          if($sq_entries != $sq_entries_cancel){
           ?>
           <option value="<?= $row_booking['misc_id'] ?>"><?= get_misc_booking_id($row_booking['misc_id'],$year).' : '.$cust_name ?></option>
           <?php
+          }
         }
       ?>
 
@@ -618,7 +581,7 @@ if($estimate_type=="Excursion Booking"){
             <?php
           }
           else{
-            $sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$estimate_type_id' "));
+            $sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$estimate_type_id' and delete_status='0' "));
             $created_at = $sq_exc['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -634,11 +597,11 @@ if($estimate_type=="Excursion Booking"){
           }
           ?>
           <?php
-            $query = "select * from excursion_master where 1 ";
+            $query = "select * from excursion_master where 1 and delete_status='0' ";
             include "../../../model/app_settings/branchwise_filteration.php";
             $query .= " order by exc_id desc";
             $sq_exc = mysqlQuery($query);
-          while($row_exc = mysqli_fetch_assoc($sq_exc)){
+            while($row_exc = mysqli_fetch_assoc($sq_exc)){
             $created_at = $row_exc['created_at'];
             $yr = explode("-", $created_at);
             $year =$yr[0];
@@ -648,9 +611,13 @@ if($estimate_type=="Excursion Booking"){
             }else{
               $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
             }
+            $sq_entries = mysqli_num_rows(mysqlQuery("select * from excursion_master_entries where exc_id ='$row_exc[exc_id]'"));
+            $sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from excursion_master_entries where exc_id ='$row_exc[exc_id]' and status='Cancel'"));
+            if($sq_entries != $sq_entries_cancel){
             ?>
             <option value="<?= $row_exc['exc_id'] ?>"><?= get_exc_booking_id($row_exc['exc_id'],$year).' : '.$cust_name ?></option>
             <?php
+            }
           }
       ?> 
     </select>     

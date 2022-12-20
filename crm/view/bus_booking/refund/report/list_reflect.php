@@ -42,7 +42,7 @@ $to_date = $_POST['payment_to_date'];
 
 			$total_refund = $total_refund+$row_refund['refund_amount'];
 
-			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_refund[booking_id]'"));
+			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_refund[booking_id]' and delete_status='0'"));
 			$date = $sq_car_rental_info['created_at'];
 			$yr = explode("-", $date);
 			$year =$yr[0];

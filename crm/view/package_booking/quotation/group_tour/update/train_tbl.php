@@ -25,8 +25,8 @@
 				            	<option value="">Class</option>
 				            	<?php get_train_class_dropdown(); ?>
 		            </select></td>
-		            <td class="col-md-2"><input type="text" id="train_departure_date1"  name="train_departure_date" placeholder="Departure Date and time" title="Departure Date and time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>" onchange="get_to_datetime(this.id,'train_arrival_date1')"></td>
-		            <td class="col-md-2"><input type="text" id="train_arrival_date1" name="train_arrival_date" placeholder="Arrival Date and time" title="Arrival Date and time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>" onchange="validate_validDatetime('train_departure_date1',this.id)"></td>
+		            <td class="col-md-2"><input type="text" id="train_departure_date1"  name="train_departure_date" placeholder="Departure Date and time" title="Departure Date and time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>" style="width:150px;" onchange="get_to_datetime(this.id,'train_arrival_date1')"></td>
+		            <td class="col-md-2"><input type="text" id="train_arrival_date1" name="train_arrival_date" placeholder="Arrival Date and time" title="Arrival Date and time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>" style="width:150px;" onchange="validate_validDatetime('train_departure_date1',this.id)"></td>
 	            </tr>    
 	            <script>
 	            	$('#train_departure_date1, #train_arrival_date1').datetimepicker({format:'d-m-Y H:i' });
@@ -56,8 +56,8 @@
 			            	<option value="">Class</option>
 			            	<?php get_train_class_dropdown(); ?>
 			            </select></td>
-			            <td class="col-md-2"><input type="text" id="train_departure_date<?= $count ?>_u" name="train_departure_date" placeholder="Departure Date and time" title="Departure Date and time" class="app_datetimepicker" value="<?= get_datetime_user($row_q_train['departure_date']) ?>" onchange="get_to_datetime(this.id,'train_arrival_date<?= $count ?>_u')"></td>
-			            <td class="col-md-2"><input type="text" id="train_arrival_date<?= $count ?>_u" name="train_arrival_date" placeholder="Arrival Date and time" title="Arrival Date and time" class="app_datetimepicker" value="<?= get_datetime_user($row_q_train['arrival_date']) ?>" onchange="validate_validDatetime('train_departure_date<?= $count ?>_u',this.id)"></td>
+			            <td class="col-md-2"><input type="text" id="train_departure_date<?= $count ?>_u" name="train_departure_date" placeholder="Departure Date and time" title="Departure Date and time" class="app_datetimepicker" value="<?= get_datetime_user($row_q_train['departure_date']) ?>" onchange="get_to_datetime(this.id,'train_arrival_date<?= $count ?>_u')" style="width:150px;"></td>
+			            <td class="col-md-2"><input type="text" id="train_arrival_date<?= $count ?>_u" name="train_arrival_date" placeholder="Arrival Date and time" title="Arrival Date and time" class="app_datetimepicker" value="<?= get_datetime_user($row_q_train['arrival_date']) ?>" onchange="validate_validDatetime('train_departure_date<?= $count ?>_u',this.id)" style="width:150px;"></td>
 			            <td class="hidden"><input type="text" value="<?= $row_q_train['id'] ?>"></td>
 		            </tr>
 		            <script>

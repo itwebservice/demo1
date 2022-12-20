@@ -83,7 +83,7 @@ $ticket_id = $_GET['ticket_id'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -131,7 +131,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);
 
-$query = "select * from ticket_master where financial_year_id='$financial_year_id' ";
+$query = "select * from ticket_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
     $query .=" and ticket_id in ( select ticket_id from ticket_master where customer_id='$customer_id' )";
 }
@@ -155,7 +155,7 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and ticket_id in (select ticket_id from ticket_master where emp_id='$emp_id' ))";
 }
-
+$query .= " order by ticket_id desc ";
 $row_count = 8;
 $count = 0;
 
@@ -168,13 +168,14 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('E'.$row_count, "Passenger Name")
         ->setCellValue('F'.$row_count, "Adolescence")
         ->setCellValue('G'.$row_count, "Ticket_No")
-        ->setCellValue('H'.$row_count, "Main Ticket No")
-        ->setCellValue('I'.$row_count, "Baggage")
-        ->setCellValue('J'.$row_count, "Seat_No")
-        ->setCellValue('K'.$row_count, "Meal_plan");
+        ->setCellValue('H'.$row_count, "Airline PNR")
+        ->setCellValue('I'.$row_count, "Main Ticket No")
+        ->setCellValue('J'.$row_count, "Check_In&Cabin_Baggage")
+        ->setCellValue('K'.$row_count, "Seat_No")
+        ->setCellValue('L'.$row_count, "Meal_plan");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
@@ -184,59 +185,59 @@ while($row_ticket =mysqli_fetch_assoc($sq_ticket)){
     $yr = explode("-", $date);
     $year = $yr[0];
 
-    $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
-    if($sq_customer_info['type'] == 'Corporate'||$sq_customer_info['type'] == 'B2B'){
-        $cust_name = $sq_customer_info['company_name'];
-    }else{
-        $cust_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
-    }
-
-    $from_city_arr = array();
-    $to_city_arr = array();
-    $sq_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE ticket_id='$row_ticket[ticket_id]'");
-    while($row_trip = mysqli_fetch_assoc($sq_trip)){
-
-        $dep_city = explode('(',$row_trip['departure_city']);
-        $arr_city = explode('(',$row_trip['arrival_city']);
-
-        $dep_city1 = explode(')',$dep_city[1]);
-        $arr_city1 = explode(')',$arr_city[1]);
-        array_push($from_city_arr,$dep_city1[0]);
-        array_push($to_city_arr,$arr_city1[0]);
-    }
-    
     $sq_entry = mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]'");
-    while($row_entry = mysqli_fetch_assoc($sq_entry)){
+    while($row_passenger1 = mysqli_fetch_assoc($sq_entry)){
+        
+        $trip_seat_arr = array();
+        $trip_meal_arr = array();
+        $from_city_arr = array();
+        $to_city_arr = array();
+        $seat_nos = explode('/',$row_passenger1['seat_no']);
+        $meal_plans = explode('/',$row_passenger1['meal_plan']);
+        $i = 0;
+        $sq_ticket_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE passenger_id='$row_passenger1[entry_id]'");
+        while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
+            if($row_trip['status'] != 'Cancel'){
+                array_push($trip_seat_arr,$seat_nos[$i]);
+                array_push($trip_meal_arr,$meal_plans[$i]);
+                $dep_city = explode('(',$row_trip['departure_city']);
+                $arr_city = explode('(',$row_trip['arrival_city']);
 
+                $dep_city1 = explode(')',$dep_city[1]);
+                $arr_city1 = explode(')',$arr_city[1]);
+                array_push($from_city_arr,$dep_city1[0]);
+                array_push($to_city_arr,$arr_city1[0]);
+            }
+            $i++;
+        }
         $seat_no_string = '';
         $meal_plan_string = '';
-        $seat_nos = explode('/',$row_entry['seat_no']);
-        for($i = 0; $i < sizeof($seat_nos); $i++){
-            $seat_no_string .= $seat_nos[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')';
-            if($i != (sizeof($seat_nos)-1)){
-                $seat_no_string .= ', ';
+        for($i = 0; $i < sizeof($trip_seat_arr); $i++){
+            $seat_no_string .= ($trip_seat_arr[$i]!='' && $from_city_arr[$i]) ? $trip_seat_arr[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')' : '';
+            if($i != (sizeof($trip_seat_arr)-1)){
+                $seat_no_string .= ($from_city_arr[$i]!='') ? ', ' : '';
             }
         }
-        $meal_plans = explode('/',$row_entry['meal_plan']);
-        for($i = 0; $i < sizeof($meal_plans); $i++){
-            $meal_plan_string .= $meal_plans[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')';
-            if($i != (sizeof($meal_plans)-1)){
-                $meal_plan_string .= ', ';
+        for($i = 0; $i < sizeof($trip_meal_arr); $i++){
+            $meal_plan_string .= ($trip_meal_arr[$i]!='' && $from_city_arr[$i]) ? $trip_meal_arr[$i].' ('.$from_city_arr[$i].'-'.$to_city_arr[$i].')' : '';
+            if($i != (sizeof($trip_meal_arr)-1)){
+                $meal_plan_string .= ($from_city_arr[$i]!='') ? ', ' : '';
             }
         }
         $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('B'.$row_count, ++$count)
             ->setCellValue('C'.$row_count, get_ticket_booking_id($row_ticket['ticket_id'],$year))
             ->setCellValue('D'.$row_count, $cust_name)
-            ->setCellValue('E'.$row_count, $row_entry['first_name']." ".$row_entry['middle_name']." ".$row_entry['last_name'])
-            ->setCellValue('F'.$row_count, $row_entry['adolescence'])
-            ->setCellValue('G'.$row_count, $row_entry['ticket_no'])
-            ->setCellValue('H'.$row_count, ($row_entry['main_ticket']!='') ? $row_entry['main_ticket'] : 'NA')
-            ->setCellValue('I'.$row_count, ($row_entry['baggage_info']!='') ? $row_entry['baggage_info'] : 'NA')
-            ->setCellValue('J'.$row_count, ($row_entry['seat_no'] != '' ) ? $seat_no_string : 'NA')
-            ->setCellValue('K'.$row_count, ($row_entry['meal_plan'] != '' ) ? $meal_plan_string : 'NA');
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($content_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+            ->setCellValue('E'.$row_count, $row_passenger1['first_name']." ".$row_passenger1['middle_name']." ".$row_passenger1['last_name'])
+            ->setCellValue('F'.$row_count, $row_passenger1['adolescence'])
+            ->setCellValue('G'.$row_count, ($row_passenger1['ticket_no']!='') ? strtoupper($row_passenger1['ticket_no']) : 'NA')
+            ->setCellValue('H'.$row_count, ($row_passenger1['gds_pnr']!='') ? strtoupper($row_passenger1['gds_pnr']) : 'NA')
+            ->setCellValue('I'.$row_count, ($row_ticket['ticket_reissue']) ? strtoupper($row_passenger1['main_ticket']) : 'NA')
+            ->setCellValue('J'.$row_count, ($row_passenger1['baggage_info']!='') ? $row_passenger1['baggage_info'] : 'NA')
+            ->setCellValue('K'.$row_count, ($seat_no_string != '' ) ? $seat_no_string : 'NA')
+            ->setCellValue('L'.$row_count, ($meal_plan_string != '' ) ? $meal_plan_string : 'NA');
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($content_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
 
         $row_count++;
     }
@@ -261,7 +262,7 @@ $objPHPExcel->setActiveSheetIndex(0);
 
 // Redirect output to a client’s web browser (Excel5)
 header('Content-Type: application/vnd.ms-excel');
-header('Content-Disposition: attachment;filename="FlightTicketMembers('.date('d-m-Y H:i:s').').xls"');
+header('Content-Disposition: attachment;filename="FlightTicketPassengers('.date('d-m-Y H:i:s').').xls"');
 header('Cache-Control: max-age=0');
 // If you're serving to IE 9, then the following may be needed
 header('Cache-Control: max-age=1');

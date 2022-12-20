@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- XML V7 Menu -->
 <menu>
-	<!-- <menu_desc>
-		<name>Dashboard</name>
-		<link>dashboard/dashboard_main.php</link>
-		<rank>1</rank>
-		<priority>1</priority>
-		<description>Dashboard Details</description>
-		<menu_icon>fa fa-tachometer</menu_icon>
-	</menu_desc>	 -->
 
 	<menu_desc>
 		<name>Administration</name>
@@ -72,7 +64,6 @@
 		<description>This is form where we assign privileges to both user and branches.</description>
 		<menu_icon>fa fa-users</menu_icon>
 	</menu_desc>
-
 
 	<menu_desc>
 		<name>Customers</name>
@@ -180,7 +171,6 @@
 		<menu_icon>fa fa-thumb-tack</menu_icon>
 	</menu_desc>
 
-
 	<menu_desc>
 		<name>Cruise</name>
 		<link>cruise/index.php</link>
@@ -245,12 +235,30 @@
 	</menu_desc>	
 
 	<menu_desc>
-		<name>Masters</name>
+		<name>Master</name>
 		<link>other_masters/index.php</link>
 		<rank>4</rank>
 		<priority>2</priority>
 		<description>Here we add other masters like city, airport.</description>
 		<menu_icon>fa fa-paw</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
+		<name>Package Tour</name>
+		<link>custom_packages/master/index.php</link>
+		<rank>4</rank>
+		<priority>2</priority>
+		<description>This is Customized Packages</description>
+		<menu_icon>fa fa-user</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
+		<name>Group Tour</name>
+		<link>tours/master/index.php</link>
+		<rank>4</rank>
+		<priority>2</priority>
+		<description>This is tour master</description>
+		<menu_icon>fa fa-users</menu_icon>
 	</menu_desc>
 
 	<menu_desc>
@@ -263,24 +271,6 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name>Group Tours</name>
-		<link>tours/master/index.php</link>
-		<rank>4</rank>
-		<priority>2</priority>
-		<description>This is tour master</description>
-		<menu_icon>fa fa-users</menu_icon>
-	</menu_desc>
-
-	<menu_desc>
-		<name>Package Tours</name>
-		<link>custom_packages/master/index.php</link>
-		<rank>4</rank>
-		<priority>2</priority>
-		<description>This is Customized Packages</description>
-		<menu_icon>fa fa-user</menu_icon>
-	</menu_desc>
-
-	<menu_desc>
 		<name>Visa</name>
 		<link>visa_master/index.php</link>
 		<rank>4</rank>
@@ -290,7 +280,7 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name>Activities</name>
+		<name>Activity</name>
 		<link>b2b_excursion/index.php</link>
 		<rank>4</rank>
 		<priority>2</priority>
@@ -371,6 +361,15 @@
 	</menu_desc>
 
 	<menu_desc>
+		<name>Flight Quotation</name>
+		<link>package_booking/quotation/car_flight/flight/index.php</link>
+		<rank>5</rank>
+		<priority>2</priority>
+		<description>This package booking quotation genrator home.</description>
+		<menu_icon>fa fa-file-text-o</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
 		<name>Car Rental Quotation</name>
 		<link>package_booking/quotation/car_flight/car_rental/index.php</link>
 		<rank>5</rank>
@@ -379,17 +378,6 @@
 		<menu_icon>fa fa-file-text-o</menu_icon>
 	</menu_desc>
 
-	<menu_desc>
-		<name>Flight Quotation</name>
-		<link>package_booking/quotation/car_flight/flight/index.php</link>
-		<rank>5</rank>
-		<priority>2</priority>
-		<description>This package booking quotation genrator home.</description>
-		<menu_icon>fa fa-file-text-o</menu_icon>
-	</menu_desc>
-	
-
-	
 	<menu_desc>
 		<name>ID Proof</name>
 		<link>booking_id_proof/upload_id_proof.php</link>
@@ -418,6 +406,15 @@
 	</menu_desc>
 
 	<menu_desc>
+		<name>Package Tour</name>
+		<link>package_booking/booking/index.php</link>
+		<rank>6</rank>
+		<priority>2</priority>
+		<description>This is Package Booking home Screen.</description>
+		<menu_icon>fa fa-user</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
 		<name>Group Tour</name>
 		<link>booking/index.php</link>
 		<rank>6</rank>
@@ -426,14 +423,6 @@
 		<menu_icon>fa fa-users</menu_icon>
 	</menu_desc>
 
-	<menu_desc>
-		<name>Package Tour</name>
-		<link>package_booking/booking/index.php</link>
-		<rank>6</rank>
-		<priority>2</priority>
-		<description>This is Package Booking home Screen.</description>
-		<menu_icon>fa fa-user</menu_icon>
-	</menu_desc>
 	
 	<menu_desc>
 		<name>Hotel</name>
@@ -454,21 +443,39 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name>Train</name>
-		<link>visa_passport_ticket/train_ticket/index.php</link>
-		<rank>6</rank>
-		<priority>2</priority>
-		<description>Train or Plane Ticket master home</description>
-		<menu_icon>fa fa-subway</menu_icon>
-	</menu_desc>
-
-	<menu_desc>
 		<name>Visa</name>
 		<link>visa_passport_ticket/visa/index.php</link>
 		<rank>6</rank>
 		<priority>2</priority>
 		<description>Visa master home</description>
 		<menu_icon>fa fa-cc-visa</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
+		<name>Car Rental</name>
+		<link>car_rental/booking/index.php</link>
+		<rank>6</rank>
+		<priority>2</priority>
+		<description>Car Rental booking home</description>
+		<menu_icon>fa fa-car</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
+		<name>Activity</name>
+		<link>excursion/index.php</link>
+		<rank>6</rank>
+		<priority>2</priority>
+		<description>Foreign exchange booking</description>
+		<menu_icon>fa fa-thumb-tack</menu_icon>
+	</menu_desc>
+
+	<menu_desc>
+		<name>Train</name>
+		<link>visa_passport_ticket/train_ticket/index.php</link>
+		<rank>6</rank>
+		<priority>2</priority>
+		<description>Train or Plane Ticket master home</description>
+		<menu_icon>fa fa-subway</menu_icon>
 	</menu_desc>
 
 	<menu_desc>
@@ -481,24 +488,6 @@
 	</menu_desc>	
 
 	<menu_desc>
-		<name>Car Rental</name>
-		<link>car_rental/booking/index.php</link>
-		<rank>6</rank>
-		<priority>2</priority>
-		<description>Car Rental booking home</description>
-		<menu_icon>fa fa-car</menu_icon>
-	</menu_desc>
-	
-	<menu_desc>
-		<name>Activity</name>
-		<link>excursion/index.php</link>
-		<rank>6</rank>
-		<priority>2</priority>
-		<description>Foreign exchange booking</description>
-		<menu_icon>fa fa-thumb-tack</menu_icon>
-	</menu_desc>
-	
-	<menu_desc>
 		<name>Miscellaneous</name>
 		<link>miscellaneous/index.php</link>
 		<rank>6</rank>
@@ -506,24 +495,6 @@
 		<description>Miscellaneous bookings</description>
 		<menu_icon>fa fa-bed</menu_icon>
 	</menu_desc>
-
-	<!-- <menu_desc>
-		<name>Forex</name>
-		<link>forex/booking/index.php</link>
-		<rank>6</rank>
-		<priority>2</priority>
-		<description>Foreign exchange booking</description>
-		<menu_icon>fa fa-money</menu_icon>
-	</menu_desc>
-	
-	<menu_desc>
-		<name>Passport</name>
-		<link>visa_passport_ticket/passport/index.php</link>
-		<rank>6</rank>
-		<priority>2</priority>
-		<description>Passport master home</description>
-		<menu_icon>fa fa-id-card-o</menu_icon>
-	</menu_desc> -->
 
 	<menu_desc>
 		<name>Cancel / Refund</name>
@@ -533,6 +504,15 @@
 		<description>Here we make new hotel booking hotel.</description>
 		<menu_icon>fa fa-ban</menu_icon>
 	</menu_desc>
+
+	<menu_desc>
+		<name>Package Tour</name>
+		<link>package_booking/cancel_and_refund/cancel_booking/cancel_booking.php</link>
+		<rank>7</rank>
+		<priority>2</priority>
+		<description>This is cancel package booking.</description>
+		<menu_icon>fa fa-angle-right</menu_icon>
+	</menu_desc>	
 
 	<menu_desc>
 		<name>Complete Group Tour</name>
@@ -553,20 +533,20 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name>Package Tour</name>
-		<link>package_booking/cancel_and_refund/cancel_booking/cancel_booking.php</link>
+		<name>Hotel</name>
+		<link>hotels/cancel_and_refund/index.php</link>
 		<rank>7</rank>
 		<priority>2</priority>
-		<description>This is cancel package booking.</description>
+		<description>Hotel booking cancel and refund</description>
 		<menu_icon>fa fa-angle-right</menu_icon>
-	</menu_desc>	
+	</menu_desc>
 
 	<menu_desc>
-		<name>Car Rental Refund </name>
-		<link>car_rental/refund/index.php</link>
+		<name>Flight</name>
+		<link>visa_passport_ticket/ticket/cancel_and_refund/index.php</link>
 		<rank>7</rank>
 		<priority>2</priority>
-		<description>Car Rental refund booking</description>
+		<description>Ticket cancel and refund</description>
 		<menu_icon>fa fa-angle-right</menu_icon>
 	</menu_desc>
 
@@ -579,21 +559,21 @@
 		<menu_icon>fa fa-angle-right</menu_icon>
 	</menu_desc>
 
-	<!-- <menu_desc>
-		<name>Passport</name>
-		<link>visa_passport_ticket/passport/cancel_and_refund/index.php</link>
+	<menu_desc>
+		<name>Car Rental Refund </name>
+		<link>car_rental/refund/index.php</link>
 		<rank>7</rank>
 		<priority>2</priority>
-		<description>Passport cancel and refund</description>
+		<description>Car Rental refund booking</description>
 		<menu_icon>fa fa-angle-right</menu_icon>
-	</menu_desc> -->
+	</menu_desc>
 
 	<menu_desc>
-		<name>Flight</name>
-		<link>visa_passport_ticket/ticket/cancel_and_refund/index.php</link>
+		<name>Activity</name>
+		<link>excursion/cancel_and_refund/index.php</link>
 		<rank>7</rank>
 		<priority>2</priority>
-		<description>Ticket cancel and refund</description>
+		<description>Activity cancel and refund</description>
 		<menu_icon>fa fa-angle-right</menu_icon>
 	</menu_desc>
 
@@ -607,29 +587,11 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name>Hotel</name>
-		<link>hotels/cancel_and_refund/index.php</link>
-		<rank>7</rank>
-		<priority>2</priority>
-		<description>Hotel booking cancel and refund</description>
-		<menu_icon>fa fa-angle-right</menu_icon>
-	</menu_desc>	
-
-	<menu_desc>
 		<name>Bus</name>
 		<link>bus_booking/refund/index.php</link>
 		<rank>7</rank>
 		<priority>2</priority>
 		<description>This bus booking refund dashboard.</description>
-		<menu_icon>fa fa-angle-right</menu_icon>
-	</menu_desc>
-
-	<menu_desc>
-		<name>Activity</name>
-		<link>excursion/cancel_and_refund/index.php</link>
-		<rank>7</rank>
-		<priority>2</priority>
-		<description>Activity cancel and refund</description>
 		<menu_icon>fa fa-angle-right</menu_icon>
 	</menu_desc>
 
@@ -661,7 +623,7 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name> Cancel / Refund </name>
+		<name> Purchase Refund </name>
 		<link>vendor/refund/index.php</link>
 		<rank>8</rank>
 		<priority>2</priority>
@@ -706,7 +668,7 @@
 	</menu_desc>
 
 	<menu_desc>
-		<name>User Activities</name>
+		<name>Daily Activities</name>
 		<link>daily_activity/index.php</link>
 		<rank>9</rank>
 		<priority>2</priority>

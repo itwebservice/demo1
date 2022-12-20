@@ -182,7 +182,7 @@ $total_footer_due = 0;
 $till_date = date('Y-m-d');
 $till_date1 = get_date_user($till_date);
 $count = 1;
-$q = "select * from vendor_estimate where 1 ";
+$q = "select * from vendor_estimate where 1 and delete_status='0' ";
 if($vendor_type != ''){
   $q .= " and vendor_type = '$vendor_type' ";
 }
@@ -204,7 +204,7 @@ while($row_supplier = mysqli_fetch_assoc($sq_supplier))
   $booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_due = 0;
   $due_date_arr = array();
 
-  $sq_pacakge = mysqlQuery("select * from vendor_estimate where vendor_type='$row_supplier[vendor_type]' and vendor_type_id ='$row_supplier[vendor_type_id]' ");
+  $sq_pacakge = mysqlQuery("select * from vendor_estimate where vendor_type='$row_supplier[vendor_type]' and vendor_type_id ='$row_supplier[vendor_type_id]' and delete_status='0' ");
   while($row_package = mysqli_fetch_assoc($sq_pacakge))
   {
     $booking_amt =0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;

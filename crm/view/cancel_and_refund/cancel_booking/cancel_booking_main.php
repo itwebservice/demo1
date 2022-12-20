@@ -9,7 +9,7 @@ include "../../../../model/model.php";
 					<select id="booking_id" name="booking_id" title="Select Booking ID" style="width:100%" onchange="cancel_booking_reflect()"> 
 						<option value="">Select Booking</option>
 						<?php 
-						$sq_hotel = mysqlQuery("select * from package_tour_booking_master order by booking_id desc");
+						$sq_hotel = mysqlQuery("select * from package_tour_booking_master where delete_status='0' order by booking_id desc");
 						while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
 							$date = $row_hotel['booking_date'];
 							$yr = explode("-", $date);
@@ -18,7 +18,7 @@ include "../../../../model/model.php";
 							?>
 							<option value="<?= $row_hotel['booking_id'] ?>"><?= get_package_booking_id($row_hotel['booking_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
 							<?php } ?>
-		      		</select>
+					</select>
 				</div>
 			</div>
 		</div> 

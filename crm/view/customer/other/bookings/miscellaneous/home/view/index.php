@@ -3,10 +3,10 @@ include "../../../../../../../model/model.php";
 
 $misc_id = $_POST['misc_id'];
 
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id' and delete_status='0'"));
 $date = $sq_visa_info['created_at'];
 $yr = explode("-", $date);
-$year =$yr[0];
+$year = $yr[0];
 
 $misc_service_arr = $sq_visa_info['service'];
 $misc_service_arr1 = json_decode($misc_service_arr, true);

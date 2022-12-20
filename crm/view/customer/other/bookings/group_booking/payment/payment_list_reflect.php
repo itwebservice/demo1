@@ -19,7 +19,7 @@ if($tourwise_traveler_id!=""){
         <th> Payment_Mode </th>
         <th> Bank_Name </th>
         <th> Cheque_No/ID </th>
-        <th class="text-right success">Payment_Amount </th>
+        <th class="success">Amount </th>
         <th> Receipt </th>
       </tr>
   </thead>
@@ -45,7 +45,49 @@ if($tourwise_traveler_id!=""){
 		$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as sum ,sum(credit_charges) as sumc from payment_master where clearance_status!='Cancelled' and tourwise_traveler_id='$row[tourwise_traveler_id]'"));
 		$total_sale = $sq_booking['net_total']+$sq_pay['sumc'];
 		$total_pay_amt = $sq_pay['sum']+$sq_pay['sumc'];
-		$outstanding =  $total_sale - $total_pay_amt;
+		$pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_booking[traveler_group_id]'"));
+		$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_booking[traveler_group_id]' and status='Cancel'"));    
+		
+		if($sq_booking['tour_group_status'] == 'Cancel'){
+			//Group Tour cancel
+			$cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+			if($cancel_tour_count2 >= '1'){
+				$cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+				$cancel_amount = $cancel_tour['cancel_amount'];
+			}
+			else{ $cancel_amount = 0; }
+		}
+		else{
+			// Group booking cancel
+			$cancel_esti_count1=mysqli_num_rows(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+			if($pass_count==$cancelpass_count){
+				$cancel_esti1=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$sq_booking[id]'"));
+				$cancel_amount = $cancel_esti1['cancel_amount'];
+			}
+			else{ $cancel_amount = 0; }
+		}
+		
+		$cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
+		if($sq_booking['tour_group_status'] == 'Cancel'){
+			if($cancel_amount > $total_pay_amt){
+				$balance_amount = $cancel_amount - $total_pay_amt;
+			}
+			else{
+				$balance_amount = 0;
+			}
+		}else{
+			if($pass_count==$cancelpass_count){
+				if($cancel_amount > $total_pay_amt){
+					$balance_amount = $cancel_amount - $total_pay_amt;
+				}
+				else{
+					$balance_amount = 0;
+				}
+			}
+			else{
+				$balance_amount = $total_sale - $total_pay_amt;
+			}
+		}
 
     $paid_amount = currency_conversion($currency,$sq_booking['currency_code'],$row['amount']+$row['credit_charges']);
     $sq_paid_amount_string = explode(' ',$paid_amount);
@@ -60,6 +102,8 @@ if($tourwise_traveler_id!=""){
     }
     elseif($row['clearance_status']=="Cancelled"){ $bg='danger';
       $sq_cancel_amount = $row['amount']+$row['credit_charges'];
+    }
+    elseif($row['clearance_status']=="Cancelled"){ $bg='success';
     }else{
       $bg = '';
     }
@@ -101,7 +145,7 @@ if($tourwise_traveler_id!=""){
 
     $receipt_type = ($row['payment_for']=='Travelling') ? "Travel Receipt" : "Tour Receipt";
 
-    $url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&tour=$tour&table_name=payment_master&customer_field=tourwise_traveler_id&in_customer_id=$row[tourwise_traveler_id]&currency_code=$sq_booking[currency_code]";
+    $url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$balance_amount&tour=$tour&table_name=payment_master&customer_field=tourwise_traveler_id&in_customer_id=$row[tourwise_traveler_id]&currency_code=$sq_booking[currency_code]&status=$row[status]";
     ?>   
       <tr class="<?= $bg;?>">
         <td><?= ++$count ?></td>
@@ -110,7 +154,7 @@ if($tourwise_traveler_id!=""){
         <td> <?php echo $row['payment_mode'] ?> </td>
         <td> <?php echo $row['bank_name'] ?> </td>
         <td> <?php echo $row['transaction_id'] ?> </td>
-        <td class="text-right success"> <?php echo $paid_amount ?> </td>
+        <td class="success"> <?php echo $paid_amount ?> </td>
         <td>
             <a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
         </td>
@@ -131,7 +175,6 @@ if($tourwise_traveler_id!=""){
 
 </div> </div> </div>
 <script type="text/javascript">
-  
 $('#group_table2').dataTable({
   "pagingType": "full_numbers"
 });

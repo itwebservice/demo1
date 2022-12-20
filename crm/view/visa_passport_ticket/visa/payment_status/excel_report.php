@@ -98,7 +98,7 @@ else{
 	$cust_name = "";
 }
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$visa_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$visa_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year = $yr[0];
@@ -129,7 +129,7 @@ if($branch_id != '') {
 $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('B2', 'Report Name')
             ->setCellValue('C2', 'Visa Summary')
-            ->setCellValue('B3', 'Visa ID')
+            ->setCellValue('B3', 'Booking ID')
             ->setCellValue('C3', $invoice_id)
             ->setCellValue('B4', 'Customer')
             ->setCellValue('C4', $cust_name)
@@ -168,7 +168,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
-        $query = "select * from visa_master where 1 ";
+        $query = "select * from visa_master where 1 and delete_status='0' ";
         if($customer_id!=""){
             $query .= " and customer_id='$customer_id'";
         }
@@ -220,7 +220,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
 
         $row_count++;
 
-        $query = "select * from visa_master where 1 ";
+        $query = "select * from visa_master where 1 and delete_status='0' ";
         if($customer_id!=""){
             $query .= " and customer_id='$customer_id'";
         }
@@ -281,7 +281,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
 
             $sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
             $branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-            $sq_total_member = mysqli_num_rows(mysqlQuery("select visa_id from visa_master_entries where visa_id = '$row_visa[visa_id]' AND status!='Cancel'"));
+            $sq_total_member = mysqli_num_rows(mysqlQuery("select visa_id from visa_master_entries where visa_id = '$row_visa[visa_id]'"));
 
             $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from visa_payment_master where visa_id='$row_visa[visa_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -326,14 +326,14 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
             $purchase_amt = 0;
             $i=0;
             $p_due_date = '';
-            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Visa Booking' and estimate_type_id='$row_visa[visa_id]'"));
+            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Visa Booking' and estimate_type_id='$row_visa[visa_id]' and delete_status='0'"));
             if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-            $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Visa Booking' and estimate_type_id='$row_visa[visa_id]'");
+            $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Visa Booking' and estimate_type_id='$row_visa[visa_id]' and delete_status='0'");
             while($row_purchase = mysqli_fetch_assoc($sq_purchase)){     
                 $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
                 $total_purchase = $total_purchase + $purchase_amt;
             }
-            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Visa Booking' and estimate_type_id='$row_visa[visa_id]'"));       
+            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Visa Booking' and estimate_type_id='$row_visa[visa_id]' and delete_status='0'"));       
             $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
             if($vendor_name == ''){ $vendor_name1 = 'NA';  }
             else{ $vendor_name1 = $vendor_name; }     

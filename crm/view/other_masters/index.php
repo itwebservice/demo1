@@ -11,7 +11,7 @@ require_once('../layouts/admin_header.php');
     </label>  
     <label for="rd_state" class="app_dual_button mg_bt_10">
         <input type="radio" id="rd_state" name="rd_master" onchange="master_content_reflect()">
-        &nbsp;State
+        &nbsp;State/Country
     </label>    
     <label for="rd_airport" class="app_dual_button mg_bt_10">
         <input type="radio" id="rd_airport" name="rd_master" onchange="master_content_reflect()">
@@ -23,7 +23,7 @@ require_once('../layouts/admin_header.php');
     </label>
     <label for="rd_references" class="app_dual_button mg_bt_10">
         <input type="radio" id="rd_references" name="rd_master" onchange="master_content_reflect()">
-        &nbsp;References
+        &nbsp;Reference
     </label>
     <label for="rd_roomc" class="app_dual_button mg_bt_10">
         <input type="radio" id="rd_roomc" name="rd_master" onchange="master_content_reflect()">

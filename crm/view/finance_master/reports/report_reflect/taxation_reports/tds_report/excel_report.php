@@ -199,7 +199,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyF
 $row_count++;
 $count = 1;
  //Hotel
- $query = "select * from hotel_booking_master where 1 ";
+ $query = "select * from hotel_booking_master where 1 and delete_status='0' ";
  if($from_date != '' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
@@ -245,7 +245,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 
         ->setCellValue('E'.$row_count, $cust_name)
 
-        ->setCellValue('F'.$row_count, ($sq_cust['pan_no'] == '') ? 'NA' : $sq_cust['pan_no'])
+        ->setCellValue('F'.$row_count, ($sq_cust['pan_no'] == '') ? 'NA' : strtoupper($sq_cust['pan_no']))
 
         ->setCellValue('G'.$row_count, number_format($tds_on_amount,2))
 
@@ -267,7 +267,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 
 //Flight
 $tds_on_amount = 0;
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($from_date != '' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
@@ -309,7 +309,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
       ->setCellValue('C'.$row_count, get_ticket_booking_id($row_query['ticket_id'],$year))
       ->setCellValue('D'.$row_count, get_date_user($row_query['created_at']))
       ->setCellValue('E'.$row_count, $cust_name)
-      ->setCellValue('F'.$row_count, ($sq_cust['pan_no'] == '') ? 'NA' : $sq_cust['pan_no'])
+      ->setCellValue('F'.$row_count, ($sq_cust['pan_no'] == '') ? 'NA' : strtoupper($sq_cust['pan_no']))
       ->setCellValue('G'.$row_count, number_format($tds_on_amount,2))
       ->setCellValue('H'.$row_count, number_format($row_query['tds'],2));
 
@@ -320,7 +320,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
   }
 }
 //Other Income
-$query = "select * from other_income_master where 1 ";
+$query = "select * from other_income_master where 1 and delete_status='0' ";
 if($from_date != '' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);

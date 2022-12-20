@@ -30,9 +30,25 @@ while($row=mysqli_fetch_assoc($sq))
     $count++;
     $sq_enq = mysqli_fetch_assoc(mysqlQuery("select * from enquiry_master where enquiry_id='$row[enquiry_id]'"));
     $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$sq_enq[assigned_emp_id]'"));
+    $enquiry_id = $row['enquiry_id'];
+    $date = $sq_enq['enquiry_date'];
+    $yr = explode("-", $date);
+    $year =$yr[0];
+
+    $followup_status = $row['followup_status'];
+    if($followup_status == 'Converted'){
+      $bg = 'success';
+    }
+    elseif($followup_status == 'Dropped'){
+      $bg = 'danger';
+    }
+    else{
+      $bg = '';
+    }
 
     $temp_arr = array( "data" => array(
       (int)($count),
+      get_enquiry_id($enquiry_id,$year),
       $sq_enq['name'],
       $sq_emp['first_name'].' '.$sq_emp['last_name'],
       get_datetime_user($row['followup_date']),

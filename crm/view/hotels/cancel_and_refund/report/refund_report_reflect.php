@@ -22,7 +22,7 @@ if($from_date!='' && $to_date!=''){
 		<tr class="table-heading-row">
 			<th>S_No.</th>
 			<th>Booking_ID</th>
-			<th>Passenger_name</th>
+			<th>Refund_TO</th>
 			<th>Refund_ID</th>
 			<th>Refund_Date</th>
 			<th>Mode</th>
@@ -43,9 +43,13 @@ if($from_date!='' && $to_date!=''){
 			while($row_refund_entry = mysqli_fetch_assoc($sq_refund_entries)){
 				$sq_entry_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_entries where entry_id='$row_refund_entry[entry_id]'"));
 				$sq_hotel_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_refund_entry[entry_id]'"));
-				$hotel_name .= $sq_hotel_info['first_name'].' '.$sq_hotel_info['last_name'];
+				if($sq_hotel_info['type']=='Corporate'||$sq_hotel_info['type'] == 'B2B'){
+					$hotel_name .= $sq_hotel_info['company_name'];
+				}else{
+					$hotel_name .= $sq_hotel_info['first_name'].' '.$sq_hotel_info['last_name'];
+				}
 			}
-			$sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$row_refund[booking_id]'"));
+			$sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$row_refund[booking_id]' and delete_status='0'"));
 			$date = $sq_entry_date['created_at'];
 			$yr = explode("-", $date);
 			$year =$yr[0];
@@ -77,7 +81,7 @@ if($from_date!='' && $to_date!=''){
 				<td><?= get_hotel_booking_id($row_refund['booking_id'],$year); ?></td>
 				<td><?= $hotel_name ?></td>
 				<td><?= get_hotel_booking_refund_id($row_refund['refund_id'],$year1); ?></td>
-				<td><?= date('d/m/Y', strtotime($row_refund['refund_date'])) ?></td>
+				<td><?= date('d-m-Y', strtotime($row_refund['refund_date'])) ?></td>
 				<td><?= $row_refund['refund_mode'] ?></td>
 				<td><?= $row_refund['bank_name'] ?></td>
 				<td><?= $row_refund['transaction_id'] ?></td>
@@ -90,7 +94,7 @@ if($from_date!='' && $to_date!=''){
 	<tfoot>
 		<tr class="active">
 			<th class="text-right info" colspan="3">Refund : <?= number_format((($total_refund=="") ? 0 : $total_refund), 2); ?></th>
-			<th class="text-right warning" colspan="2">Pending : <?= number_format((($sq_pending_amount=="") ? 0 : $sq_pending_amount), 2); ?></th>
+			<th class="text-right warning" colspan="2">Pending clearence: <?= number_format((($sq_pending_amount=="") ? 0 : $sq_pending_amount), 2); ?></th>
 			<th class="text-right danger" colspan="2">Cancelled : <?= number_format((($sq_cancel_amount=="") ? 0 : $sq_cancel_amount), 2); ?></th>
 			<th class="text-right success" colspan="2">Total_Refund : <?= number_format(($total_refund - $sq_pending_amount - $sq_cancel_amount), 2); ?></th>
 		</tr>

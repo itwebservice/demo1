@@ -5,17 +5,11 @@ class enquiry_master{
 function enquiry_master_save()
 {
 
- $enq_csv_dir = $_POST['enq_csv_dir'];
+    $enq_csv_dir = $_POST['enq_csv_dir'];
     $flag = true;
 
     $enq_csv_dir = explode('uploads', $enq_csv_dir);
-    //$enq_csv_dir = BASE_URL.'uploads'.$enq_csv_dir[1];
     $enq_csv_dir = CSV_READ_URL.'uploads'.$enq_csv_dir[1];
-
-
-
-
-
 
     begin_t();
 

@@ -51,10 +51,10 @@ function tour_group_dynamic_reflect()
   var tour_id = $('#cmb_tour_name').val();
   var booking_id = $('#cmb_traveler_group_id').val();
   var group_id = $('#cmb_tour_group').val();
- 
-    $.post('reports_content/group_tour/booking_tickets/booking_ticket_report_filter.php', { tour_id : tour_id, booking_id : booking_id, group_id : group_id}, function(data){
-      pagination_load(data, column, true, false, 20, 'gtc_tour_report');
-    });
+  $("#cmb_traveler_group_id").html('<option value="">Select Booking ID</option>');
+  $.post('reports_content/group_tour/booking_tickets/booking_ticket_report_filter.php', { tour_id : tour_id, booking_id : booking_id, group_id : group_id}, function(data){
+    pagination_load(data, column, true, false, 20, 'gtc_tour_report',true);
+  });
 }
 tour_group_dynamic_reflect();
 

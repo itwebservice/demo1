@@ -43,13 +43,13 @@ include "../../../model/model.php";
             </div>            
             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                 <input type="text" name="total_fee" id="total_fee" class="amount_feild_highlight text-right" placeholder="*Net Total" title="Net Total" readonly>
-             </div>                        
+            </div>                        
             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
               <input type="text" name="booking_date" id="booking_date" placeholder="Receipt Date" value="<?= date('d-m-Y') ?>" title="Receipt Date" onchange="check_valid_date(this.id)">
             </div>          
             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                 <input type="text" name="cust_pan_no" id="cust_pan_no" onchange="validate_specialChar(this.id)" placeholder="PAN No/TAN No" title="PAN No/TAN No" style="text-transform: uppercase;">
-             </div>    
+            </div>    
             <div class="col-md-12 col-sm-6 col-xs-12 mg_bt_10">
               <textarea name="particular" id="particular" rows="1" placeholder="*Narration" title="Narration"></textarea>
             </div>
@@ -59,10 +59,10 @@ include "../../../model/model.php";
         <legend>Receipt Details</legend>          
             <div class="row">
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="payment_amount" name="payment_amount" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','transaction_id','bank_name','bank_id')">
+                <input type="text" id="payment_date" name="payment_date" placeholder="*Date" title="Date" value="<?= date('d-m-Y')?>" onchange="check_valid_date(this.id)">
               </div>
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="payment_date" name="payment_date" placeholder="*Date" title="Date" value="<?= date('d-m-Y')?>" onchange="check_valid_date(this.id)">
+                <input type="text" id="payment_amount" name="payment_amount" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','transaction_id','bank_name','bank_id')">
               </div>
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                 <select name="payment_mode" id="payment_mode" class="form-control" title="Mode" onchange="payment_master_toggles(this.id, 'bank_name', 'transaction_id', 'bank_id')">
@@ -81,9 +81,9 @@ include "../../../model/model.php";
                 </select>
               </div>
             </div>
-               <div class="col-md-12 col-sm-9 no-pad mg_bt_20">
-                 <span style="color: red;line-height: 35px;" class="note" data-original-title="" title="">Note : Please make sure Date, Amount,mode, Creditor bank entered properly.</span>
-               </div>   
+              <div class="col-md-12 col-sm-9 no-pad mg_bt_20">
+                <span style="color: red;line-height: 35px;" class="note" data-original-title="" title="">Note : Please make sure Date, Amount,mode, Creditor bank entered properly.</span>
+              </div>   
         </div>
         <div class="row text-center mg_tp_20">
           <div class="col-xs-12">
@@ -122,16 +122,16 @@ function total_fun()
 
 $('#frm_save').validate({
   rules:{
-          income_type_id : { required: true },
-          r_from : { required: true },
-          sub_total : { required: true },
-          payment_amount : { required: true, number: true },
-          payment_date : { required: true },
-          payment_mode :{ required : true },
-          bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-          transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-          bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-          particular : { required: true },
+    income_type_id : { required: true },
+    r_from : { required: true },
+    sub_total : { required: true },
+    payment_amount : { required: true, number: true },
+    payment_date : { required: true },
+    payment_mode :{ required : true },
+    bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
+    transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+    bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+    particular : { required: true },
   },
   submitHandler:function(form){
 
@@ -159,7 +159,7 @@ $('#frm_save').validate({
       $('#income_save').prop('disabled',false);
       return false;
     }
-    if(payment_mode=='Credit Card' || payment_mode=='Credit Note'){
+    if(payment_mode=='Credit Card' || payment_mode=='Credit Note' || payment_mode=='Advance'){
       error_msg_alert("Select other payment mode!");
       $('#income_save').prop('disabled',false);
       return false;

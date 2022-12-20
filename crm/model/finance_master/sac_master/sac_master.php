@@ -5,12 +5,17 @@ public function sac_master_save()
 {
 	$service_name = $_POST['service_name'];
 	$hsn_sac_code = $_POST['hsn_sac_code'];
-	 
+
 	$created_at = date('Y-m-d H:i');
 
 	$sq_count = mysqli_num_rows(mysqlQuery("select service_name from sac_master where service_name='$service_name'"));
 	if($sq_count>0){
-		echo "error--".$service_name." already exists!";
+		echo "error--".$service_name." service already exists!";
+		exit;
+	} 
+	$sq_count = mysqli_num_rows(mysqlQuery("select service_name from sac_master where hsn_sac_code='$hsn_sac_code'"));
+	if($sq_count>0){
+		echo "error--".$hsn_sac_code." code already exists!";
 		exit;
 	} 
 
@@ -22,12 +27,12 @@ public function sac_master_save()
 	$sq_bank = mysqlQuery("insert into sac_master (sac_id, service_name, hsn_sac_code, created_at) values ('$sac_id', '$service_name', '$hsn_sac_code','$created_at')");
 	if($sq_bank){
 		commit_t();
-		echo "SAC has been successfully saved.";
+		echo "SAC Code has been successfully saved.";
 		exit;
 	}
 	else{
 		rollback_t();
-		echo "error--Sorry, SAC not saved!";
+		echo "error--Sorry, SAC code not saved!";
 		exit;
 	}
 
@@ -40,7 +45,12 @@ public function sac_master_update()
 	$hsn_sac_code = $_POST['hsn_sac_code'];
 	$sq_count = mysqli_num_rows(mysqlQuery("select * from sac_master where service_name='$service_name' and sac_id!='$sac_id'"));
 	if($sq_count>0){
-		echo "error--".$service_name." already exists!";
+		echo "error--".$service_name." service already exists!";
+		exit;
+	}
+	$sq_count = mysqli_num_rows(mysqlQuery("select service_name from sac_master where hsn_sac_code='$hsn_sac_code' and sac_id!='$sac_id'"));
+	if($sq_count>0){
+		echo "error--".$hsn_sac_code." code already exists!";
 		exit;
 	}
 
@@ -49,12 +59,12 @@ public function sac_master_update()
 	$sq_bank = mysqlQuery("update sac_master set service_name='$service_name', hsn_sac_code='$hsn_sac_code' where sac_id='$sac_id'");
 	if($sq_bank){
 		commit_t();
-		echo "SAC has been successfully updated.";
+		echo "SAC Code has been successfully updated.";
 		exit;
 	}
 	else{
 		rollback_t();
-		echo "error--Sorry, SAC not updated!";
+		echo "error--Sorry, SAC Code not updated!";
 		exit;
 	}
 

@@ -28,25 +28,30 @@ $emp_id = $_SESSION['emp_id'];
 			<select name="ticket_id_filter" id="ticket_id_filter" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
 		        <?php 
-		        $query = "select * from ticket_master where 1 ";
+		        $query = "select * from ticket_master where 1 and delete_status='0' ";
 		        include "../../../../model/app_settings/branchwise_filteration.php";
 		        $query .= " order by ticket_id desc ";
 		        $sq_ticket = mysqlQuery($query);
 		        while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
 		        	$date = $row_ticket['created_at'];
-                      $yr = explode("-", $date);
-                      $year =$yr[0];
-		          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
+					$yr = explode("-", $date);
+					$year =$yr[0];
+		          	$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
+					if($sq_customer['type'] == 'Corporate' || $sq_customer['type']=='B2B'){
+						$cust_name = $sq_customer['company_name'];
+					}else{
+						$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+					}
 		          ?>
-		          <option value="<?= $row_ticket['ticket_id'] ?>"><?= get_ticket_booking_id($row_ticket['ticket_id'],$year).' : '.$sq_customer['first_name'].' '.$sq_customer['last_name'] ?></option>
+		          <option value="<?= $row_ticket['ticket_id'] ?>"><?= get_ticket_booking_id($row_ticket['ticket_id'],$year).' : '.$cust_name ?></option>
 		          <?php
 		        }
 		        ?>
 		    </select>
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-			<input type="text" id="from_date" name="from_date" class="form-control" placeholder="From Date" title="From Date" onchange="validate_validDate('from_date','to_date');">
+			<input type="text" id="from_date" name="from_date" class="form-control" placeholder="From Date" title="From Date" onchange="get_to_date('from_date','to_date');">
 		</div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<input type="text" id="to_date" name="to_date" class="form-control" placeholder="To Date" title="To Date" onchange="validate_validDate('from_date','to_date');">
@@ -90,7 +95,6 @@ $emp_id = $_SESSION['emp_id'];
 	{ title : "EMAIL_ID"},
 	{ title : "Total_Pax"},
 	{ title : "Travel_type"},
-	{ title : "Trip_type"},
 	{ title : "Booking_Date"},
 	{ title : "View"},
 	{ title : "Basic_amount&nbsp;&nbsp;&nbsp;", className : "info"},
@@ -104,6 +108,7 @@ $emp_id = $_SESSION['emp_id'];
 	{ title : "Total", className:"info text-right"},
 	{ title : "Paid", className:"success text-right"},
 	{ title : "View"},
+	{ title : "Sales_Return"},
 	{ title : "outstanding_balance", className:"warning text-right"},
 	{ title : "due_date"},
 	{ title : "Purchase"},
@@ -128,7 +133,7 @@ $emp_id = $_SESSION['emp_id'];
 		var branch_status_r = $('#branch_status_r').val();
 		$.post(base_url+'view/visa_passport_ticket/ticket/payment_status/list_reflect.php', { customer_id : customer_id, ticket_id_filter : ticket_id_filter,from_date : from_date, to_date : to_date, cust_type : cust_type, company_name : company_name,booker_id:booker_id,branch_id : branch_id, branch_status : branch_status_r }, function(data){
 			//$('#div_list_reflect').html(data);
-			pagination_load(data, column, true, true, 20, 'flight_tour_report');
+			pagination_load(data, column, true, true, 20, 'flight_tour_report',true);
 			$('.loader').remove();
 		});
 	}
@@ -154,7 +159,7 @@ $emp_id = $_SESSION['emp_id'];
 		var base_url = $('#base_url').val();
 		var branch_status_r = $('#branch_status_r').val();
 	  	$.post(base_url+'view/visa_passport_ticket/ticket/home/company_name_load.php', { cust_type : cust_type, branch_status : branch_status_r }, function(data){
-	  		if(cust_type=='Corporate'){
+	  		if(cust_type=='Corporate'||cust_type=='B2B'){
 		  		$('#company_div').addClass('company_class');	
 		    }
 		    else

@@ -21,7 +21,7 @@ if($booking_id!=""){
         <th>Refund_Date</th>  
         <th>Bank_Name</th>  
         <th>Refund_Mode</th>
-        <th class="text-right success">Amount</th>  
+        <th class="success">Amount</th>  
     </tr>
     </thead>
     <tbody>
@@ -41,7 +41,7 @@ if($booking_id!=""){
     while($row_refund = mysqli_fetch_assoc($sq_refund))
     {       
         $count++;
-        $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_refund[booking_id]'"));
+        $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_refund[booking_id]' and delete_status='0'"));
         $date = $sq_booking['booking_date'];
         $yr = explode("-", $date);
         $year =$yr[0];
@@ -86,7 +86,7 @@ if($booking_id!=""){
         <td><?php echo date('d-m-Y', strtotime($row_refund['refund_date'])); ?></td>
         <td><?= $row_refund['bank_name'] ?></td>
         <td><?php echo $row_refund['refund_mode'] ?></td>
-        <td class="text-right success"><?php echo $total_refund; ?></td>
+        <td class="success"><?php echo $total_refund; ?></td>
     </tr>
     <?php    
     }    

@@ -25,7 +25,9 @@ function addDyn(t) {
         })
     }), $("#" + t).find(".app_select").each(function() {
         $(this).select2()
-    })
+    });
+    var e = $("#" + t).find(".dynform-item:last").removeAttr("style");
+    console.log(e);
 }
 
 function deleteDyn(t) {

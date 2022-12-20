@@ -27,7 +27,7 @@ public function cancel_traveler_booking($tourwise_id, $traveler_id_arr, $first_n
     //Cancelation sms send
     $this->traveler_cancelation_sms_send($tourwise_id);
 
-    echo "Group Booking Cancellation is successfully done.";
+    echo "Group Tour booking has been successfully cancelled.";
     exit;
   }
   else{
@@ -41,7 +41,7 @@ public function cancel_traveler_booking($tourwise_id, $traveler_id_arr, $first_n
 
 ///////////////////////////////////////Traveler Cancelation mail send start/////////////////////////////////////////////////////////////////////////////////////////
 public function traveler_cancelation_mail_send($tourwise_id, $traveler_id_arr){
-  $sq_tourwise = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+  $sq_tourwise = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
   $date = $sq_tourwise['form_date'];
   $yr = explode("-", $date);
   $year =$yr[0];
@@ -98,7 +98,7 @@ public function traveler_cancelation_mail_send($tourwise_id, $traveler_id_arr){
 ///////////////////////////////////////Traveler Cancelation sms send start/////////////////////////////////////////////////////////////////////////////////////////
 public function traveler_cancelation_sms_send($tourwise_id)
 {
-  $sq_tourwise = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+  $sq_tourwise = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
   $sq_personal_info = mysqli_fetch_assoc(mysqlQuery("select * from traveler_personal_info where tourwise_traveler_id='$tourwise_id'"));
   $sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tour_master where tour_id='$sq_tourwise[tour_id]'"));
   $sq_tour_group = mysqli_fetch_assoc(mysqlQuery("select * from tour_groups where group_id='$sq_tourwise[tour_group_id]'"));
@@ -130,9 +130,6 @@ public function refund_canceled_traveler_save(){
   $refund_date = date('Y-m-d', strtotime($refund_date));
   $created_at = date('Y-m-d');
 
-  $bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $total_refund);
-  if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; }  
-
   $timestamp_count = mysqli_num_rows( mysqlQuery("select refund_id from refund_traveler_cancelation where unique_timestamp='$unique_timestamp'") );
   if($timestamp_count>0)
   {
@@ -153,7 +150,7 @@ public function refund_canceled_traveler_save(){
   $sq_refund = mysqlQuery("insert into refund_traveler_cancelation (refund_id, tourwise_traveler_id, financial_year_id, total_refund, refund_mode, refund_date, transaction_id, bank_name, bank_id, clearance_status, created_at, unique_timestamp) values ('$max_id', '$tourwise_id', '$financial_year_id', '$total_refund', '$refund_mode', '$refund_date', '$transaction_id', '$bank_name', '$bank_id', '$clearance_status', '$created_at', '$unique_timestamp' )");
 
   if($refund_mode == 'Credit Note'){
-    $sq_group_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+    $sq_group_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
     $customer_id = $sq_group_info['customer_id'];
         
     $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(id) as max from credit_note_master"));
@@ -221,7 +218,7 @@ public function finance_save($refund_id){
 
   global $transaction_master;
 
-  $sq_group_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+  $sq_group_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
   $customer_id = $sq_group_info['customer_id'];
 
     //Getting cash/Bank Ledger
@@ -294,7 +291,7 @@ public function bank_cash_book_save($refund_id){
   $yr = explode("-", $refund_date);
   $year =$yr[0];
 
-  $sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+  $sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
   $customer_id = $sq_package_info['customer_id'];
   $year1 = explode("-", $sq_package_info['form_date']);
   $yr1 = $year1[0];
@@ -335,7 +332,7 @@ public function bank_cash_book_save($refund_id){
 public function refund_mail_send($tourwise_id,$total_refund,$refund_date,$refund_mode){
   global $currency_logo,$encrypt_decrypt,$secret_key;
 
-  $sq_sq_train_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+  $sq_sq_train_info = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
   $date = $sq_sq_train_info['form_date'];
   $yr = explode("-", $date);
   $year = $yr[0];
@@ -386,7 +383,7 @@ function refund_sms_notification_send($tourwise_id)
   $sq_personal_info = mysqli_fetch_assoc(mysqlQuery("select mobile_no from traveler_personal_info where tourwise_traveler_id='$tourwise_id'"));
   $mobile_no = $sq_personal_info['mobile_no'];
 
-  $message = "We are providing the refunds considering your cancellation request of the genuine reason. Pls, contact us for the future journey.";
+  $message = "We are providing the refunds considering your cancellation request of the genuine reason. Please, contact us for the future journey.";
   global $model;
   $model->send_message($mobile_no, $message);
 }

@@ -86,7 +86,7 @@ $payment_mode = $_GET['payment_mode'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id = '$exc_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id = '$exc_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];

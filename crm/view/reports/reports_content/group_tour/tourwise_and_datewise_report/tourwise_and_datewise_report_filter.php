@@ -10,7 +10,7 @@ $traveler_group_id = $_GET['traveler_group_id'];
 
 $status = true;
 
-$query = "select * from tourwise_traveler_details where ";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 if($tour_id!="")
 {
 	$query = $query." tour_id='$tour_id' ";

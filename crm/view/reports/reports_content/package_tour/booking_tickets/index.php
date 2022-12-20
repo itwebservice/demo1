@@ -36,7 +36,7 @@ $branch_status = $sq['branch_status'];
 	function ticket_reflect(){
 		var booking_id = $('#booking_id_filter3').val();
 		$.post('reports_content/package_tour/booking_tickets/booking_ticket_report_filter.php', {booking_id : booking_id}, function(data){
-			pagination_load(data, column, true, false, 20, 'gtc_tour_report');
+			pagination_load(data, column, true, false, 20, 'gtc_tour_report',true);
 	});
 	}
 	ticket_reflect();

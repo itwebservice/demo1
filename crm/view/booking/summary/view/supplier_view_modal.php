@@ -27,7 +27,7 @@ $id = $_POST['id'];
                     <tbody>
                       <?php 
                       $count = 0;
-                      $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE estimate_type LIKE 'Group Tour' AND estimate_type_id = '$id'");
+                      $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE status!='Cancel' and estimate_type LIKE  'Group Tour' AND estimate_type_id = '$id' and delete_status='0'");
 
                       while($row_entry = mysqli_fetch_assoc($sq_query))
                       {

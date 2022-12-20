@@ -86,7 +86,7 @@ $payment_mode = $_GET['payment_mode'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -222,38 +222,38 @@ $sq_ticket_payment = mysqlQuery($query);
 
 while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
     if($row_ticket_payment['payment_amount'] != '0'){
-    $count++;
 
-    $sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]'"));
-    $ticket_id=$sq_ticket_info['ticket_id'];
-    $date = $sq_ticket_info['created_at'];
-    $yr = explode("-", $date);
-    $year =$yr[0];
-    $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket_info[customer_id]'"));
-    if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type']=='B2B'){
-        $customer_name = $sq_customer_info['company_name'];
-    }else{
-        $customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
-    }
-    if($row_ticket_payment['clearance_status']=="Pending"){ 
-        $sq_pending_amount = $sq_pending_amount + $row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'];
-    }
-    else if($row_ticket_payment['clearance_status']=="Cancelled"){ 
-        $sq_cancel_amount = $sq_cancel_amount + $row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'];
-    }
-    $sq_paid_amount = $sq_paid_amount + $row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'];
-            
+        $count++;
 
-	$objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, $count)
-        ->setCellValue('C'.$row_count, get_ticket_booking_id($ticket_id,$year))
-        ->setCellValue('D'.$row_count, $customer_name)
-        ->setCellValue('E'.$row_count,date('d-m-Y', strtotime($row_ticket_payment['payment_date'])))
-        ->setCellValue('F'.$row_count, $row_ticket_payment['payment_mode'])
-        ->setCellValue('G'.$row_count, number_format($row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'],2));
+        $sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]'"));
+        $ticket_id=$sq_ticket_info['ticket_id'];
+        $date = $sq_ticket_info['created_at'];
+        $yr = explode("-", $date);
+        $year = $yr[0];
+        $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket_info[customer_id]'"));
+        if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type']=='B2B'){
+            $customer_name = $sq_customer_info['company_name'];
+        }else{
+            $customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
+        }
+        if($row_ticket_payment['clearance_status']=="Pending"){ 
+            $sq_pending_amount = $sq_pending_amount + $row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'];
+        }
+        else if($row_ticket_payment['clearance_status']=="Cancelled"){ 
+            $sq_cancel_amount = $sq_cancel_amount + $row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'];
+        }
+        $sq_paid_amount = $sq_paid_amount + $row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'];
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+        $objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('B'.$row_count, $count)
+            ->setCellValue('C'.$row_count, get_ticket_booking_id($ticket_id,$year))
+            ->setCellValue('D'.$row_count, $customer_name)
+            ->setCellValue('E'.$row_count,date('d-m-Y', strtotime($row_ticket_payment['payment_date'])))
+            ->setCellValue('F'.$row_count, $row_ticket_payment['payment_mode'])
+            ->setCellValue('G'.$row_count, number_format($row_ticket_payment['payment_amount']+$row_ticket_payment['credit_charges'],2));
+
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($content_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
 
 		$row_count++;
 
@@ -265,10 +265,10 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
         ->setCellValue('F'.$row_count, 'Cancellation Charges : '.number_format($sq_cancel_amount,2))
         ->setCellValue('G'.$row_count, 'Payment Amount :'.number_format(($sq_paid_amount - $sq_pending_amount - $sq_cancel_amount),2));
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);
 
-}
+    }
 	
 }
 //////////////////////////****************Content End**************////////////////////////////////

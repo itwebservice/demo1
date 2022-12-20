@@ -1,22 +1,22 @@
-<?php 
+<?php
 include_once('../../model/model.php');
 header("Content-type: text/css");
 ?>
 
-
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 /*******style_class********/
 body{
-    margin:0;
-    padding:0;
-    background: #ffffff;
-    font-family: 'Roboto', sans-serif;
-    font-size: 13px;
+margin:0;
+padding:0;
+background: #ffffff;
+font-family: 'Poppins', sans-serif !important;
+font-size: 13px;
 }
 table.table{
-    padding: 0 !important;
+padding: 0 !important;
 }
 table th, .table td {
-    padding-left: 8px !important;
+padding-left: 8px !important;
 }
 
 
@@ -32,9 +32,9 @@ li{line-height:24px;}
 hr{float:left;width: 100%;}
 
 .border_block{
-	border: 1px solid <?= $theme_color ?>;
-    padding: 10px;
-    border-radius: 5px;
+border: 1px solid <?= $theme_color ?>;
+padding: 10px;
+border-radius: 5px;
 }
 .border_rt{border-right: 1px solid <?= $theme_color ?>;}
 .border_lt{border-left: 1px solid <?= $theme_color ?>; padding-left:10px;}
@@ -47,90 +47,79 @@ hr{float:left;width: 100%;}
 
 /*******page_style********/
 .inv_rece_header_logo {
-    max-width: 210px;
+max-width: 210px;
 }
 .inv_rece_header_bottom ul li h3.title {
-    margin-bottom: 5px !important;
+margin-bottom: 5px !important;
 }
 .inv_rece_header_bottom .inv_rece_header_right ul li span {
-    min-width: 130px;
-    float: left;
+min-width: 130px;
+float: left;
 }
 section.print_sec.inv_rece_mainbody table tr th, section.print_sec.inv_rece_mainbody table tr td {
-    padding-left: 5 !important;
-}
-.inv_rece_footer_signature {
-    position: relative;
-}
-.signature_block {
-    padding-top: 60px;
-}
-.signature_block_r{
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
+padding-left: 5 !important;
 }
 
 .header_seprator{position:relative;}
 .header_seprator:after {
-    position: absolute;
-    content: '';
-    width: 1px;
-    height: 100%;
-    top: 0;
-    border-left: 1px solid #ddd;
+position: absolute;
+content: '';
+width: 1px;
+height: 100%;
+top: 0;
+border-left: 1px solid #ddd;
 }
 .header_seprator_4:after{left: 33.33333333%;}
 .header_seprator_6:after{left: 50%;}
 .last_h_sep_border_lt{border-left: 1px solid #ddd;}
 
 .inv_border{
-    border: 1px solid #dddddd;
-    border-collapse: collapse;
-    line-height: 25px;
+border: 1px solid #dddddd;
+border-collapse: collapse;
+line-height: 25px;
 }
 #inv_tbl_emp_list{
-    border: 1px solid #dddddd;
-    border-collapse: collapse;
+border: 1px solid #dddddd;
+border-collapse: collapse;
 }
 
 #inv_tbl_emp_list th{
-    border: 1px solid #dddddd !important;
-    border-collapse: collapse;
+border: 1px solid #dddddd !important;
+border-collapse: collapse;
 }
 
 #inv_tbl_emp_list td {
-    border-right: 1px solid #dddddd !important;
-    height:30px;
-    padding:10px;
-    text-align:left;
+border-right: 1px solid #dddddd !important;
+height:30px;
+padding:10px;
+text-align:left;
 }
 .red_txt{
-    color: red !important;
+color: red !important;
 }
 
 .blue_txt{
-    color:#33b5e5 !important;
+color:#33b5e5 !important;
 }
 .border_rt{
-    border-right : 1px solid #dddddd;
+border-right : 1px solid #dddddd;
 }
 
 <!-- GST invoice -->
 table.gst_invoice{
-    border-collapse: collapse !important;
+border-collapse: collapse !important;
 }
 table.gst_invoice tr td {
-    padding: 2px 5px 2px !important;
-    border-top: 1px solid #ddd !important;
-    font-size: 9px !important;
+padding: 2px 5px 2px !important;
+border-top: 1px solid #ddd !important;
+font-size: 9px !important;
 }
 .border_lt{
-    border-left : 1px solid #dddddd !important;
+border-left : 1px solid #dddddd !important;
 }
 table.table-bordered{
-    border-collapse: collapse !important;
+border-collapse: collapse !important;
 }
 table.table-bordered tr td{
-    border: 1px solid #ddd !important;
+border: 1px solid #ddd !important;
 }

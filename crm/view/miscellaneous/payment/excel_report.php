@@ -86,7 +86,7 @@ $payment_mode = $_GET['payment_mode'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id' and delete_status='0'"));
 $date = $sq_visa_info['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -232,7 +232,6 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
         $customer_name = $customer_info['first_name'].' '.$customer_info['last_name'];
     }
     $bg='';
-
     if($row_visa_payment['clearance_status']=="Pending"){ $bg='warning';
                 $sq_pending_amount = $sq_pending_amount + $row_visa_payment['payment_amount']+$row_visa_payment['credit_charges'];
     }

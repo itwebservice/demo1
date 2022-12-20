@@ -86,6 +86,23 @@ function activity_master_save()
 	      $('#activity_save').prop('disabled',false);
         return false;
       }
+      var today = new Date();
+      today = today.getTime();
+
+      var from_parts = activity_date.split(' ');
+      var parts = from_parts[0].split('-');
+      var date = new Date();
+      var new_month = parseInt(parts[1]) - 1;
+      date.setFullYear(parts[2]);
+      date.setDate(parts[0]);
+      date.setMonth(new_month);
+      var from_date_ms = date.getTime();
+
+      if (today != from_date_ms && today < from_date_ms) {
+        error_msg_alert('Future date is not allowed.');
+	      $('#activity_save').prop('disabled',false);
+        return false;
+      }
       if(activity_type=="")
       {
         error_msg_alert("Enter Activity type in row"+(i+1));

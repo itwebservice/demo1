@@ -44,13 +44,13 @@
 			</select>
 		</div>	
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	    	<input type="text" id="customer_name" name="customer_name" onchange="fname_validate(this.id)" placeholder="Customer Name" title="Customer Name">
+	    	<input type="text" id="customer_name" name="customer_name" onchange="fname_validate(this.id)" placeholder="*Customer Name" title="Customer Name">
 	    </div>
 	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<input type="text" id="email_id" name="email_id" placeholder="Email ID" title="Email ID">
 		</div>	
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-			<input type="text" id="mobile_no" name="mobile_no" onchange="mobile_validate(this.id)" placeholder="Whatsapp no with country code" title="Whatsapp no with country code">
+			<input type="text" id="mobile_no" name="mobile_no" onchange="mobile_validate(this.id)" placeholder="*Whatsapp no with country code" title="*Whatsapp no with country code">
 		</div>
 	</div>
 	<div class="row">
@@ -167,16 +167,18 @@ $('#frm_tab1').validate({
 		extra_km_cost	:	{	regex	:	/^[0-9\.]*$/	},
 		extra_hr_cost	:	{	regex	:	/^[0-9\.]*$/	},
 		places_to_visit : { required : function(){  if($('#travel_type').val()=="Outstation"){ return true; }else{ return false; }  }  },
+		traveling_date : { required : function(){  if($('#travel_type').val()=="Outstation"){ return true; }else{ return false; }  }  },
+		mobile_no : { required : true },
 	},
 	messages:{
 		extra_km_cost	:	"Only Numbers Allowed",
 		extra_hr_cost	:	"Only Numbers Allowed",
 	},
 	onkeyup: false,
-	errorPlacement: function(error, element) {
-		$(element).css({ border: '1px solid red' });
-		error_msg_alert(error[0].innerText);
-	},
+	// errorPlacement: function(error, element) {
+	// 	$(element).css({ border: '1px solid red' });
+	// 	error_msg_alert(error[0].innerText);
+	// },
 
 	submitHandler:function(form){
 		if($("#rate").val() <= 0){

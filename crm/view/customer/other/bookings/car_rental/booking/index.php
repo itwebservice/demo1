@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="booking_id_filterc" id="booking_id_filterc" style="width:100%" onchange="booking_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_booking = mysqlQuery("select * from car_rental_booking where customer_id='$customer_id'");
+			        $sq_booking = mysqlQuery("select * from car_rental_booking where customer_id='$customer_id' and delete_status='0'");
 			        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 						$date = $row_booking['created_at'];
 						$yr = explode("-", $date);
@@ -41,9 +41,11 @@ function booking_list_reflect()
 booking_list_reflect();
 function car_display_modal(booking_id)
 {
+    $('#car-'+booking_id).button('loading');
 	$.post('bookings/car_rental/booking/view/index.php', { booking_id : booking_id }, function(data){
-
+		console.log(data);
 		$('#div_car_content_display').html(data);
+		$('#car-'+booking_id).button('reset');
 	});
 }
 </script>

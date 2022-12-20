@@ -32,7 +32,7 @@ $count=1;
 
 
 
-$query = "select * from tourwise_traveler_details where ";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 
 if($booker_id!="")
 {

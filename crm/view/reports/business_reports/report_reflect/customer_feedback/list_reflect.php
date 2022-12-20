@@ -28,7 +28,7 @@ while($row = mysqli_fetch_assoc($sq)){
 
     $sq_query_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id ='$row[customer_id]'"));
     if($row['booking_type']=="Group Booking"){ 
-        $sq_booking =mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$row[booking_id]'"));  
+        $sq_booking =mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$row[booking_id]' and delete_status='0'"));  
         $sq_tour_group_name = mysqlQuery("select from_date,to_date from tour_groups where group_id='$sq_booking[tour_group_id]'");
         $row_tour_group_name = mysqli_fetch_assoc($sq_tour_group_name);
         $tour_date = date("d-m-Y", strtotime($row_tour_group_name['from_date'])).' To '.date("d-m-Y", strtotime($row_tour_group_name['to_date']));
@@ -38,7 +38,7 @@ while($row = mysqli_fetch_assoc($sq)){
         $booking_id = get_group_booking_id($row['booking_id'],$year);
     }
     else{
-        $sq_booking =mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row[booking_id]'")); 
+        $sq_booking =mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row[booking_id]' and delete_status='0'")); 
         $tour_date = date("d-m-Y", strtotime($sq_booking['tour_from_date'])).' To '.date("d-m-Y", strtotime($sq_booking['tour_to_date']));
         $date = $sq_booking['booking_date'];
         $yr = explode("-", $date);
@@ -53,7 +53,7 @@ while($row = mysqli_fetch_assoc($sq)){
         $booking_id,
         $row['booking_type'],
         $tour_date,
-        '<button class="btn btn-info btn-sm" onclick="view_modal('. $row['feedback_id'] .')" title="View Information"><i class="fa fa-eye"></i></button>'
+        '<button class="btn btn-info btn-sm" id="feedback-'. $row['feedback_id'] .'" onclick="view_modal('. $row['feedback_id'] .')" title="View Details"><i class="fa fa-eye"></i></button>'
         ), "bg" =>$bg);
     array_push($array_s,$temp_arr);
 }

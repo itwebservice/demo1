@@ -12,7 +12,7 @@ $vendor_type_id = $_POST['vendor_type_id'];
 $estimate_type = $_POST['estimate_type'];
 $estimate_type_id = $_POST['estimate_type_id'];
 
-$query = "select * from vendor_payment_master where payment_amount!='0' ";
+$query = "select * from vendor_payment_master where payment_amount!='0' and delete_status='0' ";
 if($financial_year_id!=""){
 	$query .= " and financial_year_id='$financial_year_id'";
 }
@@ -30,7 +30,7 @@ if($estimate_type_id!=""){
 }
 
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by payment_id desc ";
+// $query .= " order by payment_id desc ";
 $total_paid_amt = 0;
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
@@ -86,6 +86,11 @@ $total_paid_amt = 0;
 			else{
 				$url = "";
 			}
+			if($row_payment['payment_mode']!='Debit Note'){
+				$update_btn = '<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'].')"  title="Edit"><i class="fa fa-pencil-square-o"></i></button>';
+			}else{
+				$update_btn = '';
+			}
 			?>
 			<tr class="<?= $bg;?>">
 				<td><?= ++$count ?></td>
@@ -107,7 +112,7 @@ $total_paid_amt = 0;
 					}
 					?>
 				</td>
-				<td><button class="btn btn-info btn-sm" onclick="payment_update_modal(<?= $row_payment['payment_id'] ?>)"  title="Edit"><i class="fa fa-pencil-square-o"></i></button></td>
+				<td><?= $update_btn ?></td>
 			</tr>
 			<?php
 		}

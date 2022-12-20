@@ -65,8 +65,16 @@
           $(btnUpload).find('span').text('Upload Again');
         }else
         { 
-          $(btnUpload).find('span').text('Uploaded');
-          $('#id_upload_url').val(response);
+          if(response=="error1")
+          {
+            $(btnUpload).find('span').text('Upload Images');
+            error_msg_alert('Maximum size exceeds');
+            return false;
+          }else
+          {
+            $(btnUpload).find('span').text('Uploaded');
+            $('#id_upload_url').val(response);
+          }
         }
       }
     });

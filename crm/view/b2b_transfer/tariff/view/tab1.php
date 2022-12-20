@@ -17,7 +17,7 @@
 									<th>Luggage_capacity</th>
 									<th>Total_cost</th>
 									<th>Markup_In</th>
-									<th>Flat_Markup</th>
+									<th>Markup_amount</th>
 								</tr>
 							</thead>
 							<tbody>

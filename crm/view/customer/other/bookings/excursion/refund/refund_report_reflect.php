@@ -8,7 +8,7 @@ $query = "select * from exc_refund_master where 1 ";
 if($exc_id!=""){
 	$query .=" and exc_id='$exc_id'";
 }
-$query .=" and exc_id in ( select exc_id from excursion_master where customer_id='$customer_id' )";
+$query .=" and exc_id in ( select exc_id from excursion_master where customer_id='$customer_id' and delete_status='0' )";
 
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">

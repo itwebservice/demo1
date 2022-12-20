@@ -12,7 +12,7 @@ $temp_arr = array();
 $count = 1;
 $total_amount = 0;
 
-$query = "select * from vendor_estimate where status!='Cancel' ";
+$query = "select * from vendor_estimate where status!='Cancel' and delete_status='0' ";
 
 if($from_date != '' && $to_date != ''){
 	$from_date = get_date_db($from_date);

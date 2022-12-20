@@ -126,17 +126,17 @@ $objPHPExcel = new PHPExcel();
 
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
 
-                             ->setLastModifiedBy("Maarten Balliauw")
+    ->setLastModifiedBy("Maarten Balliauw")
 
-                             ->setTitle("Office 2007 XLSX Test Document")
+    ->setTitle("Office 2007 XLSX Test Document")
 
-                             ->setSubject("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
 
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
 
-                             ->setKeywords("office 2007 openxml php")
+    ->setKeywords("office 2007 openxml php")
 
-                             ->setCategory("Test result file");
+    ->setCategory("Test result file");
 
 
 //////////////////////////****************Content start**************////////////////////////////////
@@ -178,13 +178,11 @@ $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);    
 
 $query = "select * from hotel_master where 1 ";
-
 if($active_flag!=""){
-  $query .=" and active_flag='$active_flag' ";
+	$query .=" and active_flag='$active_flag' ";
 }
-
 if($city_id!=""){
-  $query .=" and city_id='$city_id' ";
+	$query .=" and city_id='$city_id' ";
 }
 
  $count = 0;
@@ -208,33 +206,34 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('H'.$row_count, "Contact Person")
         ->setCellValue('I'.$row_count, "Emergency Contact")
         ->setCellValue('J'.$row_count, "Address")
-        ->setCellValue('K'.$row_count, "State")
-        ->setCellValue('L'.$row_count, "Country") 
-        ->setCellValue('M'.$row_count, "Website")
-        ->setCellValue('N'.$row_count, "Bank Name")
-        ->setCellValue('O'.$row_count, "Account Type")
-        ->setCellValue('P'.$row_count, "Account No")
-        ->setCellValue('Q'.$row_count, "Branch")
-        ->setCellValue('R'.$row_count, "IFSC/SWIFT CODE")
-        ->setCellValue('S'.$row_count, "PAN/TAN No")
-        ->setCellValue('T'.$row_count, "Tax NO")
-        ->setCellValue('U'.$row_count, "Hotel Category")
-        ->setCellValue('V'.$row_count, "Hotel Type")
-        ->setCellValue('W'.$row_count, "Child Without Bed From-To Age")
-        ->setCellValue('X'.$row_count, "Child With Bed From-To Age")
-        ->setCellValue('Y'.$row_count, "Status");
+        ->setCellValue('K'.$row_count, "State/Country")
+        ->setCellValue('L'.$row_count, "Website")
+        ->setCellValue('M'.$row_count, "Bank Name")
+        ->setCellValue('N'.$row_count, "Account Type")
+        ->setCellValue('O'.$row_count, "Account No")
+        ->setCellValue('P'.$row_count, "Branch")
+        ->setCellValue('Q'.$row_count, "IFSC/SWIFT CODE")
+        ->setCellValue('R'.$row_count, "PAN/TAN No")
+        ->setCellValue('S'.$row_count, "Tax NO")
+        ->setCellValue('T'.$row_count, "Hotel Category")
+        ->setCellValue('U'.$row_count, "Hotel Type")
+        ->setCellValue('V'.$row_count, "Child Without Bed From-To Age")
+        ->setCellValue('W'.$row_count, "Child With Bed From-To Age")
+        ->setCellValue('X'.$row_count, "Opening Balance")
+        ->setCellValue('Y'.$row_count, "Balance Side")
+        ->setCellValue('Z'.$row_count, "Status");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Y'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Y'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
 while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
-	  $mobile_no = $encrypt_decrypt->fnDecrypt($row_hotel['mobile_no'], $secret_key);
-      $email_id = $encrypt_decrypt->fnDecrypt($row_hotel['email_id'], $secret_key);
-      $sq_city = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_hotel[city_id]'"));
+    $mobile_no = $encrypt_decrypt->fnDecrypt($row_hotel['mobile_no'], $secret_key);
+    $email_id = $encrypt_decrypt->fnDecrypt($row_hotel['email_id'], $secret_key);
+    $sq_city = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_hotel[city_id]'"));
     //  $sq_gl = mysqli_fetch_assoc(mysqlQuery("select * from gl_master where gl_id='$row_hotel[gl_id]'"));
-      $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$row_hotel[state_id]'"));
+    $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$row_hotel[state_id]'"));
     $objPHPExcel->setActiveSheetIndex(0)
 
         ->setCellValue('B'.$row_count, ++$count)
@@ -247,23 +246,25 @@ while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
         ->setCellValue('I'.$row_count, $row_hotel['immergency_contact_no'])
         ->setCellValue('J'.$row_count, $row_hotel['hotel_address'])
         ->setCellValue('K'.$row_count, $sq_state['state_name'])
-        ->setCellValue('L'.$row_count, $row_hotel['country'])
-        ->setCellValue('M'.$row_count, $row_hotel['website'])
-        ->setCellValue('N'.$row_count, $row_hotel['bank_name'])
-        ->setCellValue('O'.$row_count, $row_hotel['account_name'])
-        ->setCellValue('P'.$row_count, $row_hotel['account_no'])
-        ->setCellValue('Q'.$row_count, $row_hotel['branch'])
-        ->setCellValue('R'.$row_count, $row_hotel['ifsc_code'])
-        ->setCellValue('S'.$row_count, $row_hotel['pan_no'])
-        ->setCellValue('T'.$row_count, $row_hotel['service_tax_no'])
-        ->setCellValue('U'.$row_count, $row_hotel['rating_star'])
-        ->setCellValue('V'.$row_count, $row_hotel['hotel_type'])
-        ->setCellValue('W'.$row_count, $row_hotel['cwob_from'].'-'.$row_hotel['cwob_to'])
-        ->setCellValue('X'.$row_count, $row_hotel['cwb_from'].'-'.$row_hotel['cwb_to'])
-        ->setCellValue('Y'.$row_count, $row_hotel['active_flag']);
+        
+        ->setCellValue('L'.$row_count, $row_hotel['website'])
+        ->setCellValue('M'.$row_count, $row_hotel['bank_name'])
+        ->setCellValue('N'.$row_count, $row_hotel['account_name'])
+        ->setCellValue('O'.$row_count, $row_hotel['account_no'])
+        ->setCellValue('P'.$row_count, $row_hotel['branch'])
+        ->setCellValue('Q'.$row_count, $row_hotel['ifsc_code'])
+        ->setCellValue('R'.$row_count, $row_hotel['pan_no'])
+        ->setCellValue('S'.$row_count, $row_hotel['service_tax_no'])
+        ->setCellValue('T'.$row_count, $row_hotel['rating_star'])
+        ->setCellValue('U'.$row_count, $row_hotel['hotel_type'])
+        ->setCellValue('V'.$row_count, $row_hotel['cwob_from'].'-'.$row_hotel['cwob_to'])
+        ->setCellValue('W'.$row_count, $row_hotel['cwb_from'].'-'.$row_hotel['cwb_to'])
+        ->setCellValue('X'.$row_count, number_format($row_hotel['opening_balance'],2))
+        ->setCellValue('Y'.$row_count, $row_hotel['side'])
+        ->setCellValue('Z'.$row_count, $row_hotel['active_flag']);
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Y'.$row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Y'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':AA'.$row_count)->applyFromArray($borderArray);    
 
 
 

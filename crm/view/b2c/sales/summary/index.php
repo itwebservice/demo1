@@ -90,7 +90,7 @@ function list_reflect()
 	var to_date = $('#to_date_filter').val();
 	var base_url = $('#base_url').val();
 	$.post(base_url+'view/b2c/sales/summary/list_reflect.php', { customer_id : customer_id, booking_id : booking_id, from_date : from_date, to_date : to_date}, function(data){
-		pagination_load(data, column, true, true, 20, 'exc_tour_report');
+		pagination_load(data, column, true, true, 20, 'exc_tour_report',true);
 		$('.loader').remove();
 	});
 }

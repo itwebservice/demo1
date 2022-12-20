@@ -47,7 +47,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
             <select name="booking_id" id="booking_id" style="width:100%" disabled>              
 			         <option value="<?= $sq_booking['booking_id'] ?>"><?= get_bus_booking_id($sq_booking['booking_id'],$year) ?></option>
               <?php
-              $sq_booking = mysqlQuery("select * from bus_booking_master where customer_id='$sq_booking[customer_id]'");
+              $sq_booking = mysqlQuery("select * from bus_booking_master where customer_id='$sq_booking[customer_id]' and delete_status='0'");
               while($row_booking = mysqli_fetch_assoc($sq_booking)){
                 ?>
                 <option value="<?= $row_booking['booking_id'] ?>"><?= get_bus_booking_id($row_booking['booking_id'],$year) ?></option>
@@ -99,6 +99,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
         </div>
         <?php } ?>
 
+        <input type="hidden" id="canc_status1" name="canc_status" value="<?= $sq_payment_info['status'] ?>" class="form-control"/>
         <div class="row text-center mg_tp_20">
             <div class="col-md-12">
               <button class="btn btn-sm btn-success" id="bus_p_update"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Update</button>
@@ -143,7 +144,8 @@ $('#frm_update').validate({
     var credit_charges = $('#credit_charges1').val();
     var credit_card_details = $('#credit_card_details1').val();
     var credit_charges_old = $('#credit_charges_old').val();
-    
+    var canc_status = $('#canc_status1').val();
+
     if(!check_updated_amount(payment_old_value,payment_amount)){
       error_msg_alert("You can update receipt to 0 only!");
       return false;
@@ -151,20 +153,20 @@ $('#frm_update').validate({
 
     $('#bus_p_update').button('loading');
 
-     $.ajax({
+      $.ajax({
         type: 'post',
         url: base_url()+'controller/bus_booking/payment/payment_update.php',
-        data:{ payment_id : payment_id, booking_id : booking_id, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_old_value : payment_old_value,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,credit_charges:credit_charges },
+        data:{ payment_id : payment_id, booking_id : booking_id, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_old_value : payment_old_value,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,credit_charges:credit_charges,canc_status:canc_status },
         success: function(result){
           var msg = result.split('-');
           if(msg[0]=='error'){
             msg_alert(result);
-             $('#bus_p_update').button('reset');
+            $('#bus_p_update').button('reset');
           }
           else{
             msg_alert(result);
             reset_form('frm_update');
-             $('#bus_p_update').button('reset');
+            $('#bus_p_update').button('reset');
             $('#update_modal').modal('hide');  
             list_reflect();
           }

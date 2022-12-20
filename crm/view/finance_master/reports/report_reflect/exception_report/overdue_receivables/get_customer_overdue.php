@@ -11,7 +11,7 @@ $till_date1 = get_date_user($till_date);
 $count = 1;
 $total_footer_due = 0;
 //FIT
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0'";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -36,7 +36,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from package_tour_booking_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from package_tour_booking_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0;
@@ -84,7 +84,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Visa
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -110,7 +110,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from visa_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from visa_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -158,7 +158,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Miscellaneous
-$query = "select * from miscellaneous_master where 1 ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -184,7 +184,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from miscellaneous_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from miscellaneous_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -231,7 +231,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 } 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 //Flight Ticket
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -257,7 +257,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from ticket_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from ticket_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -306,7 +306,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Train
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -332,7 +332,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from train_ticket_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from train_ticket_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -381,7 +381,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Hotel
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -407,7 +407,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from hotel_booking_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from hotel_booking_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -456,7 +456,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Bus
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -482,7 +482,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from bus_booking_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from bus_booking_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -531,7 +531,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Car Rental
-$query = "select * from car_rental_booking where 1 ";
+$query = "select * from car_rental_booking where 1 and delete_status='0'";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -557,7 +557,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from car_rental_booking where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from car_rental_booking where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -669,7 +669,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Group
-$query = "select * from tourwise_traveler_details where 1 ";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -695,7 +695,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from tourwise_traveler_details where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from tourwise_traveler_details where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_fee =0; $pending_amt=0; $total_paid = 0; $cancel_amount2 = 0; $cancel_amount = 0; $cancel_amount1 = 0; $total_outstanding = 0;
@@ -851,9 +851,8 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	}
 } 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Excursion
-$query = "select * from excursion_master where 1 ";
+$query = "select * from excursion_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -879,7 +878,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from excursion_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from excursion_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;

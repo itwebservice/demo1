@@ -8,7 +8,6 @@
                 <td><select id="cmb_m_honorific1" name="cmb_m_honorific1" title="Honorific">
                         <option value="Mr">Mr</option>
                         <option value="Mrs">Mrs</option>
-                        <option value="Mas">Mas</option>
                         <option value="Miss">Miss</option>
                         <option value="Smt">Smt</option>
                         <option value="Infant">Infant</option>

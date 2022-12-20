@@ -437,6 +437,7 @@ if($sq_c_count != '0'){
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
+			<th style="min-width:200px ;">Date</th>
 			<th>Special_Attraction</th>
 			<th>Day-wise_Program</th>
 			<th>Overnight_Stay</th>
@@ -446,11 +447,15 @@ if($sq_c_count != '0'){
 	<tbody>
 		<?php 
 		$count = 0;
+		$i = 0;
+		$dates =(array) get_dates_for_package_itineary($_GET['quotation_id']);
 		$sq_package_program = mysqlQuery("select * from package_quotation_program where quotation_id='$quotation_id'");
+		
 		while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
 			?>
 			<tr>
 				<td><?= ++$count ?></td>
+				<td><?= $dates[$i++] ?></td>
 				<td><?= $row_itinarary['attraction'] ?></td>
 				<td><pre class="real_text"><?= $row_itinarary['day_wise_program'] ?></pre></td>
 				<td><?= $row_itinarary['stay'] ?></td>

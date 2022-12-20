@@ -1,4 +1,4 @@
-<?php 
+<?php
 $branch_status = $_POST['branch_status'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $role_id = $_SESSION['role_id'];
@@ -17,13 +17,44 @@ $role_id = $_SESSION['role_id'];
         <div class="row">
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
               <select name="booking_id" id="booking_id" style="width:100%" onchange="get_outstanding('hotel',this.id);">
-             <?php  get_hotel_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id,$role_id, false)  ?>
+                <option value="">Select Booking</option>
+                  <?php
+                  $query = "select * from hotel_booking_master where 1 and delete_status='0' ";
+                  include "../../../../model/app_settings/branchwise_filteration.php";
+                  $query .= " order by booking_id desc";
+                  $sq_booking = mysqlQuery($query);
+                  while($row_booking = mysqli_fetch_assoc($sq_booking))
+                  {
+                      $status = '';
+                      $pass_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]'"));
+                      $cancel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]' and status='Cancel'"));
+                      if($pass_count==$cancel_count){
+                        $status = '(Cancelled)';
+	                      $sq_payment_total = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from hotel_booking_payment where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+                        $paid_amount = $sq_payment_total['sum'];
+                        $canc_amount=$row_booking['cancel_amount'];
+                        $balance = ($paid_amount > $canc_amount) ? 0 : floatval($canc_amount) - floatval($paid_amount);
+                        if($balance <= 0) continue;
+                      }
+                      $date = $row_booking['created_at'];
+                      $yr = explode("-", $date);
+                      $year =$yr[0];
+                      $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+
+                      if($sq_customer['type']=='Corporate'||$sq_customer['type']=='B2B'){ ?>
+                        <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_hotel_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['company_name'].' '.$status ; ?></option>
+                      <?php } 
+                      else{ ?>
+                        <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_hotel_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name'].' '.$status; ?></option>
+
+                      <?php  }  
+
+                  } ?>
               </select>
           </div>
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
             <input type="text" id="payment_date" name="payment_date" title="Date" placeholder="*Date" value="<?= date('d-m-Y') ?>" onchange="check_valid_date(this.id)">
           </div>          
-         
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
             <select id="payment_mode" name="payment_mode" required title="Mode" onchange="payment_master_toggles(this.id, 'bank_name', 'transaction_id', 'bank_id');get_identifier_block('identifier','payment_mode','credit_card_details','credit_charges');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges')">
                 <?php get_payment_mode_dropdown(); ?>
@@ -32,7 +63,7 @@ $role_id = $_SESSION['role_id'];
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
             <input type="text" id="payment_amount" name="payment_amount" title="Amount" placeholder="*Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','transaction_id','bank_name','bank_id');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges');">
           </div>
-         
+
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
             <input type="text" id="bank_name" name="bank_name" onchange="fname_validate(this.id);"  class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" readonly />
           </div>
@@ -60,12 +91,13 @@ $role_id = $_SESSION['role_id'];
         <div class="row mg_tp_10">
           <div class="col-md-4 col-sm-3">
             <input type="text" id="outstanding" name="outstanding" class="form-control" placeholder="Outstanding" title="Outstanding" readonly/>
+            <input type="hidden" id="canc_status" name="canc_status" class="form-control"/>
           </div>
         </div>
         <div class="row mg_tp_20">
           <div class="col-md-9 col-sm-9">
-           <span style="color: red;line-height: 35px;" data-original-title="" title="" class="note"><?= $txn_feild_note ?></span>
-         </div>
+            <span style="color: red;line-height: 35px;" data-original-title="" title="" class="note"><?= $txn_feild_note ?></span>
+          </div>
         </div>
 
         <div class="row text-center mg_tp_20">
@@ -108,6 +140,7 @@ $(function(){
               var credit_card_details = $('#credit_card_details').val();
               var base_url = $('#base_url').val();
               var outstanding = $('#outstanding').val();
+              var canc_status = $('#canc_status').val();
               //Validation for booking and payment date in login financial year
               var check_date1 = $('#payment_date').val();
 
@@ -134,7 +167,7 @@ $(function(){
                     $.ajax({
                       type:'post',
                       url: base_url+'controller/hotel/payment/payment_save.php',
-                      data:{ booking_id : booking_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, branch_admin_id : branch_admin_id,credit_charges:credit_charges,credit_card_details:credit_card_details },
+                      data:{ booking_id : booking_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, branch_admin_id : branch_admin_id,credit_charges:credit_charges,credit_card_details:credit_card_details ,canc_status:canc_status},
                       success:function(result){
                         $('#btn_payment_save').prop('disabled', false);
                         $('#btn_payment_save').button('reset');

@@ -14,15 +14,15 @@ $customer_id = $_SESSION['customer_id'];
 						<th>Booking_ID</th>
 						<th>Total_pax</th>
 						<th>View</th>
-						<th class="text-right info">Total_Amount</th>
-						<th class="text-right success">Paid_Amount</th>
-						<th class="text-right danger">Cncel_amount</th>
-						<th class="text-right warning">Balance</th>
+						<th class="info">Total_Amount</th>
+						<th class="success">Paid_Amount</th>
+						<th class="danger">Cncel_amount</th>
+						<th class="warning">Balance</th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php
-					$query = "select * from miscellaneous_master where customer_id='$customer_id'";
+					$query = "select * from miscellaneous_master where customer_id='$customer_id' and delete_status='0'";
 					if ($misc_id != '') {
 						$query .= " and misc_id='$misc_id'";
 					}
@@ -44,7 +44,7 @@ $customer_id = $_SESSION['customer_id'];
 						$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_miscellaneous[customer_id]'"));
 
 						//Get Total no of miscellaneous members
-						$sq_total_member = mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id='$row_miscellaneous[misc_id]' and status!='Cancel'"));
+						$sq_total_member = mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id='$row_miscellaneous[misc_id]'"));
 
 						$query1 = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(credit_charges) as sumc from miscellaneous_payment_master where misc_id='$row_miscellaneous[misc_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
 						//Get Total miscellaneous Cost
@@ -88,12 +88,12 @@ $customer_id = $_SESSION['customer_id'];
 							<td><?= get_misc_booking_id($row_miscellaneous['misc_id'], $year) ?></td>
 							<td><?php echo $sq_total_member; ?></td>
 							<td>
-								<button class="btn btn-info btn-sm" onclick="misc_display_modal(<?= $row_miscellaneous['misc_id'] ?>)" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
+								<button class="btn btn-info btn-sm" onclick="misc_display_modal(<?= $row_miscellaneous['misc_id'] ?>)" title="View Details" id="misc-<?= $row_miscellaneous['misc_id'] ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
 							</td>
-							<td class="info text-right"><?php echo $sale_total_amount; ?></td>
-							<td class="success text-right"><?= $paid_amount ?></td>
-							<td class="danger text-right"><?php echo $cancel_amount; ?></td>
-							<td class="warning text-right"><?php echo number_format($balance_amount, 2); ?></td>
+							<td class="info"><?php echo $sale_total_amount; ?></td>
+							<td class="success"><?= $paid_amount ?></td>
+							<td class="danger"><?php echo $cancel_amount; ?></td>
+							<td class="warning"><?php echo number_format($balance_amount, 2); ?></td>
 						</tr>
 					<?php } ?>
 				</tbody>
@@ -111,7 +111,7 @@ $customer_id = $_SESSION['customer_id'];
 	</div>
 </div>
 <script>
-	$('#tbl_miscellaneous_list').dataTable({
-		"pagingType": "full_numbers"
-	});
+$('#tbl_miscellaneous_list').dataTable({
+	"pagingType": "full_numbers"
+});
 </script>

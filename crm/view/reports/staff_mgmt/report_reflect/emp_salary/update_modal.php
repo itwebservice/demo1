@@ -154,15 +154,11 @@ $sq_sal = mysqli_fetch_assoc(mysqlQuery("select * from employee_salary_master wh
 
               </div> 
 
-              <div class="col-md-3 col-sm-6 mg_bt_10">
-
-                  <input type="text" id="employer_pf" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="validate_balance(this.id);calculate_total_payable()" value="<?= $sq_sal['employer_pf'] ?>" >
-
-              </div> 
+             
 
               <div class="col-md-3 col-sm-6 mg_bt_10">
 
-                  <input class="form-control" id="employee_pf" name="employee_pf" type="text" placeholder="Employee PF" title="Employee PF" onchange="validate_balance(this.id);calculate_total_payable()" value="<?= $sq_sal['employee_pf'] ?>" />
+                  <input class="form-control" id="employee_pf" name="employee_pf" type="text" placeholder="Employee PF" title="Employee PF"  value="<?= $sq_sal['employee_pf'] ?>"  onchange="validate_balance(this.id);calculate_total_payable()" />
 
               </div> 
               <div class="col-md-3 col-sm-6 mg_bt_10">
@@ -193,6 +189,11 @@ $sq_sal = mysqli_fetch_assoc(mysqlQuery("select * from employee_salary_master wh
                   <input class="form-control" id="txt_deduction" name="txt_deduction" type="text" placeholder="Total Deductions" title="Total Deductions" value="<?= $sq_sal['deduction'] ?>" disabled/>
 
               </div>
+              <div class="col-md-3 col-sm-6 mg_bt_10">
+
+<input type="text" id="employer_pf" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="validate_balance(this.id);calculate_total_payable()" value="<?= $sq_sal['employer_pf'] ?>" >
+
+</div> 
             </div>
           </div> 
           <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_10">

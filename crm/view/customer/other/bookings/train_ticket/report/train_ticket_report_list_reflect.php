@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $customer_id = $_SESSION['customer_id'];
 $ticket_id = $_POST['ticket_id'];
 
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 $query .=" and customer_id='$customer_id'";
 if($ticket_id!=""){
 	$query .=" and train_ticket_id='$ticket_id'";
@@ -39,8 +39,12 @@ if($ticket_id!=""){
 			$url = explode('uploads/', $url);
 			$url = BASE_URL.'uploads/'.$url[1];
 			
+			$pass_count = mysqli_num_rows(mysqlQuery("select * from  train_ticket_master_entries where train_ticket_id='$row_ticket[train_ticket_id]'"));
+			$cancel_count = mysqli_num_rows(mysqlQuery("select * from  train_ticket_master_entries where train_ticket_id='$row_ticket[train_ticket_id]' and status='Cancel'"));
+			
 			$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_ticket[customer_id]'"));
 			$sq_entry1 = mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id='$row_ticket[train_ticket_id]'");
+			$bg = ($pass_count==$cancel_count) ? 'danger' : '';
 			while($row_entery1 = mysqli_fetch_assoc($sq_entry1)){
 				?>
 				<tr class="<?= $bg ?>">

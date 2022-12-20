@@ -3,11 +3,17 @@
 include "../../../model.php"; 
 include "../print_functions.php";
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/booking/index.php'"));
+$branch_status = $sq['branch_status'];
+
 $booking_id = $_GET['booking_id'];
 
 $sq_service_voucher = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_transport_service_voucher where booking_id='$booking_id'"));
 
-$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 
 $row_transport =  mysqli_fetch_assoc(mysqlQuery("select * from package_tour_transport_master where booking_id='$booking_id'")) ;
 
@@ -45,9 +51,9 @@ else { $emp_name = $sq_emp['first_name'].' ' .$sq_emp['last_name']; }
       <div class="col-md-6 no-pad">
         <div class="print_header_contact text-right">
           <span class="title"><?php echo $app_name; ?></span><br>
-          <p><?php echo $app_address; ?></p>
-          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo $app_contact_no; ?></p>
-          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></p>
+          <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
+          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no'] : $app_contact_no; ?></p>
+          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id;; ?></p>
         </div>
       </div>
     </section>

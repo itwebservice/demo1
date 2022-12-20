@@ -151,7 +151,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);    
 
-$query = "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, purchase_date as date, net_total as credit, '' as debit from vendor_estimate where 1 and financial_year_id='$financial_year_id' ";
+$query = "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, purchase_date as date, net_total as credit, '' as debit from vendor_estimate where 1 and financial_year_id='$financial_year_id' and delete_status='0' and status!='Cancel' ";
 if($estimate_type!=""){
 	$query .= " and estimate_type='$estimate_type' ";
 }
@@ -183,7 +183,7 @@ $query .= " and emp_id='$emp_id'";
 }
 $query .= " union all ";
 
-$query .= "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, payment_date as date1, '' as credit1, payment_amount as debit1 from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled' and financial_year_id='$financial_year_id' ";
+$query .= "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, payment_date as date1, '' as credit1, payment_amount as debit1 from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled' and financial_year_id='$financial_year_id' and delete_status='0' and payment_amount!='0' ";
 if($vendor_type!=""){
 	$query .= " and vendor_type='$vendor_type' ";
 }

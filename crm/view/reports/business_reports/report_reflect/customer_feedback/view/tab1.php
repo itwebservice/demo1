@@ -2,7 +2,7 @@
             <?php
             $booking_type = $sq_feed['booking_type'];
             if($booking_type=="Group Booking"){ 
-              $query = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$sq_feed[booking_id]'"));  
+              $query = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$sq_feed[booking_id]' and delete_status='0'"));  
                   $sq_tour_group_name = mysqlQuery("select from_date,to_date from tour_groups where group_id='$query[tour_group_id]'");
                   $row_tour_group_name = mysqli_fetch_assoc($sq_tour_group_name);
                   $tour_date = date("d-m-Y", strtotime($row_tour_group_name['from_date'])).' To '.date("d-m-Y", strtotime($row_tour_group_name['to_date']));
@@ -12,7 +12,7 @@
                   $booking_id = get_group_booking_id($sq_feed['booking_id'],$year);
             } 
             elseif($booking_type=="Package Booking"){
-              $query =mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_feed[booking_id]'"));
+              $query =mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_feed[booking_id]' and delete_status='0'"));
                   $tour_date = date('d-m-Y', strtotime($query['tour_from_date'])).' To '. date('d-m-Y', strtotime($query['tour_to_date']));
                   $date = $query['booking_date'];
                   $yr = explode("-", $date);

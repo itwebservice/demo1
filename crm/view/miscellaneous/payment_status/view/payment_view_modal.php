@@ -21,19 +21,20 @@ $misc_id = $_POST['misc_id'];
                             <th>Receipt_Date</th>
                             <th>Mode</th>
                             <th>Amount</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                       <?php 
-                       $count = 0;
-                       $sq_query = mysqlQuery("SELECT * FROM miscellaneous_payment_master WHERE misc_id = '$misc_id' and payment_amount!='0'");
-                       while($row_entry = mysqli_fetch_assoc($sq_query))
-                       {
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <?php 
+                      $count = 0;
+                      $sq_query = mysqlQuery("SELECT * FROM miscellaneous_payment_master WHERE misc_id = '$misc_id' and payment_amount!='0'");
+                      while($row_entry = mysqli_fetch_assoc($sq_query))
+                      {
+                          $bg = '';
                           if($row_entry['clearance_status']=="Pending")
                             $bg='warning';
                           else if($row_entry['clearance_status']=="Cancelled")
                             $bg='danger';		
-                          else
+                          else if($row_entry['clearance_status']=="Cleared")
                             $bg='success';
                           $count++;
                           ?>

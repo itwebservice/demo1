@@ -298,7 +298,7 @@ public function complete_booking_information_update()
   $particular = $this->get_particular($customer_id,$tour_id,$tour_group_id);
 
   $booking_save_transaction = new booking_update_transaction;
-  $sq_date = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+  $sq_date = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
   $booking_save_transaction->finance_update($tourwise_id, $row_spec, $sq_date['form_date'],$particular);
 
   //**=============**Finance Entries update end**============**//

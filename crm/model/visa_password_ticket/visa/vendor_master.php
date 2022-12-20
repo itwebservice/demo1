@@ -9,7 +9,7 @@ public function vendor_save()
 	$landline_no = $_POST['landline_no'];
 	$contact_person_name = $_POST['contact_person_name'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -41,7 +41,7 @@ public function vendor_save()
 	}
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(vendor_id) as max from visa_vendor"));
 	$vendor_id = $sq_max['max'] + 1;
-	$sq_vendor = mysqlQuery("insert into visa_vendor (vendor_id, city_id, vendor_name, mobile_no,landline_no, email_id, contact_person_name, immergency_contact_no, address, country, website, opening_balance, bank_name,account_name ,account_no, branch, ifsc_code, active_flag, created_at,service_tax_no,state_id,side,pan_no,as_of_date) values ('$vendor_id','$cmb_city_id', '$vendor_name', '$mobile_no','$landline_no', '$email_id','$contact_person_name','$immergency_contact_no' , '$address','$country','$website', '$opening_balance','$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$active_flag', '$created_at', '$service_tax_no','$state','$side','$supp_pan','$as_of_date')");
+	$sq_vendor = mysqlQuery("insert into visa_vendor (vendor_id, city_id, vendor_name, mobile_no,landline_no, email_id, contact_person_name, immergency_contact_no, address, website, opening_balance, bank_name,account_name ,account_no, branch, ifsc_code, active_flag, created_at,service_tax_no,state_id,side,pan_no,as_of_date) values ('$vendor_id','$cmb_city_id', '$vendor_name', '$mobile_no','$landline_no', '$email_id','$contact_person_name','$immergency_contact_no' , '$address','$website', '$opening_balance','$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$active_flag', '$created_at', '$service_tax_no','$state','$side','$supp_pan','$as_of_date')");
 	sundry_creditor_balance_update();
 
 	if($sq_vendor){
@@ -73,7 +73,7 @@ public function vendor_update()
 	$email_id = $_POST['email_id'];
 	$contact_person_name = $_POST['contact_person_name'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -103,7 +103,7 @@ public function vendor_update()
 		echo "error--Supplier already exists!";
 		exit;
 	}
-	$sq_vendor = mysqlQuery("update visa_vendor set vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', address='$address', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', city_id='$cmb_city_id1', country='$country', website='$website', opening_balance='$opening_balance', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', active_flag='$active_flag', service_tax_no='$service_tax_no1', state_id='$state',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
+	$sq_vendor = mysqlQuery("update visa_vendor set vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', address='$address', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', city_id='$cmb_city_id1',  website='$website', opening_balance='$opening_balance', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', active_flag='$active_flag', service_tax_no='$service_tax_no1', state_id='$state',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
 	
 	sundry_creditor_balance_update();
 

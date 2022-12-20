@@ -23,7 +23,7 @@ if($role=="Backoffice"){
 	include_once('backoffice/index.php');
 }
 if($role=="B2b"){
-	include_once('agent/index.php');
+	include_once('sales/index.php');
 }
 if($role=="Branch Admin" || $role=="Accountant" || $role=="Hr"){
 	include_once('branch_admin/index.php');

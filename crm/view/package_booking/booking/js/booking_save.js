@@ -433,7 +433,6 @@ $(function () {
 						var day_program = row.cells[3].childNodes[0].value;
 						var stay = row.cells[4].childNodes[0].value;
 						var meal_plan = row.cells[5].childNodes[0].value;
-
 						special_attraction_arr.push(special_attraction);
 						day_program_arr.push(day_program);
 						stay_arr.push(stay);
@@ -533,7 +532,7 @@ $(function () {
 						return false;
 					}
 					if (bank_id1 == '') {
-						error_msg_alert('Select Bank name');
+						error_msg_alert('Select creditor bank name');
 						return false;
 					}
 				}
@@ -596,18 +595,18 @@ $(function () {
 			var total_payment_amount = parseFloat(payment_amount1) + parseFloat(payment_amount2);
 			if (credit_amount != '') {
 				if (parseFloat(total_payment_amount) > parseFloat(credit_amount)) {
-					error_msg_alert('Low Credit note balance');
+					error_msg_alert('Credit Note Balance is not available');
 					return false;
 				}
 			}
 
 			if(payment_mode=="Credit Note" && credit_amount != ''){ 
 	        	if(parseFloat(payment_amount) > parseFloat(credit_amount)) { 
-					error_msg_alert('Low Credit note balance'); 
+					error_msg_alert('Credit Note Balance is not available'); 
 				 	return false; 
 				}
 	        }else if(payment_mode=="Credit Note" && credit_amount == ''){
-				error_msg_alert("You don't have Credit Note Amount");
+				error_msg_alert("Credit Note Balance is not available");
 				return false;
 			}
 	        if(parseFloat(payment_amount)>parseFloat(net_total)){

@@ -4,7 +4,7 @@ global $currency;
 $booking_id = $_POST['booking_id'];
 $customer_id = $_SESSION['customer_id'];
 
-$query = "select * from package_tour_booking_master where customer_id='$customer_id' ";
+$query = "select * from package_tour_booking_master where customer_id='$customer_id' and delete_status='0' ";
 if($booking_id!=""){
 	$query .=" and booking_id = '$booking_id'";
 }
@@ -19,10 +19,10 @@ if($booking_id!=""){
       <th>Tour_Name</th>
       <th>Tour_Date&nbsp;&nbsp;&nbsp;&nbsp;</th>
       <th>View</th>
-      <th class="text-right info">Total_Amount</th>
-      <th class="text-right success">Paid_Amount</th>
-      <th class="text-right danger">Cancel_Amount</th>
-      <th class="text-right warning">Balance</th>
+      <th class="info">Total_Amount</th>
+      <th class="success">Paid_Amount</th>
+      <th class="danger">Cancel_Amount</th>
+      <th class="warning">Balance</th>
     </tr>
   </thead>
   <tbody>
@@ -95,12 +95,12 @@ if($booking_id!=""){
         <td><?= $row_booking['tour_name'] ?></td>
         <td><?= date('d-m-Y', strtotime($row_booking['tour_from_date'])) ?></td>
         <td>
-          <button class="btn btn-info btn-sm" onclick="package_view_modal(<?= $row_booking['booking_id'] ?>)" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
+          <button class="btn btn-info btn-sm" onclick="package_view_modal(<?= $row_booking['booking_id'] ?>)" title="View Details" id="package-<?= $row_booking['booking_id'] ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
         </td>
-        <td class="text-right info"><?= $net_total1 ?></td>
-        <td class="text-right success"><?= $paid_amount1 ?></td>
-        <td class="danger text-right"><?= $cancel_amount1 ?></td>
-        <td class="warning text-right"><?= $balance_amount1 ?></td>
+        <td class="info"><?= $net_total1 ?></td>
+        <td class="success"><?= $paid_amount1 ?></td>
+        <td class="danger"><?= $cancel_amount1 ?></td>
+        <td class="warning"><?= $balance_amount1 ?></td>
       </tr>
       <?php
 
@@ -127,9 +127,11 @@ $('#package_table').dataTable({
 });
   function package_view_modal(booking_id)
   {
+    $('#package-'+booking_id).button('loading');
     var base_url = $('#base_url').val();
     $.post(base_url+'view/customer/other/bookings/package_booking/view/index.php', { booking_id : booking_id }, function(data){
       $('#div_package_content_display').html(data);
+      $('#package-'+booking_id).button('reset');
     });
   }
 </script>

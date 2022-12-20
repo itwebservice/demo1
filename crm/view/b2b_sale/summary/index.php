@@ -86,7 +86,7 @@ function list_reflect()
 
 	$.post(base_url+'view/b2b_sale/summary/list_reflect.php', { customer_id : customer_id, b2b_booking_master : b2b_booking_master, from_date : from_date, to_date : to_date}, function(data){
 		// alert(data);
-		pagination_load(data, column, true, true, 20, 'package_tour_report');
+		pagination_load(data, column, true, true, 20, 'package_tour_report',true);
 	});
 }
 list_reflect();

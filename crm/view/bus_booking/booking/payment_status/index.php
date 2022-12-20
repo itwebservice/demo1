@@ -158,7 +158,7 @@ function list_reflect()
 
 
 	$.post(base_url+'view/bus_booking/booking/payment_status/list_reflect.php', { customer_id : customer_id, booking_id : booking_id, payment_from_date : payment_from_date, payment_to_date : payment_to_date, cust_type : cust_type, company_name : company_name,booker_id:booker_id,branch_id : branch_id , branch_status : branch_status_r }, function(data){
-		pagination_load(data, column, true, true, 20, 'hotel_tour_report');
+		pagination_load(data, column, true, true, 20, 'hotel_tour_report',true);
 		$('.loader').remove();
 
 	});

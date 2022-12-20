@@ -39,7 +39,7 @@ $sq_enquiry = mysqli_fetch_assoc(mysqlQuery("Select * from enquiry_master where 
           </select>
         </div>
         <div class="col-md-3 col-sm-6 mg_bt_10">
-            <select name="cust_state" id="cust_state" title="Select State" style="width : 100%" class="form-control">
+            <select name="cust_state" id="cust_state" title="State/Country Name" style="width : 100%" class="form-control">
               <?php get_states_dropdown() ?>
             </select>
         </div>
@@ -142,6 +142,7 @@ $sq_enquiry = mysqli_fetch_assoc(mysqlQuery("Select * from enquiry_master where 
       followup_date:"required",
       followup_type: "required",
       followup_status: "required",
+	  cust_state: "required"
     },
     submitHandler:function(form,event){
     event.preventDefault();
@@ -157,7 +158,7 @@ $sq_enquiry = mysqli_fetch_assoc(mysqlQuery("Select * from enquiry_master where 
 	
 	if(followup_status=='Converted'){
 		if(cust_state=='' || cust_state==undefined){
-			error_msg_alert("Please select state");
+			error_msg_alert("Please select state/Country");
 			$('#btn_followup_reply').prop('disabled', false);
           	return false;
 		}

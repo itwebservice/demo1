@@ -34,23 +34,23 @@ if($payment_from_date!='' && $payment_to_date!=''){
 	$query .=" and payment_date between '$payment_from_date' and '$payment_to_date'";
 }
 if($cust_type != ""){
-	$query .= " and misc_id in (select misc_id from  miscellaneous_master where customer_id in ( select customer_id from customer_master where type='$cust_type' ))";
+	$query .= " and misc_id in (select misc_id from miscellaneous_master where customer_id in ( select customer_id from customer_master where type='$cust_type' ))";
 }
 if($company_name != ""){
-	$query .= " and misc_id in (select misc_id from  miscellaneous_master where customer_id in ( select customer_id from customer_master where company_name='$company_name' ))";
+	$query .= " and misc_id in (select misc_id from miscellaneous_master where customer_id in ( select customer_id from customer_master where company_name='$company_name' ))";
 }
 if($branch_status=='yes'){
 	if($role=='Branch Admin' || $role=='Accountant' || $role_id>'7'){
 		$query .= " and branch_admin_id = '$branch_admin_id'";
 	}
 	elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
-		$query .= " and misc_id in (select misc_id from  miscellaneous_master where emp_id ='$emp_id') and branch_admin_id = '$branch_admin_id'";
+		$query .= " and misc_id in (select misc_id from miscellaneous_master where emp_id ='$emp_id') and branch_admin_id = '$branch_admin_id'";
 	}
 }
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
-	$query .= " and misc_id in (select misc_id from  miscellaneous_master where emp_id ='$emp_id')";
+	$query .= " and misc_id in (select misc_id from miscellaneous_master where emp_id ='$emp_id')";
 }
-$query .= " order by payment_id desc";
+// $query .= " order by payment_id desc";
 
 $count = 0;
 $total_paid_amt=0;
@@ -93,6 +93,10 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 	else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg='danger';
 		$sq_cancel_amount = $sq_cancel_amount + $row_visa_payment['payment_amount'] + $row_visa_payment['credit_charges'];
 	}
+	else if($row_visa_payment['clearance_status']=="Cleared"){ $bg='success';
+	}
+	else { $bg='';
+	}
 	$sq_paid_amount = $sq_paid_amount + $row_visa_payment['payment_amount'] + $row_visa_payment['credit_charges'];
 
 	$payment_id_name = " Miscellaneous Payment ID";
@@ -109,10 +113,12 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 	$bank_name = $row_visa_payment['bank_name'];
 	$receipt_type = " Miscellaneous Receipt";			
 
-	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=miscellaneous_payment_master&customer_field=misc_id&in_customer_id=$row_visa_payment[misc_id]";
-	$checkshow = "";
+	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=miscellaneous_payment_master&customer_field=misc_id&in_customer_id=$row_visa_payment[misc_id]&status=$row_visa_payment[status]";
+	
 	if($row_visa_payment['payment_mode']=="Cash" || $row_visa_payment['payment_mode']=="Cheque"){
 		$checshow = '<input type="checkbox" id="chk_visa_payment_'.$count.'" name="chk_visa_payment" value="'. $row_visa_payment['payment_id'].'">';
+	}else{
+		$checshow = "";
 	}
 	$payshow = "";
 	if($payment_mode=="Cheque"){
@@ -122,8 +128,10 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 	}
 	if($row_visa_payment['payment_mode'] == 'Credit Note' || ($row_visa_payment['payment_mode'] == 'Credit Card' && $row_visa_payment['clearance_status']=="Cleared")){
 		$edit_btn = '';
+		$delete_btn = '';
 	}else{
 		$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='visa_payment_update_modal(".$row_visa_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_visa_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 	$temp_arr = array( "data" => array(
 		(int)($count),
@@ -135,8 +143,7 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 		$payshow,
 		number_format($row_visa_payment['payment_amount']+$row_visa_payment['credit_charges'],2),
 		'<a onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
-
-		'.$edit_btn
+		'.$edit_btn.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr); 
 	}

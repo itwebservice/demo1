@@ -193,12 +193,14 @@ $('#frm_response_save').validate({
           var request_id = $('#request_id').val();
           var cart_data = JSON.parse($('#cart_data').val());
           var response_arr = new Array();
+		      var status_arr = [];
           for(var i=0;i<cart_data.length;i++){
 
             var input_name = 'status'+i;
             $('input[name=' + input_name + ']:checked').each(function () {
               var options_arr = new Array();
               var status = $(this).val();
+			        status_arr.push(status);
               if(status === "Not Available"){
                 
                 var table = document.getElementById("tbl_similar_hotels"+i);
@@ -224,6 +226,10 @@ $('#frm_response_save').validate({
               }
               );
             });
+          }
+          if(status_arr.length==0){
+            error_msg_alert('Please select status!');
+            return false;
           }
 
           $.ajax({

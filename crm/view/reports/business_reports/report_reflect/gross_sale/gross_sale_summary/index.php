@@ -37,8 +37,8 @@ $month = date('m', strtotime($current_date));
             <tbody>
 <!-- Group Booking -->
 <?php
-$sq_group_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and tour_group_status != 'Cancel'"));
-$sq_group_pre_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$pre_financial_year_id' and tour_group_status != 'Cancel'"));
+$sq_group_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$financial_year_id' and tour_group_status != 'Cancel' and delete_status='0'"));
+$sq_group_pre_count = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details where financial_year_id='$pre_financial_year_id' and tour_group_status != 'Cancel' and delete_status='0'"));
 
 $sq_group = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from tourwise_traveler_details where financial_year_id='$financial_year_id' and tour_group_status != 'Cancel'"));
 $sq_group_pre = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from tourwise_traveler_details where financial_year_id='$pre_financial_year_id' and tour_group_status != 'Cancel'"));
@@ -61,8 +61,8 @@ $previous_group_sale_m = $sq_group_month_pre['net_total'];
     <?php } ?>
 <!-- Package Booking -->
 <?php
-$sq_package_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$financial_year_id'"));
-$sq_package_pre_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$pre_financial_year_id'"));
+$sq_package_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$financial_year_id' and delete_status='0'"));
+$sq_package_pre_count = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where financial_year_id='$pre_financial_year_id' and delete_status='0'"));
 
 $sq_package = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from package_tour_booking_master where financial_year_id='$financial_year_id'"));
 $sq_package_pre = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from package_tour_booking_master where financial_year_id='$pre_financial_year_id'"));
@@ -86,8 +86,8 @@ $previous_package_sale_m = $sq_package_month_pre['net_total'];
     <?php } ?>
  <!-- Hotel Booking -->
 <?php
-$sq_hotel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$financial_year_id' and booking_id in(SELECT booking_id FROM `hotel_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
-$sq_hotel_pre_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$pre_financial_year_id' and booking_id in(SELECT booking_id FROM `hotel_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
+$sq_hotel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$financial_year_id' and delete_status='0' and booking_id in(SELECT booking_id FROM `hotel_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
+$sq_hotel_pre_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and booking_id in(SELECT booking_id FROM `hotel_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
 
 $sq_hotel = mysqli_fetch_assoc(mysqlQuery("select sum(total_fee) as hotel_total from hotel_booking_master where financial_year_id='$financial_year_id' and booking_id in(SELECT booking_id FROM `hotel_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
 $sq_hotel_pre = mysqli_fetch_assoc(mysqlQuery("select sum(total_fee) as hotel_total from hotel_booking_master where financial_year_id='$pre_financial_year_id' and booking_id in(SELECT booking_id FROM `hotel_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
@@ -111,8 +111,8 @@ $current_month_hotel = $sq_hotel_month['hotel_total'];
     </tr>
     <?php }
 // Bus Booking
-$sq_bus_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$financial_year_id' and booking_id in(SELECT booking_id FROM `bus_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
-$sq_bus_pre_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$pre_financial_year_id' and booking_id in(SELECT booking_id FROM `bus_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
+$sq_bus_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$financial_year_id' and delete_status='0' and delete_status='0' and booking_id in(SELECT booking_id FROM `bus_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
+$sq_bus_pre_count = mysqli_num_rows(mysqlQuery("select * from bus_booking_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and delete_status='0' and booking_id in(SELECT booking_id FROM `bus_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
 
 $sq_bus = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as bus_total from bus_booking_master where financial_year_id='$financial_year_id' and booking_id in(SELECT booking_id FROM `bus_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
 $sq_bus_pre = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as bus_total from bus_booking_master where financial_year_id='$pre_financial_year_id' and booking_id in(SELECT booking_id FROM `bus_booking_entries` WHERE `status`!='Cancel' group by booking_id)"));
@@ -136,8 +136,8 @@ if($sq_bus_count!="0" || $sq_bus_pre_count!='0'){
     </tr>
 <?php } 
 // Flight Booking
-$sq_flight_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$financial_year_id' and ticket_id in(SELECT ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by ticket_id)"));
-$sq_flight_pre_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$pre_financial_year_id' and ticket_id in(SELECT ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by ticket_id)"));
+$sq_flight_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$financial_year_id' and delete_status='0' and ticket_id in(SELECT ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by ticket_id)"));
+$sq_flight_pre_count = mysqli_num_rows(mysqlQuery("select * from ticket_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and ticket_id in(SELECT ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by ticket_id)"));
 
 $sq_flight = mysqli_fetch_assoc(mysqlQuery("select sum(ticket_total_cost) as flight_total from ticket_master where financial_year_id='$financial_year_id' and ticket_id in(SELECT ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by ticket_id)"));
 $sq_flight_pre = mysqli_fetch_assoc(mysqlQuery("select sum(ticket_total_cost) as flight_total from ticket_master where financial_year_id='$pre_financial_year_id' and ticket_id in(SELECT ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by ticket_id)"));
@@ -163,7 +163,7 @@ if($sq_flight_count!="0" || $sq_flight_pre_count!='0'){
 <?php } 
 // <!-- Train Booking -->
 $sq_train_count = mysqli_num_rows(mysqlQuery("select * from  train_ticket_master where financial_year_id='$financial_year_id' and train_ticket_id in(SELECT train_ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by train_ticket_id)"));
-$sq_train_pre_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where financial_year_id='$pre_financial_year_id' and train_ticket_id in(SELECT train_ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by train_ticket_id)"));
+$sq_train_pre_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and train_ticket_id in(SELECT train_ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by train_ticket_id)"));
 
 $sq_train = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from train_ticket_master where financial_year_id='$financial_year_id' and train_ticket_id in(SELECT train_ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by train_ticket_id)"));
 $sq_train_pre = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from train_ticket_master where financial_year_id='$pre_financial_year_id' and train_ticket_id in(SELECT train_ticket_id FROM `ticket_master_entries` WHERE `status`!='Cancel' group by train_ticket_id)"));
@@ -187,8 +187,8 @@ $current_month_train = $sq_train_month['net_total'];
                     </tr>
             <?php } 
  // <!-- Visa Booking -->
-$sq_visa_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$financial_year_id' and visa_id in(SELECT visa_id FROM `visa_master_entries` WHERE `status`!='Cancel' group by visa_id)"));
-$sq_visa_pre_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$pre_financial_year_id' and visa_id in(SELECT visa_id FROM `visa_master_entries` WHERE `status`!='Cancel' group by visa_id)"));
+$sq_visa_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$financial_year_id' and delete_status='0' and delete_status='0' and visa_id in(SELECT visa_id FROM `visa_master_entries` WHERE `status`!='Cancel' group by visa_id)"));
+$sq_visa_pre_count = mysqli_num_rows(mysqlQuery("select * from visa_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and delete_status='0' and visa_id in(SELECT visa_id FROM `visa_master_entries` WHERE `status`!='Cancel' group by visa_id)"));
 
 $sq_visa = mysqli_fetch_assoc(mysqlQuery("select sum(visa_total_cost) as net_total from visa_master where financial_year_id='$financial_year_id' and visa_id in(SELECT visa_id FROM `visa_master_entries` WHERE `status`!='Cancel' group by visa_id)"));
 $sq_visa_pre = mysqli_fetch_assoc(mysqlQuery("select sum(visa_total_cost) as net_total from visa_master where financial_year_id='$pre_financial_year_id' and visa_id in(SELECT visa_id FROM `visa_master_entries` WHERE `status`!='Cancel' group by visa_id)"));
@@ -212,8 +212,8 @@ $current_month_visa = $sq_visa_month['net_total'];
                     </tr>
             <?php }
 // <!-- Car Rental Booking -->
-$sq_car_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$financial_year_id' and status!='Cancel'"));
-$sq_car_pre_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$pre_financial_year_id' and status!='Cancel'"));
+$sq_car_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$financial_year_id' and status!='Cancel' and delete_status='0'"));
+$sq_car_pre_count = mysqli_num_rows(mysqlQuery("select * from car_rental_booking where financial_year_id='$pre_financial_year_id' and status!='Cancel' and delete_status='0'"));
 
 $sq_car = mysqli_fetch_assoc(mysqlQuery("select sum(total_fees) as net_total from car_rental_booking where financial_year_id='$financial_year_id' and status!='Cancel'"));
 $sq_car_pre = mysqli_fetch_assoc(mysqlQuery("select sum(total_fees) as net_total from car_rental_booking where financial_year_id='$pre_financial_year_id' and status!='Cancel'"));
@@ -237,8 +237,8 @@ $current_month_car = $sq_car_month['net_total'];
                     </tr>
             <?php } 
 // <!-- Activity Booking -->
-$sq_exc_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$financial_year_id' and exc_id in(SELECT exc_id FROM `excursion_master_entries` WHERE `status`!='Cancel' group by exc_id)"));
-$sq_exc_pre_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$pre_financial_year_id' and exc_id in(SELECT exc_id FROM `excursion_master_entries` WHERE `status`!='Cancel' group by exc_id)"));
+$sq_exc_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$financial_year_id' and delete_status='0' and exc_id in(SELECT exc_id FROM `excursion_master_entries` WHERE `status`!='Cancel' group by exc_id)"));
+$sq_exc_pre_count = mysqli_num_rows(mysqlQuery("select * from excursion_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and exc_id in(SELECT exc_id FROM `excursion_master_entries` WHERE `status`!='Cancel' group by exc_id)"));
 
 $sq_exc = mysqli_fetch_assoc(mysqlQuery("select sum(exc_total_cost) as net_total from excursion_master where financial_year_id='$financial_year_id' and exc_id in(SELECT exc_id FROM `excursion_master_entries` WHERE `status`!='Cancel' group by exc_id)"));
 $sq_exc_pre = mysqli_fetch_assoc(mysqlQuery("select sum(exc_total_cost) as net_total from excursion_master where financial_year_id='$pre_financial_year_id' and exc_id in(SELECT exc_id FROM `excursion_master_entries` WHERE `status`!='Cancel' group by exc_id)"));
@@ -262,8 +262,8 @@ $current_month_act = $sq_exc_month['net_total'];
                     </tr>
             <?php } 
 // <!-- misc Booking -->
-$sq_misc_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$financial_year_id' and misc_id in(SELECT misc_id FROM `miscellaneous_master_entries` WHERE `status`!='Cancel' group by misc_id)"));
-$sq_misc_pre_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$pre_financial_year_id' and misc_id in(SELECT misc_id FROM `miscellaneous_master_entries` WHERE `status`!='Cancel' group by misc_id)"));
+$sq_misc_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$financial_year_id' and delete_status='0' and misc_id in(SELECT misc_id FROM `miscellaneous_master_entries` WHERE `status`!='Cancel' group by misc_id)"));
+$sq_misc_pre_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master where financial_year_id='$pre_financial_year_id' and delete_status='0' and misc_id in(SELECT misc_id FROM `miscellaneous_master_entries` WHERE `status`!='Cancel' group by misc_id)"));
 
 $sq_misc = mysqli_fetch_assoc(mysqlQuery("select sum(misc_total_cost) as net_total from miscellaneous_master where financial_year_id='$financial_year_id' and misc_id in(SELECT misc_id FROM `miscellaneous_master_entries` WHERE `status`!='Cancel' group by misc_id)"));
 $sq_misc_pre = mysqli_fetch_assoc(mysqlQuery("select sum(misc_total_cost) as net_total from miscellaneous_master where financial_year_id='$pre_financial_year_id' and misc_id in(SELECT misc_id FROM `miscellaneous_master_entries` WHERE `status`!='Cancel' group by misc_id)"));

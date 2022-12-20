@@ -83,7 +83,7 @@ $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 $financial_year_id = $_SESSION['financial_year_id'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -174,8 +174,8 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
 if($financial_year_id != ''){
 	$query .= " and booking_id in (select booking_id from bus_booking_master where financial_year_id='$financial_year_id')";
 }
+$query .= " and booking_id in (select booking_id from bus_booking_master where delete_status='0')";
 $row_count = 9;
-         
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
         ->setCellValue('C'.$row_count, "Booking ID")
@@ -193,7 +193,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyF
         $sq_entry = mysqlQuery($query);
         while($row_entry = mysqli_fetch_assoc($sq_entry)){
 
-            $sq_bus = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_entry[booking_id]'"));
+            $sq_bus = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$row_entry[booking_id]' and delete_status='0'"));
             $date = $sq_bus['created_at'];
             $yr = explode("-", $date);
             $year =$yr[0];
@@ -205,7 +205,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyF
 			}
 
 
-	$objPHPExcel->setActiveSheetIndex(0)
+	    $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, ++$count)
         ->setCellValue('C'.$row_count, get_bus_booking_id($row_entry['booking_id'],$year))
         ->setCellValue('D'.$row_count, $customer_name)
@@ -214,10 +214,8 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyF
         ->setCellValue('G'.$row_count, $row_entry['origin'].' -- '.$row_entry['destination'])
         ->setCellValue('H'.$row_count, get_datetime_user($row_entry['date_of_journey']))
         ->setCellValue('I'.$row_count, $row_entry['departure_time'].' '.$row_entry['reporting_time']);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);    
-
-
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($content_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);    
 
 		$row_count++;
 

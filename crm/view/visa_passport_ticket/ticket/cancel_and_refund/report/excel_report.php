@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -74,7 +74,7 @@ $ticket_id = $_GET['ticket_id'];
 $from_date = $_GET['payment_from_date'];
 $to_date = $_GET['payment_to_date'];
 if($ticket_id!=""){
-    $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+    $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
     $date = $sq_entry_date['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];
@@ -98,7 +98,7 @@ $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('C3', $invoice_id)
             ->setCellValue('B4', 'From-To-Date')
             ->setCellValue('C4', $date_str);
-             
+
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($borderArray);    
 
@@ -124,8 +124,8 @@ $row_count = 6;
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
         ->setCellValue('C'.$row_count, "Booking ID")
-        ->setCellValue('D'.$row_count, "Passenger_name")
-        ->setCellValue('E'.$row_count, "Refund_ID")
+        ->setCellValue('D'.$row_count, "Refund To")
+        ->setCellValue('E'.$row_count, "Refund ID")
         ->setCellValue('F'.$row_count, "Refund Date")
         ->setCellValue('G'.$row_count, "Mode")
         ->setCellValue('H'.$row_count, "Bank Name")
@@ -138,38 +138,42 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyF
 $row_count++;
 while($row_refund = mysqli_fetch_assoc($sq_refund)){
 
-        $traveler_name = "";
-        $sq_refund_entries = mysqlQuery("select * from ticket_refund_entries where refund_id='$row_refund[refund_id]'");
-        while($row_refund_entry = mysqli_fetch_assoc($sq_refund_entries)){
-            $sq_entry_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where entry_id='$row_refund_entry[entry_id]'"));
-            $traveler_name .= $sq_entry_info['first_name'].' '.$sq_entry_info['last_name'].', ';
-            $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$sq_entry_info[ticket_id]'"));
-            $date = $sq_entry_date['created_at'];
-            $yr = explode("-", $date);
-            $year =$yr[0];
-        }
-        $date = $row_refund['refund_date'];
-        $yr1 = explode("-", $date);
-        $year1 = $yr1[0];
-        $traveler_name = trim($traveler_name, ", ");
+    $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id=(select customer_id from ticket_master where ticket_id='$row_refund[ticket_id]')"));
+    if($sq_cust['type']=='Corporate'||$sq_cust['type'] == 'B2B'){
+        $cust_name = $sq_cust['company_name'];
+    }else{
+        $cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
+    }
+    $traveler_name = "";
+    $sq_refund_entries = mysqlQuery("select * from ticket_refund_entries where refund_id='$row_refund[refund_id]'");
+    while($row_refund_entry = mysqli_fetch_assoc($sq_refund_entries)){
+        $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$sq_entry_info[ticket_id]' and delete_status='0'"));
+        $date = $sq_entry_date['created_at'];
+        $yr = explode("-", $date);
+        $year =$yr[0];
+    }
+    $date = $row_refund['refund_date'];
+    $yr1 = explode("-", $date);
+    $year1 = $yr1[0];
+    $traveler_name = trim($traveler_name, ", ");
 
-        $total_refund = $total_refund+$row_refund['refund_amount'];
-        if($row_refund['clearance_status']=="Pending"){ 
-            $bg='warning';
-            $sq_pending_amount = $sq_pending_amount + $row_refund['refund_amount'];
-        }
-        else if($row_refund['clearance_status']=="Cancelled"){ 
-            $bg='danger';
-            $sq_cancel_amount = $sq_cancel_amount + $row_refund['refund_amount'];
-        }
-        else{
-            $bg='';
-        }
+    $total_refund = $total_refund+$row_refund['refund_amount'];
+    if($row_refund['clearance_status']=="Pending"){ 
+        $bg='warning';
+        $sq_pending_amount = $sq_pending_amount + $row_refund['refund_amount'];
+    }
+    else if($row_refund['clearance_status']=="Cancelled"){ 
+        $bg='danger';
+        $sq_cancel_amount = $sq_cancel_amount + $row_refund['refund_amount'];
+    }
+    else{
+        $bg='';
+    }
 
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, ++$count)
         ->setCellValue('C'.$row_count, get_ticket_booking_id($row_refund['ticket_id'],$year))
-        ->setCellValue('D'.$row_count, $traveler_name)
+        ->setCellValue('D'.$row_count, $cust_name)
         ->setCellValue('E'.$row_count, get_ticket_booking_refund_id($row_refund['refund_id'],$year1))
         ->setCellValue('F'.$row_count, date('d-m-Y', strtotime($row_refund['refund_date'])))
         ->setCellValue('G'.$row_count, $row_refund['refund_mode'])
@@ -177,24 +181,24 @@ while($row_refund = mysqli_fetch_assoc($sq_refund)){
         ->setCellValue('I'.$row_count, $row_refund['transaction_id'])
         ->setCellValue('J'.$row_count,  $row_refund['refund_amount']);
 
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($content_style_Array);
 	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);    
 
-		$row_count++;
+    $row_count++;
 
-        $objPHPExcel->setActiveSheetIndex(0)
-        ->setCellValue('B'.$row_count, "")
-        ->setCellValue('C'.$row_count, "")
-        ->setCellValue('D'.$row_count, "")
-        ->setCellValue('E'.$row_count, "")
-        ->setCellValue('F'.$row_count, "")
-        ->setCellValue('G'.$row_count, 'Refund : '.$total_refund)
-        ->setCellValue('H'.$row_count, 'Pending : '.$sq_pending_amount)
-        ->setCellValue('I'.$row_count, 'Cancelled : '.$sq_cancel_amount)
-        ->setCellValue('J'.$row_count, 'Total Refund : '.($total_refund - $sq_pending_amount - $sq_cancel_amount));
+    $objPHPExcel->setActiveSheetIndex(0)
+    ->setCellValue('B'.$row_count, "")
+    ->setCellValue('C'.$row_count, "")
+    ->setCellValue('D'.$row_count, "")
+    ->setCellValue('E'.$row_count, "")
+    ->setCellValue('F'.$row_count, "")
+    ->setCellValue('G'.$row_count, 'Refund : '.$total_refund)
+    ->setCellValue('H'.$row_count, 'Pending : '.$sq_pending_amount)
+    ->setCellValue('I'.$row_count, 'Cancelled : '.$sq_cancel_amount)
+    ->setCellValue('J'.$row_count, 'Total Refund : '.($total_refund - $sq_pending_amount - $sq_cancel_amount));
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($header_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);
 }
 
 //////////////////////////****************Content End**************////////////////////////////////

@@ -10,7 +10,7 @@ $temp_arr = array();
 	
 	$count = 1;
 	//Hotel
-	$query = "select * from hotel_booking_master where 1 ";
+	$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 	if($from_date != '' && $to_date != ''){
 		$from_date = get_date_db($from_date);
 		$to_date = get_date_db($to_date);
@@ -46,7 +46,7 @@ $temp_arr = array();
 						get_hotel_booking_id($row_query['booking_id'],$year),
 						get_date_user($row_query['created_at']),
 						$cust_name ,
-						($sq_cust['pan_no'] == '') ? 'NA' : $sq_cust['pan_no'],
+						($sq_cust['pan_no'] == '') ? 'NA' : strtoupper($sq_cust['pan_no']),
 						number_format($tds_on_amount,2) ,
 						number_format($row_query['tds'],2) 
 
@@ -57,11 +57,11 @@ $temp_arr = array();
 	}
 	//Flight
 	$tds_on_amount = 0;
-	$query = "select * from ticket_master where 1 ";
+	$query = "select * from ticket_master where 1 and delete_status='0' ";
 	if($from_date != '' && $to_date != ''){
-	$from_date = get_date_db($from_date);
-	$to_date = get_date_db($to_date);
-	$query .= " and DATE(created_at) between '$from_date' and '$to_date'"; 		
+		$from_date = get_date_db($from_date);
+		$to_date = get_date_db($to_date);
+		$query .= " and DATE(created_at) between '$from_date' and '$to_date'"; 		
 	}
 	include "../../../../../../model/app_settings/branchwise_filteration.php";
 	$sq_query = mysqlQuery($query);
@@ -85,6 +85,12 @@ $temp_arr = array();
 				$cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
 			}
 			$tds_on_amount = $row_query['basic_cost'] + $row_query['yq_tax'] + $row_query['service_charge'] - $row_query['basic_cost_discount'];	
+			$cancel_type = $row_query['cancel_type'];
+			if($cancel_type == 2 || $cancel_type == 3){
+				$bg="warning";
+			} else{
+				$bg = '';
+			}
 			if($row_query['tds'] != '0'){
 				
 				$temp_arr = array( "data" => array(
@@ -92,7 +98,7 @@ $temp_arr = array();
 					get_ticket_booking_id($row_query['ticket_id'],$year) ,
 					get_date_user($row_query['created_at']),
 					$cust_name ,
-					($sq_cust['pan_no'] == '') ? 'NA' : $sq_cust['pan_no'],
+					($sq_cust['pan_no'] == '') ? 'NA' : strtoupper($sq_cust['pan_no']),
 					number_format($tds_on_amount,2) ,
 					number_format($row_query['tds'],2) 
 
@@ -102,7 +108,8 @@ $temp_arr = array();
 		}
 	} 
 	//Other Income
-	$query = "select * from other_income_master where 1 ";
+	$bg = '';
+	$query = "select * from other_income_master where 1 and delete_status='0' ";
 	if($from_date != '' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);

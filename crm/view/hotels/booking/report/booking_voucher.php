@@ -25,13 +25,13 @@ $sq_hotel = mysqli_fetch_assoc( mysqlQuery("select * from hotel_master where hot
 
 	
 $booking_id = $sq_service_voucher['booking_id'];
-$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $customer_name = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id	='$sq_booking[customer_id]'"));
 $name = $customer_name['first_name'].' '.$customer_name['last_name'].'  Contact No. ('. $customer_name['contact_no'] .')';
 if($customer_name['type'] == 'Corporate'||$customer_name['type'] == 'B2B'){ $company_name = '('.$customer_name['company_name'].')';}
 else{ $company_name = '';}
 
- $adult= $sq_booking['adults'];
+$adult= $sq_booking['adults'];
 $child = $sq_booking['childrens'];
 $infant = $sq_booking['infant'];
 

@@ -17,7 +17,7 @@ $branch_status = $_POST['branch_status'];
             <option value="">Booking ID</option>
             <?php 
             
-            $query = "select * from package_tour_booking_master where 1 ";
+            $query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
             
             if($branch_status=='yes' && $role!='Admin'){
                 $query .=" and branch_admin_id = '$branch_admin_id'";

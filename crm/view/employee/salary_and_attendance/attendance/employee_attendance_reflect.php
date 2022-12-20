@@ -116,28 +116,23 @@ function user_attendence_Save(){
     var att_date = $('#attendence_date').val();
 	var status_arr = new Array();
 	var emp_arr = new Array();
+	
+	var today = new Date();
+	today = today.getTime();
 
-	var from_date = $('#' + 'attendence_date').val();
-	var to_date = $('#' + 'cur_date').val();
+	var from_parts = att_date.split(' ');
+	var parts = from_parts[0].split('-');
+	var date = new Date();
+	var new_month = parseInt(parts[1]) - 1;
+	date.setFullYear(parts[2]);
+	date.setDate(parts[0]);
+	date.setMonth(new_month);
+	var from_date_ms = date.getTime();
 
-	var edate = from_date.split('-');
-	e_date = new Date(edate[2], edate[1] - 1, edate[0]).getTime();
-	var edate1 = to_date.split('-');
-	e_date1 = new Date(edate1[2], edate1[1] - 1, edate1[0]).getTime();
-
-	var from_date_ms = new Date(e_date).getTime();
-	var to_date_ms = new Date(e_date1).getTime();
-	if (parseInt(from_date_ms) > parseInt(to_date_ms)) {
-		var res = false;
-	}
-	else {
-		var res = true;
-	}
-	if(!res){
-		error_msg_alert("Future date not allowed!");
+	if (today != from_date_ms && today < from_date_ms) {
+		error_msg_alert('Future date is not allowed.');
 		return false;
 	}
-	
 	$('select[name="status"]').each(function(){
 		var value = $(this).val();
 		status_arr.push(value);

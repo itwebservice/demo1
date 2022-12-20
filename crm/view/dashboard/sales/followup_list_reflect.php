@@ -107,8 +107,8 @@ $to_date = $_POST['to_date'];
                     <td><?= get_datetime_user($followup_date1); ?></td>
                     <!-- <td><a class="btn btn-info btn-sm" href="<?= BASE_URL ?>view/attractions_offers_enquiry/enquiry/followup/index.php?enquiry_id=<?php echo $row['enquiry_id'] ?>" target="_blank"><i class="fa fa-reply-all"></i></a></td> -->
                     <td><div style='<?=$back_color?>' class="table_side_widget_text widget_blue_text table_status"><?= $status ?></div></td>
-                    <td><button class="btn btn-info btn-sm" onclick="display_history('<?php echo $row['enquiry_id']; ?>');"><i class="fa fa-history"></i></button></td>
-                    <td><button class="btn btn-info btn-sm" onclick="Followup_update('<?php echo $row['enquiry_id']; ?>');" title="Update Followup" target="_blank"><i class="fa fa-reply-all"></i></button></td>
+                    <td><button class="btn btn-info btn-sm" onclick="display_history('<?php echo $row['enquiry_id']; ?>');" id="history-<?= $row['enquiry_id'] ?>"><i class="fa fa-history"></i></button></td>
+                    <td><button class="btn btn-info btn-sm" onclick="Followup_update('<?php echo $row['enquiry_id']; ?>');" id="followup-<?= $row['enquiry_id'] ?>" title="Update Followup" target="_blank"><i class="fa fa-reply-all"></i></button></td>
                 </tr>
                 <?php } } ?>
             </tbody>

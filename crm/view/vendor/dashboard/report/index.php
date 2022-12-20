@@ -67,7 +67,7 @@ var column = [
 	{ title : "Purchase_ID"},
 	{ title : "Supplier_Type"},
 	{ title : "Supplier_Name"},
-	{ title : "Date"},
+	{ title : "Trans_Date"},
 	{ title : "Credit", className:"info text-right"},
 	{ title : "Debit", className:"success text-right"}
 ];
@@ -84,7 +84,7 @@ function report_list_reflect()
 	var from_date = $('#from_date').val();
 	var to_date = $('#to_date').val();
 	$.post('report/report_list_reflect.php', { estimate_type : estimate_type, estimate_type_id : estimate_type_id, vendor_type : vendor_type, vendor_type_id : vendor_type_id , branch_status : branch_status,from_date : from_date, to_date : to_date}, function(data){
-		pagination_load(data, column, true, true, 20, 'report');
+		pagination_load(data, column, true, true, 20, 'report',true);
 		$('.loader').remove();
 	});
 }

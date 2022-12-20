@@ -1,11 +1,11 @@
-<?php 
+<?php
 include "../../../../../../model/model.php";
 
 $tourwise_traveler_id = $_POST['tourwise_traveler_id'];
 $customer_id = $_SESSION['customer_id'];
 $status = true;
 
-$query = "select * from tourwise_traveler_details where customer_id='$customer_id' ";
+$query = "select * from tourwise_traveler_details where customer_id='$customer_id' and delete_status='0' ";
 if($tourwise_traveler_id!=""){
 	$query .=" and id = '$tourwise_traveler_id'";
 }
@@ -20,10 +20,10 @@ if($tourwise_traveler_id!=""){
 			    <th>Tour_Name</th>
 			    <th>Tour_Date</th>
 			    <th>View</th>
-			    <th class="text-right info">total_Amount</th>
-			    <th class="text-right success">Paid_Amount </th>  
-			    <th class="text-right danger">Cncl_Amount</th>
-			    <th class="text-right warning">Balance</th>
+			    <th class="info">total_Amount</th>
+			    <th class="success">Paid_Amount </th>  
+			    <th class="danger">Cncl_Amount</th>
+			    <th class="warning">Balance</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -136,19 +136,19 @@ if($tourwise_traveler_id!=""){
 			$count++;
 			?>
 			<tr class="<?= $bg ?>">
-				<td><?php echo $count ?></td>
-				<td><?= get_group_booking_id($tourwise_id,$year) ?></td>
-				<td><?php echo $tour_name ?></td>
-				<td><?php echo $tour_group_from." to ".$tour_group_to ?></td>
+				<td><?php echo $count; ?></td>
+				<td><?php echo get_group_booking_id($tourwise_id,$year); ?></td>
+				<td><?php echo $tour_name; ?></td>
+				<td><?php echo $tour_group_from." to ".$tour_group_to; ?></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="display_modal(<?php echo $row1['id']; ?>)" title="View Details"><i class="fa fa-eye"></i></button>
+					<button class="btn btn-info btn-sm" onclick="display_modal(<?php echo $row1['id']; ?>)" title="View Details" id="group-<?php echo $row1['id']; ?>"><i class="fa fa-eye"></i></button>
 				</td>
-				<td class="text-right info"><?= $net_total1 ?></td>
-				<td class="text-right success"><?= $paid_amount1?></td>
-				<td class="text-right danger"><?= $cancel_amount1 ?></td>
-				<td class="text-right warning"><?= $balance_amount1 ?></td>
+				<td class="info"><?= $net_total1 ?></td>
+				<td class="success"><?= $paid_amount1?></td>
+				<td class="danger"><?= $cancel_amount1 ?></td>
+				<td class="warning"><?= $balance_amount1 ?></td>
 			</tr>
-			<?php			
+			<?php		
 		}
 		?>
 		</tbody>
@@ -170,8 +170,10 @@ $('#group_table').dataTable({
 });
 function display_modal(id)
 {
+    $('#group-'+id).button('loading');
     $.post('bookings/group_booking/booking/view/index.php', { id : id }, function(data){
     	$('#view_modal').html(data);
+    	$('#group-'+id).button('reset');
     });
 }
 </script>

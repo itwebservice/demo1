@@ -98,6 +98,7 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role!='Hr'){
 </div> </div> </div>
 <script>
 $('#tbl_user_log').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 });
 </script>

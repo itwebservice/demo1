@@ -15,7 +15,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
-$query = "select * from train_ticket_master where financial_year_id='$financial_year_id' ";
+$query = "select * from train_ticket_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .= " and customer_id='$customer_id'";
 }		
@@ -54,10 +54,12 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	if($pass_count==$cancel_count) 	{
 		$bg="danger";
 		$update_btn = '';
+		$delete_btn = '';
 	}
 	else  {
-		$bg="#fff";
+		$bg="";
 		$update_btn = '<button class="btn btn-info btn-sm" onclick="train_ticket_update_modal('. $row_ticket['train_ticket_id'] .')"  data-toggle="tooltip" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_ticket['train_ticket_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 
 	$date = $row_ticket['created_at'];
@@ -78,12 +80,16 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
 	$paid_amount = $sq_paid_amount['sum'];
 	$paid_amount = ($paid_amount == '')?0:$paid_amount;
-	$sale_amount = $row_ticket['net_total']-$row_ticket['cancel_amount'];
-	$bal_amount = $sale_amount - $paid_amount;
+	$sale_amount = $row_ticket['net_total'];
 
 	$cancel_amt = $row_ticket['cancel_amount'];
 	if($cancel_amt == ""){ $cancel_amt = 0;}
 	
+	if($bg != ''){
+		$bal_amount = ($paid_amount > $cancel_amt) ? 0 : floatval($cancel_amt) - floatval($paid_amount);
+	}else{
+		$bal_amount = floatval($sale_amount) - floatval($paid_amount);
+	}
 	$total_sale = $total_sale+$row_ticket['net_total']+$credit_card_charges;
 	$total_cancelation_amount = $total_cancelation_amount+$cancel_amt;
 	$total_balance = $total_balance+$sale_amount+$credit_card_charges;	
@@ -98,8 +104,8 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	$service_charge =  $row_ticket['service_charge'];
 	$service_tax = $row_ticket['service_tax_subtotal'];
 	
-	$basic_cost = $row_ticket['basic_fair'] - $row_ticket['cancel_amount'];
-	$net_amount = $row_ticket['net_total'] - $row_ticket['cancel_amount'];
+	$basic_cost = $row_ticket['basic_fair'];
+	$net_amount = $row_ticket['net_total'];
 
 	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='Train'"));   
 	$sac_code = $sq_sac['hsn_sac_code'];
@@ -107,7 +113,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	if($app_invoice_format == 4)
 	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/tax_invoice_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&service_charge=$service_charge&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&train_ticket_id=$train_ticket_id&total_paid=$paid_amount&balance_amount=$bal_amount&sac_code=$sac_code&branch_status=$branch_status&pass_count=$pass_count&credit_card_charges=$credit_card_charges";
 	else
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/train_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&service_charge=$service_charge&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&train_ticket_id=$train_ticket_id&total_paid=$paid_amount&balance_amount=$bal_amount&sac_code=$sac_code&branch_status=$branch_status&credit_card_charges=$credit_card_charges";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/train_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&service_charge=$service_charge&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&train_ticket_id=$train_ticket_id&total_paid=$paid_amount&balance_amount=$bal_amount&sac_code=$sac_code&branch_status=$branch_status&credit_card_charges=$credit_card_charges&canc_amount=$cancel_amt&bg=$bg";
 	
 	$temp_arr = array( "data" => array(
 		$row_ticket['invoice_pr_id'],
@@ -124,7 +130,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 		
 		<button class="btn btn-info btn-sm" onclick="train_ticket_view_modal('. $row_ticket['train_ticket_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>
 
-		'.$update_btn
+		'.$update_btn.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr); 
 }

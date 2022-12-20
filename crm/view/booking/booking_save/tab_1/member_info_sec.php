@@ -67,7 +67,7 @@
 
     <td><input style="width: 130px;" type="text" id="txt_m_passport_issue_date" name="txt_m_passport_issue_date" placeholder="Issue Date" title="Passport Issue Date" class="app_datepicker" onchange="checkPassportDate(this.id);payment_details_reflected_data('tbl_member_dynamic_row')" disabled></td>
 
-    <td><input style="width: 132px;" type="text" id="txt_m_passport_expiry_date" name="txt_m_passport_expiry_date" placeholder="Expire Date" title="Passport Expire Date" class="app_datepicker" onchange="checkExpiryDate(this.id);payment_details_reflected_data('tbl_member_dynamic_row')" disabled></td>
+    <td><input style="width: 132px;" type="text" id="txt_m_passport_expiry_date" name="txt_m_passport_expiry_date" placeholder="Expiry Date" title="Passport Expiry Date" class="app_datepicker" onchange="checkExpiryDate(this.id);payment_details_reflected_data('tbl_member_dynamic_row')" disabled></td>
     
 </tr>
 

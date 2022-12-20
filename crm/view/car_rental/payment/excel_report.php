@@ -81,7 +81,7 @@ $from_date = $_GET['payment_from_date'];
 $to_date = $_GET['payment_to_date'];
 
 if($booking_id!=""){
-  $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id = '$booking_id'")) ;
+  $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id = '$booking_id' and delete_status='0'")) ;
   $booking_date = $sql_booking_date['created_at'];
   $yr = explode("-", $booking_date);
   $year =$yr[0];
@@ -185,8 +185,8 @@ while($row_payment = mysqli_fetch_assoc($sq_payment))
     
     $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_payment[booking_id]'"));
     $date = $sq_booking['created_at'];
-         $yr = explode("-", $date);
-         $year =$yr[0];
+    $yr = explode("-", $date);
+    $year =$yr[0];
     $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
     if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
       $customer_name = $sq_customer['company_name'];
@@ -199,7 +199,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment))
       $sq_pending_amount = $sq_pending_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
     }
     else if($row_payment['clearance_status']=="Cancelled"){  
-     $sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
+      $sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
     }
 
 	$objPHPExcel->setActiveSheetIndex(0)

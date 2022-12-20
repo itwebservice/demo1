@@ -28,9 +28,9 @@ $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 $coupon_amount = ($coupon_amount!='')?$coupon_amount:0;
 
 if($service_name =='Package Invoice'){
-  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 }else{
-  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'"));
+  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'"));
 }
 
 $total_balance = floatval($net_total) - floatval($paid_amount);
@@ -60,7 +60,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
   <div class="row">
     <div class="col-md-12">
       <div class="main_block inv_rece_calculation border_block">
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?= $total_cost ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?= $total_cost ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">CREDIT CARD CHARGES </span><span class="float_r"><?= $charge ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= $tax.' '.$tax_amount ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $paid_amount ?></span></p></div> 

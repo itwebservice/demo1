@@ -85,7 +85,7 @@ $to_date = $_GET['to_date'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id = '$booking_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id = '$booking_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -143,7 +143,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
 
-$query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' ";
+$query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
     $query .=" and customer_id='$customer_id'";
 }

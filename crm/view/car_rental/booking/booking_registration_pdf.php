@@ -5,9 +5,16 @@ require("../../../classes/convert_amount_to_word.php");
 define('FPDF_FONTPATH', '../../../classes/fpdf/font/');
 require('../../../classes/mc_table.php');
 $_SESSION['generated_by'] = $app_name;
+global $currency;
+
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='car_rental/booking/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 
 $booking_id = $_GET['booking_id'];
-$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
 $no_of_car = ceil($sq_booking['total_pax'] / $sq_booking['capacity']);
 $booking_date = $sq_booking['created_at'];
 $yr = explode("-", $booking_date);
@@ -94,14 +101,14 @@ $pdf->line(10, 31, 200, 31);
 
 $pdf->SetFont('Arial', '', 9);
 $pdf->SetXY(10, 30);
-$pdf->MultiCell(150, 8, $app_address);
+$pdf->MultiCell(150, 8, ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address);
 
 $y_pos = $pdf->getY();
 $pdf->SetXY(10, $y_pos);
-$pdf->MultiCell(45, 8, "Phone: " . $app_contact_no);
+$pdf->MultiCell(45, 8, "Phone: " . ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no'] : $app_contact_no);
 
 $pdf->SetXY(50, $y_pos);
-$pdf->MultiCell(70, 8, "Email: " . $app_email_id);
+$pdf->MultiCell(70, 8, "Email: " . ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id);
 
 $pdf->SetFont('Arial', '', 12);
 $y_pos = $pdf->getY() + 10;
@@ -132,13 +139,13 @@ $y_pos = $pdf->getY() + 8;
 $pdf->SetFont('Arial', '', 9);
 $pdf->setXY(10, $y_pos);
 $pdf->SetWidths(array(30, 65, 30, 65));
-$pdf->Row(array('Customer Name', $customer_name, 'Total Pax', $sq_booking['total_pax']));
+$pdf->Row(array('Customer Name', $customer_name, 'Guest(s)', $sq_booking['total_pax']));
 $pdf->Row(array('Mobile No', $contact_no, 'Email ID', $email_id));
 $pdf->Row(array('Travelling Date', $travel_date, 'Days Of Travel', $sq_booking['days_of_traveling']));
 
 $pdf->SetWidths(array(30, 160));
 $pdf->Row(array('Total vehicle(s)', $no_of_car));
-$pdf->Row(array('Passenger', $sq_booking['pass_name']));
+$pdf->Row(array('Guest Name', $sq_booking['pass_name']));
 $pdf->Row(array('Address', $sq_customer['address']));
 $pdf->Row(array($rout, $place_to_visit));
 $pdf->Row(array('Vendor Name', $sq_vendor['vendor_name']));
@@ -164,7 +171,11 @@ $pdf->Row(array('State Entry Tax', $sq_booking['state_entry_tax'], 'Other Charge
 
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetWidths(array(30, 160));
-$pdf->Row(array('Total', number_format($sq_booking['state_entry_tax'] + $newBasic + $sq_booking['driver_allowance'] + $sq_booking['other_charges'] + $sq_booking['permit_charges'] + $sq_booking['toll_and_parking'], 2), ''));
+
+$total_cost = $sq_booking['state_entry_tax'] + $newBasic + $sq_booking['driver_allowance'] + $sq_booking['other_charges'] + $sq_booking['permit_charges'] + $sq_booking['toll_and_parking'];
+$total_cost = currency_conversion($currency,$currency,$total_cost);
+
+$pdf->Row(array('Total', $total_cost, ''));
 
 $y_pos = $pdf->getY() + 5;
 $pdf->SetFont('Arial', 'B', 9);
@@ -178,16 +189,11 @@ $pdf->SetWidths(array(20, 30, 30, 40, 40, 30));
 $pdf->Row(array('Sr. No', 'Vehicle Name', 'Vehicle No', 'Driver Name', 'Mobile No', 'Type'));
 
 $count = 0;
-// $sq_vehicle_entries = mysqlQuery("select * from car_rental_booking_vehicle_entries where booking_id='$booking_id'");
-// while($row_vehicle = mysqli_fetch_assoc($sq_vehicle_entries)){
 
 $count++;
 
 $sq_vehicle = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_vendor_vehicle_entries where vehicle_id='$row_vehicle[vehicle_id]'"));
 
 $pdf->Row(array($count, $sq_booking['vehicle_name'], $sq_vehicle['vehicle_no'], $sq_vehicle['vehicle_driver_name'], $sq_vehicle['vehicle_mobile_no'], $sq_vehicle['vehicle_type']));
-
-// }
-
 
 $pdf->Output();

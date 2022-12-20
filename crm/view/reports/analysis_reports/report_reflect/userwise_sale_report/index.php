@@ -1,5 +1,7 @@
 
-
+<div class="col-md-12 text-right">
+		<button class="btn btn-excel btn-sm" onclick="exportToExcel('user_wise_sale_report')" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>
+	</div>
 
 <div class="app_panel_content Filter-panel">
 		<div class="row">
@@ -18,7 +20,7 @@
 
 <div id="div_list" class="main_block mg_tp_20">
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
-<table id="gpd_tour_report" class="table table-hover" style="margin: 20px 0 !important;">         
+<table id="user_wise_sale_report" class="table table-hover" style="margin: 20px 0 !important;">         
 </table>
 </div></div></div>
 </div>
@@ -50,11 +52,11 @@ $( "#from_date, #to_date" ).datetimepicker({ timepicker:false, format:'d-m-Y' })
 	{ title : "Total Converted"},
 	{ title : "Profit/Loss"},
 	{ title : "Profit/Loss%"},
-	{ title : "Actions"},
+	{ title : "Actions" , class : "no-export"},
 ];
 		$.post('report_reflect/userwise_sale_report/get_report.php', {id : id, fromdate : fromdate, todate : todate}, function(data){
 		// $('#div_list').html(data);
-		pagination_load(data, column, true, true, 20, 'gpd_tour_report');
+		pagination_load(data, column, true, true, 20, 'user_wise_sale_report');
 	});
 	}
 	

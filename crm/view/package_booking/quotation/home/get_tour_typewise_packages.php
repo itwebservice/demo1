@@ -1,7 +1,7 @@
 <?php
 include '../../../../model/model.php';
 $tour_type = $_POST['tour_type'];
-$query = "SELECT package_id,package_name FROM `custom_package_master` WHERE 1 ";
+$query = "SELECT package_id,package_name FROM `custom_package_master` WHERE 1 and status='Active' ";
 if($tour_type != ''){
     $query .= " and tour_type ='$tour_type' ";
 }

@@ -78,7 +78,7 @@ $sq_vendor_login = mysqli_fetch_assoc(mysqlQuery("select * from vendor_login whe
             <input type="text" name="ifsc_code1" id="ifsc_code1" placeholder="IFSC/SWIFT CODE" title="IFSC/SWIFT CODE" value="<?= $sq_vendor['ifsc_code']?>"> 
           </div>
           <div class="col-md-3 col-sm-6 mg_bt_10">
-            <input type="text" id="opening_balance1" name="opening_balance1" placeholder="Opening Balance" title="Opening Balance" value="<?= $sq_vendor['opening_balance'] ?>">
+            <input type="text" id="opening_balance1" name="opening_balance1" placeholder="*Opening Balance" title="Opening Balance" value="<?= $sq_vendor['opening_balance'] ?>">
           </div>
         </div>
         <div class="row">   
@@ -126,10 +126,10 @@ $('#frm_update').validate({
           address1 : { required : true }, 
           cmb_city_id1 : { required : true },
           contact_person_name1:{ required:true },
-          opening_balance1 : { required : true, number: true }, 
           country1 : { required : true }, 
           cust_state1 : { required : true }, 
           side1 : { required : true },
+          opening_balance1 : { required : true },
   },
   submitHandler:function(form){
       var vendor_id = $('#vendor_id').val();

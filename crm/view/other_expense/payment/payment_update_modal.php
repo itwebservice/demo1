@@ -38,7 +38,7 @@ $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from bank_master where bank_i
             <div class="row">
              <?php if($sq_payment['supplier_id'] != '0'){ ?>
               <div class="col-md-3">
-                <select name="supplier_id1" id="supplier_id1" title="Supplier Type" disabled>
+                <select name="supplier_id1" id="supplier_id1" title="Supplier Name" disabled>
                   <option value="<?= $sq_expense['vendor_id'] ?>"><?= $sq_expense['vendor_name'] ?></option>
                 </select>
               </div>

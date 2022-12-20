@@ -88,7 +88,7 @@ $booker_id = $_GET['booker_id'];
 $branch_id = $_GET['branch_id'];
 
 
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id' and delete_status='0'"));
 $date = $sq_visa_info['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -171,7 +171,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
-$query = "select * from miscellaneous_master where 1 ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0' ";
 if($customer_id!=""){
     $query .= " and customer_id='$customer_id'";
 }
@@ -212,7 +212,7 @@ $row_count = 11;
                 ->setCellValue('D'.$row_count, "Customer_Name")
                 ->setCellValue('E'.$row_count, "Contact")
                 ->setCellValue('F'.$row_count, "EMAIL_ID")
-                ->setCellValue('G'.$row_count, "Total_Guest")
+                ->setCellValue('G'.$row_count, "Total_Pax")
                 ->setCellValue('H'.$row_count, "Booking_Date")
                 ->setCellValue('I'.$row_count, "Basic_Amount")
                 ->setCellValue('J'.$row_count, "Service_Charge")
@@ -232,7 +232,7 @@ $row_count = 11;
 
 
         $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':W'.$row_count)->applyFromArray($header_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':E'.$row_count)->applyFromArray($borderArray);    
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':W'.$row_count)->applyFromArray($borderArray);    
 
         $row_count++;
 
@@ -266,7 +266,7 @@ $row_count = 11;
 
             $sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
             $branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-            $sq_total_member = mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id = '$row_visa[misc_id]' AND status!='Cancel'"));
+            $sq_total_member = mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id = '$row_visa[misc_id]'"));
 
             $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from miscellaneous_payment_master where misc_id='$row_visa[misc_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
             $credit_card_charges = $sq_paid_amount['sumc'];
@@ -312,14 +312,14 @@ $row_count = 11;
             $purchase_amt = 0;
             $i=0;
             $p_due_date = '';
-            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Miscellaneous Booking' and estimate_type_id='$row_visa[misc_id]'"));
+            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Miscellaneous Booking' and estimate_type_id='$row_visa[misc_id]' and delete_status='0'"));
             if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-            $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Miscellaneous Booking' and estimate_type_id='$row_visa[misc_id]'");
+            $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Miscellaneous Booking' and estimate_type_id='$row_visa[misc_id]' and delete_status='0'");
             while($row_purchase = mysqli_fetch_assoc($sq_purchase)){     
                 $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
                 $total_purchase = $total_purchase + $purchase_amt;
             }
-            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Miscellaneous Booking' and estimate_type_id='$row_visa[misc_id]'"));       
+            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Miscellaneous Booking' and estimate_type_id='$row_visa[misc_id]' and delete_status='0'"));       
             $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
             if($vendor_name == ''){ $vendor_name1 = 'NA';  }
             else{ $vendor_name1 = $vendor_name; }     

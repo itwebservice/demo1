@@ -20,10 +20,10 @@ $customer_id = $_SESSION['customer_id'];
 						<th>Travel_Date/Time</th>
 						<th>Status</th>
 						<th>View</th>
-						<th class="text-right info">Total_Amount</th>
-						<th class="text-right success">Paid_Amount</th>
-						<th class="text-right danger">Cncl_amount</th>
-						<th class="text-right warning">Balance</th>
+						<th class="info">Total_Amount</th>
+						<th class="success">Paid_Amount</th>
+						<th class="danger">Cncl_amount</th>
+						<th class="warning">Balance</th>
 					</tr>
 				</thead>
 
@@ -31,7 +31,7 @@ $customer_id = $_SESSION['customer_id'];
 
 					<?php
 
-					$query = "select * from train_ticket_master where 1";
+					$query = "select * from train_ticket_master where 1 and delete_status='0'";
 					$query .= " and customer_id='$customer_id'";
 					if ($ticket_id != "") {
 						$query .= " and train_ticket_id='$ticket_id'";
@@ -107,12 +107,12 @@ $customer_id = $_SESSION['customer_id'];
 
 							<td><?= $sq_train_info['ticket_status']; ?></td>
 							<td>
-								<button class="btn btn-info btn-sm" onclick="train_ticket_view_modal(<?= $row_ticket['train_ticket_id'] ?>)" title="View Details"><i class="fa fa-eye"></i></button>
+								<button class="btn btn-info btn-sm" onclick="train_ticket_view_modal(<?= $row_ticket['train_ticket_id'] ?>)" title="View Details" id="train-<?= $row_ticket['train_ticket_id'] ?>"><i class="fa fa-eye"></i></button>
 							</td>
-							<td class="text-right info"><?= $sale_total_amount  ?></td>
-							<td class="text-right success"><?= number_format($paid_amount, 2) ?></td>
-							<td class="text-right danger"><?= $cancel_amount ?></td>
-							<td class="text-right warning"><?= number_format($balance_amount, 2) ?></td>
+							<td class="info"><?= $sale_total_amount  ?></td>
+							<td class="success"><?= number_format($paid_amount, 2) ?></td>
+							<td class="danger"><?= $cancel_amount ?></td>
+							<td class="warning"><?= number_format($balance_amount, 2) ?></td>
 						</tr>
 
 					<?php

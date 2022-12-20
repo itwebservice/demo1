@@ -20,7 +20,7 @@
     $reference_id = $_POST['reference_id'];
     $enquiry_content = $_POST['enquiry_content'];
     $branch_admin_id = $_POST['branch_admin_id'];
-    $financial_year_id = $_POST['financial_year_id'];
+    $financial_year_id = $_SESSION['financial_year_id'];
     $customer_name = $_POST['customer_name'];
     $by = $_POST['by']; //enquiries saved by customer 
     $enquiry_content = json_encode($enquiry_content);
@@ -75,7 +75,7 @@
   ///////////////////////***Enquiry Master Save end*********//////////////
   function send_sms_enquiry_master($enquiry_id, $mobile_no,$name){
     global $app_contact_no;
-    $message = "We have received your enquiry. Pls, contact below for more details. Inq No.".$enquiry_id."  Contact : ".$app_contact_no."";
+    $message = "We have received your enquiry. Please, contact below for more details. Inq No.".$enquiry_id."  Contact : ".$app_contact_no."";
     
     
     global $model;
@@ -241,7 +241,7 @@
               <tr><td style="text-align:left;border: 1px solid #888888;">Preferred Hotels</td>   <td style="text-align:left;border: 1px solid #888888;">'.$hotel_type.'</td></tr>';
               }
 
-  $content .= '
+    $content .= '
             <tr><td style="text-align:left;border: 1px solid #888888;">Tour Type</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enquiry_type.'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;">Reference </td>   <td style="text-align:left;border: 1px solid #888888;">'.$reference['reference_name'].'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;">Followup Time</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_datetime_user($sq_enquiry_details['followup_date']).'</td></tr>
@@ -262,7 +262,7 @@
         </tr>
     ';
 
-  $subject = 'Enquiry Assignment : ( Enquiry ID : '.$enquiry_id1. ' , Customer Name : '.$name. ' )';
+    $subject = 'Enquiry Assignment : ( Enquiry ID : '.$enquiry_id1. ' , Customer Name : '.$name. ' )';
 
     global $model;
     $model->app_email_send('5',$emp_name,$ass_email_id, $content,$subject,'1');
@@ -463,8 +463,8 @@
   public function enquiry_csv_save()
   {
       $enq_csv_dir = $_POST['obj'];
-      $branch_admin_id=$_SESSION['branch_admin_id'];
-      $financial_year_id=$_SESSION['financial_year_id'];
+      $branch_admin_id = $_SESSION['branch_admin_id'];
+      $financial_year_id = $_SESSION['financial_year_id'];
       $login_id = $_SESSION['login_id'];
       $flag = true;
 

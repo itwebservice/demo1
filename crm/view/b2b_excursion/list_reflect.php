@@ -2,14 +2,16 @@
 include "../../model/model.php";
 $city_id = $_POST['city_id'];
 $active_flag = $_POST['active_flag'];
-$query = "select entry_id,city_id,currency_code,excursion_name,departure_point,duration,active_flag from excursion_master_tariff where 1 ";
+if($active_flag == ''){
+	$query = "select entry_id,city_id,currency_code,excursion_name,departure_point,duration,active_flag from excursion_master_tariff where 1 and active_flag='Active'";
+}else{
+	$query = "select entry_id,city_id,currency_code,excursion_name,departure_point,duration,active_flag from excursion_master_tariff where active_flag='$active_flag' ";
+}
 if($city_id != ''){
 	$query .= " and city_id = '$city_id'";
 }
-if($active_flag!=""){
-	$query .=" and active_flag='$active_flag' ";
-}
 $query .= ' order by entry_id desc';
+
 $count = 0;
 $sq_serv = mysqlQuery($query);
 $array_s = array();
@@ -23,7 +25,7 @@ while($row_ser = mysqli_fetch_assoc($sq_serv)){
 		$update_btn = '';
 	}else{
 		$bg = "";
-		$update_btn = '<button class="btn btn-info btn-sm" onclick="time_slotupdate_modal('.$row_ser['entry_id'] .')" data-toggle="tooltip" title="Update Timing Slot Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$update_btn = '<button class="btn btn-info btn-sm" onclick="time_slotupdate_modal('.$row_ser['entry_id'] .')" data-toggle="tooltip" title="Update Timing Slot(s)"><i class="fa fa-pencil-square-o"></i></button>';
 	}
 	$temp_arr = array("data" =>array(
 		(int)(++$count),

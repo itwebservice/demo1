@@ -75,7 +75,7 @@ $from_date = $_GET['payment_from_date'];
 $to_date = $_GET['payment_to_date'];
 
 if($booking_id!= ''){
-    $query = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+    $query = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
     $date = $query['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];
@@ -142,7 +142,7 @@ $sq_car_rental_refund = mysqlQuery($query);
 
       $total_refund = $total_refund+$row_car_rental_refund['refund_amount'];
 
-      $sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]'"));
+      $sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]' and delete_status='0'"));
       $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_car_rental_info[customer_id]'"));
       $date = $sq_car_rental_info['created_at'];
       $yr = explode("-", $date);

@@ -1,7 +1,5 @@
 <?php
-
 include "../../../model/model.php";
-
 ?>
 
 <form id="frm_save">
@@ -50,13 +48,13 @@ include "../../../model/model.php";
 				<textarea name="address" id="address" onchange="validate_address(this.id);" placeholder="Address" title="Address" rows="1"></textarea>
 			</div>
 			<div class="col-sm-3 col-xs-6 mg_bt_10">
-	            <select name="state" id="state" title="Select State" style="width:100%" required>
+	            <select name="state" id="state" title="Select State/Country Name" style="width:100%" required>
 	            	<?php get_states_dropdown() ?>
 	            </select>
 	        </div> 
-			<div class="col-md-3 col-sm-6 mg_bt_10">
+			<!-- <div class="col-md-3 col-sm-6 mg_bt_10">
             	<input type="text" id="country" name="country" placeholder="Country" title="Country">
-        	</div> 			
+        	</div> 			 -->
 		</div>
 		<div class="row">
 			<div class="col-md-3 col-sm-6 mg_bt_10">
@@ -88,19 +86,19 @@ include "../../../model/model.php";
 				<input type="text" name="service_tax_no" id="service_tax_no" onchange="validate_alphanumeric(this.id)" placeholder="Tax No" title="Tax No" style="text-transform: uppercase;">
 			</div>
 			<div class="col-md-3 col-sm-6 mg_bt_10">
-             <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id);" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+            	<input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id);" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
 			</div>
 			<div class="col-md-3 col-sm-6 mg_bt_10">
-				<input type="hidden" id="opening_balance" name="opening_balance" placeholder="Opening Balance" title="Opening Balance" value="0.00"  onchange="validate_balance(this.id)">
-			</div>   
-			<div class="col-sm-3 mg_bt_10">
-				<input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
+				<input type="number" class="form-control" id="opening_balance" name="opening_balance" placeholder="*Opening Balance" title="Opening Balance" value="0" >
 			</div>
 			<div class="col-md-3 col-sm-6 mg_bt_10">
-				<select class="hidden" name="side" id="side" title="Select side">
+				<select class="form-control" data-toggle="tooltip" name="side" id="side" title="Balance Side">
 				<option value="Credit">Credit</option>
 				<option value="Debit">Debit</option>
 				</select>
+			</div> 
+			<div class="col-sm-3 mg_bt_10">
+				<input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
 			</div>
 		</div>
         <div class="row">
@@ -138,6 +136,7 @@ $(function(){
 		active_flag : { required : true },
 		side : { required : true },
 		as_of_date : { required : true },
+		opening_balance : { required : true },
     },
     submitHandler:function(form){
 	    var base_url = $("#base_url").val();
@@ -150,7 +149,7 @@ $(function(){
 		var landline_no = $('#landline_no').val();
 		var concern_person_name = $('#concern_person_name').val();
 	   	var immergency_contact_no = $("#immergency_contact_no").val();
-	    var country = $("#country").val();
+	    // var country = $("#country").val();
 	    var website = $("#website").val();
 	    var bank_name = $("#bank_name").val();
 	    var branch = $("#branch").val();
@@ -173,7 +172,7 @@ $(function(){
 	  $('#btn_save_e').button('loading');
       $.post( 
 		base_url+"controller/site_seeing/vendor/vendor_save.php",
-		{ vendor_name : vendor_name, city_id : city_id, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, concern_person_name : concern_person_name, immergency_contact_no : immergency_contact_no,opening_balance : opening_balance, country : country, website : website, address : address, active_flag : active_flag, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code ,service_tax_no : service_tax_no, state : state, side : side, account_name:account_name, supp_pan : supp_pan,as_of_date : as_of_date, email_id_1:email_id_1,email_id_2:email_id_2 },
+		{ vendor_name : vendor_name, city_id : city_id, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, concern_person_name : concern_person_name, immergency_contact_no : immergency_contact_no,opening_balance : opening_balance, website : website, address : address, active_flag : active_flag, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code ,service_tax_no : service_tax_no, state : state, side : side, account_name:account_name, supp_pan : supp_pan,as_of_date : as_of_date, email_id_1:email_id_1,email_id_2:email_id_2 },
 			function(data) {  
 				var msg = data.split('--');
 				if(msg[0]=="error"){

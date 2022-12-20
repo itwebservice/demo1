@@ -198,21 +198,23 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('H'.$row_count, "Contact Person")
         ->setCellValue('I'.$row_count, "Emergency Contact")
         ->setCellValue('J'.$row_count, "Address")
-        ->setCellValue('K'.$row_count, "State")
-        ->setCellValue('L'.$row_count, "Country") 
-        ->setCellValue('M'.$row_count, "Website")
-        ->setCellValue('N'.$row_count, "Bank Name") 
-        ->setCellValue('O'.$row_count, "Account Type")
-        ->setCellValue('P'.$row_count, "Account No")
-        ->setCellValue('Q'.$row_count, "Branch")
-        ->setCellValue('R'.$row_count, "IFSC/SWIFT CODE")
-        ->setCellValue('S'.$row_count, "PAN/TAN No")
-        ->setCellValue('T'.$row_count, "Tax NO")
-        ->setCellValue('U'.$row_count, "Status");
+        ->setCellValue('K'.$row_count, "State/Country")
+        
+        ->setCellValue('L'.$row_count, "Website")
+        ->setCellValue('M'.$row_count, "Bank Name") 
+        ->setCellValue('N'.$row_count, "Account Type")
+        ->setCellValue('O'.$row_count, "Account No")
+        ->setCellValue('P'.$row_count, "Branch")
+        ->setCellValue('Q'.$row_count, "IFSC/SWIFT CODE")
+        ->setCellValue('R'.$row_count, "PAN/TAN No")
+        ->setCellValue('S'.$row_count, "Tax NO")
+        ->setCellValue('T'.$row_count, "Opening Balance")
+        ->setCellValue('U'.$row_count, "Balance Side")
+        ->setCellValue('V'.$row_count, "Status");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':W'.$row_count)->applyFromArray($header_style_Array);
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':W'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 global $encrypt_decrypt,$secret_key;
@@ -247,19 +249,20 @@ while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
         ->setCellValue('I'.$row_count, $row_hotel['immergency_contact_no'])
         ->setCellValue('J'.$row_count, $row_hotel['dmc_address'])
         ->setCellValue('K'.$row_count, $sq_state['state_name'])
-        ->setCellValue('L'.$row_count, $row_hotel['country'])
-        ->setCellValue('M'.$row_count, $row_hotel['website'])
-        ->setCellValue('N'.$row_count, $row_hotel['bank_name'])
-        ->setCellValue('O'.$row_count, $row_hotel['account_name'])
-        ->setCellValue('P'.$row_count, $row_hotel['account_no'])
-        ->setCellValue('Q'.$row_count, $row_hotel['branch'])
-        ->setCellValue('R'.$row_count, $row_hotel['ifsc_code'])
-        ->setCellValue('S'.$row_count, $row_hotel['pan_no'])
-        ->setCellValue('T'.$row_count, $row_hotel['service_tax_no'])
-        ->setCellValue('U'.$row_count, $row_hotel['active_flag']);
+        ->setCellValue('L'.$row_count, $row_hotel['website'])
+        ->setCellValue('M'.$row_count, $row_hotel['bank_name'])
+        ->setCellValue('N'.$row_count, $row_hotel['account_name'])
+        ->setCellValue('O'.$row_count, $row_hotel['account_no'])
+        ->setCellValue('P'.$row_count, $row_hotel['branch'])
+        ->setCellValue('Q'.$row_count, strtoupper($row_hotel['ifsc_code']))
+        ->setCellValue('R'.$row_count, strtoupper($row_hotel['pan_no']))
+        ->setCellValue('S'.$row_count, strtoupper($row_hotel['service_tax_no']))
+        ->setCellValue('T'.$row_count, number_format($row_hotel['opening_balance'],2))
+        ->setCellValue('U'.$row_count, $row_hotel['side'])
+        ->setCellValue('V'.$row_count, $row_hotel['active_flag']);
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':W'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':W'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
 }

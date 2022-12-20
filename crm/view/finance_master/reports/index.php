@@ -40,8 +40,8 @@ $branch_status = $sq['branch_status'];
 	                        <li class="dropdown_two">
 	                          <span onclick="show_sub_menu('sub_menu_1')">Tax Reports</span>
 	                          <ul class="dropdown_menu_two" id="sub_menu_1">
-	                            <li><span onclick="show_report_reflect('ITC Report')">ITC Report</span></li>
-	                            <li><span onclick="show_report_reflect('Tax on Sales')">Tax on Sales</span></li>
+	                            <li><span onclick="show_report_reflect('GST-R1')">GST-R1</span></li>
+	                            <li><span onclick="show_report_reflect('GST-R2')">GST-R2</span></li>
 	                            <li><span onclick="show_report_reflect('TCS on Sales')">TCS on Sales</span></li>
 	                            <li class="dropdown_three">
 	                            	<span onclick="show_third_level_menu('third_level_menu_1')">Tax on Cancellation</span>
@@ -200,8 +200,8 @@ function show_report_reflect(report_name){
 	if(report_name=="Trial Balance"){ url = 'trail_balance/index.php'; }
 
 	//Taxation Reports
-	if(report_name=="ITC Report"){ url = 'taxation_reports/itc_report/index.php?branch_status=<?= $branch_status ?>'; }
-  	if(report_name=="Tax on Sales"){ url = 'taxation_reports/gst_sale/index.php?branch_status=<?= $branch_status ?>'; }
+	if(report_name=="GST-R2"){ url = 'taxation_reports/itc_report/index.php?branch_status=<?= $branch_status ?>'; }
+  	if(report_name=="GST-R1"){ url = 'taxation_reports/gst_sale/index.php?branch_status=<?= $branch_status ?>'; }
   	if(report_name=="TCS on Sales"){ url = 'taxation_reports/tcs_sale/index.php?branch_status=<?= $branch_status ?>'; }
 
 	  if(report_name=="Tax on Sale Cancel"){ url = 'taxation_reports/gst_cancel/sale/index.php?branch_status=<?= $branch_status ?>'; }

@@ -5,6 +5,8 @@ $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
+$emp_id = $_SESSION['emp_id'];
+$role = $_SESSION['role'];
 $branch_status = $_POST['branch_status'];
 $customer_id = $_POST['customer_id'];
 $misc_id = $_POST['misc_id'];
@@ -12,10 +14,8 @@ $from_date = $_POST['from_date'];
 $to_date = $_POST['to_date'];
 $cust_type = $_POST['cust_type'];
 $company_name = $_POST['company_name'];
-$emp_id = $_SESSION['emp_id'];
-$role = $_SESSION['role'];
 
-$query = "select * from miscellaneous_master where financial_year_id='$financial_year_id' ";
+$query = "select * from miscellaneous_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 
 if($customer_id!=""){
 	$query .= " and customer_id='$customer_id'";
@@ -57,16 +57,18 @@ while($row_visa = mysqli_fetch_assoc($sq_visa)){
 	$sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_visa[emp_id]'"));
 	$emp_name = ($row_visa['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
 
-	$pass_count = mysqli_num_rows(mysqlQuery("select * from  miscellaneous_master_entries where misc_id='$row_visa[misc_id]'"));
-	$cancel_count = mysqli_num_rows(mysqlQuery("select * from  miscellaneous_master_entries where misc_id='$row_visa[misc_id]' and status='Cancel'"));
-	$bg="";
+	$pass_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id='$row_visa[misc_id]'"));
+	$cancel_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id='$row_visa[misc_id]' and status='Cancel'"));
+	$bg = "";
 	if($pass_count==$cancel_count) 	{
-		$bg="danger";
+		$bg = "danger";
 		$update_btn = '';
+		$delete_btn = '';
 	}
-	else  {
-		$bg="#fff";
+	else {
+		$bg = "";
 		$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="visa_update_modal('. $row_visa['misc_id'] .')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_visa['misc_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 	//Get Total no of visa members
 	$sq_total_member=mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id='$row_visa[misc_id]' "));     
@@ -96,7 +98,7 @@ while($row_visa = mysqli_fetch_assoc($sq_visa)){
 	$total_paid = 0;
 	$total_paid =  $sq_paid_amount['sum'] ;
 	$total_paid = ($total_paid == '') ? '0' : $total_paid;            
-
+	
 	$created_at = $row_visa['created_at'];
 	$year = explode("-", $created_at);
 	$year =$year[0];
@@ -113,16 +115,22 @@ while($row_visa = mysqli_fetch_assoc($sq_visa)){
 	$service_charge = $row_visa['service_charge'];
 	$service_tax = $row_visa['service_tax_subtotal'];
 	//**Basic Cost
-	$basic_cost = $row_visa['misc_issue_amount'] - $row_visa['cancel_amount'];
-	$net_amount = $row_visa['misc_total_cost'] - $row_visa['cancel_amount'];
+	$basic_cost = $row_visa['misc_issue_amount'];
+	$net_amount = $row_visa['misc_total_cost'];
 	$balance_amount = $net_amount - $total_paid;
+
+	if($bg != ''){
+		$balance_amount = ($total_paid > $cancel_amount) ? 0 : floatval($cancel_amount) - floatval($total_paid);
+	}else{
+		$balance_amount = floatval($net_amount) - floatval($total_paid);
+	}
 
 	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='Miscellaneous'"));   
 	$sac_code = $sq_sac['hsn_sac_code'];
 	if($app_invoice_format == 4)
 	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/tax_invoice_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$total_paid&balance_amount=$balance_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&pass_count=$pass_count&credit_card_charges=$credit_card_charges";
 	else
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/misc_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$total_paid&balance_amount=$balance_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges";
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/misc_body_html.php?invoice_no=$invoice_no&invoice_date=$invoice_date&customer_id=$customer_id&service_name=$service_name&basic_cost=$basic_cost&taxation_type=$taxation_type&service_tax_per=$service_tax_per&service_tax=$service_tax&net_amount=$net_amount&service_charge=$service_charge&total_paid=$total_paid&balance_amount=$balance_amount&sac_code=$sac_code&branch_status=$branch_status&booking_id=$booking_id&credit_card_charges=$credit_card_charges&canc_amount=$cancel_amount&bg=$bg";
 
 	$temp_arr = array( "data" => array(
 		$row_visa['invoice_pr_id'],
@@ -135,10 +143,8 @@ while($row_visa = mysqli_fetch_assoc($sq_visa)){
 		number_format($total_visa_amount, 2),
 		$emp_name,
 		'<a onclick="loadOtherPage(\''.$url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></a>
-		
 		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="visa_display_modal('. $row_visa['misc_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
-
-		'.$update_btn
+		'.$update_btn.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr); 
 }

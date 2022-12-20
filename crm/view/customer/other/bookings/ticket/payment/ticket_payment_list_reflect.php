@@ -15,7 +15,7 @@ $ticket_id = $_POST['ticket_id'];
 			<th>Mode</th>
 			<th>Bank_Name</th>
 			<th>Cheque_No/ID</th>			
-			<th class="text-right success">Amount</th>
+			<th class="success">Amount</th>
 			<th class="text-center">Receipt</th>
 		</tr>
 	</thead>
@@ -41,9 +41,31 @@ $ticket_id = $_POST['ticket_id'];
 
 			$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_ticket_payment[ticket_id]'"));
 			$total_sale = $sq_ticket_info['ticket_total_cost'] + $sq_pay['sumc'];
+			$cancel_amount = $sq_ticket_info['cancel_amount'];
 
 			$total_pay_amt = $sq_pay['sum']+$sq_pay['sumc'];
-			$outstanding =  $total_sale - $total_pay_amt;
+			if($sq_ticket_info['cancel_type'] == '1'){
+				if($total_pay_amt > 0){
+					if($cancel_amount >0){
+						if($total_pay_amt > $cancel_amount){
+							$outstanding = 0;
+						}else{
+							$outstanding = $cancel_amount - $total_pay_amt;
+						}
+					}else{
+						$outstanding = 0;
+					}
+				}
+				else{
+					$outstanding = $cancel_amount;
+				}
+			}else if($sq_ticket_info['cancel_type'] == '2'||$sq_ticket_info['cancel_type'] == '3'){
+				$cancel_estimate = json_decode($sq_ticket_info['cancel_estimate']);
+				$outstanding = (($total_sale - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_amount) - $total_pay_amt;
+			}
+			else{
+				$outstanding = $total_sale - $total_pay_amt;
+			}
 			$date = $row_ticket_payment['payment_date'];
 			$yr = explode("-", $date);
 			$year1 =$yr[0];
@@ -51,7 +73,7 @@ $ticket_id = $_POST['ticket_id'];
 
 			$date = $sq_ticket_info['created_at'];
 			$yr = explode("-", $date);
-			$year =$yr[0];
+			$year = $yr[0];
 
 			$bg='';
 			$sq_depa_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id ='$row_ticket_payment[ticket_id]'"));
@@ -64,6 +86,11 @@ $ticket_id = $_POST['ticket_id'];
 			else if($row_ticket_payment['clearance_status']=="Cancelled"){ 
 				$bg='danger';
 				$sq_cancel_amount = $sq_cancel_amount + $row_ticket_payment['payment_amount']+ $row_ticket_payment['credit_charges'];
+			}
+			else if($row_ticket_payment['clearance_status']=="Cleared"){
+				$bg='success';
+			}else{
+				$bg='';
 			}
 			$sq_paid_amount = $sq_paid_amount + $row_ticket_payment['payment_amount'] + $row_ticket_payment['credit_charges'];
 
@@ -81,8 +108,7 @@ $ticket_id = $_POST['ticket_id'];
 			$bank_name = $row_ticket_payment['bank_name'];
 			$receipt_type = "Flight Ticket Receipt";
 
-
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=ticket_payment_master&customer_field=ticket_id&in_customer_id=$row_ticket_payment[ticket_id]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=ticket_payment_master&customer_field=ticket_id&in_customer_id=$row_ticket_payment[ticket_id]&status=$row_ticket_payment[status]";
 
 			?>
 			<tr class="<?= $bg?>">				
@@ -92,7 +118,7 @@ $ticket_id = $_POST['ticket_id'];
 				<td><?= $row_ticket_payment['payment_mode'] ?></td>
 				<td><?= $row_ticket_payment['bank_name'] ?></td>
 				<td><?= $row_ticket_payment['transaction_id'] ?></td>
-				<td class="text-right success"><?= number_format($row_ticket_payment['payment_amount'] + $row_ticket_payment['credit_charges'],2) ?></td>
+				<td class="success"><?= number_format($row_ticket_payment['payment_amount'] + $row_ticket_payment['credit_charges'],2) ?></td>
 				<td class="text-center">
 					<a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 				</td>				

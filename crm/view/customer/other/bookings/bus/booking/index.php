@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="booking_id_filter3" id="booking_id_filter3" style="width:100%" onchange="list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_booking = mysqlQuery("select * from bus_booking_master where customer_id='$customer_id'");
+			        $sq_booking = mysqlQuery("select * from bus_booking_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 						$date = $row_booking['created_at'];
@@ -44,8 +44,10 @@ list_reflect();
 
 function view_modal(booking_id)
 {
+    $('#bus-'+booking_id).button('loading');
 	$.post('bookings/bus/booking/view/index.php', { booking_id : booking_id }, function(data){
 		$('#div_view_modal').html(data);
+    	$('#bus-'+booking_id).button('reset');
 	});
 }
 </script>

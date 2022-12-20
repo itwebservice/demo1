@@ -38,7 +38,7 @@ $query = mysqlQuery($str);
 								
 								$check_in=$sql['from_date'];
 								$check_out=$sql['to_date'];
-								$str1="select * from package_tour_booking_master where booking_id=$sql[booking_id]";
+								$str1="select * from package_tour_booking_master where booking_id='$sql[booking_id]' and delete_status='0'";
 								$sql_cust=mysqli_fetch_assoc(mysqlQuery($str1));
 								$date = $sql_cust['booking_date'];
 								$yr = explode("-", $date);
@@ -67,7 +67,7 @@ $query = mysqlQuery($str);
 							while($sql = mysqli_fetch_assoc($sql_temp)){
 								$check_in=$sql['check_in'];
 								$check_out=$sql['check_out'];
-								$str1="select * from hotel_booking_master where booking_id=$sql[booking_id]";
+								$str1="select * from hotel_booking_master where booking_id='$sql[booking_id]' and delete_status='0'";
 								$sql_cust=mysqli_fetch_assoc(mysqlQuery($str1));
 								$date = $sql_cust['booking_date'];
 								$yr = explode("-", $date);

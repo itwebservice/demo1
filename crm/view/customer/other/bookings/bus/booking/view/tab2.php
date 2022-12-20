@@ -98,6 +98,9 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 										$bg='danger';
 										$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'];
 									}
+									else if ($row_payment['clearance_status'] == "Cleared") {
+										$bg = "success";
+									}
 
 									?>
 									<tr class="<?= $bg;?>">				

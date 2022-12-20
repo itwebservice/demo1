@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include "../../../../../../../model/model.php";
 
@@ -6,7 +6,7 @@ include "../../../../../../../model/model.php";
 
 $id = $_POST['id'];
 
-$query = mysqlQuery("select * from tourwise_traveler_details where id='$id'");
+$query = mysqlQuery("select * from tourwise_traveler_details where id='$id' and delete_status='0'");
 
 $sq_group_info = mysqli_fetch_assoc($query);
 

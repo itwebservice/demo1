@@ -80,7 +80,7 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		$package_name,
 		$quotation_cost,
 		'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>
-		<button style="display:inline-block" class="btn btn-info btn-sm" onclick="delete_quotation('.$row_quotation['entry_id'] .')" title="Delete Quotation" data-toggle="tooltip"><i class="fa fa-trash" aria-hidden="true"></i></button>
+		<button style="display:inline-block" class="btn btn-danger btn-sm" onclick="delete_quotation('.$row_quotation['entry_id'] .')" title="Delete Quotation" data-toggle="tooltip"><i class="fa fa-trash" aria-hidden="true"></i></button>
 		'
 	
 	), "bg" =>$bg);

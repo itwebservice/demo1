@@ -111,23 +111,22 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyF
 
 $row_count++;
 $count = 0;
-$str="select * from excursion_inventory_master where entry_id='$entry_id'";
-$query = mysqlQuery($str);
-while($row_ser = mysqli_fetch_assoc($query)){
-    $sql_temp=mysqlQuery("select * from excursion_master_entries where city_id='$row_ser[city_id]' and exc_name='$row_ser[exc_id]' and status!='Cancel' and (exc_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]')");
-    while($sql = mysqli_fetch_assoc($sql_temp)){
-        $check_in=$sql['exc_date'];
-        $str1="select * from excursion_master where exc_id=$sql[exc_id]";
-        $sql_cust=mysqli_fetch_assoc(mysqlQuery($str1));
-        $date = $sql_cust['created_at'];
-        $yr = explode("-", $date);
-        $year = $yr[0];
-        $sql_Cust_details=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id=$sql_cust[customer_id]"));
-        if($sql_Cust_details['type']=='Corporate'||$sql_Cust_details['type'] == 'B2B'){
-            $customer_name = $sql_Cust_details['company_name'];
-        }else{
-            $customer_name = $sql_Cust_details['first_name'].' '.$sql_Cust_details['last_name'];
-        }
+$row_ser = mysqli_fetch_assoc(mysqlQuery("select * from excursion_inventory_master where entry_id='$entry_id'"));
+
+$sql_temp = mysqlQuery("select * from excursion_master_entries where status!='Cancel' and city_id='$row_ser[city_id]' and exc_name='$row_ser[exc_id]' and (exc_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]') and exc_id in(select exc_id from excursion_master where delete_status='0')");
+while($sql = mysqli_fetch_assoc($sql_temp)){
+
+    $check_in = $sql['exc_date'];
+    $sql_cust = mysqli_fetch_assoc(mysqlQuery("select delete_status,created_at,customer_id,exc_id from excursion_master where exc_id='$sql[exc_id]' and delete_status='0'"));
+    $date = $sql_cust['created_at'];
+    $yr = explode("-", $date);
+    $year = $yr[0];
+    $sql_Cust_details=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id=$sql_cust[customer_id]"));
+    if($sql_Cust_details['type']=='Corporate'||$sql_Cust_details['type'] == 'B2B'){
+        $customer_name = $sql_Cust_details['company_name'];
+    }else{
+        $customer_name = $sql_Cust_details['first_name'].' '.$sql_Cust_details['last_name'];
+    }
 
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, ++$count)
@@ -141,33 +140,32 @@ while($row_ser = mysqli_fetch_assoc($query)){
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
     $row_count++;
 }
-    //Package Booking
-    $sq_hotel_c1 = mysqlQuery("select * from package_tour_excursion_master where city_id= '$row_ser[city_id]' and exc_id = '$row_ser[exc_id]' and booking_id in(select booking_id from package_tour_booking_master where tour_from_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]')");
 
+    //Package Booking
+    $sq_hotel_c1 = mysqlQuery("select * from package_tour_excursion_master where city_id= '$row_ser[city_id]' and exc_id = '$row_ser[exc_id]' and booking_id in(select booking_id from package_tour_booking_master where (tour_from_date between '$row_ser[valid_from_date]' and '$row_ser[valid_to_date]') and delete_status='0')");
+    $check_in = '';
     while($row_hotel_c1= mysqli_fetch_assoc($sq_hotel_c1)){
-        $check_in=$sql['exc_date'];
-        $str1="select * from package_tour_booking_master where booking_id='$row_hotel_c1[booking_id]'";
-        $sql_cust=mysqli_fetch_assoc(mysqlQuery($str1));
-        $date = $sql_cust['booking_date'];
-        $yr = explode("-", $date);
-        $year = $yr[0];
-        $sql_Cust_details=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id=$sql_cust[customer_id]"));
-		if($sql_Cust_details['type']=='Corporate'||$sql_Cust_details['type'] == 'B2B'){
-			$customer_name = $sql_Cust_details['company_name'];
-		}else{
-			$customer_name = $sql_Cust_details['first_name'].' '.$sql_Cust_details['last_name'];
-		}
+
         $cancel_est = mysqli_num_rows(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$row_hotel_c1[booking_id]'"));
-        $pax = 0;
+        $check_in = get_datetime_user($row_hotel_c1['exc_date']);
         if($cancel_est == 0){
-            $pax = $row_hotel_c1['adult'] + $row_hotel_c1['chwb'] + $row_hotel_c1['chwob'] + $row_hotel_c1['infant'];;
-        }
-        if($pax != 0){
+        
+            $sql_cust=mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_hotel_c1[booking_id]'"));
+            $date = $sql_cust['booking_date'];
+            $yr = explode("-", $date);
+            $year = $yr[0];
+            $sql_Cust_details=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id=$sql_cust[customer_id]"));
+            if($sql_Cust_details['type']=='Corporate'||$sql_Cust_details['type'] == 'B2B'){
+                $customer_name = $sql_Cust_details['company_name'];
+            }else{
+                $customer_name = $sql_Cust_details['first_name'].' '.$sql_Cust_details['last_name'];
+            }
+            $pax = $row_hotel_c1['adult'] + $row_hotel_c1['chwb'] + $row_hotel_c1['chwob'] + $row_hotel_c1['infant'];
             $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('B'.$row_count, ++$count)
             ->setCellValue('C'.$row_count, 'Package')
             ->setCellValue('D'.$row_count, get_package_booking_id($row_hotel_c1['booking_id'],$year))
-            ->setCellValue('E'.$row_count, 'NA')
+            ->setCellValue('E'.$row_count, $check_in)
             ->setCellValue('F'.$row_count, $customer_name)
             ->setCellValue('G'.$row_count, $pax);
 
@@ -176,8 +174,6 @@ while($row_ser = mysqli_fetch_assoc($query)){
             $row_count++;
         }
     }
-
-}
 	
 
 //////////////////////////****************Content End**************////////////////////////////////

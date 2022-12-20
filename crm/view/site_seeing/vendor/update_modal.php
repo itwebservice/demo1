@@ -21,7 +21,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Activity Supplier Information</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Activity Supplier Details</h4>
       </div>
       <div class="modal-body">
       	<div class="panel panel-default panel-body app_panel_style feildset-panel">
@@ -65,7 +65,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
 					<textarea name="address" id="address" placeholder="Address"  onchange="validate_address(this.id);" title="Address" rows="1"><?= $sq_vendor['address'] ?></textarea>
 				</div>	
 				<div class="col-sm-3 col-xs-6 mg_bt_10">
-		            <select name="cust_state1" id="cust_state1"  title="Select State" placeholder="select state" style="width:100%" required>
+		            <select name="cust_state1" id="cust_state1"  title="Select State/Country Name" placeholder="Select State/Country Name" style="width:100%" required>
 		              <?php if($sq_vendor['state_id']!='0'){
 		               $sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_vendor[state_id]'"));
 		              ?>
@@ -75,15 +75,22 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
 		            </select>
 	          	</div>
 				<div class="row">
-				<div class="col-md-3 col-sm-6 mg_bt_10">
+				<!-- <div class="col-md-3 col-sm-6 mg_bt_10">
 	                <input type="text" id="country1" name="country1" class="form-control"  onchange="validate_specialChar(this.id);" placeholder="Country" value="<?= $sq_vendor['country'] ?>" title="Country" >
-	            </div>
+	            </div> -->
 	         </div>
            </div>
 		   <div class="row">
 				<div class="col-md-3 col-sm-6 mg_bt_10">
 	                <input type="text" id="website1" name="website1" placeholder="Website" value="<?= $sq_vendor['website'] ?>" class="form-control" title="Website">
 	            </div>
+				<div class="col-md-3 col-sm-6 mg_bt_10">
+					<select name="active_flag" id="active_flag" title="Status">
+			        	<option value="<?= $sq_vendor['active_flag'] ?>"><?= $sq_vendor['active_flag'] ?></option>
+			            <option value="Active">Active</option>
+			            <option value="Inactive">Inactive</option>
+			        </select>
+				</div>
 			</div>
 			</div>
            <div class="panel panel-default panel-body app_panel_style feildset-panel">
@@ -105,38 +112,34 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
 				</div>
 				<div class="row"> 
 					<div class="col-md-3 col-sm-6 mg_bt_10">
-		              <input type="text" name="ifsc_code1" id="ifsc_code1" onchange="validate_IFSC(this.id);" placeholder="IFSC/SWIFT CODE" title="IFSC/SWIFT CODE" value="<?= $sq_vendor['ifsc_code']?>" style="text-transform: uppercase;">
+		              	<input type="text" name="ifsc_code1" id="ifsc_code1" onchange="validate_IFSC(this.id);" placeholder="IFSC/SWIFT CODE" title="IFSC/SWIFT CODE" value="<?= $sq_vendor['ifsc_code']?>" style="text-transform: uppercase;">
 		          	</div>
 					<div class="col-md-3 col-sm-6 mg_bt_10">
 						<input type="text" name="service_tax_no1" onchange="validate_balance(this.id)" id="service_tax_no1" placeholder="Tax No" title="Tax No" value="<?= strtoupper($sq_vendor['service_tax_no'])?>" style="text-transform: uppercase;">
 					</div>
 					<div class="col-md-3 col-sm-6 mg_bt_10">
-             			<input type="text" id="supp_pan" name="supp_pan" onchange="validate_specialChar(this.id)" value="<?= $sq_vendor['pan_no']?>" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
-					</div>
-		          	<div class="col-md-3 col-sm-6 mg_bt_10">
-						<input type="hidden" id="opening_balance" name="opening_balance" placeholder="Opening Balance" title="Opening Balance" value="<?= $sq_vendor['opening_balance'] ?>" <?= $value ?>  onchange="validate_balance(this.id)">
-					</div>  
-					<div class="col-sm-3 mg_bt_10">
-						<input type="hidden" id="as_of_date1" name="as_of_date1" placeholder="*As of Date" title="As of Date" value="<?= get_date_user($sq_vendor['as_of_date'])?>">
+						<input type="text" id="supp_pan" name="supp_pan" onchange="validate_specialChar(this.id)" value="<?= $sq_vendor['pan_no']?>" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
 					</div>
 					<div class="col-md-3 col-sm-6 mg_bt_10">
-						<select class="hidden" name="side1" id="side1" title="Select side" disabled>
+						<input type="number" id="opening_balance1" name="opening_balance1" placeholder="*Opening Balance" title="Opening Balance" value="<?= $sq_vendor['opening_balance'] ?>" >
+					</div>  
+					<div class="col-md-3 col-sm-6 mg_bt_10">
+						<select class="form-control" name="side1" id="side1" title="Balance Side">
 							<option value="<?= $sq_vendor['side'] ?>"><?= $sq_vendor['side'] ?></option>
-							<option value="">*Select Side</option>
+							<?php if($sq_vendor['side'] != 'Debit'){ ?>
+								<option value="Debit">Debit</option>
+							<?php }
+							if($sq_vendor['side'] != 'Credit'){ ?>
 							<option value="Credit">Credit</option>
-							<option value="Debit">Debit</option>
+							<?php } ?>
 						</select>
+					</div>
+					<div class="col-sm-3 mg_bt_10">
+						<input type="hidden" id="as_of_date1" name="as_of_date1" placeholder="*As of Date" title="As of Date" value="<?= get_date_user($sq_vendor['as_of_date'])?>">
 					</div>
 				</div>
 			</div>
 			<div class="row">	
-				<div class="col-md-3 col-sm-6 mg_bt_10">
-					<select name="active_flag" id="active_flag" title="Status">
-			          	<option value="<?= $sq_vendor['active_flag'] ?>"><?= $sq_vendor['active_flag'] ?></option>
-			            <option value="Active">Active</option>
-			            <option value="Inactive">Inactive</option>
-			        </select>
-				</div>
 			</div>
 			<div class="row mg_tp_20 mg_bt_20 text-center">
 				<div class="col-md-12">
@@ -165,6 +168,7 @@ $(function(){
 			active_flag: { required : true },
 			side1 : { required : true },
 			as_of_date1 : { required : true },
+			opening_balance1 : { required : true },
     },
 
     submitHandler:function(form){
@@ -172,7 +176,7 @@ $(function(){
 		var base_url = $("#base_url").val();
 		var landline_no = $('#landline_no1').val();
 		var immergency_contact_no = $('#immergency_contact_no1').val();
-		var country = $("#country1").val();
+		// var country = $("#country1").val();
 		var website = $("#website1").val();
 		var bank_name = $("#bank_name1").val();
 		var account_name = $("#account_name1").val();
@@ -188,7 +192,7 @@ $(function(){
 		var email_id_1 = $("#txt_email_id_1").val();
 		var email_id_2 = $("#txt_email_id_2").val();
 		var concern_person_name = $('#concern_person_name').val();
-		var opening_balance = $('#opening_balance').val();
+		var opening_balance = $('#opening_balance1').val();
 		var address = $('#address').val();
 		var gl_id = $('#gl_id').val();
 		var active_flag = $('#active_flag').val();
@@ -206,7 +210,7 @@ $(function(){
 
 		$.post( 
 				base_url+"controller/site_seeing/vendor/vendor_update.php",
-				{ vendor_id : vendor_id, vendor_login_id : vendor_login_id, vendor_name : vendor_name, city_id : city_id, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, concern_person_name : concern_person_name, immergency_contact_no : immergency_contact_no, opening_balance : opening_balance, address : address, country :country, website :website, active_flag : active_flag, service_tax_no1 : service_tax_no1, bank_name : bank_name, account_no:account_no, branch : branch, ifsc_code:ifsc_code, state_id : state_id, side :side,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date, email_id_1:email_id_1, email_id_2:email_id_2 },
+				{ vendor_id : vendor_id, vendor_login_id : vendor_login_id, vendor_name : vendor_name, city_id : city_id, mobile_no : mobile_no, landline_no : landline_no, email_id : email_id, concern_person_name : concern_person_name, immergency_contact_no : immergency_contact_no, opening_balance : opening_balance, address : address, website :website, active_flag : active_flag, service_tax_no1 : service_tax_no1, bank_name : bank_name, account_no:account_no, branch : branch, ifsc_code:ifsc_code, state_id : state_id, side :side,account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date, email_id_1:email_id_1, email_id_2:email_id_2 },
 				function(data) {  
 						var msg = data.split('--');
 						if(msg[0]=="error"){

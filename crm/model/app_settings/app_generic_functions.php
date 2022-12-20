@@ -1,14 +1,14 @@
 <?php
 if (!function_exists('begin_panel')) {
   function begin_panel($title,$entry_id = '') {
-    if($entry_id!=''){
-      return '<div class="app_panel"> <div class="app_panel_head"><h2 class="pull-left">'.$title.'</h2>
-      <div class="pull-right header_btn"><button title="Play Video" data-toggle="tooltip" onclick="display_description(1,'.$entry_id.')"><a><i class="fa fa-play" aria-hidden="true"></i></a></button></div>
-      </div> <div class="app_panel_content">';
-    }
-    else{
+    // if($entry_id!=''){
+    //   return '<div class="app_panel"> <div class="app_panel_head"><h2 class="pull-left">'.$title.'</h2>
+    //   <div class="pull-right header_btn"><button title="Play Video" data-toggle="tooltip" onclick="display_description(1,'.$entry_id.')"><a><i class="fa fa-play" aria-hidden="true"></i></a></button></div>
+    //   </div> <div class="app_panel_content">';
+    // }
+    // else{
       return '<div class="app_panel"> <div class="app_panel_head"><h2 class="pull-left">'.$title.'</h2></div> <div class="app_panel_content">';
-    }
+    //}
   }
 }
 // <div class="pull-right header_btn"><button title="Info" onclick="display_description(2,'.$entry_id.')"><a><i class="fa fa-info" aria-hidden="true" title="Guidelins"></i></a></button></div>
@@ -83,7 +83,7 @@ function currency_conversion($from_currency,$to_currency,$quotation_cost){
     $from_currency_rate = $sq_from['currency_rate'];
     $sq_to = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$to_currency'"));
     $to_currency_rate = $sq_to['currency_rate'];
-    $c_amount = $from_currency_rate / $to_currency_rate * $quotation_cost;
+    $c_amount = ($quotation_cost != 0) ? ($from_currency_rate / $to_currency_rate) * $quotation_cost : 0;
     $currency_amount = $currency_logo.' '.number_format($c_amount,2);
   }else{
     $currency_amount = $from_currency_logo.' '.number_format($quotation_cost,2);
@@ -205,7 +205,7 @@ function get_vendor_cancelation_gl_id($vendor_type, $vendor_type_id){
 }
 function get_bank_book_opening_balance($bank_id='')
 {
-  $query = "select sum(opening_balance) as sum from bank_master where 1 ";
+  $query = "select sum(op_balance) as sum from bank_master where 1 ";
   if($bank_id!=''){
     $query .=" and bank_id='$bank_id'";
   }
@@ -226,56 +226,56 @@ function sundry_creditor_balance_update()
     $sq_bank = mysqlQuery("update gl_master set  gl_balance='$sq_bank_balance[opening_balance]' where gl_id='15'");
  }
 
-function bank_cash_balance_check($refund_mode, $bank_id, $refund_amount, $old_amount='')
-{
-    if($refund_mode=="Cash"){
+// function bank_cash_balance_check($refund_mode, $bank_id, $refund_amount, $old_amount='')
+// {
+//     if($refund_mode=="Cash"){
 
-        $sq_credit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Cash' and payment_side='Credit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+//         $sq_credit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Cash' and payment_side='Credit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
-        $sq_debit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Cash' and payment_side='Debit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+//         $sq_debit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Cash' and payment_side='Debit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
-        $transaction_bal = $sq_credit['sum'] - $sq_debit['sum'];
+//         $transaction_bal = $sq_credit['sum'] - $sq_debit['sum'];
 
-        $opening_bal = $transaction_bal;
-    }
-    else{
+//         $opening_bal = $transaction_bal;
+//     }
+//     else{
 
-        $opening_bal = get_bank_book_opening_balance($bank_id);
+//         $opening_bal = get_bank_book_opening_balance($bank_id);
 
-        $sq_credit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Bank' and payment_side='Credit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+//         $sq_credit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Bank' and payment_side='Credit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
-        $sq_debit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Bank' and payment_side='Debit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+//         $sq_debit = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from bank_cash_book_master where payment_type='Bank' and payment_side='Debit' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
-        $transaction_bal = $sq_credit['sum'] - $sq_debit['sum'];
+//         $transaction_bal = $sq_credit['sum'] - $sq_debit['sum'];
 
-        $opening_bal = $opening_bal+$transaction_bal;
-        //echo $opening_bal; exit;
-    }
-    if($old_amount!=""){
-        $opening_bal = $opening_bal+$old_amount;
-    }
+//         $opening_bal = $opening_bal+$transaction_bal;
+//         //echo $opening_bal; exit;
+//     }
+//     if($old_amount!=""){
+//         $opening_bal = $opening_bal+$old_amount;
+//     }
 
-    //This is temporary comment for balance chack validation
-    /*if($refund_amount>$opening_bal){
-      return false;
-    }
-    else{
-      return true;
-    }*/
+//     //This is temporary comment for balance chack validation
+//     /*if($refund_amount>$opening_bal){
+//       return false;
+//     }
+//     else{
+//       return true;
+//     }*/
 
-    return true;
+//     return true;
 
-}
+// }
 
-function bank_cash_balance_error_msg($refund_mode, $bank_id)
-{
-    if($refund_mode=="Cash"){
-      return "error--Not enough cash available!";
-    }
-    else{
-      return "error--Not enough cash available in selected bank!";
-    }
-}
+// function bank_cash_balance_error_msg($refund_mode, $bank_id)
+// {
+//     if($refund_mode=="Cash"){
+//       return "error--Not enough cash available!";
+//     }
+//     else{
+//       return "error--Not enough cash available in selected bank!";
+//     }
+// }
 
 
 function mail_login_box($username, $password, $link)
@@ -957,7 +957,7 @@ function get_customer_name($booking_type,$booking_id)
   $customer_id = ''; 
 
   if($booking_type == "Visa Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Passport Booking"){
@@ -965,23 +965,23 @@ function get_customer_name($booking_type,$booking_id)
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Air Ticket Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Train Ticket Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Group Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Package Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Bus Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Forex Booking"){
@@ -989,15 +989,15 @@ function get_customer_name($booking_type,$booking_id)
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Car Rental Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Excursion Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "Miscellaneous Booking"){
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
   else if($booking_type == "B2C Booking"){
@@ -1009,7 +1009,7 @@ function get_customer_name($booking_type,$booking_id)
     $customer_id = $sq_booking['customer_id'];
   }
   else {
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
     $customer_id = $sq_booking['customer_id'];
   }
 
@@ -1129,7 +1129,7 @@ function get_vendor_pan_report($vendor_type,$vendor_type_id)
 }
 function get_supplier_info($vendor_type,$estimate_id){
   
-  $sq_supplier = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where vendor_type='$vendor_type' and estimate_id='$estimate_id'"));
+  $sq_supplier = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where vendor_type='$vendor_type' and estimate_id='$estimate_id' and delete_status='0'"));
   $arr = array(
     'vendor_type_id' => $sq_supplier['vendor_type_id'],
     'estimate_type' => $sq_supplier['estimate_type']

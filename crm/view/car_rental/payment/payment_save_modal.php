@@ -21,7 +21,36 @@ $role_id = $_SESSION['role_id'];
         <div class="row">
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
               <select name="booking_id" id="booking_id" style="width:100%" title="Booking ID" onchange="get_outstanding('car',this.id);">
-                <?php get_car_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_id,$role_id);   ?>
+                <option value="">*Select Booking ID</option>
+                <?php
+                $query = "select * from car_rental_booking where 1 and delete_status='0' ";
+                include "../../../model/app_settings/branchwise_filteration.php";
+                $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."' order by booking_id desc";
+                $sq_booking = mysqlQuery($query);
+
+                while($row_booking = mysqli_fetch_assoc($sq_booking))
+                {
+                  $date = $row_booking['created_at'];
+                  $yr = explode("-", $date);
+                  $year =$yr[0];
+                  $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+
+                  $status = '';
+                  if($row_booking['status'] == 'Cancel'){
+                    $status = '(Cancelled)';
+                    $sq_payment_total = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from car_rental_payment where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+                    $paid_amount = $sq_payment_total['sum'];
+                    $canc_amount=$row_booking['cancel_amount'];
+                    $balance = ($paid_amount > $canc_amount) ? 0 : floatval($canc_amount) - floatval($paid_amount);
+                    if($balance <= 0) continue;
+                  }
+                    if($sq_customer['type']=='Corporate'||$sq_customer['type']=='B2B'){
+                          ?>
+                        <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year)." : ".$sq_customer['company_name'].' '.$status ?></option>
+                    <?php }  else{ ?>
+                        <option value="<?= $row_booking['booking_id'] ?>"><?= get_car_rental_booking_id($row_booking['booking_id'],$year)." : ".$sq_customer['first_name'].' '.$sq_customer['last_name'].' '.$status ?></option>
+                    <?php }
+                  } ?>
               </select>
           </div>
           <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
@@ -65,6 +94,7 @@ $role_id = $_SESSION['role_id'];
           
           <div class="col-md-4 col-sm-3">
             <input type="text" id="outstanding" name="outstanding" class="form-control" placeholder="Outstanding" title="Outstanding" readonly/>
+            <input type="hidden" id="canc_status" name="canc_status" class="form-control"/>
           </div>
         </div>
         <div class="row">
@@ -78,7 +108,6 @@ $role_id = $_SESSION['role_id'];
               <button id="btn_payment_save" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Save</button>
           </div>
         </div>
-
 
       </div>     
     </div>
@@ -100,59 +129,61 @@ $(function(){
         bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
       },
       submitHandler:function(form){
-              $('#btn_payment_save').prop('disabled',true);
-              var booking_id = $('#booking_id').val();
-              var payment_amount = $('#payment_amount').val();
-              var payment_date = $('#payment_date').val();
-              var payment_mode = $('#payment_mode').val();
-              var bank_name = $('#bank_name').val();
-              var transaction_id = $('#transaction_id').val();
-              var bank_id = $('#bank_id').val();
-              var branch_admin_id = $('#branch_admin_id1').val();
-              var emp_id = $('#emp_id').val();
-              var credit_charges = $('#credit_charges').val();
-              var credit_card_details = $('#credit_card_details').val();
-              var base_url = $('#base_url').val();
-              var outstanding = $('#outstanding').val();
-              if(payment_mode=="Credit Note"||payment_mode=="Advance"){
-                error_msg_alert("Please select another payment mode.");
-                $('#btn_payment_save').prop('disabled',false);
-                return false;
-              }
-              if(parseFloat(payment_amount)>parseFloat(outstanding)){
-                error_msg_alert("Payment amount cannot be greater than outstanding amount.");
-                $('#btn_payment_save').prop('disabled',false);
-                return false;
-              }
-              //Validation for booking and payment date in login financial year
-              var check_date1 = $('#payment_date').val();
-              $.post(base_url+'view/load_data/finance_date_validation.php', { check_date: check_date1 }, function(data){
-                if(data !== 'valid'){
-                  error_msg_alert("The Payment date does not match between selected Financial year.");
+        $('#btn_payment_save').prop('disabled',true);
+        var booking_id = $('#booking_id').val();
+        var payment_amount = $('#payment_amount').val();
+        var payment_date = $('#payment_date').val();
+        var payment_mode = $('#payment_mode').val();
+        var bank_name = $('#bank_name').val();
+        var transaction_id = $('#transaction_id').val();
+        var bank_id = $('#bank_id').val();
+        var branch_admin_id = $('#branch_admin_id1').val();
+        var emp_id = $('#emp_id').val();
+        var credit_charges = $('#credit_charges').val();
+        var credit_card_details = $('#credit_card_details').val();
+        var base_url = $('#base_url').val();
+        var outstanding = $('#outstanding').val();
+        var canc_status = $('#canc_status').val();
+        if(payment_mode=="Credit Note"||payment_mode=="Advance"){
+          error_msg_alert("Please select another payment mode.");
+          $('#btn_payment_save').prop('disabled',false);
+          return false;
+        }
+        if(parseFloat(payment_amount)>parseFloat(outstanding)){
+          error_msg_alert("Payment amount cannot be greater than outstanding amount.");
+          $('#btn_payment_save').prop('disabled',false);
+          return false;
+        }
+        //Validation for booking and payment date in login financial year
+        var check_date1 = $('#payment_date').val();
+        $.post(base_url+'view/load_data/finance_date_validation.php', { check_date: check_date1 }, function(data){
+          if(data !== 'valid'){
+            error_msg_alert("The Payment date does not match between selected Financial year.");
+            $('#btn_payment_save').prop('disabled',false);
+            return false;
+          } else{
+              $('#btn_payment_save').button('loading');
+              
+              $.ajax({
+                type:'post',
+                url: base_url+'controller/car_rental/payment/payment_save.php',
+                data:{ booking_id : booking_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id , branch_admin_id : branch_admin_id, emp_id : emp_id,credit_charges:credit_charges,credit_card_details:credit_card_details,canc_status:canc_status},
+                success:function(result){
                   $('#btn_payment_save').prop('disabled',false);
-                  return false;
-                } else{
-                    $('#btn_payment_save').button('loading');
-                    
-                    $.ajax({
-                      type:'post',
-                      url: base_url+'controller/car_rental/payment/payment_save.php',
-                      data:{ booking_id : booking_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id , branch_admin_id : branch_admin_id, emp_id : emp_id,credit_charges:credit_charges,credit_card_details:credit_card_details},
-                      success:function(result){
-                        $('#btn_payment_save').prop('disabled',false);
-                        $('#btn_payment_save').button('reset');
-                        msg_popup_reload(result);
-                      },
-                      error:function(result){
-                        $('#btn_payment_save').prop('disabled',false);
-                        console.log(result.responseText);
-                      }
-                    });
-                    if($('#whatsapp_switch').val() == "on") whatsapp_send_r(booking_id, payment_amount, base_url);
+                  $('#btn_payment_save').button('reset');
+                  msg_alert(result);
+                  reset_form('frm_payment_save');
+                  $('#payment_save_modal').modal('hide');  
+                  payment_list_reflect();
+                },
+                error:function(result){
+                  $('#btn_payment_save').prop('disabled',false);
+                  console.log(result.responseText);
                 }
-              })
-
-
+              });
+              if($('#whatsapp_switch').val() == "on") whatsapp_send_r(booking_id, payment_amount, base_url);
+          }
+        })
       }
   });
 });

@@ -1,28 +1,28 @@
 <?php
- include_once('../model.php');
- $by_customer = true;
+include_once('../model.php');
+$by_customer = true;
 ?>
 <div id="vi_confirm_box"></div>
 <div id="popup"></div>
 <head>
 	<title>Enquiry Information</title>
-  <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,500" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,500" rel="stylesheet">
 
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/font-awesome-4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/jquery-ui.min.css" type="text/css" />
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/bootstrap.min.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL ?>css/jquery.datetimepicker.css">
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/admin.php">
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/app.php">
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/vi.alert.css">
-  <link rel="stylesheet" href="<?php echo BASE_URL ?>css/select2.min.css">
-            
-  <script src="<?php echo BASE_URL ?>js/jquery-3.1.0.min.js"></script>
-  <script src="<?php echo BASE_URL ?>js/jquery-ui.min.js"></script>
-  <script src="<?php echo BASE_URL ?>js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/jquery-ui.min.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/bootstrap.min.css">
+		<link rel="stylesheet" href="<?php echo BASE_URL ?>css/jquery.datetimepicker.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/admin.php">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/app.php">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/vi.alert.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>css/select2.min.css">
+				
+	<script src="<?php echo BASE_URL ?>js/jquery-3.1.0.min.js"></script>
+	<script src="<?php echo BASE_URL ?>js/jquery-ui.min.js"></script>
+	<script src="<?php echo BASE_URL ?>js/bootstrap.min.js"></script>
     <script src="<?php echo BASE_URL ?>js/jquery.datetimepicker.full.js"></script> 
     <script src="<?php echo BASE_URL ?>js/jquery.validate.min.js"></script>
 	<script src="<?php echo BASE_URL ?>js/vi.alert.js"></script>
@@ -33,7 +33,7 @@
 <input type="hidden" name="fid" id="fid" value=<?= $_GET['fid']?> >
 <div class="container">
     <div class="app_panel_head">
-      <h2>Enquiry Information</h2>
+    	<h2>Enquiry Information</h2>
     </div>
 <form id="frm_enquiry_save" class="mg_tp_20">
 <div class="panel panel-default panel-body app_panel_style feildset-panel" style="margin-bottom: 30px;">
@@ -64,7 +64,7 @@
 		</div>	
 		<div class="col-md-2 text-right"><label for="app_name">Interested Tour</label></div>
 		<div class="col-md-2 no-pad">
-			<input type="text" id="tour_name" name="tour_name" class="form-control"  placeholder="*Interested Tour" title="*Interested Tour">
+			<input type="text" id="tour_name" name="tour_name" class="form-control"  placeholder="*Interested Tour" title="Interested Tour">
 		</div>
 		
 	</div>
@@ -92,7 +92,7 @@
 		</div>
 		<div class="col-md-2 text-right"><label for="app_website">Total Infant</label></div>
 		<div class="col-md-2 no-pad">
-			<input type="text" id="total_infant" class="form-control" name="total_infant" placeholder="*Total Infant" title="*Total Infant">   
+			<input type="text" id="total_infant" class="form-control" name="total_infant" placeholder="*Total Infant" title="Total Infant">   
 		</div>
 		<div class="col-md-2 text-right"><label for="app_website">Child Without Bed</label></div>
 		<div class="col-md-2 no-pad">
@@ -107,7 +107,7 @@
 		<div class="col-md-2 text-right"><label for="app_website">Hotel Category</label></div>
 		<div class="col-md-2 no-pad">
 				<select name="hotel_type" id="hotel_type" title="Hotel Category" class="form-control">
-					<option value="">Hotel Category</option>
+					<option value="">*Hotel Category</option>
 					<option value="1-Star">1-Star</option>
 					<option value="2-Star">2-Star</option>
 					<option value="3-Star">3-Star</option>
@@ -120,7 +120,7 @@
 		</div>
 		<div class="col-md-2 text-right"><label for="app_name">Reference</label></div>
 		<div class="col-md-2 no-pad">
-			<select name="reference_id" id="reference_id" class="form-control" style="width:100%" title="References">
+			<select name="reference_id" id="reference_id" class="form-control" style="width:100%" title="Reference">
 				<option value="">Reference</option>
 					<?php 
 					$sq_ref = mysqlQuery("select * from references_master where active_flag!='Inactive' order by reference_name asc");
@@ -142,9 +142,9 @@
 		</div>
 	</div>
 	<div class="main_block text-center mg_tp_20">
-	 <div class="col-md-12">
-		<button class="btn btn-success" id="form_send"><i class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;Send</button>
-	 </div>
+		<div class="col-md-12">
+			<button class="btn btn-success" id="form_send"><i class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;Send</button>
+		</div>
     </div>
 </div>
 </form>
@@ -153,45 +153,44 @@
 <script>
 $("#travel_from_date,#travel_to_date").datetimepicker({timepicker:false, format  : 'd-m-Y'});
 $('#country_code').select2();
-/*function send_enq_info()
-{*/
- $(function(){
-  $('#frm_enquiry_save').validate({
+$(function(){
+	$('#frm_enquiry_save').validate({
     rules:{
-            txt_name : { required :true },
-            txt_mobile_no : { required :true },
-            txt_email_id : { required :true, email:true }, 
-            reference_id : { required : true },
-            tour_name : { required : true },
-            travel_from_date : { required : true },
-            travel_to_date : { required : true },
-            total_adult : { required : true },
-			cwb : { required : true },
-			cb : { required : true },
-            total_children : { required : true },
-            total_infant : { required : true },
-            enquiry_spec : { required : true },
-            budget : { required : true },
+		txt_name : { required :true },
+		txt_mobile_no : { required :true },
+		txt_email_id : { required :true, email:true }, 
+		reference_id : { required : true },
+		tour_name : { required : true },
+		travel_from_date : { required : true },
+		travel_to_date : { required : true },
+		total_adult : { required : true },
+		cwb : { required : true },
+		cb : { required : true },
+		total_children : { required : true },
+		total_infant : { required : true },
+		enquiry_spec : { required : true },
+		budget : { required : true },
+		hotel_type : { required : true },
     },
     submitHandler:function(form){
-	   var name = $("#txt_name").val(); 
-	   var mobile_no = $("#txt_mobile_no").val(); 
-	   var landline_no = $("#txt_landline_no").val();
-	   var country_code = $('#country_code').val();
-	   var email_id = $("#txt_email_id").val(); 
-	   var tour_name  = $('#tour_name').val();
-	   var travel_from_date = $("#travel_from_date").val(); 
-	   var travel_to_date = $("#travel_to_date").val();
-	   var budget = $('#budget').val();
-	   var total_adult = $('#total_adult').val();
-	   var total_infant = $('#total_infant').val();
-	   var reference_id = $('#reference_id').val();
-	   var child_wb = $('#cwb').val();
-	   var child_b = $('#cb').val();
-	   var login_id = $('#login_id').val();
-	   var fid = $('#fid').val();
-		 var enquiry_spec = $("#txt_enquiry_specification").val();
-		 var hotel_type = $("#hotel_type").val();
+		var name = $("#txt_name").val(); 
+		var mobile_no = $("#txt_mobile_no").val(); 
+		var landline_no = $("#txt_landline_no").val();
+		var country_code = $('#country_code').val();
+		var email_id = $("#txt_email_id").val(); 
+		var tour_name  = $('#tour_name').val();
+		var travel_from_date = $("#travel_from_date").val(); 
+		var travel_to_date = $("#travel_to_date").val();
+		var budget = $('#budget').val();
+		var total_adult = $('#total_adult').val();
+		var total_infant = $('#total_infant').val();
+		var reference_id = $('#reference_id').val();
+		var child_wb = $('#cwb').val();
+		var child_b = $('#cb').val();
+		var login_id = $('#login_id').val();
+		var fid = $('#fid').val();
+		var enquiry_spec = $("#txt_enquiry_specification").val();
+		var hotel_type = $("#hotel_type").val();
 	   //Creating enquiry content
 		enquiry_content = [
 			{name : "tour_name", "value" : tour_name},
@@ -205,18 +204,16 @@ $('#country_code').select2();
 			{name : "children_without_bed", "value" : child_wb},
 			{name : "children_with_bed", "value" : child_b}
 		]
-	   //End
-	   $('#form_send').button('loading');
-	   
-	    $.ajax({
-	      type:'post',
-	      url: 'admin_tour_enquiry.php',
-	      data:{name : name,mobile_no : mobile_no,landline_no : landline_no,country_code:country_code, email_id : email_id,tour_name : tour_name,travel_from_date : travel_from_date,travel_to_date : travel_to_date,budget : budget,total_adult : total_adult,total_infant : total_infant,reference_id: reference_id,enquiry_specification : enquiry_spec,hotel_type : hotel_type},
-	      success: function(message){
-	          //alert(message); 
-	          $('#form_send').button('reset');
-	           //location.reload();
-	     }  
+		//End
+		$('#form_send').button('loading');
+		
+			$.ajax({
+			type:'post',
+			url: 'admin_tour_enquiry.php',
+			data:{name : name,mobile_no : mobile_no,landline_no : landline_no,country_code:country_code, email_id : email_id,tour_name : tour_name,travel_from_date : travel_from_date,travel_to_date : travel_to_date,budget : budget,total_adult : total_adult,total_infant : total_infant,reference_id: reference_id,enquiry_specification : enquiry_spec,hotel_type : hotel_type},
+			success: function(message){
+				$('#form_send').button('reset');
+			}
 		});
 		$.post("<?= BASE_URL ?>controller/attractions_offers_enquiry/enquiry_master_save_v.php", {mobile_no:mobile_no,email_id:email_id}, function(data){
 			if(data == '')
@@ -245,11 +242,10 @@ $('#country_code').select2();
 					}
 				);
 		        }
-		      }
-		});	
-		});
-		
-    }
-  });
+				}
+			});	
+			});
+		}
+	});
 });
 </script>

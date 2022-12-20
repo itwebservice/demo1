@@ -3,7 +3,7 @@ include "../../../../model/model.php";
 
 $booking_id = $_POST['booking_id'];
 
-$sq_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+$sq_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
 $sq_payment_info = mysqli_fetch_array(mysqlQuery("SELECT sum(payment_amount) as sum from car_rental_payment where booking_id='$booking_id' AND clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 $booking_amt = intval($sq_booking_info['total_fees']) - intval($sq_booking_info['service_tax_subtotal']);
 $basic_cost1 = intval($sq_booking_info['basic_amount']) + intval($sq_booking_info['driver_allowance']) + intval($sq_booking_info['permit_charges']) + intval($sq_booking_info['toll_and_parking']) + intval($sq_booking_info['state_entry_tax']) + intval($sq_booking_info['other_charges']);
@@ -79,6 +79,11 @@ if ($bsmValues[0]->basic != '') { //inclusive markup
 				$refund_amount = $sq_booking_info['total_refund_amount'];
 			}
 			?>
+			<div class="row">
+		<div class="col-md-12 text-center mt-5 mb-5" style="margin-bottom: 20px;">
+			<h4>Refund Estimate</h4>
+		</div>
+	</div>
 			<div class="row text-center">
 				<div class="col-sm-6 col-xs-12 mg_bt_20">
 					<input type="text" name="cancel_amount" id="cancel_amount" class="text-right" placeholder="*Cancellation Charges" title="Cancellation Charges" onchange="validate_balance(this.id);calculate_total_refund()" value="<?= $sq_booking_info['cancel_amount'] ?>">
@@ -98,7 +103,7 @@ if ($bsmValues[0]->basic != '') { //inclusive markup
 <hr>
 <?php
 
-$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
 $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from car_rental_payment where booking_id='$booking_id' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 $sq_refund_info = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from car_rental_refund_master where booking_id='$booking_id' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 
@@ -187,7 +192,7 @@ $remaining_pay = $refund_amount - $sq_refund_info['sum'];
 							$bg = "";
 						}
 
-						$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]'"));
+						$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]' and delete_status='0'"));
 						$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_car_rental_info[customer_id]'"));
 						if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
 							$cust_name = $sq_customer['company_name'];
@@ -208,7 +213,7 @@ $remaining_pay = $refund_amount - $sq_refund_info['sum'];
 						$customer_id = $sq_car_rental_info['customer_id'];
 						$refund_id = $row_car_rental_refund['refund_id'];
 
-						$url = BASE_URL . "model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&currency_code=$currency";
+						$url = BASE_URL . "model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&booking_id=".get_car_rental_booking_id($booking_id,$year)."&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&currency_code=$currency";
 
 					?>
 						<tr class="<?= $bg ?>">

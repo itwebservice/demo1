@@ -22,7 +22,7 @@ while($row_hotel=mysqli_fetch_assoc($sq_hotel)){
         $hotel_name = $sq_hotel_name['hotel_name'];
 
         $email_id = $encrypt_decrypt->fnDecrypt($sq_hotel_name['email_id'], $secret_key);
-        $sq_booking_details = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+        $sq_booking_details = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 
         $customer_id = $sq_booking_details['customer_id'];
         $tour_name = $sq_booking_details['tour_name'];

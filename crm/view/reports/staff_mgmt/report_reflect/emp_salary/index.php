@@ -97,7 +97,6 @@ var column = [
 { title : "Days_Worked"},
 { title : "Gross_Salary"},
 { title : "salary_advance"},
-{ title : "Incentive"},
 { title:"Employer_PF"},
 { title : "Employee_PF"},
 { title : "ESIC_Deduction"},
@@ -128,7 +127,7 @@ function report_reflect()
 		return false;
 	}
 	$.post(base_url+'view/reports/staff_mgmt/report_reflect/emp_salary/report_reflect.php', { year : year, month : month, emp_id : emp_id,branch_status:branch_status }, function(data){
-		pagination_load(data, column, true, false, 20, 'emp_salary_table');
+		pagination_load(data, column, true, false, 20, 'emp_salary_table',true);
 		$('.loader').remove();
 	});
 }
@@ -187,7 +186,7 @@ function calculate_total_payable(offset='')
 	var loan_ded = $('#loan_ded'+offset).val();
 	var surcharge_deduction = $('#surcharge_deduction'+offset).val();
 	var cess_deduction = $('#cess_deduction'+offset).val();
-	var employee_pf = $('#employee_pf'+offset).val();
+	 var employee_pf = $('#employee_pf'+offset).val();
 	var esic = $('#txt_esic'+offset).val();
 	var pt = $('#txt_pt'+offset).val();
 	var tds = $('#txt_tds'+offset).val();
@@ -211,7 +210,7 @@ function calculate_total_payable(offset='')
 	if(loan_ded==""){ loan_ded=0;}
 	if(surcharge_deduction==""){ surcharge_deduction=0; }
 	if(cess_deduction==""){ cess_deduction=0; }
-	if(employee_pf==""){ employee_pf=0; }
+	 if(employee_pf==""){ employee_pf=0; }
 	if(esic==""){ esic=0; }
 	if(pt==""){ pt=0; }
 	if(labour_all==""){ labour_all=0; }
@@ -223,11 +222,11 @@ function calculate_total_payable(offset='')
 	total_addition = round_off_value(total_addition);
 	$('#gross_salary'+offset).val(total_addition);
 
-	var total_deduction = parseFloat(employee_pf) + parseFloat(esic) + parseFloat(pt) + parseFloat(labour_all) + parseFloat(employer_pf) + parseFloat(tds) + parseFloat(salary_advance) + parseFloat(loan_ded) + parseFloat(surcharge_deduction) + parseFloat(cess_deduction) + parseFloat(leave_deduction);
+	var total_deduction =  parseFloat(employee_pf) + parseFloat(esic) + parseFloat(pt) + parseFloat(labour_all)  + parseFloat(tds) + parseFloat(salary_advance) + parseFloat(loan_ded) + parseFloat(surcharge_deduction) + parseFloat(cess_deduction) + parseFloat(leave_deduction);
 	total_deduction = round_off_value(total_deduction);
 	$('#txt_deduction'+offset).val(total_deduction);
 	
-	var total_add_value =  parseFloat(total_addition) - parseFloat(total_deduction) + parseFloat(employer_pf) + parseFloat(employer_pf);
+	var total_add_value =  parseFloat(total_addition) - parseFloat(total_deduction) ;
 	total_add_value = round_off_value(total_add_value);
 	$('#net_salary'+offset).val(total_add_value);
 

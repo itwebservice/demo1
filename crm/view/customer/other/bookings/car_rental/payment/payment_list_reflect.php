@@ -12,7 +12,7 @@ $query .=" and booking_id in (select booking_id from car_rental_booking where cu
 ?>
 <div class="row mg_tp_20"><div class="col-xs-12">
 <div class="table-responsive">
-<table class="table table-bordered table-hover cust_table" id="tbl_vendor_list1" style="margin:20px 0 !important;">
+<table class="table table-bordered table-hover bg_white cust_table" id="tbl_vendor_list1" style="margin:20px 0 !important;">
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
@@ -21,7 +21,7 @@ $query .=" and booking_id in (select booking_id from car_rental_booking where cu
 			<th>Mode</th>
 			<th>Bank_Name</th>
 			<th>Cheque_No/ID</th>
-			<th class="text-right success">Amount</th>
+			<th class="success">Amount</th>
 			<th>Receipt</th>
 		</tr>
 	</thead>
@@ -41,7 +41,7 @@ $query .=" and booking_id in (select booking_id from car_rental_booking where cu
 			$yr = explode("-", $date);
 			$year1 =$yr[0];
 			
-			$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_payment[booking_id]'"));
+			$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_payment[booking_id]' and delete_status='0'"));
 			$total_sale = $sq_booking['total_fees'];
 			$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from car_rental_payment where clearance_status!='Cancelled' and booking_id='$row_payment[booking_id]'"));
 			$total_pay_amt = $sq_pay['sum'];
@@ -61,12 +61,8 @@ $query .=" and booking_id in (select booking_id from car_rental_booking where cu
 				$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount']+ $row_payment['credit_charges'];
 			}
 
-			if($row_payment['clearance_status']=="Cleared"){ $bg='success';
-				$sq_paid_amount = $sq_paid_amount + $row_payment['payment_amount']+ $row_payment['credit_charges'];
-			}
-
-			if($row_payment['clearance_status']==""){ $bg='';
-			}
+			if($row_payment['clearance_status']=="Cleared"){ $bg='success'; }
+			if($row_payment['clearance_status']==""){ $bg=''; }
 			$total_paid_amt = $total_paid_amt + $row_payment['payment_amount']+ $row_payment['credit_charges'];
 
 			$payment_id_name = "Car Rental Payment ID";
@@ -83,7 +79,7 @@ $query .=" and booking_id in (select booking_id from car_rental_booking where cu
 			$bank_name = $row_payment['bank_name'];
 			$receipt_type = "Car Rental Receipt";				
 
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=car_rental_payment&customer_field=booking_id&in_customer_id=$row_payment[booking_id]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=car_rental_payment&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&status=$row_payment[status]";
 			?>
 			<tr class="<?= $bg;?>">				
 				<td><?= $count ?></td>
@@ -92,7 +88,7 @@ $query .=" and booking_id in (select booking_id from car_rental_booking where cu
 				<td><?= $row_payment['payment_mode'] ?></td>
 				<td><?= $row_payment['bank_name'] ?></td>
 				<td><?= $row_payment['transaction_id'] ?></td>
-				<td class="text-right success"><?= number_format($row_payment['payment_amount']+ $row_payment['credit_charges'],2) ?></td>
+				<td class="success"><?= number_format($row_payment['payment_amount']+ $row_payment['credit_charges'],2) ?></td>
 				<td>
 					<a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 				</td>					

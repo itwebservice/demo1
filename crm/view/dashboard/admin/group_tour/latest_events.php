@@ -23,7 +23,7 @@
 			$sq = mysqlQuery("select * from payment_master order by date(date) desc limit 5");
 			while($row = mysqli_fetch_assoc($sq)){
 				$tourwise_id = $row['tourwise_traveler_id'];
-				$sq_tourwise = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+				$sq_tourwise = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
 				$tour_id = $sq_tourwise['tour_id'];
 				$tour_group_id = $sq_tourwise['tour_group_id'];
 
@@ -97,7 +97,7 @@
 		<tbody>
 			<?php 
 			$today = date('Y-m-d');
-			$sq = mysqlQuery("select * from tourwise_traveler_details where and tour_group_status!='Cancel' and date(form_date)>'$today' limit 5");
+			$sq = mysqlQuery("select * from tourwise_traveler_details where 1 and tour_group_status!='Cancel' and delete_status='0' and date(form_date)>'$today' limit 5");
 			while($row = mysqli_fetch_assoc($sq)){
 				$tourwise_id = $row['id'];
 				$tour_id = $row['tour_id'];

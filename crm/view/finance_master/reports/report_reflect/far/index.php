@@ -78,7 +78,7 @@ var column = [
 	{ title : "Depreciation"},
 	{ title : "Accumulated_Depreciation"},
 	{ title : "Closing_Carrying_amount"},
-	{ title : "View"},
+	{ title : "Actions"},
 ];
 function report_reflect()
 {

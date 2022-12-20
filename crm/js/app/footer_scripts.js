@@ -795,7 +795,8 @@ function pagination_load(
 	bg_stat = false,
 	footer_string = false,
 	pg_length = 20,
-	table_id = 'tbl_list'
+	table_id = 'tbl_list',
+	desc_filter = false
 ) {
 	//1. dataset,2.columns titles,3.if want bg color,4.if want footer,5.manual pagelength change
 	var html = '';
@@ -819,7 +820,7 @@ function pagination_load(
 		}
 		for (var i = 0; i < parseInt(dataset_main[dataset_main.length - 1].footer_data['total_footers']); i++) {
 			html +=
-				'<th class="text-right ' +
+				'<th class=" ' +
 				dataset_main[dataset_main.length - 1].footer_data['class' + i] +
 				' " colspan=\'' +
 				dataset_main[dataset_main.length - 1].footer_data['col' + i] +
@@ -832,12 +833,23 @@ function pagination_load(
 	if ($.fn.DataTable.isDataTable('#' + table_id)) {
 		$('#' + table_id).DataTable().clear().destroy(); // for managin error
 	}
+	if(desc_filter == true)
+	{
+		order_value = 'desc'; 
+	}
+	else
+	{
+		order_value = 'asc'; 
+
+	}
 	var table = $('#' + table_id).DataTable({
+	
 		data: table_data,
 		pageLength: pg_length,
 		columns: columns,
 		searching: true,
 		// "scrollX": true,
+		order: [[0, order_value]],
 		createdRow: function (row, data, dataIndex) {
 			// adds bg color for every invalid point
 			if (bg_stat) $(row).addClass(bg[dataIndex]);
@@ -1072,16 +1084,20 @@ function check_updated_amount(payment_old_value, payment_amount) {
 }
 function add_itinerary(dest_id1, spa, dwp, ovs, dayp) {
 
+	var day_id = dayp.split('-');
+
+	$('#itinerary'+day_id[1]).prop('disabled',true);
 	var base_url = $('#base_url').val();
 	var dest_id = $('#' + dest_id1).val();
 	if (dest_id == '') {
 		error_msg_alert('Please select destination!');
+		$('#itinerary'+day_id[1]).prop('disabled',false);
 		return false;
 	}
-	var day_id = dayp.split('-');
 	$('#itinerary'+day_id[1]).button('loading');
 	$.post(base_url + 'view/load_data/itinerary_modal.php', { dest_id: dest_id, spa: spa, dwp: dwp, ovs: ovs, dayp: dayp }, function (data) {
 		$('#itinerary'+day_id[1]).button('reset');
+		$('#itinerary'+day_id[1]).prop('disabled',false);
 		$('#div_itinerary_modal').html(data);
 	});
 }
@@ -1108,10 +1124,10 @@ function vehicle_save_modal(vehicle_name1) {
 		}
 	);
 }
-function customer_whatsapp_send(first_name, contact_no, email_id) {
+function customer_whatsapp_send(first_name, contact_no, email_id,company_name,cust_type) {
 
 	var base_url = $('#base_url').val();
-	$.post(base_url + 'controller/customer_master/whatsapp_send.php', { first_name: first_name, contact_no: contact_no, email_id: email_id }, function (data) {
+	$.post(base_url + 'controller/customer_master/whatsapp_send.php', { first_name: first_name, contact_no: contact_no, email_id: email_id ,company_name:company_name,cust_type:cust_type}, function (data) {
 		window.open(data);
 	});
 }

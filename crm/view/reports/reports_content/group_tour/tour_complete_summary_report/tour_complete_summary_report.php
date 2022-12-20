@@ -32,7 +32,7 @@
 	$total_tour_paid=0;
 	$totl_bal=0;
 
-	$query1 = "select * from tourwise_traveler_details where 1 ";
+	$query1 = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 	if(isset($_GET['tour_id']))
 	{
 		$tour_id = $_GET['tour_id'];

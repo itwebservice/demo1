@@ -52,6 +52,10 @@
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>Bank Name <em>:</em></label> ".$query['b_bank_name']; ?>
 		            </span>
+					<span class="main_block">
+		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+		                  <?php echo "<label>Bank Account Name <em>:</em></label> ".$query['b_bank_account_name']; ?>
+		            </span>
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>Account Type<em>:</em></label> ".$query['b_acc_name'] ?>

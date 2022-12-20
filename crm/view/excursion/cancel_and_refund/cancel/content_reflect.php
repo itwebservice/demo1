@@ -14,7 +14,7 @@ $exc_id = $_POST['exc_id'];
 	<div class="col-md-10 col-md-offset-1 col-sm-8 col-sm-offset-2 col-xs-12 mg_bt_20_xs">
 		<div class="widget_parent-bg-img bg-img-red">
 			<?php     
-				$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+				$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
 				$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from exc_payment_master where exc_id='$exc_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 				$sq_refund_info = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from exc_refund_master where exc_id='$exc_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 				
@@ -78,7 +78,7 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
 }
 
 		begin_widget();
-		$title_arr = array("Booking","Serv. Charge", " Tax","Markup","Markup Tax","Roundoff","Total Amount","Paid Amount");
+		$title_arr = array("Basic Amount","Serv. Charge", " Tax","Markup","Markup Tax","Roundoff","Total Amount","Paid Amount");
 		$content_arr = array( number_format($exc_amount,2) ,number_format($service_charge,2), number_format($service_tax_amount,2),number_format($sq_exc_info['markup'],2),number_format($markupservice_tax_amount,2),number_format($sq_exc_info['roundoff'],2), number_format($sq_exc_info['exc_total_cost'],2),number_format($sq_payment_info['sum'],2));
 		$percent = ($sq_exc_info['exc_total_cost']!='0')?($sq_payment_info['sum']/$sq_exc_info['exc_total_cost'])*100 : 0;
 		$percent = round($percent, 2);
@@ -147,7 +147,7 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
 $sq_cancel_count = mysqli_num_rows(mysqlQuery("select * from excursion_master_entries where exc_id='$exc_id' and status='Cancel'"));
 if($sq_cancel_count>0){
 
-	$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+	$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
 	if($sq_exc_info['cancel_amount'] == "0.00"){
 		$refund_amount = $sq_payment_info['sum'];
 	}else{
@@ -155,7 +155,11 @@ if($sq_cancel_count>0){
 	}
 ?>
 <form id="frm_refund" class="mg_bt_150">
-
+<div class="row">
+		<div class="col-md-12 text-center mt-5 mb-5" style="margin-bottom: 20px;">
+			<h4>Refund Estimate</h4>
+		</div>
+	</div>
 	<div class="row text-center">
 		<div class="col-md-3 col-md-offset-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 			<input type="text" name="cancel_amount" id="cancel_amount" class="text-right" placeholder="*Cancellation Charges" title="Cancellation Charges" onchange="validate_balance(this.id);calculate_total_refund()" value="<?= $sq_exc_info['cancel_amount'] ?>">

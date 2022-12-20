@@ -3,7 +3,7 @@ include "../../../../model/model.php";
 /*======******Header******=======*/
 require_once('../../../layouts/admin_header.php');
 ?>
-<?= begin_panel('Train Ticket Cancel & Refund',74) ?>
+<?= begin_panel('Train Ticket Booking Cancel & Refund',74) ?>
 
 <div class="row text-center text_left_sm_xs mg_bt_10">
     <label for="rd_ticket_cancel" class="app_dual_button mg_bt_10 active">

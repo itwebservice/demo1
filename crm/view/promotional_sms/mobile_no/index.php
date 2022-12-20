@@ -58,7 +58,7 @@ $branch_status = $_POST['branch_status'];
     </div>
   </div>
   <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
-	<table id="email_id" class="table table-hover" style="margin: 20px 0 !important;">         
+	<table id="table_sms" class="table table-hover" style="margin: 20px 0 !important;">         
 	</table>
 </div></div></div>
 </div>
@@ -83,7 +83,7 @@ function select_all_mobile(ele){
 }
 
 var column = [
-	{ title : ""},
+	// { title : ""},
 	{ title : "S_No."},
 	{ title:"Mobile_No", className:"text-center"},
 	{ title : "Group_Name"},
@@ -96,7 +96,7 @@ function mobile_list_reflect(){
 		$('#tbl_mobile_no tbody tr').remove();
 		var branch_status = $('#branch_status').val();
 		$.post('mobile_no/list_reflect.php', { branch_status : branch_status}, function(data){
-			pagination_load(data, column, true, false, 20, 'email_id');
+			pagination_load(data, column, true, false, 20, 'table_sms',true);
 		});
 }mobile_list_reflect();
 

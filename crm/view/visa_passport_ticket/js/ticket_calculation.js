@@ -52,7 +52,6 @@ function get_auto_values(booking_date, sub_total, payment_mode, service_charge, 
         else
             $('#' + service_charge).removeAttr('readonly');
 
-
         /////////////////Service charge End/////////////////
 
         /////////////////Markup Start///////////////////////
@@ -61,7 +60,6 @@ function get_auto_values(booking_date, sub_total, payment_mode, service_charge, 
             if ($('#' + markup).val() == '') $('#' + markup).val(parseInt(0).toFixed(2));
         }
         else {
-            console.log(service_amount);
             var markup_cost = calculate_charges(markup_amount_rules_array, type, basic_amount, service_amount);
             markup_cost = (markup_cost == '' || typeof markup_cost === NaN || markup_cost === undefined) ? parseFloat(0).toFixed(2) : parseFloat(markup_cost).toFixed(2);
             
@@ -311,7 +309,8 @@ function get_tax_charges(new_taxes_rules, taxes_result, basic_amount, basic_amou
     }
 }
 function get_tax_rules_on_conditions(final_taxes_rules, basic_amount, payment_mode, type) {
-
+    
+    var base_url = $('#base_url').val();
     let applied_rules = [];
     if (type === 'save') {
         var customer = $('#customer_id').val();
@@ -349,7 +348,7 @@ function get_tax_rules_on_conditions(final_taxes_rules, basic_amount, payment_mo
                                 'type': "POST",
                                 'global': false,
                                 'dataType': 'html',
-                                'url': "../inc/get_customer_operator_state.php",
+                                'url': base_url+"view/visa_passport_ticket/inc/get_customer_operator_state.php",
                                 'data': { 'customer': customer },
                                 'success': (data) => {
                                     data = data.split('-');
@@ -448,7 +447,7 @@ function get_tax_rules_on_conditions(final_taxes_rules, basic_amount, payment_mo
                                 'type': "POST",
                                 'global': false,
                                 'dataType': 'html',
-                                'url': "../inc/get_customer.php",
+                                'url': base_url+"view/visa_passport_ticket/inc/get_customer.php",
                                 'data': { 'customer': customer },
                                 'success': function (data) {
                                     data = data.split('-');
@@ -503,7 +502,7 @@ function get_tax_rules_on_conditions(final_taxes_rules, basic_amount, payment_mo
                                 'type': "POST",
                                 'global': false,
                                 'dataType': 'html',
-                                'url': "../inc/get_customer.php",
+                                'url': base_url+"view/visa_passport_ticket/inc/get_customer.php",
                                 'data': { 'customer': customer },
                                 'success': function (data) {
                                     data = data.split('-');
@@ -529,15 +528,13 @@ function get_tax_rules_on_conditions(final_taxes_rules, basic_amount, payment_mo
                             var cust_type= $('#cust_type').val();
                             switch (for1) {
                                 case '!=':
-                                    if (cust_type !== value || cust_type === '')
-                                    {
+                                    if (cust_type !== value || cust_type === ''){
                                         customer_type_flag = true;
                                     }
                                     else customer_type_flag = false;
                                     break;
                                 case '==':
-                                    if (cust_type === value  || cust_type === '')
-                                    {
+                                    if (cust_type === value  || cust_type === ''){
                                         customer_type_flag = true;
                                     }
                                     else customer_type_flag = false;

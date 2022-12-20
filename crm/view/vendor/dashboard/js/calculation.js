@@ -226,7 +226,6 @@ function get_tax_rules_on_conditions(final_taxes_rules,basic_amount,payment_mode
                                 'data': { 'supplier' : supplier , 'type' : type1},
                                 'success': (data) => {
                                     data = data.split('-');
-                                    console.log(type1);
                                         switch(for1) {
                                             case '!=':
                                                 if(data[0] !== value || data[1] === '')

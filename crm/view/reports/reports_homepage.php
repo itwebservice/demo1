@@ -36,7 +36,7 @@ $branch_status = $sq['branch_status'];
                   <ul class="dropdown_menu no-pad">
                     <li><span onclick="show_report_reflect('Group Passenger Report')">Group Passenger Report</span></li>
                     <li><span onclick="show_report_reflect('Room Allocation')">Room Allocation</span></li>
-                    <li><span onclick="show_report_reflect('Payment Collection')">Payment Collection</span></li>
+                    <!-- <li><span onclick="show_report_reflect('Payment Collection')">Payment Collection</span></li> -->
                     <li><span onclick="show_report_reflect('Complete Tour Cancel/Refund')">Complete Tour Cancel/Refund</span></li>
                     <li><span onclick="show_report_reflect('Traveller Cancel/Refund')">Traveller Cancel/Refund</span></li>
                     <li><span onclick="show_report_reflect('Itinerary And Gift')">Itinerary And Gift</span></li>
@@ -132,6 +132,9 @@ function travelers_booking_reflect(tour_group_id,tour_id,id)
 {
   var tour_id = document.getElementById(tour_id).value;
   var tour_group_id = document.getElementById(tour_group_id).value;
+  
+  $("#"+id).html('<option value="">Select Booking ID</option>');
+
   $.get( "reports_content/group_tour/booking_tickets/cancelled_traveler_reflect.php" , { tour_id : tour_id, tour_group_id : tour_group_id } , function ( data ) {
         $("#"+id).html(data);
   });

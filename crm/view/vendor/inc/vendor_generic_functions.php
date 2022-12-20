@@ -13,7 +13,7 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
 
 	}
 	if($estimate_type=="Package Tour"){
-		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$estimate_type_id'"));
+		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$estimate_type_id' "));
 		$date = $sq_booking['booking_date'];
          $yr = explode("-", $date);
          $year =$yr[0];
@@ -27,7 +27,7 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
 		$estimate_type_val = get_package_booking_id($sq_booking['booking_id'],$year)." : ".$cust_name;
 	}
 	if($estimate_type=="Car Rental"){
-		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$estimate_type_id'"));	
+		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$estimate_type_id' "));	
 		$date = $sq_booking['created_at'];
          $yr = explode("-", $date);
          $year =$yr[0];
@@ -40,7 +40,7 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
 		$estimate_type_val = get_car_rental_booking_id($sq_booking['booking_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Visa Booking"){
-		$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$estimate_type_id'"));
+		$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$estimate_type_id' "));
 		$date = $sq_visa['created_at'];
          $yr = explode("-", $date);
          $year =$yr[0];
@@ -66,7 +66,7 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
    		$estimate_type_val = get_passport_booking_id($sq_passport['passport_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Ticket Booking"){
-		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$estimate_type_id'"));
+		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$estimate_type_id' "));
 		$date = $sq_ticket['created_at'];
          $yr = explode("-", $date);
          $year =$yr[0];
@@ -79,10 +79,10 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
    		$estimate_type_val = get_ticket_booking_id($sq_ticket['ticket_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Train Ticket Booking"){
-		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$estimate_type_id'"));
+		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$estimate_type_id' "));
 		$date = $sq_ticket['created_at'];
-         $yr = explode("-", $date);
-         $year =$yr[0];
+		$yr = explode("-", $date);
+		$year =$yr[0];
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket[customer_id]'"));
 		if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
 		  $cust_name = $sq_customer['company_name'];
@@ -92,20 +92,20 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
    		$estimate_type_val = get_train_ticket_booking_id($sq_ticket['train_ticket_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Hotel Booking"){
-		$sq_hotel_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$estimate_type_id'"));
+		$sq_hotel_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$estimate_type_id' "));
 		$date = $sq_hotel_booking['created_at'];
 		$yr = explode("-", $date);
 		$year =$yr[0];
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_hotel_booking[customer_id]'"));
 		if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-		  $cust_name = $sq_customer['company_name'];
+			$cust_name = $sq_customer['company_name'];
 		}else{
-		  $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+			$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 		}
-   		$estimate_type_val = get_hotel_booking_id($sq_hotel_booking['booking_id'],$year).' : '.$cust_name;
+		$estimate_type_val = get_hotel_booking_id($sq_hotel_booking['booking_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Bus Booking"){
-		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$estimate_type_id'"));
+		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$estimate_type_id' "));
 		$date = $sq_booking['created_at'];
          $yr = explode("-", $date);
          $year =$yr[0];
@@ -131,7 +131,7 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
         $estimate_type_val = get_forex_booking_id($sq_booking['booking_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Miscellaneous Booking"){
-		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$estimate_type_id'"));
+		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$estimate_type_id' "));
 		$date = $sq_booking['created_at'];
          $yr = explode("-", $date);
          $year =$yr[0];
@@ -144,17 +144,17 @@ function get_estimate_type_name($estimate_type, $estimate_type_id){
         $estimate_type_val = get_misc_booking_id($sq_booking['misc_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="Excursion Booking"){
-		$sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$estimate_type_id'"));
+		$sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$estimate_type_id' "));
 		$date = $sq_exc['created_at'];
-         $yr = explode("-", $date);
-         $year =$yr[0];
+		$yr = explode("-", $date);
+		$year =$yr[0];
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_exc[customer_id]'"));
 		if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-		  $cust_name = $sq_customer['company_name'];
+			$cust_name = $sq_customer['company_name'];
 		}else{
-		  $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+			$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 		}
-   		$estimate_type_val = get_exc_booking_id($sq_exc['exc_id'],$year).' : '.$cust_name;
+		$estimate_type_val = get_exc_booking_id($sq_exc['exc_id'],$year).' : '.$cust_name;
 	}
 	if($estimate_type=="B2B Booking"){
 		$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from b2b_booking_master where booking_id='$estimate_type_id'"));

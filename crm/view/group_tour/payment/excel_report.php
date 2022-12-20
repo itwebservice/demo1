@@ -110,7 +110,7 @@ else{
 }
 
 if($booking_id!=""){
-  $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id = '$booking_id'")) ;
+  $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id = '$booking_id' and delete_status='0'")) ;
   $booking_date = $sql_booking_date['form_date'];
   $yr = explode("-", $booking_date);
   $year1 =$yr[0];

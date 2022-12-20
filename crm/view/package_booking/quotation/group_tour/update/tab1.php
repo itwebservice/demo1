@@ -12,7 +12,7 @@ $role_id = $_SESSION['role_id'];
 
 			<input type="hidden" id="login_id" name="login_id" value="<?= $login_id ?>">
 
-			<select name="enquiry_id1" id="enquiry_id1" title="Enquiry No" style="width:100%" onchange="get_enquiry_details('1');group_quotation_cost_calculate();">
+			<select name="enquiry_id1" id="enquiry_id1" title="Select Enquiry" style="width:100%" onchange="get_enquiry_details('1');group_quotation_cost_calculate();">
 
 				<?php 
 
@@ -64,19 +64,19 @@ $role_id = $_SESSION['role_id'];
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-			<input type="text" id="tour_name1" name="tour_name1" onchange="validate_spaces(this.id)" placeholder="*Destination Name" title="Destination Name" value="<?= $sq_quotation['tour_name'] ?>">
+			<input type="text" id="tour_name1" name="tour_name1" onchange="validate_spaces(this.id)" placeholder="*Tour Name" title="Tour Name" value="<?= $sq_quotation['tour_name'] ?>">
 
 		</div>	
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	      <input type="text" id="from_date1" name="from_date1" placeholder="*From Date" title="From Date" onchange="total_days_reflect('1');get_to_date(this.id,'to_date1')" value="<?= date('d-m-Y', strtotime($sq_quotation['from_date'])) ?>">
+	    	<input type="text" id="from_date1" name="from_date1" placeholder="*From Date" title="From Date" onchange="total_days_reflect('1');get_to_date(this.id,'to_date1')" value="<?= date('d-m-Y', strtotime($sq_quotation['from_date'])) ?>">
 
 	    </div>
 
 	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	     <input type="text" id="to_date1" name="to_date1" placeholder="*To Date" title="To Date" onchange="total_days_reflect('1');validate_validDate('from_date1','to_date1');" value="<?= date('d-m-Y', strtotime($sq_quotation['to_date'])) ?>">
+	    	<input type="text" id="to_date1" name="to_date1" placeholder="*To Date" title="To Date" onchange="total_days_reflect('1');validate_validDate('from_date1','to_date1');" value="<?= date('d-m-Y', strtotime($sq_quotation['to_date'])) ?>">
 
 	    </div>
 
@@ -95,55 +95,54 @@ $role_id = $_SESSION['role_id'];
 
 			<input type="text" id="mobile_no1" name="mobile_no1" placeholder="Mobile Number" title="Mobile Number" value="<?= $sq_quotation['mobile_number'] ?>" onchange="mobile_validate(this.id)">
 			
-		</div>	
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+
+	    	<input type="text" id="email_id1" name="email_id1" placeholder="Email ID" title="Email ID" value="<?= $sq_quotation['email_id'] ?>">
+
+	    </div>	
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	    	<input type="text" id="total_adult1" name="total_adult1" placeholder="*Total Adult" title="Total Adult" title="Total Infant" min="1" onchange=" validate_balance(this.id);total_passangers_calculate('1'); cost_reflect();" value="<?= $sq_quotation['total_adult'] ?>">
+	    	<input type="text" id="total_adult1" name="total_adult1" placeholder="*Total Adult(s)" title="Total Adult(s)" title="Total Infant" min="1" onchange=" validate_balance(this.id);total_passangers_calculate('1'); cost_reflect();" value="<?= $sq_quotation['total_adult'] ?>">
 
 	    </div>
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	    	<input type="text" class="form-control" id="children_with_bed1" name="children_with_bed1" title="Child With Bed" onchange="total_passangers_calculate('1');validate_balance(this.id);cost_reflect()" placeholder="Child With Bed" value="<?= $sq_quotation['children_with_bed'] ?>">   
+	    	<input type="text" class="form-control" id="children_with_bed1" name="children_with_bed1" title="Child With Bed(s)" onchange="total_passangers_calculate('1');validate_balance(this.id);cost_reflect()" placeholder="Child With Bed(s)" value="<?= $sq_quotation['children_with_bed'] ?>">   
 
 	    </div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	    	<input type="text" class="form-control" id="children_without_bed1" name="children_without_bed1" onchange="total_passangers_calculate('1');validate_balance(this.id);cost_reflect()" placeholder="Child Without Bed" title="Child Without Bed" value="<?= $sq_quotation['children_without_bed'] ?>">
+	    	<input type="text" class="form-control" id="children_without_bed1" name="children_without_bed1" onchange="total_passangers_calculate('1');validate_balance(this.id);cost_reflect()" placeholder="Child Without Bed(s)" title="Child Without Bed(s)" value="<?= $sq_quotation['children_without_bed'] ?>">
 
 	    </div>
 
 	    
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	    	<input type="text" id="total_infant1" name="total_infant1" placeholder="Total Infant" title="Total Infant" onchange="total_passangers_calculate('1');cost_reflect(); validate_balance(this.id)" value="<?= $sq_quotation['total_infant'] ?>">
+	    	<input type="text" id="total_infant1" name="total_infant1" placeholder="Total Infant(s)" title="Total Infant(s)" onchange="total_passangers_calculate('1');cost_reflect(); validate_balance(this.id)" value="<?= $sq_quotation['total_infant'] ?>">
 
 	    </div>
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-			<input type="text" id="total_passangers1" name="total_passangers1" placeholder="Total Members" title="Total Members" disabled value="<?= $sq_quotation['total_passangers'] ?>">
+			<input type="text" id="total_passangers1" name="total_passangers1" placeholder="Total Member(s)" title="Total Member(s)" disabled value="<?= $sq_quotation['total_passangers'] ?>">
 
 		</div>	
 
-		
-
-	 	 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	     <input type="text" id="email_id1" name="email_id1" placeholder="Email ID" title="Email ID" value="<?= $sq_quotation['email_id'] ?>">
-
-	    </div>	
+			
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-			 <input type="text" class="form-control" id="quotation_date1" name="quotation_date1" placeholder="Quotation Date" title="Quotation Date" value="<?= date('d-m-Y', strtotime($sq_quotation['quotation_date'])) ?>">
+			<input type="text" class="form-control" id="quotation_date1" name="quotation_date1" placeholder="Quotation Date" title="Quotation Date" value="<?= date('d-m-Y', strtotime($sq_quotation['quotation_date'])) ?>">
 
 		</div>	
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	       <select name="booking_type2" id="booking_type2" title="Tour Type">
+	    	<select name="booking_type2" id="booking_type2" title="Tour Type">
 
 	        	<option value="<?= $sq_quotation['booking_type'] ?>"><?= $sq_quotation['booking_type'] ?></option>
 
@@ -154,6 +153,16 @@ $role_id = $_SESSION['role_id'];
 	        </select>
 
 	    </div>
+		<div class="col-md-3 col-sm-6">
+		<?php
+		$status = ($sq_quotation['status'] == '1') ? 'Active' : 'Inactive';
+		?>
+		<select class="<?= $active_inactive_flag ?>" name="active_flag1" id="active_flag1" title="Status">
+		<option  value="<?php echo $sq_quotation['status']; ?>"><?php echo $status; ?></option>
+			<option value="1">Active</option>
+			<option value="0">Inactive</option>
+		</select>
+		</div>
 
 	</div>	
 

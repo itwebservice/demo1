@@ -78,7 +78,7 @@ function select_all_emails(ele){
 	}
 }
 var column = [
-	{ title : ""},
+	// { title : ""},
 	{ title : "S_No."},
 	{ title:"Email_ID"},
 	{ title : "Group_Name"},
@@ -90,7 +90,7 @@ function email_id_list_reflect(){
 		$('#tbl_email_id tbody tr').remove();
 		var branch_status = $('#branch_status').val();
 		$.post('email_id/list_reflect.php', {branch_status : branch_status}, function(data){
-			pagination_load(data, column, true, false, 20, 'email_id');
+			pagination_load(data, column, true, false, 20, 'email_id',true);
 		});
 }
 email_id_list_reflect();

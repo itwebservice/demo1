@@ -12,7 +12,7 @@ public function vendor_save()
 	$landline_no = $_POST['landline_no'];
 	$contact_person_name = $_POST['contact_person_name'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -43,7 +43,7 @@ public function vendor_save()
 	}
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(vendor_id) as max from train_ticket_vendor"));
 	$vendor_id = $sq_max['max'] + 1;
-	$sq_vendor = mysqlQuery("insert into train_ticket_vendor (vendor_id, vendor_name, mobile_no, landline_no, email_id, contact_person_name, immergency_contact_no, address,country, website, bank_name,account_name ,account_no, branch, ifsc_code, opening_balance, active_flag, created_at, service_tax_no, state_id, side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$mobile_no', '$landline_no','$email_id', '$contact_person_name','$immergency_contact_no', '$address', '$country','$website',  '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$opening_balance', '$active_flag', '$created_at', '$service_tax_no', '$state','$side','$supp_pan','$as_of_date')");
+	$sq_vendor = mysqlQuery("insert into train_ticket_vendor (vendor_id, vendor_name, mobile_no, landline_no, email_id, contact_person_name, immergency_contact_no, address, website, bank_name,account_name ,account_no, branch, ifsc_code, opening_balance, active_flag, created_at, service_tax_no, state_id, side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$mobile_no', '$landline_no','$email_id', '$contact_person_name','$immergency_contact_no', '$address', '$website',  '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$opening_balance', '$active_flag', '$created_at', '$service_tax_no', '$state','$side','$supp_pan','$as_of_date')");
 
 	if($sq_vendor){
 		$vendor_login_master = new vendor_login_master;
@@ -75,7 +75,7 @@ public function vendor_update()
 	$address = addslashes($_POST['address']);
 	$contact_person_name = $_POST['contact_person_name'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -101,7 +101,7 @@ public function vendor_update()
 		echo "error--Supplier already exists!";
 		exit;
 	}
-	$sq_vendor = mysqlQuery("update train_ticket_vendor set vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', address='$address', country='$country', website='$website', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', opening_balance='$opening_balance', active_flag='$active_flag', service_tax_no='$service_tax_no1', state_id='$state_id',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
+	$sq_vendor = mysqlQuery("update train_ticket_vendor set vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', address='$address', website='$website', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', opening_balance='$opening_balance', active_flag='$active_flag', service_tax_no='$service_tax_no1', state_id='$state_id',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
 	sundry_creditor_balance_update();
 	
 	if($sq_vendor){

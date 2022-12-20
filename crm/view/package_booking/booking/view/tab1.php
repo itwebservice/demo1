@@ -75,7 +75,7 @@
 				</div>
 
 				<div class="col-sm-6 col-xs-12">
-									<?php if($sq_customer['type'] == 'Corporate'||$sq_customer['type'] == 'B2B'){ ?>
+					<?php if($sq_customer['type'] == 'Corporate'||$sq_customer['type'] == 'B2B'){ ?>
 					<span class="main_block">
 
 						<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -83,21 +83,13 @@
 						<?php echo "<label>Contact Person <em>:</em></label> ".$sq_package_info['contact_person_name']; ?>
 
 					</span>
-									<?php } ?>
-
-							<span class="main_block">
-
-									<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-
-								<?php echo "<label>City <em>:</em></label> ".$sq_package_info['city']; ?>
-
-							</span>
+					<?php } ?>
 
 					<span class="main_block">
 
-						<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+							<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-						<?php echo "<label>Country <em>:</em></label> ".$sq_package_info['country_name']; ?>
+						<?php echo "<label>City <em>:</em></label> ".$sq_package_info['city']; ?>
 
 					</span>
 
@@ -105,7 +97,7 @@
 
 						<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-							<?php echo "<label>State <em>:</em></label> ".$sq_package_info['state']; ?> 
+							<?php echo "<label>State/Country <em>:</em></label> ".$sq_package_info['state']; ?> 
 
 					</span>
 				</div>
@@ -167,7 +159,7 @@
 								<th>Adole</th>
 								<th>Passport_No.</th>
 								<th>Issue_Date</th>
-								<th>Expire_Date</th>
+								<th>Expiry_Date</th>
 							</tr>
 						</thead>
 						<tbody>

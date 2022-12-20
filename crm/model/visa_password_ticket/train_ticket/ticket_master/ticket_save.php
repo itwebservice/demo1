@@ -121,7 +121,7 @@ class ticket_save{
 		$train_ticket_id = $sq_max['max'] + 1;
 		$reflections = json_encode($reflections);
 		$bsmValues = json_encode($bsmValues);
-		$sq_ticket = mysqlQuery("INSERT INTO  train_ticket_master (train_ticket_id, customer_id, branch_admin_id,financial_year_id, type_of_tour, basic_fair, service_charge, delivery_charges, gst_on, service_tax_subtotal, net_total, payment_due_date, created_at,emp_id,reflections,bsm_values,roundoff,invoice_pr_id) VALUES ('$train_ticket_id','$customer_id', '$branch_admin_id','$financial_year_id', '$type_of_tour', '$basic_fair', '$service_charge', '$delivery_charges', '$gst_on', '$service_tax_subtotal', '$net_total', '$payment_due_date', '$booking_date','$emp_id','$reflections','$bsmValues','$roundoff','$invoice_pr_id')");
+		$sq_ticket = mysqlQuery("INSERT INTO train_ticket_master (train_ticket_id, customer_id, branch_admin_id,financial_year_id, type_of_tour, basic_fair, service_charge, delivery_charges, gst_on, service_tax_subtotal, net_total, payment_due_date, created_at,emp_id,reflections,bsm_values,roundoff,invoice_pr_id) VALUES ('$train_ticket_id','$customer_id', '$branch_admin_id','$financial_year_id', '$type_of_tour', '$basic_fair', '$service_charge', '$delivery_charges', '$gst_on', '$service_tax_subtotal', '$net_total', '$payment_due_date', '$booking_date','$emp_id','$reflections','$bsmValues','$roundoff','$invoice_pr_id')");
 
 		if(!$sq_ticket){
 			$GLOBALS['flag'] = false;
@@ -231,6 +231,147 @@ class ticket_save{
 		}
 	}
 
+	public function ticket_master_delete(){
+
+		global $delete_master,$transaction_master;
+		$train_ticket_id = $_POST['booking_id'];
+	
+		$deleted_date = date('Y-m-d');
+		$row_spec = "sales";
+	
+		$row_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+	
+		$reflections = json_decode($row_ticket['reflections']);
+		$service_tax_subtotal = $row_ticket['service_tax_subtotal'];
+		$customer_id = $row_ticket['customer_id'];
+		$booking_date = $row_ticket['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		
+		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+		if($sq_ct['type']=='Corporate' || $sq_ct['type'] == 'B2B'){
+			$cust_name = $sq_ct['company_name'];
+		}else{
+			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+		}
+		
+		$sq_pax = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id='$train_ticket_id' and adolescence!='Infant'"));
+		$sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id='$train_ticket_id'"));
+		$sq_trip_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id='$train_ticket_id'"));
+		
+		$i = 0;
+		$sq_ticket1 = mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id='$train_ticket_id'");
+		while($row_ticket1 = mysqli_fetch_assoc($sq_ticket1)){
+			if($i == 0)
+				$sector = $row_ticket1['travel_from'].'-'.$row_ticket1['travel_to'];
+			if($i>0)
+				$sector = $sector.','.$row_ticket1['travel_from'].'-'.$row_ticket1['travel_to'];
+			$i++;
+		}
+		$ticket_no = $sq_trip_ticket['train_no'];
+		$ticket_number = $sq_ticket['ticket_number'];
+		$class = $sq_trip_ticket['class'];
+		$particular = $this->get_particular($customer_id,$sq_pax,$sector,$ticket_no,$ticket_number,$class);
+
+		$particular = $particular;
+		$delete_master->delete_master_entries('Invoice','Train Ticket',$train_ticket_id,get_train_ticket_booking_id($train_ticket_id,$year),$cust_name,$row_ticket['net_total']);
+	
+		//Getting customer Ledger
+		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+		$cust_gl = $sq_cust['ledger_id'];
+	
+		////////////Sales/////////////
+		$module_name = "Train Ticket Booking";
+		$module_entry_id = $train_ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Train Ticket Sales');
+		$old_gl_id = $gl_id = 133;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+		////////////service charge/////////////
+		$module_name = "Train Ticket Booking";
+		$module_entry_id = $train_ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Train Ticket Sales');
+		$old_gl_id = $gl_id = ($reflections[0]->train_sc != '') ? $reflections[0]->train_sc : 189;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+		/////////Service Charge Tax Amount////////
+		// Eg. CGST:(9%):24.77, SGST:(9%):24.77
+		$service_tax_subtotal = explode(',',$service_tax_subtotal);
+		$tax_ledgers = explode(',',$reflections[0]->train_taxes);
+		for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+
+			$service_tax = explode(':',$service_tax_subtotal[$i]);
+			$ledger = $tax_ledgers[$i];
+
+			$module_name = "Train Ticket Booking";
+			$module_entry_id = $train_ticket_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $deleted_date;
+			$payment_particular = $particular;
+			$ledger_particular = get_ledger_particular('To','Train Ticket Sales');
+			$old_gl_id = $gl_id = $ledger;
+			$payment_side = "Credit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+		}
+		/////////Roundoff/////////
+		$module_name = "Train Ticket Booking";
+		$module_entry_id = $train_ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Train Ticket Sales');
+		$old_gl_id = $gl_id = 230;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+		///////// Delivery charges //////////
+		$module_name = "Train Ticket Booking";
+		$module_entry_id = $train_ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Train Ticket Sales');
+		$old_gl_id = $gl_id = 33;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+		////////Customer Amount//////
+		$module_name = "Train Ticket Booking";
+		$module_entry_id = $train_ticket_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $particular;
+		$ledger_particular = get_ledger_particular('To','Train Ticket Sales');
+		$old_gl_id = $gl_id = $cust_gl;
+		$payment_side = "Debit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+		
+		$sq_delete = mysqlQuery("update train_ticket_master set basic_fair='0',service_charge='0',delivery_charges='0',service_tax_subtotal='',net_total='0',delete_status='1', roundoff='0' where train_ticket_id='$train_ticket_id' ");
+		if($sq_delete){
+			echo 'Entry deleted successfully!';
+			exit;
+		}
+	}
+
 	function get_particular($customer_id,$pax,$sector,$train_no,$ticket_number,$class){
 		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 		$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
@@ -239,21 +380,16 @@ class ticket_save{
 
 	public function finance_save($train_ticket_id, $payment_id, $row_spec, $branch_admin_id,$particular)
 	{
-
 		$customer_id = $_POST['customer_id'];
 		$basic_fair = $_POST['basic_fair'];
 		$service_charge = $_POST['service_charge'];
 		$delivery_charges = $_POST['delivery_charges'];
-		$gst_on = $_POST['gst_on'];
-		$taxation_type = $_POST['taxation_type'];
-		$taxation_id = $_POST['taxation_id'];
 		$service_tax = $_POST['service_tax'];
 		$service_tax_subtotal = $_POST['service_tax_subtotal'];
 		$net_total = $_POST['net_total'];
 		$payment_date = $_POST['payment_date'];
 		$payment_amount1 = $_POST['payment_amount'];
 		$payment_mode = $_POST['payment_mode'];
-		$bank_name = $_POST['bank_name'];
 		$transaction_id1 = $_POST['transaction_id'];	
 		$booking_date = $_POST['booking_date'];
 		$bank_id1 = $_POST['bank_id'];
@@ -268,8 +404,6 @@ class ticket_save{
 		$year1 = explode("-", $booking_date);
 		$yr1 =$year1[0];
 		$year2 = explode("-", $payment_date1);
-		$yr2 =$year2[0];
-		$created_at = date("Y-m-d");	
 		foreach($bsmValues[0] as $key => $value){
 			switch($key){
 			case 'basic' : $basic_fair = ($value != "") ? $value : $basic_fair;break;
@@ -373,18 +507,6 @@ class ticket_save{
 		$clearance_status = "";
 		$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'INVOICE');
 
-		// /////////Discount////////
-		// $module_name = "Train Ticket Booking";
-		// $module_entry_id = $train_ticket_id;
-		// $transaction_id = "";
-		// $payment_amount = $discount;
-		// $payment_date = $booking_date;
-		// $payment_particular = $particular;
-		// $ledger_particular = get_ledger_particular('To','Train Ticket Sales');
-		// $gl_id = 36;
-		// $payment_side = "Debit";
-		// $clearance_status = "";
-		// $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'INVOICE');
 		////////Customer Amount//////
 		$module_name = "Train Ticket Booking";
 		$module_entry_id = $train_ticket_id;
@@ -405,8 +527,8 @@ class ticket_save{
 		if($payment_mode == 'Credit Card'){
 
 			//////Customer Credit charges///////
-			$module_name = "Train Ticket Booking";
-			$module_entry_id = $train_ticket_id;
+			$module_name = "Train Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -418,8 +540,8 @@ class ticket_save{
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
 			//////Credit charges ledger///////
-			$module_name = "Train Ticket Booking";
-			$module_entry_id = $train_ticket_id;
+			$module_name = "Train Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -442,12 +564,12 @@ class ticket_save{
 			//////company's tax on credit card charges
 			$tax_charges = ($sq_credit_charges['tax_charges_in'] =='Flat') ? $sq_credit_charges['tax_on_credit_card_charges'] : ($company_card_charges * ($sq_credit_charges['tax_on_credit_card_charges']/100));
 			$finance_charges = $company_card_charges + $tax_charges;
-$finance_charges = number_format($finance_charges,2);
+			$finance_charges = number_format($finance_charges,2);
 			$credit_company_amount = $payment_amount1 - $finance_charges;
 
 			//////Finance charges ledger///////
-			$module_name = "Train Ticket Booking";
-			$module_entry_id = $train_ticket_id;
+			$module_name = "Train Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $finance_charges;
 			$payment_date = $payment_date1;
@@ -458,8 +580,8 @@ $finance_charges = number_format($finance_charges,2);
 			$clearance_status = ($payment_mode=="Cheque"||$payment_mode=="Credit Card") ? "Pending" : "";
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 			//////Credit company amount///////
-			$module_name = "Train Ticket Booking";
-			$module_entry_id = $train_ticket_id;
+			$module_name = "Train Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_company_amount;
 			$payment_date = $payment_date1;
@@ -472,8 +594,8 @@ $finance_charges = number_format($finance_charges,2);
 		}
 		else{
 
-			$module_name = "Train Ticket Booking";
-			$module_entry_id = $train_ticket_id;
+			$module_name = "Train Ticket Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -486,8 +608,8 @@ $finance_charges = number_format($finance_charges,2);
 		}
 
 		//////Customer Payment Amount///////
-		$module_name = "Train Ticket Booking";
-		$module_entry_id = $train_ticket_id;
+		$module_name = "Train Ticket Booking Payment";
+		$module_entry_id = $payment_id;
 		$transaction_id = $transaction_id1;
 		$payment_amount = $payment_amount1;
 		$payment_date = $payment_date1;
@@ -499,7 +621,6 @@ $finance_charges = number_format($finance_charges,2);
 		$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 	}
 }
-
 
 
 	public function bank_cash_book_save($train_ticket_id, $payment_id, $branch_admin_id){
@@ -540,7 +661,7 @@ $finance_charges = number_format($finance_charges,2);
 		    $customer_id = $sq_max['max'];
 	    }
 
-		$module_name = "Train Ticket Booking";
+		$module_name = "Train Ticket Booking Payment";
 
 		$module_entry_id = $payment_id;
 
@@ -664,6 +785,11 @@ public function whatsapp_send(){
   else{
    $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
   }
+  if($sq_customer['type'] == 'Corporate' || $sq_customer['type']=='B2B'){
+		$cust_name = $sq_customer['company_name'];
+  }else{
+		$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+  }
    $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
   
    $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
@@ -674,7 +800,7 @@ public function whatsapp_send(){
 	 $contact = $sq_emp_info['mobile_no'];
    }
    
-   $whatsapp_msg = rawurlencode('Hello Dear '.$sq_customer['first_name'].',
+   $whatsapp_msg = rawurlencode('Dear '.$cust_name.',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : '.get_date_user($booking_date).'
   

@@ -1,4 +1,4 @@
-<?php 
+<?php
 class visa_master{
 
 ///////////// Employee Save///////////////////////
@@ -27,7 +27,7 @@ public function visa_master_save()
   $value=mysqli_fetch_assoc($row);
   $max=$value['max']+1;
 
-  $sq = mysqlQuery("insert into visa_crm_master (entry_id, country_id, visa_type, fees, markup, time_taken, upload_url,upload_url2, list_of_documents) values ('$max', '$visa_country_name', '$visa_type', '$fees', '$markup', '$time_taken', '$photo_upload_url', '$photo_upload_url2','$doc_list')");
+  $sq = mysqlQuery("insert into visa_crm_master (entry_id, country_id, visa_type, fees, markup, time_taken, upload_url,upload_url2, list_of_documents,status) values ('$max', '$visa_country_name', '$visa_type', '$fees', '$markup', '$time_taken', '$photo_upload_url', '$photo_upload_url2','$doc_list','1')");
 
   if($sq){
     echo "Visa information has been successfully saved.";
@@ -64,6 +64,7 @@ public function visa_master_save()
    $photo_upload_url2 = $_POST['photo_upload_url2'];
 
    $doc_list=mysqlREString($_POST['doc_list']);
+   $active_flag = $_POST['active_flag'];
 
 
 
@@ -77,7 +78,7 @@ public function visa_master_save()
     exit;
   }
 
-  $sq = mysqlQuery("update visa_crm_master set country_id='$visa_country_name',visa_type='$visa_type',fees='$fees',markup='$markup',time_taken='$time_taken',upload_url='$photo_upload_url',upload_url2='$photo_upload_url2',list_of_documents='$doc_list' where entry_id='$entry_id'");
+  $sq = mysqlQuery("update visa_crm_master set country_id='$visa_country_name',visa_type='$visa_type',fees='$fees',markup='$markup',time_taken='$time_taken',upload_url='$photo_upload_url',upload_url2='$photo_upload_url2',list_of_documents='$doc_list',status='$active_flag' where entry_id='$entry_id'");
 
   if($sq){
 
@@ -106,6 +107,12 @@ public function visa_master_save()
 function visa_typemaster_save()
 {
     $visa_type=$_POST['visa_type'];
+    if(empty($visa_type) || ctype_space($visa_type))
+    {
+      rollback_t();
+      echo "error--Visa Type Cannot Be Null !";
+      exit;
+    } 
     $visa_type = addslashes($visa_type);
     $sq_count = mysqli_fetch_assoc(mysqlQuery("select visa_type_id from visa_type_master where visa_type='$visa_type'"));
     if($sq_count > 0){
@@ -134,7 +141,7 @@ function visa_typemaster_save()
 
 public function visa_master_send()
 {
-  global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website,$model;
+  global $model;
   $entry_id=$_POST['entry_id'];
   $email_id=$_POST['email_id'];
   $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_crm_master where entry_id='$entry_id'"));
@@ -149,11 +156,12 @@ public function visa_master_send()
     $newDir2=substr($newDir1, 1); 
     $UploadURL=$newDir2;
 
-    $fileCover=$sq_visa['upload_url2'];
+    $fileCover = $sq_visa['upload_url2'];
     $getMain= explode('..',$fileCover);
     $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
     $CoverURL=substr($getSub, 1);
     array_push($arrayAttachment, $UploadURL,$CoverURL);
+    
     ///////////////////////////////////////////Send Mail as attachment End////////////////////////////////////////////////////////////////
 
     $content = '
@@ -196,7 +204,7 @@ function visa_whatsapp(){
   $CoverURL=substr($getSub, 1);
   array_push($arrayAttachment, $UploadURL,$CoverURL);
   
-  $whatsapp_msg = rawurlencode('Hello Dear '.',
+  $whatsapp_msg = rawurlencode('Dear '.',
 Hope you are doing great. Thank you for enquiry with us. Following is the visa information & required visa documents.
 *Country Name* : ' . $sq_visa['country_id'] . '
 *Visa Type* : ' . $sq_visa['visa_type'] . '

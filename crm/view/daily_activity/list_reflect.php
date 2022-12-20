@@ -51,6 +51,7 @@ include "../../model/app_settings/branchwise_filteration.php";
 </table>
 <script type="text/javascript">
 $('#acitvity_table').dataTable({
-  "pagingType": "full_numbers"
+  "pagingType": "full_numbers",
+  order: [[0, 'desc']],
 });
 </script>

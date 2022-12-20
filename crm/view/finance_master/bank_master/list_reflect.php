@@ -10,8 +10,7 @@ include "../../../model/model.php";
 			<th>Bank_Name</th>
 			<th>A/c No.</th>
 			<th>Account_Type</th>
-			<th>view</th>
-			<th>Edit</th>
+			<th>Actions</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -28,10 +27,8 @@ include "../../../model/model.php";
 				<td><?= $row_bank['account_no'] ?></td>
 				<td><?= $row_bank['account_type'] ?></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="display_modal(<?= $row_bank['bank_id'] ?>)" title="General Information"><i class="fa fa-eye"></i></button>
-				</td>
-				<td>
-					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_bank['bank_id'] ?>)" title="Update Bank"><i class="fa fa-pencil-square-o"></i></button>
+					<button class="btn btn-info btn-sm" onclick="display_modal(<?= $row_bank['bank_id'] ?>)" title="View Details"><i class="fa fa-eye"></i></button>
+					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_bank['bank_id'] ?>)" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
 				</td>
 			</tr>
 			<?php

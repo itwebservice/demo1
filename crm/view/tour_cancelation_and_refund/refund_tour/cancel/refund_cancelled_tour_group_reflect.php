@@ -5,7 +5,7 @@ $tour_group_id = $_GET['tour_group_id'];
 $traveler_group_id = $_GET['traveler_group_id'];
 if($traveler_group_id!='' && $tour_id!='' && $tour_group_id!=''){
 
-$sq = mysqlQuery("select * from tourwise_traveler_details where tour_id = '$tour_id' and tour_group_id = '$tour_group_id' and id = '$traveler_group_id'");
+$sq = mysqlQuery("select * from tourwise_traveler_details where tour_id = '$tour_id' and tour_group_id = '$tour_group_id' and id = '$traveler_group_id' and delete_status='0'");
 $row1 = mysqli_fetch_assoc($sq);
 $tourwise_id = $traveler_group_id;
 

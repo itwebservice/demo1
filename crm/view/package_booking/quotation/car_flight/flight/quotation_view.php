@@ -49,8 +49,11 @@ else{
 
 <div class="main_block mg_tp_30"></div>
 
-<h3 class="editor_title main_block">Flight Information</h3>
-<table class="table table-bordered table-responsive">
+<div class="row mg_tp_30">
+<div class="col-md-12">
+<h3 class="editor_title">Flight Information</h3>
+<div class="table-responsive">
+<table class="table table-bordered no-marg">
 	<thead>
 		<tr class="table-heading-row">
 			<th>From_City</th>
@@ -62,8 +65,8 @@ else{
 			<th>Adult(s)</th>
 			<th>Child(ren)</th>
 			<th>Infant(s)</th>
-			<th>Dep_Date</th>
-			<th>Arr_Date</th>
+			<th>Departure_D/T</th>
+			<th>Arrival_D/T</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -81,8 +84,8 @@ else{
 				<td><?php echo $row_train['from_location']; ?></td>
 				<td><?php echo $sq_city1['city_name']; ?></td>
 				<td><?= $row_train['to_location'] ?></td>
-				<td><?= $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')' ?></td>
-				<td><?= $row_train['class'] ?></td>
+				<td><?= ($row_train['airline_name'] != '') ? $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')' : 'NA' ?></td>
+				<td><?= ($row_train['class'] != '') ? $row_train['class']:'NA' ?></td>
 				<td><?= $row_train['total_adult'] ?></td>
 				<td><?= $row_train['total_child'] ?></td>
 				<td><?= $row_train['total_infant'] ?></td>
@@ -94,6 +97,9 @@ else{
 		?>
 	</tbody>
 </table>
+</div>
+</div>
+</div>
 <div class="main_block mg_tp_30"></div>
 <h3 class="editor_title main_block">Costing Information</h3>
 <table class="table table-bordered">

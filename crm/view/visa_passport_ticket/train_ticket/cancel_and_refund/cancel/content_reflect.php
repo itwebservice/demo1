@@ -9,7 +9,7 @@ $train_ticket_id = $_POST['train_ticket_id'];
 	<div class="col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
 		<div class="widget_parent-bg-img bg-img-red">
 			<?php     
-				$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+				$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
 				$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from train_ticket_payment_master where train_ticket_id='$train_ticket_id' AND clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 				$service_tax_amount = 0;
 				if($sq_train_ticket_info['service_tax_subtotal'] !== 0.00 && ($sq_train_ticket_info['service_tax_subtotal']) !== ''){
@@ -101,7 +101,7 @@ $train_ticket_id = $_POST['train_ticket_id'];
 <?php 
 $sq_cancel_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id='$train_ticket_id' and status='Cancel'"));
 if($sq_cancel_count>0){
-	$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+	$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
 	if($sq_train_ticket_info['cancel_amount'] == "0.00"){
 		$refund_amount = $sq_payment_info['sum'];
 	}else{
@@ -109,7 +109,11 @@ if($sq_cancel_count>0){
 	}
 ?>
 <form id="frm_refund" class="mg_bt_150">
-
+<div class="row">
+		<div class="col-md-12 text-center mt-5 mb-5" style="margin-bottom: 20px;">
+			<h4>Refund Estimate</h4>
+		</div>
+	</div>
 	<div class="row text-center">
 		<div class="col-md-3 col-md-offset-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 			<input type="text" name="cancel_amount" id="cancel_amount" class="text-right" placeholder="*Cancellation Charges" title="Cancellation Charges" onchange="validate_balance(this.id);calculate_total_refund()" value="<?= $sq_train_ticket_info['cancel_amount'] ?>">

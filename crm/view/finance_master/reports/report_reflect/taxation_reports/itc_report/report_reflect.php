@@ -1,6 +1,7 @@
 <?php
 include "../../../../../../model/model.php";
 include_once('../itc_report/vendor_generic_functions.php');
+// include '../../../../../../view/vendor_login/view/bookings/vendor_generic_functions.php';
 
 $from_date = $_POST['from_date'];
 $to_date = $_POST['to_date'];
@@ -12,7 +13,7 @@ $emp_id = $_SESSION['emp_id'];
 $array_s = array();
 $temp_arr = array();
 $tax_total = 0;
-$query = "select * from vendor_estimate where status='' ";
+$query = "select * from vendor_estimate where status='' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -24,6 +25,7 @@ $count = 1;
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
+	$estimate_type_val = get_estimate_type_name($row_query['estimate_type'], $row_query['estimate_type_id']);
 	$vendor_name = get_vendor_name($row_query['vendor_type'],$row_query['vendor_type_id']);
 	$vendor_info = get_vendor_info($row_query['vendor_type'], $row_query['vendor_type_id']);
 	$hsn_code = get_service_info($row_query['estimate_type']);
@@ -46,7 +48,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 		}
 	}
 	//Taxable amount
-	$taxable_amount = ($service_tax_amount / $tax_per) * 100;
+	$taxable_amount = ($tax_per!=0) ? ($service_tax_amount / $tax_per) * 100 : 0;
 	$tax_total += $service_tax_amount;
 	$temp_arr = array( "data" => array(
 		(int)($count++),
@@ -55,7 +57,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 		$vendor_name ,
 		($vendor_info['service_tax'] == '') ? 'NA' : strtoupper($vendor_info['service_tax']),
 		($sq_state['state_name'] == '') ? 'NA' : $sq_state['state_name'] ,
-		$row_query['estimate_id'] ,
+		$row_query['estimate_id'].' ('.$estimate_type_val.')' ,
 		get_date_user($row_query['purchase_date']) ,
 		($vendor_info['service_tax'] == '') ? 'Unregistered' : 'Registered',
 		($sq_supply['state_name'] == '') ? 'NA' : $sq_supply['state_name'],
@@ -71,7 +73,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	array_push($array_s,$temp_arr);
 }
 //Expense Booking
-$query = "select * from other_expense_master where 1 ";
+$query = "select * from other_expense_master where 1 and delete_status='0'";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -128,7 +130,7 @@ $footer_data = array("footer_data" => array(
 	
 	'foot0' => 'Total TAX :'.number_format($tax_total,2),
 	'col0' => 14,
-	'class0' =>"info text-left",
+	'class0' =>"info text-right",
 
 	'foot1' => '',
 	'col1' => 1,

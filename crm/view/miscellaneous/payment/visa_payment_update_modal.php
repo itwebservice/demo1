@@ -43,9 +43,9 @@ $enable = ($sq_payment_info['payment_mode']=="Cash"||$sq_payment_info['payment_m
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
             <select name="visa_id1" id="visa_id1" style="width:100%" title="Booking ID" disabled>              
-			         <option value="<?= $sq_visa['misc_id'] ?>"><?= get_misc_booking_id($sq_visa['misc_id'],$year) ?></option>
+			        <option value="<?= $sq_visa['misc_id'] ?>"><?= get_misc_booking_id($sq_visa['misc_id'],$year) ?></option>
               <?php
-              $sq_visa = mysqlQuery("select * from miscellaneous_master where customer_id='$sq_visa[customer_id]'");
+              $sq_visa = mysqlQuery("select * from miscellaneous_master where customer_id='$sq_visa[customer_id]' and delete_status='0'");
               while($row_visa = mysqli_fetch_assoc($sq_visa)){ ?>
                 <option value="<?= $row_visa['misc_id'] ?>"><?= get_misc_booking_id($row_visa['misc_id'],$year) ?></option>
                 <?php } ?>
@@ -92,6 +92,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash"||$sq_payment_info['payment_m
 					</div>
 				</div>
         <?php } ?>
+        <input type="hidden" id="canc_status1" name="canc_status1" class="form-control" value="<?=$sq_payment_info['status']?>"/>
         <div class="row text-center mg_tp_20">
             <div class="col-md-12">
               <button class="btn btn-sm btn-success" id="btn_visa_p_update"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Update</button>
@@ -136,6 +137,7 @@ $('#frm_visa_payment_update').validate({
     var credit_charges = $('#credit_charges1').val();
     var credit_card_details = $('#credit_card_details1').val();
     var credit_charges_old = $('#credit_charges_old').val();
+    var canc_status = $('#canc_status1').val();
     
     if(!check_updated_amount(payment_old_value,payment_amount)){
       error_msg_alert("You can update receipt to 0 only!");
@@ -147,12 +149,12 @@ $('#frm_visa_payment_update').validate({
       $.ajax({
         type: 'post',
         url: base_url+'controller/miscellaneous/miscellaneous_master_payment_update.php',
-        data:{ payment_id : payment_id, misc_id : misc_id, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_old_value : payment_old_value, payment_old_mode : payment_old_mode,payment_bank_old : payment_bank_old ,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old},
+        data:{ payment_id : payment_id, misc_id : misc_id, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_old_value : payment_old_value, payment_old_mode : payment_old_mode,payment_bank_old : payment_bank_old ,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,canc_status:canc_status},
         success: function(result){
           var msg = result.split('-');
           if(msg[0]=='error'){
             msg_alert(result);
-               $('#btn_visa_p_update').button('reset');
+            $('#btn_visa_p_update').button('reset');
           }
           else{
             msg_alert(result);

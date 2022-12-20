@@ -22,13 +22,13 @@ public function quotation_master_save()
 	$roundoff = $_POST['roundoff'];
 
 	$bsmValues = json_decode(json_encode($_POST['bsmValues']));
-  	foreach($bsmValues[0] as $key => $value){
-      switch($key){
-		case 'basic' : $subtotal = ($value != "") ? $value : $subtotal;break;
-		case 'service' : $service_charge = ($value != "") ? $value : $service_charge;break;
-		case 'markup' : $markup_cost = ($value != "") ? $value : $markup_cost;break;
-      }
-    }
+	foreach($bsmValues[0] as $key => $value){
+		switch($key){
+			case 'basic' : $subtotal = ($value != "") ? $value : $subtotal;break;
+			case 'service' : $service_charge = ($value != "") ? $value : $service_charge;break;
+			case 'markup' : $markup_cost = ($value != "") ? $value : $markup_cost;break;
+		}
+	}
 
 	//Plane
 	$from_city_id_arr = $_POST['from_city_id_arr'];
@@ -46,12 +46,12 @@ public function quotation_master_save()
 	$enquiry_content = json_encode($_POST['enquiry_content']);
 	$quotation_date = get_date_db($quotation_date);
 	$created_at = date('Y-m-d');
-	 
+
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(quotation_id) as max from flight_quotation_master"));
 	$quotation_id = $sq_max['max']+1;
 	$bsmValues = json_encode($bsmValues);
-	$sq_quotation = mysqlQuery("INSERT INTO flight_quotation_master ( quotation_id, enquiry_id, login_id, branch_admin_id,financial_year_id, emp_id,customer_name,  email_id, mobile_no,subtotal,markup_cost,markup_cost_subtotal,service_tax,service_charge,quotation_cost,quotation_date,bsm_values,roundoff,created_at) VALUES ('$quotation_id','$enquiry_id','$login_id', '$branch_admin_id','$financial_year_id', '$emp_id', '$customer_name','$email_id','$mobile_no','$subtotal','$markup_cost','$markup_cost_subtotal','$service_tax','$service_charge','$total_tour_cost','$quotation_date','$bsmValues','$roundoff','$created_at')");
- 
+	$sq_quotation = mysqlQuery("INSERT INTO flight_quotation_master ( quotation_id, enquiry_id, login_id, branch_admin_id,financial_year_id, emp_id,customer_name,  email_id, mobile_no,subtotal,markup_cost,markup_cost_subtotal,service_tax,service_charge,quotation_cost,quotation_date,bsm_values,roundoff,created_at,status) VALUES ('$quotation_id','$enquiry_id','$login_id', '$branch_admin_id','$financial_year_id', '$emp_id', '$customer_name','$email_id','$mobile_no','$subtotal','$markup_cost','$markup_cost_subtotal','$service_tax','$service_charge','$total_tour_cost','$quotation_date','$bsmValues','$roundoff','$created_at','1')");
+
 	if($sq_quotation){
 		////////////Enquiry Save///////////
 		if($enquiry_id == 0){
@@ -128,7 +128,7 @@ public function quotation_whatsapp(){
 	}
 	
 
-	$whatsapp_msg = rawurlencode('Hello Dear '.$sq_quotation['customer_name'].',
+	$whatsapp_msg = rawurlencode('Dear '.$sq_quotation['customer_name'].',
 Hope you are doing great. This is flight quotation details as per your request. We look forward to having you onboard with us.'.$sector_string.'
 *Quotation Cost* : '.$currency.$sq_quotation['quotation_cost'].'
 

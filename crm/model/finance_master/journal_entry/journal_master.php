@@ -70,6 +70,68 @@ public function journal_master_save()
 
 }
 
+function journal_master_delete(){
+
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$entry_id = $_POST['entry_id'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$deleted_date = date('Y-m-d');
+	$row_spec = "Journal Entry";
+
+	$sq_jv = mysqli_fetch_assoc(mysqlQuery("select * from journal_entry_master where entry_id='$entry_id'"));
+	$date = $sq_jv['entry_date'];
+	$yr = explode("-", $date);
+	$year = $yr[0];
+
+	$sq_jv_entry = mysqli_fetch_assoc(mysqlQuery("select * from journal_entry_accounts where entry_id='$entry_id' and type='Debit'"));
+	$sq_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$sq_jv_entry[ledger_id]'"));
+	
+	$delete_master->delete_master_entries('Journal Voucher','Journal Entry',$entry_id,get_jv_entry_id($entry_id,$year),$sq_ledger['ledger_name'],$sq_jv_entry['amount']);
+
+	$sq_jv1 = mysqlQuery("select * from journal_entry_accounts where entry_id='$entry_id'");
+	while($row_jv = mysqli_fetch_assoc($sq_jv1)){
+
+		$module_name = "Journal Entry";
+		$module_entry_id = $entry_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = $sq_jv['narration'];
+		$ledger_particular = '';
+		$old_gl_id = $gl_id = $row_jv['ledger_id'];
+		$payment_side = $row_jv['type'];
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,'JOURNAL VOUCHER');
+		
+		$payment_mode = ($row_jv['ledger_id'] == '20') ? 'Cash' : 'Other';
+		// if($row_jv['ledger_id'] == '20'){
+
+			$module_name = "Journal Entry";
+			$module_entry_id = $entry_id;
+			$payment_date = $deleted_date;
+			$payment_amount = 0;
+			$payment_mode = $payment_mode;
+			$bank_name = '';
+			$transaction_id = '';
+			$bank_id = '';
+			$particular = $sq_jv['narration'];
+			$clearance_status = "";
+			$payment_side = $row_jv['type'];
+			$payment_type = ($payment_mode == "Cash") ? "Cash" : "Bank";
+
+			$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+		// }
+
+		$sq_delete = mysqlQuery("update journal_entry_accounts set amount = '0' where acc_id='$row_jv[acc_id]'");
+	}
+	$sq_delete = mysqlQuery("update journal_entry_master set delete_status = '1' where entry_id='$sq_jv_entry[entry_id]'");
+	if($sq_delete){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+
+}
+
 public function debit_finance_save($entry_id,$debit_ledger_id,$debit_ledger_amt)
 {
 	$entry_date = $_POST['entry_date'];

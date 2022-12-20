@@ -36,7 +36,7 @@ else if($entity_for=="Visa Booking"){
     <select id="booking_id" name="booking_id" style="width:100%"> 
         <option value="">Select Booking</option>
             <?php 
-                $query ="select * from visa_master where 1";
+                $query ="select * from visa_master where 1 and delete_status='0'";
                 if($role != 'Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
                     $query .= " and emp_id='$emp_id'";
                 }
@@ -49,9 +49,8 @@ else if($entity_for=="Visa Booking"){
                 {
                   $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));   
                 ?>
-                 <option value="<?php echo $row_booking['visa_id'] ?>"><?php echo "Booking ID-".$row_booking['visa_id']."-".$sq_customer['first_name'].' '.$sq_customer['last_name']; ?></option>
-                 <?php    
-                    
+                    <option value="<?php echo $row_booking['visa_id'] ?>"><?php echo "Booking ID-".$row_booking['visa_id']."-".$sq_customer['first_name'].' '.$sq_customer['last_name']; ?></option>
+                <?php    
                 }?>
         </select>
     </div>
@@ -63,7 +62,7 @@ else if($entity_for=="Visa Booking"){
     <select id="booking_id" name="booking_id" style="width:100%"> 
         <option value="">Select Booking</option>
             <?php 
-                $query ="select * from ticket_master where 1";
+                $query ="select * from ticket_master where 1 and delete_status='0'";
                 if($role != 'Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
                     $query .= " and emp_id='$emp_id'";
                 }
@@ -76,9 +75,8 @@ else if($entity_for=="Visa Booking"){
                 {
                   $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));   
                 ?>
-                 <option value="<?php echo $row_booking['ticket_id'] ?>"><?php echo "Booking ID-".$row_booking['ticket_id']."-".$sq_customer['first_name'].' '.$sq_customer['last_name']; ?></option>
-                 <?php    
-                    
+                <option value="<?php echo $row_booking['ticket_id'] ?>"><?php echo "Booking ID-".$row_booking['ticket_id']."-".$sq_customer['first_name'].' '.$sq_customer['last_name']; ?></option>
+                <?php
                 }?>
         </select>
     </div>
@@ -90,7 +88,7 @@ else if($entity_for=="Visa Booking"){
     <select id="booking_id" name="booking_id" style="width:100%"> 
         <option value="">Select Booking</option>
             <?php 
-                $query ="select * from train_ticket_master where 1";
+                $query ="select * from train_ticket_master where 1 and delete_status='0'";
                 if($role != 'Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
                     $query .= " and emp_id='$emp_id'";
                 }
@@ -218,7 +216,7 @@ else{
 	<select id="booking_id" name="booking_id" style="width:100%"> 
             <option value="">Select Booking</option>
             <?php 
-                $query ="select * from package_tour_booking_master where 1";
+                $query ="select * from package_tour_booking_master where 1 and delete_status='0'";
                 if($role != 'Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
                     $query .= " and emp_id='$emp_id'";
                 }

@@ -103,7 +103,7 @@ else{
 // Add some data
 $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('B2', 'Report Name')
-            ->setCellValue('C2', 'Supplier Advance')
+            ->setCellValue('C2', 'PrePurchase Advances')
             ->setCellValue('B3', 'Supplier Type')
             ->setCellValue('C3', $vendor_str)
             ->setCellValue('B4', 'Supplier Name')
@@ -123,7 +123,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);  
 
-$query = "select * from vendor_advance_master where 1";
+$query = "select * from vendor_advance_master where 1 and delete_status='0'";
 if($financial_year_id!=""){
     $query .= " and financial_year_id='$financial_year_id'";
 }

@@ -83,7 +83,7 @@ function admin_header_scripts(){
     ?>
 
     <!--========*****Header Scripts*****========-->
-    <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link>
+    <!-- <link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet"></link> -->
     <script src="<?php echo BASE_URL ?>js/jquery-3.1.0.min.js"></script>
     <script src="<?php echo BASE_URL ?>js/jquery-ui.min.js"></script>
     <script src="<?php echo BASE_URL ?>js/bootstrap.min.js"></script>
@@ -102,6 +102,7 @@ function admin_header_scripts(){
     <script src="<?php echo BASE_URL ?>js/app/validation.js"></script> 
     <script src="<?php echo BASE_URL ?>js/jquery.dataTables.min.js"></script>
     <script src="<?php echo BASE_URL ?>js/dataTables.bootstrap.min.js"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script> -->
     <script src="<?php echo BASE_URL ?>js/bootstrap-tagsinput.min.js"></script>  
 
 <?php
@@ -471,6 +472,7 @@ function fullwidth_header_scripts(){
     <link rel="stylesheet" href="<?php echo BASE_URL ?>css/btn-style.css" type="text/css" />
     <link rel="stylesheet" href="<?php echo BASE_URL ?>css/vi.alert.css">
     <link rel="stylesheet" href="<?php echo BASE_URL ?>css/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL ?>css/dynforms.vi.css">
     <link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/notification.php">
     <link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/app.php">
     <link rel="stylesheet" href="<?php echo BASE_URL ?>css/app/fullwidth_app.php">
@@ -506,6 +508,7 @@ function fullwidth_header_scripts(){
     <script src="<?php echo BASE_URL ?>js/app/validation.js"></script>
     <script src="<?php echo BASE_URL ?>js/bootstrap-tagsinput.min.js"></script>  
     <script src="<?php echo BASE_URL ?>js/ckeditor_4.17.1_full/ckeditor.js"></script>  
+    <script src="<?php echo BASE_URL ?>js/dynforms.vi.js"></script>
 <?php
 }
 

@@ -67,8 +67,6 @@ $pro_s_b = $_POST['pro_s_b'];
 $pro_c_b = $_POST['pro_c_b'];
 $pro_h_b = $_POST['pro_h_b'];
 
-echo $pro_s_v;
-
 session_start();
 $_SESSION['total_g'] = $total_g;
 $_SESSION['total_p'] = $total_p;

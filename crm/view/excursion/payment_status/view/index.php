@@ -2,7 +2,7 @@
 include "../../../../model/model.php";
 
 $exc_id = $_POST['exc_id'];
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id = '$exc_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id = '$exc_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];

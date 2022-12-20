@@ -106,7 +106,7 @@ function list_reflect()
 	var base_url = $('#base_url').val();
 	var branch_status_r = $('#branch_status_r').val();
 	$.post(base_url+'view/car_rental/summary/list_reflect.php', { customer_id : customer_id, booking_id : booking_id, from_date : from_date, to_date : to_date, cust_type : cust_type, company_name : company_name,booker_id:booker_id,branch_id : branch_id , branch_status : branch_status_r }, function(data){
-		pagination_load(data, column, true, true, 20, 'car_tour_report');
+		pagination_load(data, column, true, true, 20, 'car_tour_report',true);
 		$('.loader').remove();
 	});
 }

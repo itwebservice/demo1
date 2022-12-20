@@ -8,7 +8,7 @@ include "../../../../model/model.php";
 			<select name="booking_id" id="booking_id" style="width:100%"  title="Select Booking" onchange="refund_content_reflect()" class="app_select2">
 		        <option value="">Select Booking</option>
 		        <?php 
-		        $sq_booking = mysqlQuery("select * from car_rental_booking where status='Cancel' order by booking_id desc");
+		        $sq_booking = mysqlQuery("select * from car_rental_booking where status='Cancel' and delete_status='0' order by booking_id desc");
 		        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		        	$date = $row_booking['created_at'];
 			         $yr = explode("-", $date);

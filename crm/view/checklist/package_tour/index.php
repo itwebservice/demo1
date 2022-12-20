@@ -14,7 +14,7 @@ $branch_status = $sq['branch_status'];
 			<select id="booking_id" name="booking_id" title="Select booking id" style="width:100%"> 
                 <option value="">Select booking ID</option>
                 <?php 
-                    $query ="select * from package_tour_booking_master where 1";
+                    $query ="select * from package_tour_booking_master where 1 and delete_status='0'";
                     
                     if($role != 'Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
                       $query .= " and emp_id='$emp_id'";
@@ -22,18 +22,18 @@ $branch_status = $sq['branch_status'];
                     if($branch_status=='yes' && $role!='Admin'){
                         $query .= " and branch_admin_id = '$branch_admin_id'";
                     } 
-                         
+
                     $query .= " order by booking_id desc";
                     $sq_booking = mysqlQuery($query);
                     while($row_booking = mysqli_fetch_assoc($sq_booking))
                     {
                       $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));   
                     ?>
-                     <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo "Booking ID-".$row_booking['booking_id']."-".$sq_customer['first_name'].' '.$sq_customer['last_name']; ?></option>
-                     <?php    
+                    <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo "Booking ID-".$row_booking['booking_id']."-".$sq_customer['first_name'].' '.$sq_customer['last_name']; ?></option>
+                    <?php    
                         
                     }    
-                 ?>
+                ?>
             </select>
 		</div>		
 

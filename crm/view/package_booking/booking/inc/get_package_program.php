@@ -40,11 +40,11 @@ $sq_tours = mysqlQuery("select * from custom_package_program where package_id = 
       </div>
       <div class="row mg_tp_20">
         <div class="col-md-6">
-          <legend>Inclusions</legend>
+          <h4>Inclusions</h4>
           <textarea class="feature_editor" name="incl" id="incl" style="width:100% !important" rows="8"><?= $sq_package['inclusions']?></textarea>
         </div>
         <div class="col-md-6">
-          <legend>Exclusions</legend>
+          <h4>Exclusions</h4>
           <textarea class="feature_editor" name="excl" id="excl" style="width:100% !important" rows="8"><?= $sq_package['exclusions']?></textarea>
         </div>
       </div>

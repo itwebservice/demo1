@@ -5,7 +5,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $customer_id = $_POST['customer_id'];
 $branch_status = $_POST['branch_status'];
 
-$query = "select * from tourwise_traveler_details where tour_group_status != 'Cancel' ";
+$query = "select * from tourwise_traveler_details where tour_group_status != 'Cancel' and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";
 }

@@ -2,7 +2,7 @@
 include "../../../../../../../model/model.php";
 $ticket_id = $_POST['ticket_id'];
 
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
 $date = $sq_visa_info['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];

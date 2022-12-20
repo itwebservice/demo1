@@ -6,16 +6,16 @@ $customer_id = $_SESSION['customer_id'];
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
 <table class="table table-bordered bg_white cust_table" id="miscellaneous_payment_list" style="margin:20px 0 !important">
 	<thead>
-	 <tr class="table-heading-row">
-		<th>S_No.</th>
-		<th>Booking_ID</th>
-		<th>Payment_Date</th>
-		<th>Mode</th>
-		<th>Bank_Name</th>
-		<th>Cheque_No/ID</th>
-		<th class="success text-right">Amount</th>
-		<th>Receipt </th>
-	 </tr>
+		<tr class="table-heading-row">
+			<th>S_No.</th>
+			<th>Booking_ID</th>
+			<th>Payment_Date</th>
+			<th>Mode</th>
+			<th>Bank_Name</th>
+			<th>Cheque_No/ID</th>
+			<th class="success">Amount</th>
+			<th>Receipt </th>
+		</tr>
 	</thead>
 	<tbody>
 		<?php 
@@ -63,7 +63,7 @@ $customer_id = $_SESSION['customer_id'];
 			$sq_paid_amount1 = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(credit_charges) as sumc from miscellaneous_payment_master where misc_id='$row_miscellaneous_payment[misc_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 			$credit_card_charges = $sq_paid_amount1['sumc'];
 
-			$sq_miscellaneous_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$row_miscellaneous_payment[misc_id]'"));
+			$sq_miscellaneous_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$row_miscellaneous_payment[misc_id]' and delete_status='0'"));
 			$total_sale = $sq_miscellaneous_info['misc_total_cost'] + $credit_card_charges;
 			$total_pay_amt = $sq_paid_amount1['sum']+$sq_paid_amount1['sumc'];
 			$outstanding =  $total_sale - $total_pay_amt;
@@ -80,6 +80,10 @@ $customer_id = $_SESSION['customer_id'];
 			}
 			else if($row_miscellaneous_payment['clearance_status']=="Cancelled"){ $bg='danger';
 				$sq_cancel_amount = $sq_cancel_amount + $row_miscellaneous_payment['payment_amount'] + $row_miscellaneous_payment['credit_charges'];
+			}
+			else if($row_miscellaneous_payment['clearance_status']=="Cancelled"){ $bg='success';
+			}else{
+				$bg='';	
 			}		
 			$sq_paid_amount = $sq_paid_amount + $row_miscellaneous_payment['payment_amount'] + $row_miscellaneous_payment['credit_charges'];
 
@@ -97,7 +101,7 @@ $customer_id = $_SESSION['customer_id'];
 			$bank_name = $row_miscellaneous_payment['bank_name'];
 			$receipt_type = "miscellaneous Receipt";			
 
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=miscellaneous_payment_master&customer_field=misc_id&in_customer_id=$row_miscellaneous_payment[misc_id]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=miscellaneous_payment_master&customer_field=misc_id&in_customer_id=$row_miscellaneous_payment[misc_id]&status=$row_miscellaneous_payment[status]";
 
 			?>
 			<tr class="<?= $bg?>">
@@ -107,7 +111,7 @@ $customer_id = $_SESSION['customer_id'];
 				<td><?= $row_miscellaneous_payment['payment_mode'] ?></td>
 				<td><?= $row_miscellaneous_payment['bank_name']; ?></td>
 				<td><?= $row_miscellaneous_payment['transaction_id']; ?></td>
-				<td class="text-right success"><?= number_format($row_miscellaneous_payment['payment_amount'] + $row_miscellaneous_payment['credit_charges'],2) ?></td>
+				<td class="success"><?= number_format($row_miscellaneous_payment['payment_amount'] + $row_miscellaneous_payment['credit_charges'],2) ?></td>
 				<td>
 					<a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 				</td>

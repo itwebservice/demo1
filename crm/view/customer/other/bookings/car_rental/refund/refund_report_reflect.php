@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $booking_id = $_POST['booking_id'];
 $customer_id = $_SESSION['customer_id'];
 
-$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
 
 $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from car_rental_payment where booking_id='$booking_id' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 
@@ -35,7 +35,7 @@ $total_refund1 = $bal_amount - $sq_refund_info['sum'];
 			<th>Bank_Name</th>
 			<th>Mode</th>
 			<th>Cheque_No/ID</th>
-			<th class="text-right success">Amount</th>
+			<th class="success">Amount</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -60,7 +60,7 @@ $total_refund1 = $bal_amount - $sq_refund_info['sum'];
 			$year =$yr[0];
 			$total_refund = $total_refund+$row_car_rental_refund['refund_amount'];
 
-			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]'"));
+			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]' and delete_status='0'"));
 			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_car_rental_info[customer_id]'"));
 
 			if($row_car_rental_refund['clearance_status']=="Pending"){ $bg='warning';
@@ -78,7 +78,7 @@ $total_refund1 = $bal_amount - $sq_refund_info['sum'];
 				$sq_paid_amount = $sq_paid_amount + $row_car_rental_refund['refund_amount'];
 			}
 
-			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]'"));
+			$sq_car_rental_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$row_car_rental_refund[booking_id]' and delete_status='0'"));
 			$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_car_rental_info[customer_id]'"));
 
 			?>

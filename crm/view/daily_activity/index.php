@@ -7,7 +7,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='daily_activity/index.php'"));
 $branch_status = $sq['branch_status']; 
 ?>
-<?= begin_panel('User Activities',92) ?>
+<?= begin_panel('Daily Activities',92) ?>
 
 
 <div class="header_bottom">

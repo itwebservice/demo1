@@ -75,7 +75,7 @@ $from_date = $_GET['payment_from_date'];
 $to_date = $_GET['payment_to_date'];
 
 if($train_ticket_id != ''){
-    $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+    $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
     $date = $sq_entry_date['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];
@@ -148,7 +148,7 @@ while($row_refund = mysqli_fetch_assoc($sq_refund)){
         while($row_refund_entry = mysqli_fetch_assoc($sq_refund_entries)){
             $sq_entry_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where entry_id='$row_refund_entry[entry_id]'"));
             $traveler_name .= $sq_entry_info['first_name'].' '.$sq_entry_info['last_name'].', ';
-            $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$sq_entry_info[train_ticket_id]'"));
+            $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$sq_entry_info[train_ticket_id]' and delete_status='0'"));
             $date = $sq_entry_date['created_at'];
             $yr = explode("-", $date);
             $year =$yr[0];

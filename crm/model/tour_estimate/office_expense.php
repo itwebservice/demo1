@@ -99,9 +99,6 @@ public function office_expense_save()
 
 
 	$particular = addslashes($particular);
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $amount);
-
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }
 
 
 
@@ -350,12 +347,6 @@ public function office_expense_update()
 	$clearance_status = ($sq_payment_info['payment_mode']=='Cash' && $payment_mode!="Cash") ? "Pending" : $sq_payment_info['clearance_status'];
 
 	if($payment_mode=="Cash"){ $clearance_status = ""; }
-
-
-
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $amount, $sq_payment_info['amount']);
-
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }
 
 
 

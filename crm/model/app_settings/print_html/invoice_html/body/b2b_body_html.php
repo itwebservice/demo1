@@ -51,6 +51,7 @@ $currency_code_d = $sq_currency['currency_code'];
 if($app_invoice_format == "Standard"){include "../headers/standard_header_html.php"; }
 if($app_invoice_format == "Regular"){include "../headers/regular_header_html.php"; }
 if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php"; }
+echo 'hi-'.$branch_status;
 ?>
 
 <hr class="no-marg">
@@ -385,7 +386,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
     <div class="col-md-12 text-right">
       <div class="main_block inv_rece_calculation border_block">
         <div class="col-md-12 border_lt"><p>
-          <div class="col-md-6 text-left"><span class="font_5">AMOUNT</span></div>
+          <div class="col-md-6 text-left"><span class="font_5">BASIC AMOUNT</span></div>
           <div class="col-md-6 float_r"><span><?= $currency_code_d.' '.number_format($main_total,2) ?></span></div></p>
         </div>
         <div class="col-md-12 border_lt"><p>

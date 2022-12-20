@@ -187,7 +187,7 @@ $row_count = 5;
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
         ->setCellValue('C'.$row_count, "Particulars")
-        ->setCellValue('D'.$row_count, "Description")
+        ->setCellValue('D'.$row_count, "Transaction Type")
         ->setCellValue('E'.$row_count, "Debit")
         ->setCellValue('F'.$row_count, "Credit");
 

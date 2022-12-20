@@ -3,6 +3,12 @@
 include "../../../../model.php"; 
 include "printFunction.php";
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/group_tour/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $quotation_id = $_GET['quotation_id'];
 global $app_quot_img,$currency;
 
@@ -43,12 +49,13 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
 
     <div class="row">
       <div class="col-md-4">
-        <div class="landigPageCustomer mg_tp_20">
-          <h3 class="customerFrom">Prepared for</h3>
-          <span class="customerName mg_tp_10"><i class="fa fa-user"></i> : <?= $sq_quotation['customer_name'] ?></span><br>
-          <span class="customerMail mg_tp_10"><i class="fa fa-envelope"></i> : <?= $sq_quotation['email_id'] ?></span><br>
-          <!-- <span class="customerMobile mg_tp_10"><i class="fa fa-phone"></i> : <?= $sq_quotation['mobile_no'] ?></span><br> -->
-          <span class="generatorName mg_tp_10">Prepared By <?= $emp_name?></span><br>
+        <div class="landigPageCustomer">
+          <h3 class="customerFrom">PREPARED FOR</h3>
+          <span class="customerName"><i class="fa fa-user"></i> : <?= $sq_quotation['customer_name'] ?></span><br>
+          <span class="customerMail"><i class="fa fa-envelope"></i> : <?= $sq_quotation['email_id'] ?></span><br>
+          <?php if($sq_quotation['mobile_number'] != ''){ ?>
+            <span class="customerMobile"><i class="fa fa-phone"></i> : <?= $sq_quotation['mobile_number'] ?></span> <?php } ?>
+          <span class="generatorName">PREPARED BY <?= $emp_name?></span><br>
         </div>
       </div>
       <div class="col-md-8 text-right">
@@ -83,24 +90,13 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
         </div>
       </div>
 
-      <div class="detailBlock text-center">
-        <div class="detailBlockIcon detailBlockRed">
-          <i class="fa fa-tag"></i>
-        </div>
-        <div class="detailBlockContent">
-          <h3 class="contentValue"><?= $currency_amount1 ?></h3>
-          <span class="contentLabel">PRICE</span>
-        </div>
-      </div>
       </div>
     </div>
 
   </div>
 </section>
 
-
 <!-- Itinerary -->
-
 <section class="itinerarySec main_block side_pad mg_tp_30">
   <div class="vitinerary_div">
     <h6>Destination Guide Video</h6>
@@ -109,17 +105,13 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
   </div>
   <ul class="print_itinenary main_block no-pad no-marg">
     <?php 
-      $count = 1;
-      while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
-        if($count%2!=0){
+    $count = 1;
+    $i = 0;
+    $dates = (array) get_dates_for_tour_itineary($quotation_id); 
+    while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
     ?>
-    
     <li class="singleItinenrary leftItinerary col-md-12 no-pad">
-      <div class="itneraryContent col-md-6 no-pad text-right mg_tp_20 mg_bt_20">
-        <div class="itneraryText col-md-8 no-pad">
-          <h5 class="specialAttraction no-marg"><?= $row_itinarary['attraction'] ?></h5>
-          <p><?= $row_itinarary['day_wise_program'] ?></p>
-        </div>
+      <div class="itneraryContent col-md-12 no-pad text-right mg_tp_20 mg_bt_20">
         <?php
             if($row_itinarary['daywise_images'] != ""){
               $img = $row_itinarary['daywise_images'];
@@ -133,53 +125,30 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               $img = "http://itourscloud.com/destination_gallery/asia/singapore/Asia_Singapore_Four.jpg";
         ?>
         <div class="itneraryImg col-md-4 no-pad">
-          <img src="<?= $img ?>" class="img-responsive">
+          <img src="<?= $img ?>" class="img-responsive" style="display: block;">
+          <div style="display: flex; margin-top: 20px; align-items: center;">
+            <div class="dayCount" style="position: static; ">
+              <span>Day-<?= $count ?> <b>(<?php echo $dates[$i++] ?>) </b></span>
+            </div>
+            <div class="itineraryDetail" style="position: static; margin-right:auto;">
+              <ul class="no-marg no-pad" style="margin-top: 15px; display: flex;">
+                <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
+                <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
+              </ul>
+            </div>
+            
+          </div>
+        </div>
+        <div class="itneraryText col-md-8 no-pad" style="padding-left: 20px;">
+          <h5 style="padding-left: 50px;" class="specialAttraction no-marg text-left"><?= $row_itinarary['attraction'] ?></h5>
+          <p style="margin-left: 50px;" class="text-left"><?= $row_itinarary['day_wise_program'] ?></p>
         </div>
       </div>
-      <div class="itineraryDetail">
-        <ul class="no-marg no-pad">
-          <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
-          <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
-        </ul>
-      </div>
-      <div class="dayCount">
-        <span>Day-<?= $count ?></span>
-      </div>
-      <div class="col-md-6 no-pad"></div>
+      
     </li>
 
-    <?php }else{ ?>
-
-    <li class="singleItinenrary rightItinerary col-md-12 no-pad">
-      <div class="col-md-6 no-pad"></div>
-      <div class="itneraryContent col-md-6 no-pad text-left mg_tp_20 mg_bt_20">
-      <?php
-                  if($row_itinarary['daywise_images'] != ""){
-                    $img = $row_itinarary['daywise_images'] ;
-                  } 
-                  else 
-                    $img = "http://itourscloud.com/destination_gallery/asia/singapore/Asia_Singapore_Four.jpg";
-                ?>
-        <div class="itneraryImg col-md-4 no-pad">
-          <img src="<?= $img ?>" class="img-responsive">
-        </div>
-        <div class="itneraryText col-md-8 no-pad">
-          <h5 class="specialAttraction no-marg"><?= $row_itinarary['attraction'] ?></h5>
-          <p><?= $row_itinarary['day_wise_program'] ?></p>
-        </div>
-      </div>
-      <div class="itineraryDetail">
-        <ul class="no-marg no-pad">
-          <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
-          <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
-        </ul>
-      </div>
-      <div class="dayCount">
-        <span>Day-<?= $count ?></span>
-      </div>
-    </li>
-        
-    <?php } $count++; } ?>
+    <?php
+  $count++; } ?>
   </ul>
 
 </section>
@@ -187,7 +156,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
 <!-- traveling Information -->
 <section class="travelingDetails main_block mg_tp_30">
       
-<?php
+      <?php
       $sq_train_count = mysqli_num_rows(mysqlQuery("select * from group_tour_quotation_train_entries where quotation_id='$quotation_id'"));
       if($sq_train_count>0){ ?>
       <!-- train -->
@@ -203,11 +172,11 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               <table class="table table-bordered no-marg" id="tbl_emp_list">
                 <thead>
                   <tr class="table-heading-row">
-                    <th>From</th>
-                    <th>To</th>
+                    <th>From_LOCATION</th>
+                    <th>To_LOCATION</th>
                     <th>Class</th>
-                    <th>Departure</th>
-                    <th>Arrival</th>
+                    <th>Departure_D/T</th>
+                    <th>Arrival_D/T</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -247,11 +216,11 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               <table class="table table-bordered no-marg" id="tbl_emp_list">
                 <thead>
                   <tr class="table-heading-row">
-                    <th>From</th>
-                    <th>To</th>
+                    <th>From_SECTOR</th>
+                    <th>To_SECTOR</th>
                     <th>Airline</th>
-                    <th>Departure</th>
-                    <th>Arrival</th>
+                    <th>Departure_D/T</th>
+                    <th>Arrival_D/T</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -286,8 +255,8 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               <table class="table table-bordered no-marg" id="tbl_emp_list">
                 <thead>
                   <tr class="table-heading-row">
-                    <th>Departure</th>
-                    <th>Arrival</th>
+                    <th>Departure_D/T</th>
+                    <th>Arrival_D/T</th>
                     <th>Route</th>
                     <th>Cabin</th>
                     <th>Sharing</th>
@@ -330,7 +299,7 @@ if($sq_quotation['incl'] != ''){ ?>
             <?php if($sq_quotation['incl'] != ''){?>
             <div class="row">
               <div class="col-md-12">
-                <h3 class="lgTitle">Inclusions</h3>
+                <h3 class="costBankTitle">INCLUSIONS</h3>
                 <pre class="real_text"><?= $sq_quotation['incl'] ?></pre>
               </div>
             </div>
@@ -352,7 +321,7 @@ if($sq_quotation['excl'] != ''){ ?>
             <?php if($sq_quotation['excl'] != ''){?>
             <div class="row">
               <div class="col-md-12">
-                <h3 class="lgTitle">Exclusions</h3>
+                <h3 class="costBankTitle">EXCLUSIONS</h3>
                 <pre class="real_text"><?= $sq_quotation['excl'] ?></pre>
               </div>
             </div>
@@ -369,17 +338,18 @@ if($sq_terms_cond['terms_and_conditions'] != ''){ ?>
 
   <section class="incluExcluTerms main_block">
     <!-- Inclusion Exclusion -->
-    <div class="incluExclu main_block">
-        <div class="contenPanel main_block side_pad mg_tp_30">
-            <div class="row">
+      <div class="incluExclu main_block">
+        <div class=" main_block side_pad mg_tp_30">
+          <div class="row">
               <div class="col-md-12">
-                <h3 class="lgTitle">Terms and Conditions</h3>
-                <pre class="real_text"><?= $sq_terms_cond['terms_and_conditions'] ?></pre>
+                <h3 class="costBankTitle">TERMS AND CONDITIONS</h3>
+                <div class="tncContent">
+                  <pre class="real_text"><?= $sq_terms_cond['terms_and_conditions'] ?></pre>
+                </div>
               </div>
-            </div>
           </div>
         </div>
-    </div>
+      </div>
   </section>
 <?php } ?>
 
@@ -388,11 +358,11 @@ if($sq_terms_cond['terms_and_conditions'] != ''){ ?>
   
   <!-- Guest Detail -->
   <div class="guestDetail main_block text-center">
-        <h3 class="costBankTitle">Total Guest</h3>
-        <img src="<?= BASE_URL ?>images/quotation/guestCount.png" class="img-responsive">
-        <span class="guestCount adultCount">Adult : <?= $sq_quotation['total_adult'] ?></span>
-        <span class="guestCount childCount">Child : <?= $sq_quotation['total_children'] ?></span>
-        <span class="guestCount infantCount">Infant : <?= $sq_quotation['total_infant'] ?></span>
+    <h3 class="costBankTitle">TOTAL GUEST</h3>
+    <img src="<?= BASE_URL ?>images/quotation/guestCount.png" class="img-responsive">
+    <span class="guestCount adultCount">Adult : <?= $sq_quotation['total_adult'] ?></span>
+    <span class="guestCount childCount">Child : <?= $sq_quotation['total_children'] ?></span>
+    <span class="guestCount infantCount">Infant : <?= $sq_quotation['total_infant'] ?></span>
   </div>
   <?php
   $tour_cost1 = $sq_quotation['tour_cost'];
@@ -430,7 +400,7 @@ if($sq_terms_cond['terms_and_conditions'] != ''){ ?>
   $newBasic1 = currency_conversion($currency,$sq_quotation['currency_code'],$newBasic);
   ?>
   <!-- Costing & Bank Detail -->
-  <div class="costBankSec main_block mg_tp_20">
+  <div class="costBankSec main_block mg_tp_20 costing_bank_details_bk">
     <div class="costBankInner main_block side_pad mg_tp_20 mg_bt_20">
       <div class="row">
         <!-- Costing -->
@@ -465,31 +435,39 @@ if($sq_terms_cond['terms_and_conditions'] != ''){ ?>
                 </div>
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/branchName.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_branch_name ?></h4>
+                  <h4 class="no-marg"><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?> (<?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?>) </h4>
                   <p>BRANCH</p>
                 </div>
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $acc_name ?></h4>
-                  <p>A/C NAME</p>
+                  <h4 class="no-marg"><?= ($acc_name != '') ? $acc_name : 'NA' ?></h4>
+                  <p>A/C TYPE</p>
                 </div>
               </div>
               <div class="row">
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_acc_no ?></h4>
+                  <h4 class="no-marg"><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></h4>
                   <p>A/C NO</p>
                 </div>
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_ifsc_code ?></h4>
-                  <p>IFSC</p>
+                  <h4 class="no-marg"><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></h4>
+                  <p>BANK ACCOUNT NAME</p>
                 </div>
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= $bank_swift_code ?></h4>
                   <p>SWIFT CODE</p>
                 </div>
+                <?php 
+              if(check_qr()) { ?>
+                <div class="col-md-12 text-center" style="margin-top:20px; margin-bottom:20px;">
+                        <?= get_qr('Landscape Standard') ?>
+                        <br>
+                        <h4 class="no-marg">Scan & Pay </h4>
+          </div> 
+          <?php } ?>
               </div>
         </div>
       </div>
@@ -507,33 +485,33 @@ if($sq_terms_cond['terms_and_conditions'] != ''){ ?>
         </div>
       </div>
       <div class="col-md-5">  
-        <?php if($app_address != ''){?>
+        <?php //if($app_address != ''){?>
         <div class="contactBlock main_block side_pad mg_tp_20">
           <div class="cBlockIcon"> <i class="fa fa-map-marker"></i> </div>
           <div class="cBlockContent">
             <h5 class="cTitle">Corporate Office</h5>
-            <p class="cBlockData"><?php echo $app_address; ?></p>
+            <p class="cBlockData"><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
           </div>
         </div>      
-        <?php } ?>
-        <?php if($app_contact_no != ''){?>
+        <?php //} ?>
+        <?php //if($app_contact_no != ''){?>
         <div class="contactBlock main_block side_pad mg_tp_20">
           <div class="cBlockIcon"> <i class="fa fa-phone"></i> </div>
           <div class="cBlockContent">
             <h5 class="cTitle">Contact</h5>
-            <p class="cBlockData"><?php echo $app_contact_no; ?></p>
+            <p class="cBlockData"><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
           </div>
         </div>
-        <?php } ?>
-        <?php if($app_email_id != ''){?>
+        <?php //} ?>
+        <?php //if($app_email_id != ''){?>
         <div class="contactBlock main_block side_pad mg_tp_20">
           <div class="cBlockIcon"> <i class="fa fa-envelope"></i> </div>
           <div class="cBlockContent">
             <h5 class="cTitle">Email Id</h5>
-            <p class="cBlockData"><?php echo $app_email_id; ?></p>
+            <p class="cBlockData"><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
           </div>
         </div>
-        <?php } ?>
+        <?php //} ?>
 
       </div>
     </div>

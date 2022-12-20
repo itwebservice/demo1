@@ -21,7 +21,7 @@ $branch_status = $_POST['branch_status'];
     			      <select name="visa_id_filter" id="visa_id_filter" style="width:100%" class="form-control" title="Booking ID" onchange="load_passenger(this.id)">
     			        <option value="">*Booking ID</option>
     			        <?php 
-        			    $query = "select * from visa_master where 1";
+        			    $query = "select * from visa_master where 1 and delete_status='0'";
                   if($branch_status=='yes' && $role!='Admin'){
                     $query .= " and branch_admin_id = '$branch_admin_id'";
                   }

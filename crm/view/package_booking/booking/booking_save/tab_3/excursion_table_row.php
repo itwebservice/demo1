@@ -31,7 +31,6 @@
         </div>
     </div>
 </div>
-</div>
 <script>
     city_lzloading('select[name="city_name-1"]');
 </script>

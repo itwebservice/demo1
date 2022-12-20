@@ -4,6 +4,12 @@ include "../../../../model.php";
 include "printFunction.php";
 global $app_quot_img,$similar_text,$qout_note;
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/home/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $quotation_id = $_GET['quotation_id']; 
 
 $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_master where quotation_id='$quotation_id'"));
@@ -67,7 +73,11 @@ if($bsmValues[0]->basic != ''){ //inclusive markup
 $quotation_cost = $basic_cost +$service_charge+ $service_tax_amount+ $sq_quotation['train_cost'] + $sq_quotation['cruise_cost']+ $sq_quotation['flight_cost'] + $sq_quotation['visa_cost'] + $sq_quotation['guide_cost'] + $sq_quotation['misc_cost'];
 $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],$quotation_cost);
 ?>
-
+<style>
+.package_costing table tr:nth-child(even) {
+  background-color: #efefef !important;
+}
+</style>
     <!-- landingPage -->
     <section class="landingSec main_block">
 
@@ -137,102 +147,15 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
             </div>
             <div class="print_header_contact text-right main_block">
               <span class="title"><?php echo $app_name; ?></span><br>
-              <?php if($app_address != ''){?><p class="address no-marg"><?php echo $app_address; ?></p><?php }?>
-              <?php if($app_contact_no != ''){?><p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i><?php echo $app_contact_no; ?></p><?php }?>
-              <?php if($app_email_id != ''){?><p class="no-marg"><i class="fa fa-envelope" style="margin-right: 5px;"></i><?php echo $app_email_id; ?></p><?php }?>
-              <?php if($app_website != ''){?><p><i class="fa fa-globe" style="margin-right: 5px;"></i><?php echo $app_website; ?></p><?php }?>
+              <p class="address no-marg"><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
+              <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
+              <p class="no-marg"><i class="fa fa-envelope" style="margin-right: 5px;"></i><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
+              <?php if($app_website != ''){ ?><p><i class="fa fa-globe" style="margin-right: 5px;"></i><?php echo $app_website; ?></p><?php } ?>
             </div>
           </div>
         </div>
         
       </div>
-    </section>
-
-
-    <!-- Itinerary -->
-    
-    <section class="itinerarySec main_block side_pad mg_tp_30">
-
-      <div class="vitinerary_div">
-        <h6>Destination Guide Video</h6>
-        <img src="<?php echo BASE_URL.'images/quotation/youtube-icon.png'; ?>" class="itinerary-img img-responsive"><br/>
-        <a href="<?=$sq_dest['link']?>" class="no-marg" target="_blank"></a>
-      </div>
-      <div class="print_itinenary main_block no-pad no-marg">
-        <?php
-          $count = 1;
-          while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
-            $sq_day_image = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_images where quotation_id='$row_itinarary[quotation_id]' and package_id='$sq_quotation[package_id]'"));
-            $day_url1 = explode(',',$sq_day_image['image_url']);
-            $daywise_image = 'http://itourscloud.com/quotation_format_images/dummy-image.jpg';
-            for($count1 = 0; $count1<sizeof($day_url1);$count1++){
-                $day_url2 = explode('=',$day_url1[$count1]);
-                if($day_url2[0]==$sq_quotation['package_id'] && $day_url2[1]==$row_itinarary['day_count']){
-                  $daywise_image = $day_url2[2];
-                }
-            }
-            if($count%2!=0){
-        ?>
-
-        <section class="singleItinenrary leftItinerary col-md-12 no-pad mg_tp_30 mg_bt_30">
-          <div class="col-md-5">
-            <div class="itneraryImg">
-              <img src="<?= $daywise_image ?>" class="img-responsive">
-              <h5>Day-<?= $count ?></h5>
-              <div class="itineraryDetail">
-                <ul>
-                  <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
-                  <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
-                </ul>
-              </div>
-            </div>
-            </div>
-            <div class="col-md-7">
-              <div class="itneraryText">
-                <div class="dayCount">
-                  <span><i class="fa fa-map-marker"></i> <?= $row_itinarary['attraction'] ?></span>
-                </div>
-                <div class="dayWiseProgramDetail">
-                  <p><?= $row_itinarary['day_wise_program'] ?></p>
-                </div>
-              </div>
-            </div> 
-        </section>
-
-        <hr class="main_block no-marg">
-
-        <?php }else{ ?>
-
-        <section class="singleItinenrary rightItinerary col-md-12 no-pad mg_tp_30 mg_bt_30">
-            <div class="col-md-6">
-              <div class="itneraryText">
-                <div class="dayCount">
-                  <span><i class="fa fa-map-marker"></i> <?= $row_itinarary['attraction'] ?></span>
-                </div>
-                <div class="dayWiseProgramDetail">
-                  <p><?= $row_itinarary['day_wise_program'] ?></p>
-                </div>
-              </div>
-            </div> 
-          <div class="col-md-6">
-            <div class="itneraryImg">
-              <img src="<?= $daywise_image ?>" class="img-responsive">
-              <h5>Day-<?= $count ?></h5>
-              <div class="itineraryDetail">
-                <ul>
-                  <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?></li>
-                  <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
-                </ul>
-              </div>
-            </div>
-            </div>
-         </section>
-
-        <hr class="main_block no-marg">
-            
-        <?php } $count++; } ?>
-      </div>
-
     </section>
 
   <!-- Count queries -->
@@ -247,9 +170,57 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
   ?>
 
     <!-- traveling Information -->
-  <?php if($sq_transport_count != 0 || $sq_train_count != 0 || $sq_plane_count != 0 || $sq_train_count != 0 || $sq_hotel_count != 0 || $sq_exc_count != 0){?>
+  <?php if($sq_transport_count != 0 || $sq_train_count != 0 || $sq_plane_count != 0 || $sq_hotel_count != 0 || $sq_exc_count != 0){?>
     <section class="travelingDetails main_block mg_tp_30">
 
+          <!-- Hotel -->
+          <?php if($sq_hotel_count != 0){
+          $sq_package_type = mysqlQuery("select DISTINCT(package_type) from package_tour_quotation_hotel_entries where quotation_id='$quotation_id' order by package_type");
+          while($row_hotel1 = mysqli_fetch_assoc($sq_package_type)){
+
+            $sq_package_type1 = mysqlQuery("select * from package_tour_quotation_hotel_entries where quotation_id='$quotation_id' and package_type='$row_hotel1[package_type]' order by package_type");
+            ?>
+              <section class="transportDetails main_block side_pad mg_tp_30">
+                <h6 class="text-center">PACKAGE TYPE - <?= $row_hotel1['package_type'] ?></h6>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div class="transportImg">
+                      <img src="<?= BASE_URL ?>images/quotation/hotel.png" class="img-responsive">
+                    </div>
+                  </div>
+                  <div class="col-md-9">
+                    <div class="table-responsive mg_tp_30">
+                      <table class="table table-bordered no-marg" id="tbl_emp_list">
+                        <thead>
+                          <tr class="table-heading-row">
+                          <th>City</th>
+                          <th>Hotel Name</th>
+                          <th>Check_IN</th>
+                          <th>Check_OUT</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        while($row_hotel = mysqli_fetch_assoc($sq_package_type1)){
+
+                          $hotel_name = mysqli_fetch_assoc(mysqlQuery("select * from hotel_master where hotel_id='$row_hotel[hotel_name]'"));
+                          $city_name = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_hotel[city_name]'"));
+                          ?>
+                          <tr>
+                              <td><?php echo $city_name['city_name']; ?></td>
+                              <td><?php echo $hotel_name['hotel_name'].$similar_text; ?></td>
+                              <td><?= get_date_user($row_hotel['check_in']) ?></td>
+                              <td><?= get_date_user($row_hotel['check_out']) ?></td>
+                            </tr>
+                          <?php } ?>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>  
+                </div>
+              </section>
+              <?php } ?>
+          <?php } ?>
           <!-- train -->
           <?php
           if($sq_train_count>0){ ?>
@@ -382,55 +353,6 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
             </div>
           </section>
           <?php } ?>
-
-          <!-- Hotel -->
-          <?php if($sq_hotel_count != 0){
-          $sq_package_type = mysqlQuery("select DISTINCT(package_type) from package_tour_quotation_hotel_entries where quotation_id='$quotation_id' order by package_type");
-          while($row_hotel1 = mysqli_fetch_assoc($sq_package_type)){
-
-            $sq_package_type1 = mysqlQuery("select * from package_tour_quotation_hotel_entries where quotation_id='$quotation_id' and package_type='$row_hotel1[package_type]' order by package_type");
-            ?>
-              <section class="transportDetails main_block side_pad mg_tp_30">
-                <h6 class="text-center">PACKAGE TYPE - <?= $row_hotel1['package_type'] ?></h6>
-                <div class="row">
-                  <div class="col-md-3">
-                    <div class="transportImg">
-                      <img src="<?= BASE_URL ?>images/quotation/hotel.png" class="img-responsive">
-                    </div>
-                  </div>
-                  <div class="col-md-9">
-                    <div class="table-responsive mg_tp_30">
-                      <table class="table table-bordered no-marg" id="tbl_emp_list">
-                        <thead>
-                          <tr class="table-heading-row">
-                          <th>City</th>
-                          <th>Hotel Name</th>
-                          <th>Check_IN</th>
-                          <th>Check_OUT</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        while($row_hotel = mysqli_fetch_assoc($sq_package_type1)){
-
-                          $hotel_name = mysqli_fetch_assoc(mysqlQuery("select * from hotel_master where hotel_id='$row_hotel[hotel_name]'"));
-                          $city_name = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_hotel[city_name]'"));
-                          ?>
-                          <tr>
-                              <td><?php echo $city_name['city_name']; ?></td>
-                              <td><?php echo $hotel_name['hotel_name'].$similar_text; ?></td>
-                              <td><?= get_date_user($row_hotel['check_in']) ?></td>
-                              <td><?= get_date_user($row_hotel['check_out']) ?></td>
-                            </tr>
-                          <?php } ?>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>  
-                </div>
-              </section>
-              <?php } ?>
-          <?php } ?>
           <!-- transport -->
           <?php
           if($sq_transport_count>0){ ?>
@@ -524,7 +446,7 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
                     <thead>
                       <tr class="table-heading-row">
                         <th>City </th>
-                        <th>Activity Date</th>
+                        <th>Activity Date/Time</th>
                         <th>Activity Name</th>
                         <th>Transfer Option</th>
                         <th>Adult(s)</th>
@@ -561,8 +483,94 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
           <?php }?>
 
     </section>
-  <?php }?>
+  <?php } ?>
 
+    <!-- Itinerary -->  
+    <section class="itinerarySec main_block side_pad mg_tp_30">
+
+      <div class="vitinerary_div">
+        <h6>Destination Guide Video</h6>
+        <img src="<?php echo BASE_URL.'images/quotation/youtube-icon.png'; ?>" class="itinerary-img img-responsive"><br/>
+        <a href="<?=$sq_dest['link']?>" class="no-marg" target="_blank"></a>
+      </div>
+      <div class="print_itinenary main_block no-pad no-marg">
+        <?php
+        $count = 1;
+        $i = 0;
+        $dates =(array) get_dates_for_package_itineary($_GET['quotation_id']);
+        while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
+            $sq_day_image = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_images where quotation_id='$row_itinarary[quotation_id]' and package_id='$sq_quotation[package_id]'"));
+            $day_url1 = explode(',',$sq_day_image['image_url']);
+            $daywise_image = 'http://itourscloud.com/quotation_format_images/dummy-image.jpg';
+            for($count1 = 0; $count1<sizeof($day_url1);$count1++){
+                $day_url2 = explode('=',$day_url1[$count1]);
+                if($day_url2[0]==$sq_quotation['package_id'] && $day_url2[1]==$row_itinarary['day_count']){
+                  $daywise_image = $day_url2[2];
+                }
+            }
+            if($count%2!=0){
+          ?>
+          <section class="singleItinenrary leftItinerary col-md-12 no-pad mg_tp_30 mg_bt_30">
+            <div class="col-md-5">
+              <div class="itneraryImg">
+                <img src="<?= $daywise_image ?>" class="img-responsive">
+                <h5>Day-<?= $count  ?>
+              </h5>
+                <div class="itineraryDetail">
+                  <ul>
+                    <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?> </li>
+                    <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div class="itneraryText">
+                <div class="dayCount">
+                  <span><i class="fa fa-map-marker"></i> <?= $row_itinarary['attraction'] ?> <br> <?= '('.$dates[$i].')' ?></span>
+                </div>
+                <div class="dayWiseProgramDetail">
+                  <p><?= $row_itinarary['day_wise_program'] ?></p>
+                </div>
+              </div>
+            </div> 
+          </section>
+          <!-- <hr class="main_block no-marg"> -->
+          <?php }else{ ?>
+          <section class="singleItinenrary rightItinerary col-md-12 no-pad mg_tp_30 mg_bt_30">
+              <div class="col-md-6">
+                <div class="itneraryText">
+                  <div class="dayCount">
+                    <span><i class="fa fa-map-marker"></i> <?= $row_itinarary['attraction'] ?> <br> <?= '('.$dates[$i].')' ?></span>
+                  </div>
+                  <div class="dayWiseProgramDetail">
+                    <p><?= $row_itinarary['day_wise_program'] ?></p>
+                  </div>
+                </div>
+              </div> 
+            <div class="col-md-6">
+              <div class="itneraryImg">
+                <img src="<?= $daywise_image ?>" class="img-responsive">
+                <h5>Day-<?= $count  ?>
+              </h5>
+              <div class="itineraryDetail">
+                <ul>
+                  <li><span><i class="fa fa-bed"></i> : </span><?=  $row_itinarary['stay'] ?> </li>
+                  <li><span><i class="fa fa-cutlery"></i> : </span><?= $row_itinarary['meal_plan'] ?></li>
+                </ul>
+              </div>
+              </div>
+            </div>
+          </section>
+          <!-- <hr class="main_block no-marg"> -->
+          <?php
+        }
+      $count++;
+      $i++;
+    } ?>
+    </div>
+
+  </section>
 
   <?php if($sq_quotation['inclusions'] != '' && $sq_quotation['inclusions'] != ' ' && $sq_quotation['inclusions'] != '<div><br></div>'){ ?>
     <!-- Inclusion  -->
@@ -610,19 +618,6 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
     <section class="incluExcluTerms main_block fullHeightLand">
       <!-- Note -->
       <div class="row side_pad">
-        <div class="col-md-1 mg_tp_10">
-        </div>
-        <?php
-        if($sq_package_name['note'] != ''){ ?>
-        <div class="col-md-11 mg_tp_10">
-          <div class="incluExcluTermsTabPanel main_block">
-              <h3 class="incexTitle">NOTE</h3>
-              <div class="tabContent">
-                  <pre class="real_text"><?= $sq_package_name['note'] ?></pre>
-              </div>
-          </div>
-        </div>
-        <?php } ?>
         <!-- Terms and Conditions -->
         <?php if($sq_terms_cond['terms_and_conditions']!= ''){ ?>
         <div class="col-md-1 mg_tp_30">
@@ -636,12 +631,24 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
           </div>
         </div>
         <?php }?>
+        <?php
+        if($sq_package_name['note'] != ''){ ?>
+        <div class="col-md-1 mg_tp_10">
+        </div>
+        <div class="col-md-11 mg_tp_10">
+          <div class="incluExcluTermsTabPanel main_block">
+              <h3 class="incexTitle">NOTE</h3>
+              <div class="tabContent">
+                  <pre class="real_text"><?= $sq_package_name['note'] ?></pre>
+              </div>
+          </div>
+        </div>
+        <?php } ?>
         <?php if($quot_note != ''){?>
           <div class="col-md-1 mg_tp_30">
           </div>
           <div class="col-md-11 mg_tp_10">
             <div class="incluExcluTermsTabPanel main_block">
-                <!-- <h3 class="incexTitle">TERMS AND CONDITIONS</h3> -->
                 <div class="tabContent">
                     <pre class="real_text"><?= $quot_note?></pre>
                 </div>
@@ -666,17 +673,17 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
                 <h3 class="costBankTitle text-center">TOTAL GUEST</h3>
                 <div class="col-md-2 mg_bt_30"></div>
                 <div class="col-md-3 mg_bt_30">
-                  <div class="icon"><img src="<?= BASE_URL ?>images/quotation/Icon/adultIcon.png" class="img-responsive"></div>
+                  <div class="icon" style="margin-left:13px!important;"><img src="<?= BASE_URL ?>images/quotation/Icon/adultIcon.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= ($sq_quotation['total_adult'] != '') ? 'Adult: '.$sq_quotation['total_adult'] : 'Adult: '.'0' ?></h4>
                   <!-- <p>Adult</p> -->
                 </div>
                 <div class="col-md-3 mg_bt_30">
-                  <div class="icon"><img src="<?= BASE_URL ?>images/quotation/Icon/childIcon.png" class="img-responsive"></div>
+                  <div class="icon" style="margin-left:25px!important;"><img src="<?= BASE_URL ?>images/quotation/Icon/childIcon.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?php echo 'CWB/CWOB: '.($sq_quotation['children_with_bed']+$sq_quotation['children_without_bed']); ?></h4>
                   <!-- <p>CWB/CWOB</p> -->
                 </div>
                 <div class="col-md-3 mg_bt_30">
-                  <div class="icon"><img src="<?= BASE_URL ?>images/quotation/Icon/infantIcon.png" class="img-responsive"></div>
+                  <div class="icon" style="margin-left:10px!important;"><img src="<?= BASE_URL ?>images/quotation/Icon/infantIcon.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= ($sq_quotation['total_infant'] != '') ? 'Infant: '.$sq_quotation['total_infant'] : 'Infant: '.'0' ?></h4>
                   <!-- <p>Infant</p> -->
                 </div>
@@ -699,11 +706,11 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
                   <table class="table table-bordered tableTrnasp no-marg" style="width:100% !important;" id="tbl_emp_list">
                     <thead>
                       <tr class="table-heading-row">
-                        <th style="font-size: 18px !important;">Package Type</th>
-                        <th style="font-size: 18px !important;">Tour Cost</th>
-                        <th style="font-size: 18px !important;">Tax</th>
-                        <th style="font-size: 18px !important;">Travel Cost</th>
-                        <th style="font-size: 18px !important;">Total Cost</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Package Type</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Tour Cost</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Tax</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">TRAVEL/OTHER</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Total Cost</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -749,11 +756,11 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
                         $travel_cost = currency_conversion($currency,$sq_quotation['currency_code'],$travel_cost);
                         ?>
                         <tr>
-                          <td style="font-size: 16px !important;"><?php echo $sq_costing['package_type']?></td>
-                          <td style="font-size: 16px !important;"><?= $newBasic ?></td>
-                          <td style="font-size: 16px !important;"><?= str_replace(',','',$name).$service_tax_amount_show ?></td>
-                          <td style="font-size: 16px !important;"><?= $travel_cost ?></td>
-                          <td style="font-size: 16px !important;"><?= $currency_amount1 ?></td>
+                          <td style="font-size: 14px !important; padding: 8px  20px !important;"><?php echo $sq_costing['package_type']?></td>
+                          <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= $newBasic ?></td>
+                          <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= str_replace(',','',$name).$service_tax_amount_show ?></td>
+                          <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= $travel_cost ?></td>
+                          <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= $currency_amount1 ?></td>
                         </tr>
                         <?php
                       }
@@ -791,10 +798,10 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
                         $total_pax = intval($sq_quotation['total_adult'])+intval($sq_quotation['children_with_bed'])+intval($sq_quotation['children_without_bed'])+intval($sq_quotation['total_infant']);
                         $per_service_charge = floatval($service_charge)/floatval($total_pax);
               
-                        $adult_cost = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['adult_cost']+floatval($per_service_charge))));
-                        $child_with = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_with']+floatval($per_service_charge))));
-                        $child_without = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_without']+floatval($per_service_charge))));
-                        $infant_cost = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['infant_cost']+floatval($per_service_charge))));
+                        $adult_cost = ($sq_quotation['total_adult']!='0')? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['adult_cost']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                        $child_with = ($sq_quotation['children_with_bed']!='0') ? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_with']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                        $child_without = ($sq_quotation['children_without_bed']!='0')? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_without']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                        $infant_cost = ($sq_quotation['total_infant']!='0') ? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['infant_cost']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
               
                         $tour_cost= $basic_cost + $service_charge;
                         $service_tax_amount = 0;
@@ -834,10 +841,10 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
                         ?>
                         <tr>
                           <td><?php echo $sq_costing['package_type'].' (<b>'.$currency_amount1.'</b>)' ?></td>
-                          <td><?= ($sq_quotation['total_adult']!='0')?$adult_cost:number_format(0,2) ?></td>
-                          <td><?= ($sq_quotation['children_with_bed']!='0')?$child_with:number_format(0,2) ?></td>
-                          <td><?= ($sq_quotation['children_without_bed']!='0')?$child_without:number_format(0,2)  ?></td>
-                          <td><?= ($sq_quotation['total_infant']!='0')?$infant_cost:number_format(0,2) ?></td>
+                          <td><?= $adult_cost ?></td>
+                          <td><?= $child_with ?></td>
+                          <td><?= $child_without  ?></td>
+                          <td><?= $infant_cost ?></td>
                           <td><?= str_replace(',','',$name).$service_tax_amount_show ?></td>
                           <td><?= $travel_cost ?></td>
                         </tr>
@@ -863,36 +870,44 @@ $currency_amount = currency_conversion($currency,$sq_quotation['currency_code'],
         <h3 class="costBankTitle text-center">BANK DETAILS</h3>
         <div class="col-md-2 mg_bt_30"></div>
         <div class="col-md-4 mg_bt_30">
-          <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/bankName.png" class="img-responsive"></div>
+          <div class="icon" style="margin-left:30px!important"><img src="<?= BASE_URL ?>images/quotation/p4/bankName.png" class="img-responsive"></div>
           <h4 class="no-marg"><?= ($bank_name_setting != '') ? $bank_name_setting : 'NA' ?></h4>
           <p>BANK NAME</p>
         </div>
         <div class="col-md-3 mg_bt_30">
           <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/branchName.png" class="img-responsive"></div>
-          <h4 class="no-marg"><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></h4>
-          <p>BRANCH</p>
+          <h4 class="no-marg"><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?>)</h4>
+            <p>BRANCH</p>
         </div>
         <div class="col-md-3 mg_bt_30">
-          <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
+          <div class="icon" style="margin-left:15px!important"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
           <h4 class="no-marg"><?= ($acc_name != '') ? $acc_name : 'NA' ?></h4>
-          <p>A/C NAME</p>
+          <p>A/C TYPE</p>
         </div>
         <div class="col-md-2 mg_bt_30"></div>
         <div class="col-md-4 mg_bt_30">
-          <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
+          <div class="icon" style="margin-left:30px!important"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
           <h4 class="no-marg"><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></h4>
           <p>A/C NO</p>
         </div>
         <div class="col-md-3 mg_bt_30">
           <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-          <h4 class="no-marg"><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></h4>
-          <p>IFSC</p>
+          <h4 class="no-marg"><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></h4>
+            <p>BANK ACCOUNT NAME</p>
         </div>
         <div class="col-md-3 mg_bt_30">
-          <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
+          <div class="icon" style="margin-left:15px!important"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
           <h4 class="no-marg"><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></h4>
           <p>SWIFT CODE</p>
         </div>
+        <?php 
+              if(check_qr()) { ?>
+              <div class="col-md-12 text-center" style="margin-top:20px; margin-bottom:20px;">
+                        <?= get_qr('Landscape Creative') ?>
+                        <br>
+                        <h4 class="no-marg">Scan & Pay </h4>
+          </div>
+          <?php } ?>
       </div>
     </section>
 

@@ -16,7 +16,7 @@ $sq_setting = mysqli_fetch_assoc(mysqlQuery("select * from app_settings where se
 $sq_supply = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_setting[state_id]'"));
 
 //GIT Booking
-$query = "select * from tourwise_traveler_details where 1 and tcs_tax!='0'  ";
+$query = "select * from tourwise_traveler_details where 1 and tcs_tax!='0' and delete_status='0'  ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -26,10 +26,10 @@ $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
 	//Total count
-	$sq_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as booking_count from travelers_details where traveler_group_id ='$row_query[id]'"));
+	$sq_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as booking_count from travelers_details where traveler_group_id ='$row_query[traveler_group_id]'"));
 
 	//Cancelled count
-	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as cancel_count from travelers_details where traveler_group_id ='$row_query[id]' and status ='Cancel'"));
+	$sq_cancel_count = mysqli_fetch_assoc(mysqlQuery("select count(traveler_id) as cancel_count from travelers_details where traveler_group_id ='$row_query[traveler_group_id]' and status ='Cancel'"));
 	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_query[customer_id]'"));
 	if($sq_cust['type'] == 'Corporate'||$sq_cust['type'] == 'B2B'){
 		$cust_name = $sq_cust['company_name'];
@@ -64,7 +64,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //FIT Booking
-$query = "select * from package_tour_booking_master where 1 and tcs_tax!='0'  ";
+$query = "select * from package_tour_booking_master where 1 and tcs_tax!='0' and delete_status='0'  ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -113,7 +113,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Hotel Booking
-$query = "select * from hotel_booking_master where 1 and tcs_tax!='0' ";
+$query = "select * from hotel_booking_master where 1 and tcs_tax!='0' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);

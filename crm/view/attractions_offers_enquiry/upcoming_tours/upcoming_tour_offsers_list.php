@@ -37,6 +37,7 @@ include "../../../model/model.php";
 </div> </div> </div>
 <script type="text/javascript">
 $('#upcoming_tours_id').dataTable({
-  "pagingType": "full_numbers"
+  "pagingType": "full_numbers",
+  order: [[0, 'desc']],
 });
 </script>

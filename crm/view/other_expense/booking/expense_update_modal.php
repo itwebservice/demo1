@@ -29,7 +29,7 @@ $q_expense = mysqli_fetch_assoc(mysqlQuery("select * from other_expense_master w
           <?php } ?> 
           <?php if($q_expense['supplier_id'] != '0'){ ?>
 					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-						<select name="supplier_type2" id="supplier_type2" title="Supplier Type" class="form-control" style="width:100%" disabled>
+						<select name="supplier_type2" id="supplier_type2" title="Supplier Name" class="form-control" style="width:100%" disabled>
 							<?php 
 							$sq_supp = mysqli_fetch_assoc(mysqlQuery("select * from other_vendors where vendor_id='$q_expense[supplier_id]'"));
 							?>
@@ -131,8 +131,8 @@ function upload_hotel_pic_attch()
       onSubmit: function(file, ext)
       {  
         if (! (ext && /^(jpg|png|jpeg|pdf)$/.test(ext))){ 
-         error_msg_alert('Only JPG, PNG or pdf files are allowed');
-         return false;
+          error_msg_alert('Only JPG, PNG, pdf files are allowed');
+          return false;
         }
         $(btnUpload).find('span').text('Uploading...');
       },

@@ -35,12 +35,12 @@ $sq_countc = mysqli_num_rows(mysqlQuery("select * from hotel_contracted_tarrif w
         <div class="app_panel_content Filter-panel">
         <div class="row mg_bt_20">
             <div class="col-md-3 mg_bt_10">
-                <select id="cmb_city_id1" name="cmb_city_id1" onchange="hotel_name_list_load(this.id)" class="city_master_dropdown" style="width:100%" title="Select City Name">
+                <select id="cmb_city_id1" name="cmb_city_id1" onchange="hotel_name_list_load(this.id)" class="city_master_dropdown" style="width:100%" title="Select City Name" disabled>
                     <option value='<?= $sq_city['city_id'] ?>'><?= $sq_city['city_name'] ?></option>
                 </select>
             </div>
             <div class="col-md-3 mg_bt_10">
-                <select id="hotel_id1" name="hotel_id1" style="width:100%" title="Select Hotel Name">
+                <select id="hotel_id1" name="hotel_id1" style="width:100%" title="Select Hotel Name" disabled>
                     <option value='<?= $sq_hotel['hotel_id'] ?>'><?= $sq_hotel['hotel_name'] ?></option>
                     <option value="">*Select Hotel</option>
                 </select>

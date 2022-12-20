@@ -196,7 +196,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);
 
 $count = 0;
 $total_amount = 0;
-$query = "SELECT * FROM `ledger_master` WHERE `group_sub_id` not in('20','105')"; 
+$query = "SELECT * FROM `ledger_master` WHERE `group_sub_id` not in('20','105') "; 
 $sq_query = mysqlQuery($query);
 
 $finDate = mysqli_fetch_assoc(mysqlQuery("SELECT `from_date`, `to_date` FROM `financial_year` WHERE `financial_year_id` = '$financial_year_id'"));
@@ -249,20 +249,21 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 			$module_name = 'Train Booking';
 		else
 			$module_name = $row_finance['module_name'];
+    if($row_finance['payment_amount']!=0){
+      
+      $objPHPExcel->setActiveSheetIndex(0)
 
-    $objPHPExcel->setActiveSheetIndex(0)
+      ->setCellValue('B'.$row_count, ++$count)
+      ->setCellValue('C'.$row_count, $module_name)
+      ->setCellValue('D'.$row_count, $customer_name)
+      ->setCellValue('E'.$row_count, $row_finance['module_entry_id'])
+      ->setCellValue('F'.$row_count, number_format($row_finance['payment_amount'],2));
 
-    ->setCellValue('B'.$row_count, ++$count)
-    ->setCellValue('C'.$row_count, $module_name)
-    ->setCellValue('D'.$row_count, $customer_name)
-    ->setCellValue('E'.$row_count, $row_finance['module_entry_id'])
-    ->setCellValue('F'.$row_count, number_format($row_finance['payment_amount'],2));
-
-  
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($content_style_Array);
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($borderArray);    
-
-  $row_count++;
+    
+      $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($content_style_Array);
+      $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':F'.$row_count)->applyFromArray($borderArray);    
+      $row_count++;
+    }
 }
 }
 

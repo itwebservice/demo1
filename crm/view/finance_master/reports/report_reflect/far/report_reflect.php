@@ -45,7 +45,7 @@ $temp_arr = array();
 			$sq_latest['depr_till_date'],
 			$sq_depr['depr_till_date'],
 			number_format($closing_c_amount,2),
-			'<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="display_modal(\''.$sq_latest['entry_id'] .'\',\''.$sq_latest['asset_ledger'] .'\',\''. $sq_latest['asset_id'] .'\')" title="View Details"><i class="fa fa-eye"></i></button>'
+			'<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="display_modal(\''.$sq_latest['entry_id'] .'\',\''.$sq_latest['asset_ledger'] .'\',\''. $sq_latest['asset_id'] .'\')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>'
 			), "bg" =>$bg);
 			array_push($array_s,$temp_arr);
 		}

@@ -20,15 +20,15 @@ $branch_status = $_POST['branch_status'];
                   <select name="group_id_filter" id="group_id_filter" style="width:100%" title="Booking ID" onchange="load_passenger(this.id)">
                     <option value="">*Booking ID</option>
                     <?php
-                    $query = "select * from tourwise_traveler_details where 1";
+                    $query = "select * from tourwise_traveler_details where 1 and delete_status='0'";
                     if($branch_status=='yes' && $role!='Admin'){
                         $query .=" and branch_admin_id = '$branch_admin_id'";
                     } 
                     $query .=" order by traveler_group_id desc";
                     $sq_group = mysqlQuery($query);
                     while($row_group = mysqli_fetch_assoc($sq_group)){
-                      $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_group[id]'"));
-                      $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_group[id]' and status='Cancel'"));
+                      $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_group[traveler_group_id]'"));
+                      $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_group[traveler_group_id]' and status='Cancel'"));
                       $bg="";
                       if($row_group['tour_group_status']=="Cancel"){
                         continue;

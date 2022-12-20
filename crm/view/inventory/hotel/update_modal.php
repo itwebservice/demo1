@@ -12,7 +12,7 @@ $sq_hotel = mysqli_fetch_assoc(mysqlQuery("select hotel_name,hotel_id from hotel
 		<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h4 class="modal-title" id="myModalLabel">Update Inventory</h4>
+			<h4 class="modal-title" id="myModalLabel">Update Hotel Inventory</h4>
 		</div>
 
 		<div class="modal-body">

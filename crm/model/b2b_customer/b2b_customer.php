@@ -66,7 +66,6 @@ class b2b_customer{
         
 		$quotation_id = $_POST['quotation_id'];
         $url = $_POST['url'];
-		global $app_contact_no;
 		
 		$all_message = "";
         $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from b2b_quotations where quotation_id='$quotation_id'"));
@@ -76,7 +75,7 @@ class b2b_customer{
         $cust_name = $pdf_data_array[0]->cust_name;
         $contact_no = $pdf_data_array[0]->contact_no;
 
-        $whatsapp_msg = 'Hello%20Dear%20'.rawurlencode($cust_name).',%0aHope%20you%20are%20doing%20great.%20This%20is%20tour%20quotation%20details%20as%20per%20your%20request.%20We%20look%20forward%20to%20having%20you%20onboard%20with%20us.%0a'.'%0a*Link*%20:%20'.$url.'%0aPlease%20contact%20for%20more%20details%20:%20'.$mobile_no.'%0aThank%20you.%0a';
+        $whatsapp_msg = 'Dear%20'.rawurlencode($cust_name).',%0aHope%20you%20are%20doing%20great.%20This%20is%20tour%20quotation%20details%20as%20per%20your%20request.%20We%20look%20forward%20to%20having%20you%20onboard%20with%20us.%0a'.'%0a*Link*%20:%20'.$url.'%0aPlease%20contact%20for%20more%20details%20:%20'.$mobile_no.'%0aThank%20you.%0a';
         $all_message .=$whatsapp_msg;
 
         $link = 'https://web.whatsapp.com/send?phone='.$contact_no.'&text='.$all_message;
@@ -240,7 +239,7 @@ class b2b_customer{
         $address2 = $_POST['address2'];
         $city = $_POST['city'];
         $pincode = $_POST['pincode'];
-        $country = $_POST['country'];
+        // $country = $_POST['country'];
         $state = $_POST['state'];
         $timezone = $_POST['timezone'];
         $address_upload_url = $_POST['address_upload_url'];
@@ -255,6 +254,7 @@ class b2b_customer{
         $photo_upload_url = $_POST['photo_upload_url'];
         // Account Details
         $bank_name = $_POST['bank_name'];
+        $bank_account_name = $_POST['bank_acc_name'];
         $acc_name1 = $_POST['acc_name1'];
         $bank_acc_no = $_POST['bank_acc_no'];
         $bank_branch_name = $_POST['bank_branch_name'];
@@ -291,15 +291,34 @@ class b2b_customer{
         //Registration
         $sq_max1 = mysqli_fetch_assoc(mysqlQuery("select max(register_id) as max from b2b_registration"));
         $register_id = $sq_max1['max'] + 1;
-        $sq_insert = mysqlQuery("INSERT INTO `b2b_registration`(`register_id`, `emp_id`, `company_name`, `accounting_name`, `iata_status`, `iata_reg_no`, `nature_of_business`, `currency`, `telephone`, `latitude`, `turnover`, `skype_id`, `website`, `cp_first_name`, `cp_last_name`, `mobile_no`, `email_id`, `whatsapp_no`, `designation`, `pan_card`, `id_proof_url`, `address1`, `address2`, `city`, `pincode`, `country`, `timezone`, `address_proof_url`, `username`, `password`, `branch_admin_id`, `financial_year_id`, `active_flag`, `approval_status`, `agent_code`, `created_at`, `mail_status`, `approval_date`,`reference`,`company_logo`,`state`,`b_bank_name`, `b_acc_name`, `b_acc_no`, `b_branch_name`, `b_ifsc_code`) VALUES ('$register_id','$emp_id','$company_name','$acc_name','$iata_status','$iata_reg','$nature','$currency','$telephone','$latitude','$turnover_slab','$skype_id','$website','$contact_personf','$contact_personl','$mobile_noa','$email_id','$whatsapp_no','$designation','$pan_card','$photo_upload_url','$address1','$address2','$city','$pincode','$country','$timezone','$address_upload_url','$username','$password','$branch_admin_id','$financial_year_id','Active','Approved','$agent_code','$created_at','Sent','$created_at','direct','$company_logo','$state','$bank_name', '$acc_name1', '$bank_acc_no', '$bank_branch_name', '$bank_ifsc_code')");
+        $sq_insert = mysqlQuery("INSERT INTO `b2b_registration`(`register_id`, `emp_id`, `company_name`, `accounting_name`, `iata_status`, `iata_reg_no`, `nature_of_business`, `currency`, `telephone`, `latitude`, `turnover`, `skype_id`, `website`, `cp_first_name`, `cp_last_name`, `mobile_no`, `email_id`, `whatsapp_no`, `designation`, `pan_card`, `id_proof_url`, `address1`, `address2`, `city`, `pincode`, `timezone`, `address_proof_url`, `username`, `password`, `branch_admin_id`, `financial_year_id`, `active_flag`, `approval_status`, `agent_code`, `created_at`, `mail_status`, `approval_date`,`reference`,`company_logo`,`state`,`b_bank_name`, `b_acc_name`, `b_acc_no`, `b_branch_name`, `b_ifsc_code`,`b_bank_account_name`) VALUES ('$register_id','$emp_id','$company_name','$acc_name','$iata_status','$iata_reg','$nature','$currency','$telephone','$latitude','$turnover_slab','$skype_id','$website','$contact_personf','$contact_personl','$mobile_noa','$email_id','$whatsapp_no','$designation','$pan_card','$photo_upload_url','$address1','$address2','$city','$pincode','$timezone','$address_upload_url','$username','$password','$branch_admin_id','$financial_year_id','Active','Approved','$agent_code','$created_at','Sent','$created_at','direct','$company_logo','$state','$bank_name', '$acc_name1', '$bank_acc_no', '$bank_branch_name', '$bank_ifsc_code','$bank_account_name')");
 
         ///////////////////////////
         if($sq_insert){
+            
+            if($company_name != ''){
+                $company_count = mysqli_num_rows(mysqlQuery("select * from customer_master where company_name='$company_name' and type not in('Corporate','B2B')"));
+            }
+            if($company_count>0){
+                echo "error--Sorry, The Company has already been taken.";
+                exit;
+            }
+            $mobile_no1 = $encrypt_decrypt->fnEncrypt($mobile_noa, $secret_key);
+            $sq_cust_contact = mysqlQuery("select * from customer_master where 1");
+            while($row_cust_contact = mysqli_fetch_assoc($sq_cust_contact)){
+
+                $mobile_nos = $encrypt_decrypt->fnDecrypt($row_cust_contact['contact_no'], $secret_key);
+                $contacts = str_replace($row_cust_contact['country_code'],"",$mobile_nos);
+                $temp = $encrypt_decrypt->fnEncrypt($contacts, $secret_key);
+                if($mobile_no1 == $temp){
+                    echo "error--Sorry, The Customer already exist.";
+                    exit;
+                }
+            }
             //B2B customer creation
             $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(customer_id) as max from customer_master"));
             $customer_id = $sq_max['max'] + 1;
             $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$city'"));
-            $mobile_no1 = $encrypt_decrypt->fnEncrypt($mobile_noa, $secret_key);
             $email_id1 = $encrypt_decrypt->fnEncrypt($email_id, $secret_key);
             $sq_customer = mysqlQuery("insert into customer_master (customer_id,type,first_name, middle_name, last_name, gender, birth_date, age, contact_no,landline_no, email_id,alt_email,company_name, address, address2, city, active_flag, created_at,service_tax_no,state_id,pan_no, branch_admin_id) values ('$customer_id','B2B', '$contact_personf', '', '$contact_personl', '', '', '', '$mobile_no1','$telephone', '$email_id1','','$company_name', '$address1','$address2','$sq_city[city_name]', 'Active', '$created_at', '','$state','$pan_card','$branch_admin_id')");
 
@@ -350,7 +369,7 @@ class b2b_customer{
         $address2 = $_POST['address2'];
         $city = $_POST['city'];
         $pincode = $_POST['pincode'];
-        $country = $_POST['country'];
+        // $country = $_POST['country'];
         $state = $_POST['state'];
         $timezone = $_POST['timezone'];
         $address_upload_url = $_POST['address_upload_url'];
@@ -386,7 +405,7 @@ class b2b_customer{
         //Registration
         $sq_max1 = mysqli_fetch_assoc(mysqlQuery("select max(register_id) as max from b2b_registration"));
         $register_id = $sq_max1['max'] + 1;
-        $sq_insert = mysqlQuery("INSERT INTO `b2b_registration`(`register_id`, `emp_id`, `company_name`, `accounting_name`, `iata_status`, `iata_reg_no`, `nature_of_business`, `currency`, `telephone`, `latitude`, `turnover`, `skype_id`, `website`, `cp_first_name`, `cp_last_name`, `mobile_no`, `email_id`, `whatsapp_no`, `designation`, `pan_card`, `id_proof_url`, `address1`, `address2`, `city`, `pincode`, `country`, `timezone`, `address_proof_url`, `username`, `password`, `branch_admin_id`, `financial_year_id`, `active_flag`, `approval_status`, `agent_code`, `created_at`, `mail_status`, `approval_date`,`company_logo`,`state`) VALUES ('$register_id','$emp_id','$company_name','$acc_name','$iata_status','$iata_reg','$nature','$currency','$telephone','$latitude','$turnover_slab','$skype_id','$website','$contact_personf','$contact_personl','$mobile_no','$email_id','$whatsapp_no','$designation','$pan_card','$photo_upload_url','$address1','$address2','$city','$pincode','$country','$timezone','$address_upload_url','$username','$password','','','Active','','','$created_at','','$created_at','$company_logo','$state')");
+        $sq_insert = mysqlQuery("INSERT INTO `b2b_registration`(`register_id`, `emp_id`, `company_name`, `accounting_name`, `iata_status`, `iata_reg_no`, `nature_of_business`, `currency`, `telephone`, `latitude`, `turnover`, `skype_id`, `website`, `cp_first_name`, `cp_last_name`, `mobile_no`, `email_id`, `whatsapp_no`, `designation`, `pan_card`, `id_proof_url`, `address1`, `address2`, `city`, `pincode`,  `timezone`, `address_proof_url`, `username`, `password`, `branch_admin_id`, `financial_year_id`, `active_flag`, `approval_status`, `agent_code`, `created_at`, `mail_status`, `approval_date`,`company_logo`,`state`) VALUES ('$register_id','$emp_id','$company_name','$acc_name','$iata_status','$iata_reg','$nature','$currency','$telephone','$latitude','$turnover_slab','$skype_id','$website','$contact_personf','$contact_personl','$mobile_no','$email_id','$whatsapp_no','$designation','$pan_card','$photo_upload_url','$address1','$address2','$city','$pincode','$timezone','$address_upload_url','$username','$password','','','Active','','','$created_at','','$created_at','$company_logo','$state')");
 
         if($sq_insert){    
             //Send Acknowledgement Mails
@@ -423,7 +442,7 @@ class b2b_customer{
         $address2 = $_POST['address2'];
         $city = $_POST['city'];
         $pincode = $_POST['pincode'];
-        $country = $_POST['country'];
+        // $country = $_POST['country'];
         $state = $_POST['state'];
         $timezone = $_POST['timezone'];
         $address_upload_url = $_POST['address_upload_url'];
@@ -438,6 +457,7 @@ class b2b_customer{
         $photo_upload_url = $_POST['photo_upload_url'];
         // Account Details
         $bank_name = $_POST['bank_name'];
+        $bank_acc_name = $_POST['bank_acc_name'];
         $acc_name1 = $_POST['acc_name1'];
         $bank_acc_no = $_POST['bank_acc_no'];
         $bank_branch_name = $_POST['bank_branch_name'];
@@ -467,23 +487,41 @@ class b2b_customer{
             exit;
         }
         
-        //Registration
-        $sq_update = mysqlQuery("UPDATE `b2b_registration` SET `company_name`='$company_name',`accounting_name`='$acc_name',`iata_status`='$iata_status',`iata_reg_no`='$iata_reg',`nature_of_business`='$nature',`currency`='$currency',`telephone`='$telephone',`latitude`='$latitude',`turnover`='$turnover_slab',`skype_id`='$skype_id',`website`='$website',`cp_first_name`='$contact_personf',`cp_last_name`='$contact_personl',`mobile_no`='$mobile_no',`email_id`='$email_id',`whatsapp_no`='$whatsapp_no',`designation`='$designation',`pan_card`='$pan_card',`id_proof_url`='$photo_upload_url',`address1`='$address1',`address2`='$address2',`city`='$city',`pincode`='$pincode',`country`='$country',`timezone`='$timezone',`address_proof_url`='$address_upload_url',`username`='$username',`password`='$password',`active_flag`='$active_flag',company_logo='$company_logo',agent_code='$agent_code',`state`='$state',`b_bank_name`='$bank_name',`b_acc_name`='$acc_name1',`b_acc_no`='$bank_acc_no',`b_branch_name`= '$bank_branch_name',`b_ifsc_code`='$bank_ifsc_code' WHERE register_id='$register_id'");
+        if($company_name != ''){
+            $company_count = mysqli_num_rows(mysqlQuery("select * from customer_master where company_name='$company_name' and type not in('Corporate','B2B') and customer_id!='$sq_old[customer_id]'"));
+        }
+        if($company_count>0){
+            echo "error--Sorry, The Company has already been taken.";
+            exit;
+        }
+        $mobile_no1 = $encrypt_decrypt->fnEncrypt($mobile_no, $secret_key);
+        $sq_cust_contact = mysqlQuery("select * from customer_master where 1 and customer_id!='$sq_old[customer_id]'");
+        while($row_cust_contact = mysqli_fetch_assoc($sq_cust_contact)){
+
+            $mobile_nos = $encrypt_decrypt->fnDecrypt($row_cust_contact['contact_no'], $secret_key);
+            $contacts = str_replace($row_cust_contact['country_code'],"",$mobile_nos);
+            $temp = $encrypt_decrypt->fnEncrypt($contacts, $secret_key);
+            if($mobile_no1 == $temp){
+                echo "error--Sorry, The Customer already exist.";
+                exit;
+            }
+        }
+        //B2B customer updatation
+        $sq_cust = mysqli_fetch_assoc(mysqlQuery("select customer_id from customer_master where company_name='$company_old'"));
+        $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$city'"));
+        $email_id1 = $encrypt_decrypt->fnEncrypt($email_id, $secret_key);
+
+        $sq_customer = mysqlQuery("update customer_master set first_name='$contact_personf', last_name='$contact_personl', contact_no='$mobile_no1',landline_no='$telephone', email_id='$email_id1',company_name='$company_name', address='$address1', address2='$address2', city='$sq_city[city_name]',pan_no='$pan_card',state_id='$state' where customer_id='$sq_cust[customer_id]'");
+
+        //Ledger updation
+        $ledger_name = $company_name;
+        $sq_ledger = mysqlQuery("update ledger_master set ledger_name='$ledger_name' where ledger_name='$company_old' and customer_id='$sq_cust[customer_id]' and user_type='customer'");
         //////////////////////////////////////////////////////////////////////
 
-        if($sq_update){
-            //B2B customer updatation
-            $sq_cust = mysqli_fetch_assoc(mysqlQuery("select customer_id from customer_master where company_name='$company_old'"));
-            $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$city'"));
-            $mobile_no1 = $encrypt_decrypt->fnEncrypt($mobile_no, $secret_key);
-            $email_id1 = $encrypt_decrypt->fnEncrypt($email_id, $secret_key);
+        if($sq_ledger){
 
-            $sq_customer = mysqlQuery("update customer_master set first_name='$contact_personf', last_name='$contact_personl', contact_no='$mobile_no1',landline_no='$telephone', email_id='$email_id1',company_name='$company_name', address='$address1', address2='$address2', city='$sq_city[city_name]',pan_no='$pan_card',state_id='$state' where customer_id='$sq_cust[customer_id]'");
-
-            //Ledger updation
-            $ledger_name = $company_name;
-            $sq_ledger = mysqlQuery("update ledger_master set ledger_name='$ledger_name' where ledger_name='$company_old' and customer_id='$sq_cust[customer_id]' and user_type='customer'");
-
+            //Registration
+            $sq_update = mysqlQuery("UPDATE `b2b_registration` SET `company_name`='$company_name',`accounting_name`='$acc_name',`iata_status`='$iata_status',`iata_reg_no`='$iata_reg',`nature_of_business`='$nature',`currency`='$currency',`telephone`='$telephone',`latitude`='$latitude',`turnover`='$turnover_slab',`skype_id`='$skype_id',`website`='$website',`cp_first_name`='$contact_personf',`cp_last_name`='$contact_personl',`mobile_no`='$mobile_no',`email_id`='$email_id',`whatsapp_no`='$whatsapp_no',`designation`='$designation',`pan_card`='$pan_card',`id_proof_url`='$photo_upload_url',`address1`='$address1',`address2`='$address2',`city`='$city',`pincode`='$pincode',`timezone`='$timezone',`address_proof_url`='$address_upload_url',`username`='$username',`password`='$password',`active_flag`='$active_flag',company_logo='$company_logo',agent_code='$agent_code',`state`='$state',`b_bank_name`='$bank_name',`b_acc_name`='$acc_name1',`b_acc_no`='$bank_acc_no',`b_branch_name`= '$bank_branch_name',`b_ifsc_code`='$bank_ifsc_code',`b_bank_account_name`='$bank_acc_name' WHERE register_id='$register_id'");
             if($sq_old['approval_status'] == 'Approved' && $sq_old['username'] != $username || $sq_old['password']!=$password){
                 //Send Acknowledgement Mails
                 $this->mail_b2blogin_box($username, $password,$agent_code, $email_id,$register_id);
@@ -751,11 +789,11 @@ class b2b_customer{
         $address1 = $col_data_array[0]->address1;
         $address2 = $col_data_array[0]->address2;
         $pincode = $col_data_array[0]->pincode;
-        $country = $col_data_array[0]->country;
+        // $country = $col_data_array[0]->country;
         $timezone = $col_data_array[0]->timezone;
         $address_proof_url = $col_data_array[0]->address_proof_url;
 
-        $q1="UPDATE `b2b_registration` SET `address1`='$address1',`address2`='$address2',`city`='$city',`pincode`='$pincode',`country`='$country',`timezone`='$timezone',`address_proof_url`='$address_proof_url' WHERE register_id='$register_id'";
+        $q1="UPDATE `b2b_registration` SET `address1`='$address1',`address2`='$address2',`city`='$city',`pincode`='$pincode',`timezone`='$timezone',`address_proof_url`='$address_proof_url' WHERE register_id='$register_id'";
         $sq_update = mysqlQuery($q1);
         echo "Address Information updated successfully";
         exit;

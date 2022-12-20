@@ -35,12 +35,12 @@ $branch_status = $sq['branch_status'];
 $('#gl_id_filter').select2();
 $('#from_date_filter, #to_date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
 var column = [
-	{ title: "S_No." },
+	{ title: "Credit_Note_ID" },
 	{ title: "date" },
 	{ title: "customer_name" },
 	{ title: "booking_type" },
 	{ title: "booking_id" },
-	{ title: "amount" , className: "success text-right"}
+	{ title: "amount" , className: "success"}
 ];
 function report_reflect()
 {

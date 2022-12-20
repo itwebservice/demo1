@@ -1,7 +1,7 @@
 <?php
 include "../../../../../../../model/model.php";
 $train_ticket_id = $_POST['train_ticket_id'];
-$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+$sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
 $date = $sq_booking['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];

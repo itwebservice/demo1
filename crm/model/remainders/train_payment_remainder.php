@@ -3,11 +3,11 @@ include_once('../model.php');
  	$due_date=date('Y-m-d');
 	 global $secret_key,$encrypt_decrypt;
 
- 	$sq_train = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where payment_due_date='$due_date'"));
+ 	$sq_train = mysqli_num_rows(mysqlQuery("select * from train_ticket_master where payment_due_date='$due_date' and delete_status='0'"));
 
  	if($sq_train>0){
 
-	 	$sq_train_details =  mysqlQuery("select * from train_ticket_master where payment_due_date='$due_date'");
+	 	$sq_train_details =  mysqlQuery("select * from train_ticket_master where payment_due_date='$due_date' and delete_status='0'");
 
 		while ($row_train = mysqli_fetch_assoc($sq_train_details)) {
 

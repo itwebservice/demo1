@@ -21,9 +21,6 @@ public function refund_canceled_traveler_save()
   $refund_date = date('Y-m-d', strtotime($refund_date));
   $created_at = date('Y-m-d');
 
-  $bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $total_refund);
-  if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; }
-
   $timestamp_count = mysqli_num_rows( mysqlQuery("select refund_id from package_refund_traveler_cancelation where unique_timestamp='$unique_timestamp'") );
   if($timestamp_count>0)
   {

@@ -12,10 +12,11 @@ $array_s = array();
 $temp_arr = array();
 $count = 1;
 $total_amount = 0;
-$query = "SELECT * FROM `ledger_master` WHERE 1 and `group_sub_id` not in('20','105')"; 
-$sq_query = mysqlQuery($query);
+
 $finDate = mysqli_fetch_assoc(mysqlQuery("SELECT `from_date`, `to_date` FROM `financial_year` WHERE `financial_year_id` = '$financial_year_id'"));
 
+$query = "SELECT * FROM `ledger_master` WHERE 1 and `group_sub_id` not in('20','105')"; 
+$sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query)){
 
 	$f_query = "select * from finance_transaction_master where gl_id='$row_query[ledger_id]' and type='INVOICE' and module_name!='Journal Entry'";
@@ -50,15 +51,18 @@ while($row_query = mysqli_fetch_assoc($sq_query)){
 			$module_name = 'Train Booking';
 		else
 			$module_name = $row_finance['module_name'];
+			
+		if($row_finance['payment_amount']!=0){
 		
-		$temp_arr = array( "data" => array(
-			(int)($count++),
-			$module_name,
-			$customer_name,
-			$row_finance['module_entry_id'],
-			$row_finance['payment_amount'] 
-			), "bg" =>$bg);
-			array_push($array_s,$temp_arr);
+			$temp_arr = array( "data" => array(
+				(int)($count++),
+				$module_name,
+				$customer_name,
+				$row_finance['module_entry_id'],
+				$row_finance['payment_amount'] 
+				), "bg" =>$bg);
+				array_push($array_s,$temp_arr);
+		}
 	}
 }
 $footer_data = array("footer_data" => array(

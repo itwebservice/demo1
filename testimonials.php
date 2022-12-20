@@ -65,30 +65,6 @@ $b2c_testm = $cached_array[0]->cms_data[4];
 </div>
 
 <!-- ********** Component :: Page Title End ********** -->
-<!-- Landing Section Start -->
-
-<!-- <section class="ts-inner-landing-section ts-font-poppins">
-
-    <img src="images/banner-2.jpg" alt="" class="img-fluid">
-
-    <div class="ts-inner-landing-content">
-
-        <div class="container">
-
-            <h1 class="ts-section-title">Testimonials</h1>
-
-        </div>
-
-    </div>
-
-</section> -->
-
-<!-- Landing Section End -->
-
-
-
-
-
 <!-- Testimonial Section Start -->
 
 <section class="ts-customer-testimonial-section">
@@ -106,19 +82,14 @@ $b2c_testm = $cached_array[0]->cms_data[4];
         <h2 class="ts-section-title">HAPPY CUSTOMERS</h2>
 
             <?php
-
             if(sizeof($b2c_testm->customer_testimonials) != 0){
 
                 ?>
 
             <div class="row">
 
-            <?php
-
-    
-
+            <?php    
                 $testm = $b2c_testm->customer_testimonials;
-
                 for($testm_count=0;$testm_count<=sizeof($testm)-1;$testm_count++){
 
                         

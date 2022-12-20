@@ -4,7 +4,7 @@ global $currency;
 
 $booking_id = $_POST['booking_id'];
 
-$sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+$sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $date = $sq_package_info['booking_date'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -26,7 +26,7 @@ $year =$yr[0];
 						<?php } ?>
 					<?php 
 					$sq_c_hotel = mysqli_num_rows(mysqlQuery("select * from package_hotel_accomodation_master where booking_id='$booking_id'"));
-					$sq_c_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+					$sq_c_package = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 					if($sq_c_hotel != '0' || $sq_c_package['transport_bus_id'] !=''){ ?>
 					<li role="presentation"><a href="#hotel_transport_information" aria-controls="hotel_transport_information" role="tab" data-toggle="tab" class="tab_name">Hotel & Transport</a></li>
 					<?php } ?>

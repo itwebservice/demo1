@@ -10,8 +10,8 @@ include "../../../../model/model.php";
         <h4 class="modal-title" id="myModalLabel">Visa Supplier Details</h4>
       </div>
       <div class="modal-body">
-       <form id="frm_save" class="no-marg">
-       <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_10">
+      <form id="frm_save" class="no-marg">
+      <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_10">
         <legend>Visa Supplier Information</legend>
         <div class="row">
           <div class="col-md-3 col-sm-6 mg_bt_10">
@@ -44,13 +44,13 @@ include "../../../../model/model.php";
       </div>
       <div class="row">
          <div class="col-sm-3 col-xs-6 mg_bt_10_xs">
-            <select name="state" id="state" title="Select State" style="width:100%" required>
+            <select name="state" id="state" title="Select State/Country Name" style="width:100%" required>
               <?php get_states_dropdown() ?>
             </select>
           </div> 
-        <div class="col-md-3 col-sm-6 mg_bt_10_xs">
+        <!-- <div class="col-md-3 col-sm-6 mg_bt_10_xs">
           <input type="text" id="country" name="country" class="form-control" placeholder="Country" title="Country">
-        </div>
+        </div> -->
         <div class="col-md-3 col-sm-6 mg_bt_10_xs">
           <input type="text" id="website" name="website" class="form-control" placeholder="Website" title="Website">
         </div>
@@ -80,23 +80,23 @@ include "../../../../model/model.php";
         <div class="col-md-3 col-sm-6 mg_bt_10_xs">
             <input type="text" name="service_tax_no" id="service_tax_no" class="form-control" onchange="validate_alphanumeric(this.id);" placeholder="Tax No" title="Tax No"   style="text-transform: uppercase;">
         </div>
-         <div class="col-md-3 col-sm-6 mg_bt_10">
-             <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" placeholder="PAN/TAN No" title="PAN/TAN No"  style="text-transform: uppercase;">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" placeholder="PAN/TAN No" title="PAN/TAN No"  style="text-transform: uppercase;">
           </div> 
-         <div class="col-md-3 col-sm-6 mg_bt_10_xs">
-            <input type="hidden" id="opening_balance" name="opening_balance" class="form-control" placeholder="Opening Balance" title="Opening Balance" value="0"  onchange="validate_balance(this.id);">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <input type="number" id="opening_balance" value="0" name="opening_balance" class="form-control" placeholder="*Opening Balance" title="Opening Balance">
           </div>
-          <div class="col-sm-3 mg_bt_10">
-            <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
-          </div>
-          <div class="col-md-3 col-sm-6 mg_bt_10_xs">
-            <select class="hidden" name="side" id="side" title="Select side">
+      </div>
+      <div class="row"> 
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <select class="form-control" data-toggle="tooltip" name="side" id="side" title="Balance Side">
               <option value="Credit">Credit</option>
               <option value="Debit">Debit</option>
             </select>
           </div>
-      </div>
-      <div class="row"> 
+          <div class="col-sm-3 mg_bt_10">
+            <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
+          </div>
           <div class="col-md-3 col-sm-6 mg_bt_10_xs">
             <select name="active_flag" class="form-control hidden" id="active_flag" title="Status" style="width: 100%;">
               <option value="Active">Active</option>
@@ -128,6 +128,7 @@ $('#frm_save').validate({
           cmb_city_id : { required: true },
           side : { required : true },
 			    as_of_date : { required : true },
+          opening_balance : { required : true },
   },
 
   submitHandler:function(form){
@@ -137,7 +138,7 @@ $('#frm_save').validate({
       var mobile_no = $('#mobile_no').val();
       var landline_no = $('#landline_no').val();
       var immergency_contact_no = $("#immergency_contact_no").val();
-      var country = $("#country").val();
+      // var country = $("#country").val();
       var website = $("#website").val();
       var bank_name = $("#bank_name").val();
       var branch = $("#branch").val();
@@ -163,7 +164,7 @@ $('#frm_save').validate({
       $.ajax({
         type: 'post',
         url: base_url+'controller/visa_passport_ticket/visa/vendor/vendor_save.php',
-        data:{ vendor_name : vendor_name, mobile_no : mobile_no, email_id : email_id, landline_no : landline_no,contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, cmb_city_id : cmb_city_id,country : country, website : website, address : address,  opening_balance : opening_balance, active_flag : active_flag,service_tax_no : service_tax_no, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, state : state, side : side, account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date},
+        data:{ vendor_name : vendor_name, mobile_no : mobile_no, email_id : email_id, landline_no : landline_no,contact_person_name : contact_person_name, immergency_contact_no : immergency_contact_no, cmb_city_id : cmb_city_id, website : website, address : address,  opening_balance : opening_balance, active_flag : active_flag,service_tax_no : service_tax_no, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, state : state, side : side, account_name : account_name,supp_pan : supp_pan,as_of_date : as_of_date},
         success: function(result){
           $('#btn_save').button('reset');
           var msg = result.split('-');

@@ -1637,7 +1637,7 @@ function validate_dayprogram(id) {
 	var obj = document.getElementById(id).value;
 	obj = obj.replace(/^\s+|\s+$/g, '');
 	if (obj.length > 2000) {
-		error_msg_alert('Character limit for Day-program is 2000 characters');
+		error_msg_alert('Character limit for Day-wise program is 2000 characters');
 		$('#' + id).css({ border: '1px solid red' });
 		$('#' + id).focus();
 		g_validate_status = false;

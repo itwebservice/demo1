@@ -43,13 +43,13 @@ include "../../../../model/model.php";
         </div>
         <div class="row">
           <div class="col-sm-3 col-xs-6 mg_bt_10">
-            <select name="state" id="state" title="Select State" style="width:100%" required>
+            <select name="state" id="state" title="Select State/Country Name" style="width:100%" required>
               <?php get_states_dropdown() ?>
             </select>
           </div> 
-          <div class="col-sm-3 col-sm-6 mg_bt_10">
+          <!-- <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="country" class="form-control" name="country" placeholder="Country" title="Country">
-          </div>
+          </div> -->
           <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="website" name="website" placeholder="Website" title="Website">
           </div>
@@ -61,10 +61,10 @@ include "../../../../model/model.php";
           <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="bank_name" class="bank_suggest"  name="bank_name" placeholder="Bank Name" title="Bank Name" >
           </div>
-           <div class="col-sm-3 col-sm-6 mg_bt_10">
+          <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="account_name" class="form-control" name="account_name" placeholder="A/c Type" title="A/c Type" >
           </div> 
-           <div class="col-sm-3 col-sm-6 mg_bt_10">
+          <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="account_no" class="form-control" onchange="validate_accountNo(this.id);" name="account_no" placeholder="A/c No" title="A/c No" >
           </div> 
           <div class="col-sm-3 col-sm-6 mg_bt_10">
@@ -75,32 +75,32 @@ include "../../../../model/model.php";
           <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" id="ifsc_code" class="form-control"onchange="validate_IFSC(this.id);" name="ifsc_code" placeholder="IFSC/SWIFT CODE" title="IFSC/SWIFT CODE" style="text-transform: uppercase;">
           </div>
-           <div class="col-sm-3 col-sm-6 mg_bt_10">
+          <div class="col-sm-3 col-sm-6 mg_bt_10">
             <input type="text" name="service_tax_no" class="form-control" id="service_tax_no" placeholder="Tax No" title="Tax No" onchange="validate_alphanumeric(this.id)" style="text-transform: uppercase;">
           </div>
-            <div class="col-md-3 col-sm-6 mg_bt_10">
-             <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id);" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
-            </div> 
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+            <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id);" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+          </div> 
           <div class="col-sm-3 col-sm-6 mg_bt_10">
-            <input type="hidden" id="opening_balance" class="form-control" name="opening_balance" placeholder="Opening Balance" title="Opening Balance" value="0" onchange="validate_balance(this.id)">
+            <input type="number" id="opening_balance" value="0" class="form-control" name="opening_balance" placeholder="*Opening Balance" title="*Opening Balance">
           </div>
-          <div class="col-sm-3 mg_bt_10">
-            <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
-          </div>
-           <div class="col-md-3 col-sm-6 mg_bt_10">
-              <select class="hidden" name="side" id="side" title="Select side">
+          <div class="col-md-3 col-sm-6 mg_bt_10">
+              <select class="form-control" data-toggle='tooltip' name="side" id="side" title="Balance Side">
                 <option value="Credit">Credit</option>
                 <option value="Debit">Debit</option>
               </select>
-           </div> 
+          </div>
+          <div class="col-sm-3 mg_bt_10">
+            <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date">
+          </div> 
         </div>  
         <div class="row">
             <div class="col-sm-3 col-sm-6 mg_bt_10">
               <select name="active_flag" id="active_flag" title="Status" class="form-control hidden" style="width: 100%;">
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
-               </select>
-             </div>
+              </select>
+            </div>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ include "../../../../model/model.php";
             </table>
 
         </div></div></div>
-       </div>
+        </div>
 
         <div class="row text-center mg_tp_20 mg_bt_20">
           <div class="col-md-12">
@@ -165,11 +165,11 @@ city_lzloading('#cmb_city_id');
 $(function(){
   $('#frm_car_rental_vendor_save').validate({
       rules:{
-              cmb_city_id : { required: true },
-              vendor_name: { required: true },
-              side : { required : true },
-			        as_of_date : { required : true },
-              
+        cmb_city_id : { required: true },
+        vendor_name: { required: true },
+        side : { required : true },
+        as_of_date : { required : true },
+        opening_balance : { required : true },
       },
       submitHandler:function(form){
               var vendor_name = $('#vendor_name').val();
@@ -179,12 +179,13 @@ $(function(){
               var active_flag = $('#active_flag').val();
               var service_tax_no = $('#service_tax_no').val();
               var email_id = $('#email_id').val();
-              var country = $("#country").val();
+              // var country = $("#country").val();
               var website = $("#website").val();
               var bank_name = $("#bank_name").val();
               var branch = $("#branch").val();
-              var ifsc_code = $("#ifsc_code").val();
-               var account_name = $("#account_name").val();
+              var ifsc_code1 = $("#ifsc_code").val();
+              var ifsc_code = ifsc_code1.toUpperCase();
+              var account_name = $("#account_name").val();
               var account_no = $("#account_no").val();
               var contact_person_name = $("#contact_person_name").val();
               var immergency_contact_no =$("#immergency_contact_no").val();
@@ -192,7 +193,8 @@ $(function(){
               var city_id =$("#cmb_city_id").val();
               var state = $("#state").val();
               var side = $('#side').val();
-              var supp_pan = $('#supp_pan').val();
+              var supp_pan1 = $('#supp_pan').val();
+              var supp_pan = supp_pan1.toUpperCase();
               var as_of_date = $('#as_of_date').val();
 
               var add = validate_address('address');
@@ -254,7 +256,7 @@ $(function(){
               $.ajax({
                 type:'post',
                 url: base_url+'controller/car_rental/vendor/vendor_save.php',
-                data:{ city_id: city_id, vendor_name : vendor_name, mobile_no : mobile_no, landline_no : landline_no, address  : address, contact_person_name :contact_person_name, immergency_contact_no:immergency_contact_no,country : country, website : website, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, opening_balance : opening_balance, active_flag : active_flag, vehicle_name_arr : vehicle_name_arr, vehicle_no_arr : vehicle_no_arr, vehicle_driver_name_arr : vehicle_driver_name_arr, vehicle_mobile_no_arr : vehicle_mobile_no_arr, vehicle_year_of_purchase_arr : vehicle_year_of_purchase_arr, vehicle_rate_arr : vehicle_rate_arr, vehicle_type_arr : vehicle_type_arr,service_tax_no:service_tax_no, email_id : email_id, state : state,side:side,account_name : account_name , supp_pan : supp_pan,as_of_date : as_of_date},
+                data:{ city_id: city_id, vendor_name : vendor_name, mobile_no : mobile_no, landline_no : landline_no, address  : address, contact_person_name :contact_person_name, immergency_contact_no:immergency_contact_no, website : website, bank_name : bank_name, account_no : account_no, branch : branch, ifsc_code : ifsc_code, opening_balance : opening_balance, active_flag : active_flag, vehicle_name_arr : vehicle_name_arr, vehicle_no_arr : vehicle_no_arr, vehicle_driver_name_arr : vehicle_driver_name_arr, vehicle_mobile_no_arr : vehicle_mobile_no_arr, vehicle_year_of_purchase_arr : vehicle_year_of_purchase_arr, vehicle_rate_arr : vehicle_rate_arr, vehicle_type_arr : vehicle_type_arr,service_tax_no:service_tax_no, email_id : email_id, state : state,side:side,account_name : account_name , supp_pan : supp_pan,as_of_date : as_of_date},
                 success:function(result){
                   msg_alert(result);
                   $('#vendor_save_modal').modal('hide');

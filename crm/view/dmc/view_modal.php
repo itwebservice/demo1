@@ -123,7 +123,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_dmc['email_id'], $secret_key);
 
 										                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-										                  <?php echo "<label>State <em>:</em></label>".$sq_state['state_name'] ?>
+										                  <?php echo "<label>State/Country <em>:</em></label>".$sq_state['state_name'] ?>
 
 										            </span>	
 
@@ -134,13 +134,11 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_dmc['email_id'], $secret_key);
 							        				    <?php echo "<label>Website <em>:</em></label> " .$sq_dmc['website']; ?>
 
 							        				</span>
-							        				<span class="main_block">
-
-							        				<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i> 
-
-							        				    <?php echo "<label>Country <em>:</em></label> " .$sq_dmc['country']; ?>
-
-							        				</span>
+													<span class="main_block">
+													<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+													<?php echo "<label>Address <em>:</em></label> " .$sq_dmc['dmc_address']; ?>
+												</span>
+							        			
 
 							        			</div>
 
@@ -187,7 +185,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_dmc['email_id'], $secret_key);
 
 							        					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-							        				    <?php echo "<label>PAN/TAN No <em>:</em></label> " .$sq_dmc['pan_no']; ?>
+							        				    <?php echo "<label>PAN/TAN No <em>:</em></label> " .strtoupper($sq_dmc['pan_no']); ?>
 
 							        				</span>
 							        				<span class="main_block">
@@ -197,6 +195,20 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_dmc['email_id'], $secret_key);
 							        				    <?php echo "<label>Tax No <em>:</em></label> " .strtoupper($sq_dmc['service_tax_no']) ?>
 
 							        				</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Opening Balance <em>:</em></label> " .$sq_dmc['opening_balance']; ?>
+
+													</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Balance Side <em>:</em></label> " .$sq_dmc['side']; ?>
+
+													</span>
 							        				<span class="main_block">
 
 							        					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -210,10 +222,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_dmc['email_id'], $secret_key);
 								    		</div>
 											<div class="row">
 											<div class="col-md-12">
-												<span class="main_block">
-													<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-													<?php echo "<label>Address <em>:</em></label> " .$sq_dmc['dmc_address']; ?>
-												</span>
+												
 											</div>
 											</div>
 								    	</div>

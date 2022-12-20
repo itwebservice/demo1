@@ -4,6 +4,12 @@ include "../../../../model.php";
 include "printFunction.php";
 global $app_quot_img;
 
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2b_sale/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
+
 $package_id=$_GET['package_id'];
 $sq_pckg = mysqli_fetch_assoc(mysqlQuery("select * from custom_package_master where package_id = '$package_id'"));
 $sq_dest = mysqli_fetch_assoc(mysqlQuery("select * from destination_master where dest_id='$sq_pckg[dest_id]'"));
@@ -293,39 +299,39 @@ if($sq_hotelc!=0){?>
         <div class="contactTitlePanel text-center">
           <!-- <h3>Contact Us</h3> -->
           <img src="<?= BASE_URL ?>images/quotation/contactImg.jpg" class="img-responsive">
-          <p class="mg_tp_10"><?php echo $app_website; ?></p>
+          <?php if($app_website != ''){?><p class="no-marg"><?php echo $app_website; ?></p><?php } ?>
         </div>
       </div>
-        <div class="col-md-5">
-          <?php if($app_address != ''){?>
-          <div class="contactBlock main_block side_pad mg_tp_20">
-            <div class="cBlockIcon"> <i class="fa fa-map-marker"></i> </div>
-            <div class="cBlockContent">
-              <h5 class="cTitle">Corporate Office</h5>
-              <p class="cBlockData"><?php echo $app_address; ?></p>
-            </div>
+      <div class="col-md-5">  
+        <?php //if($app_address != ''){?>
+        <div class="contactBlock main_block side_pad mg_tp_20">
+          <div class="cBlockIcon"> <i class="fa fa-map-marker"></i> </div>
+          <div class="cBlockContent">
+            <h5 class="cTitle">Corporate Office</h5>
+            <p class="cBlockData"><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
           </div>
-          <?php } ?>
-          <?php if($app_contact_no != ''){?>
-          <div class="contactBlock main_block side_pad mg_tp_20">
-            <div class="cBlockIcon"> <i class="fa fa-phone"></i> </div>
-            <div class="cBlockContent">
-              <h5 class="cTitle">Contact</h5>
-              <p class="cBlockData"><?php echo $app_contact_no; ?></p>
-            </div>
+        </div>      
+        <?php //} ?>
+        <?php //if($app_contact_no != ''){?>
+        <div class="contactBlock main_block side_pad mg_tp_20">
+          <div class="cBlockIcon"> <i class="fa fa-phone"></i> </div>
+          <div class="cBlockContent">
+            <h5 class="cTitle">Contact</h5>
+            <p class="cBlockData"><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
           </div>
-          <?php } ?>
-          <?php if($app_email_id != ''){?>
-          <div class="contactBlock main_block side_pad mg_tp_20">
-            <div class="cBlockIcon"> <i class="fa fa-envelope"></i> </div>
-            <div class="cBlockContent">
-              <h5 class="cTitle">Email Id</h5>
-              <p class="cBlockData"><?php echo $app_email_id; ?></p>
-            </div>
-          </div>
-          <?php } ?>
-
         </div>
+        <?php //} ?>
+        <?php //if($app_email_id != ''){?>
+        <div class="contactBlock main_block side_pad mg_tp_20">
+          <div class="cBlockIcon"> <i class="fa fa-envelope"></i> </div>
+          <div class="cBlockContent">
+            <h5 class="cTitle">Email Id</h5>
+            <p class="cBlockData"><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
+          </div>
+        </div>
+        <?php //} ?>
+
+      </div>
     </div>
   </section>
 

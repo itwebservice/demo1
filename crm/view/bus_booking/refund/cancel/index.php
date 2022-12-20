@@ -7,12 +7,12 @@ include "../../../../model/model.php";
 			<select name="booking_id" id="booking_id" title="Booking ID" style="width:100%" onchange="refund_reflect()">
 				<option value=""> Select Booking</option>
 				<?php 
-				$sq_booking = mysqlQuery("select * from bus_booking_master order by booking_id desc");
+				$sq_booking = mysqlQuery("select * from bus_booking_master where 1 and delete_status='0' order by booking_id desc");
 				while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
-				  $date = $row_booking['created_at'];
-		          $yr = explode("-", $date);
-		          $year =$yr[0];
+					$date = $row_booking['created_at'];
+					$yr = explode("-", $date);
+					$year =$yr[0];
 					$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
 					
 					if($sq_customer['type'] == 'Corporate'||$sq_customer['type'] == 'B2B'){

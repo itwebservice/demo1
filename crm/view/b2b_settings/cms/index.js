@@ -8,7 +8,7 @@ function get_icons(image_url){
         url: base_url + 'view/b2b_settings/cms/inc/destination_ideas/get_icons.php',
         data:{image_url:image_url,cmp_image_url:cmp_image_url},
         success:function(result){
-         $('#image_modal').html(result);
+            $('#image_modal').html(result);
         }
     });
 }

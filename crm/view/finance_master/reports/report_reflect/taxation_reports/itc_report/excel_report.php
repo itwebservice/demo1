@@ -88,7 +88,7 @@ else{
 // Add some data
 $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('B2', 'Report Name')
-    ->setCellValue('C2', 'ITC Report')
+    ->setCellValue('C2', 'GST-R2 Report')
     ->setCellValue('B3', 'From-To-Date')
     ->setCellValue('C3', $date_str);
 
@@ -99,7 +99,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);
 
 
-$query = "select * from vendor_estimate where status='' ";
+$query = "select * from vendor_estimate where status='' and delete_status='0' ";
 $count=1;
 
 $row_count = 7;
@@ -123,7 +123,7 @@ $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('C'.$row_count, "Service Name")
     ->setCellValue('D'.$row_count, "SAC/HSN Code")
     ->setCellValue('E'.$row_count, "Supplier Name")
-    ->setCellValue('F'.$row_count, "GSTIN/UIN")
+    ->setCellValue('F'.$row_count, "Tax_No")
     ->setCellValue('G'.$row_count, "Account State")
     ->setCellValue('H'.$row_count, "Purchase ID")
     ->setCellValue('I'.$row_count, "Purchase Date")
@@ -146,6 +146,7 @@ $tax_total = 0;
 $sq_sales = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_sales)){
 
+	$estimate_type_val = get_estimate_type_name($row_query['estimate_type'], $row_query['estimate_type_id']);
     $vendor_name = get_vendor_name($row_query['vendor_type'],$row_query['vendor_type_id']);
     $vendor_info = get_vendor_info($row_query['vendor_type'], $row_query['vendor_type_id']);
     $hsn_code = get_service_info($row_query['estimate_type']);
@@ -168,7 +169,7 @@ while($row_query = mysqli_fetch_assoc($sq_sales)){
         }
     }
     //Taxable amount
-    $taxable_amount = ($service_tax_amount / $tax_per) * 100;
+	$taxable_amount = ($tax_per!=0) ? ($service_tax_amount / $tax_per) * 100 : 0;
     $tax_total += $service_tax_amount;
 
     $objPHPExcel->setActiveSheetIndex(0)
@@ -178,7 +179,7 @@ while($row_query = mysqli_fetch_assoc($sq_sales)){
         ->setCellValue('E'.$row_count, $vendor_name)
         ->setCellValue('F'.$row_count, ($vendor_info['service_tax'] == '') ? 'NA' : strtoupper($vendor_info['service_tax']))
         ->setCellValue('G'.$row_count, ($sq_state['state_name'] == '') ? 'NA' : $sq_state['state_name'] )
-        ->setCellValue('H'.$row_count, $row_query['estimate_id'])
+        ->setCellValue('H'.$row_count, $row_query['estimate_id'].' ('.$estimate_type_val.')')
         ->setCellValue('I'.$row_count, get_date_user($row_query['purchase_date']))
          ->setCellValue('J'.$row_count, ($vendor_info['service_tax'] == '') ? 'Unregistered' : 'Registered')
          ->setCellValue('K'.$row_count, ($sq_supply['state_name'] == '') ? 'NA' : $sq_supply['state_name'])
@@ -197,7 +198,7 @@ while($row_query = mysqli_fetch_assoc($sq_sales)){
     $row_count++;
 }
 //Expense Booking
-$query = "select * from other_expense_master where 1 ";
+$query = "select * from other_expense_master where 1 and delete_status='0'";
 if($from_date !='' && $to_date != ''){
     $from_date = get_date_db($from_date);
     $to_date = get_date_db($to_date);
@@ -293,7 +294,7 @@ $objPHPExcel->setActiveSheetIndex(0);
 
 // Redirect output to a client’s web browser (Excel5)
 header('Content-Type: application/vnd.ms-excel');
-header('Content-Disposition: attachment;filename="ITC Report('.date('d-m-Y H:i').').xls"');
+header('Content-Disposition: attachment;filename="GST-R2 Report('.date('d-m-Y H:i').').xls"');
 header('Cache-Control: max-age=0');
 // If you're serving to IE 9, then the following may be needed
 header('Cache-Control: max-age=1');

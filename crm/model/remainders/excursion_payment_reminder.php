@@ -2,10 +2,10 @@
 include_once('../model.php');
 global $secret_key,$encrypt_decrypt;
 $due_date=date('Y-m-d');
-$sq_air = mysqli_num_rows(mysqlQuery("select * from excursion_master where due_date='$due_date'"));
+$sq_air = mysqli_num_rows(mysqlQuery("select * from excursion_master where due_date='$due_date' and delete_status='0'"));
 if($sq_air>0){
 
-	$sq_air_details = mysqlQuery("select * from excursion_master where due_date='$due_date'");
+	$sq_air_details = mysqlQuery("select * from excursion_master where due_date='$due_date' and delete_status='0'");
 	while($row_air = mysqli_fetch_assoc($sq_air_details)){
 
 		$air_id = $row_air['exc_id'];

@@ -11,7 +11,7 @@ $to_date = $_POST['to_date'];
 $bank_id = $_POST['bank_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 
-$query = "select * from cash_withdraw_master where 1 ";
+$query = "select * from cash_withdraw_master where 1 and delete_status=0 and amount!=0 ";
 if($from_date!="" && $to_date!=""){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -25,6 +25,7 @@ if($financial_year_id!=""){
 	$query .=" and financial_year_id='$financial_year_id'";
 }
 include "../../../model/app_settings/branchwise_filteration.php";
+$query .=" order by withdraw_id desc";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
 	
@@ -34,10 +35,10 @@ include "../../../model/app_settings/branchwise_filteration.php";
 			<th>S_No.</th>
 			<th>Tr_Date</th>
 			<th>Creditor_bank</th>
-			<th>Evidence</th>
-			<th class="text-right">Amount</th>
+			<th>PAYMENT EVIDENCE</th>
+			<th class="text-right">CREDITED AMOUNT</th>
 			<th>Created_by</th>
-			<th class="text-center">Edit</th>
+			<th class="text-center">Actions</th>
 		</tr>	
 	</thead>
 	<tbody>
@@ -62,7 +63,7 @@ include "../../../model/app_settings/branchwise_filteration.php";
 
 			?>
 			<tr class="<?= $bg ?>">
-				<td><?= ++$count ?></td>
+				<td><?= $row_withdraw['withdraw_id'] ?></td>
 				<td><?= get_date_user($row_withdraw['transaction_date']) ?></td>
 				<td><?= $sq_bank['bank_name'].'('.$sq_bank['branch_name'].')' ?></td>
 				<td>
@@ -78,6 +79,7 @@ include "../../../model/app_settings/branchwise_filteration.php";
 				<td><?= ($sq_emp['first_name'] !='')?$sq_emp['first_name'].' '.$sq_emp['last_name']:'Admin' ?></td>
 				<td class="text-center">
 					<button class="btn btn-info btn-sm" onclick="update_withdrawal_modal(<?= $row_withdraw['withdraw_id'] ?>)" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
+					<button class="<?= $delete_flag ?> btn btn-danger btn-sm" onclick="withdraw_delete_entry(<?= $row_withdraw['withdraw_id'] ?>)" title="Delete Entry"><i class="fa fa-trash"></i></button>
 				</td>
 			</tr>
 			<?php

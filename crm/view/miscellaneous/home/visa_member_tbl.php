@@ -8,7 +8,7 @@
     <td ><input type="text" id="adolescence<?= $offset ?>1" name="adolescence<?= $offset ?>1" placeholder="Adolescence" title="Adolescence" disabled/></td>
     <td><input type="text" id="passport_id<?= $offset ?>1" name="passport_id<?= $offset ?>1" onchange="validate_passport(this.id)" placeholder="*Passport ID" title="Passport ID" style="text-transform: uppercase;" required/></td>
     <td><input type="text" id="issue_date<?= $offset ?>1" name="issue_date<?= $offset ?>1" class="app_datepicker" placeholder="Issue Date" title="Issue Date" onchange="checkPassportDate(this.id);" value="<?= date('d-m-Y')?>" ></td>
-    <td><input type="text" id="expiry_date<?= $offset ?>1" name="expiry_date<?= $offset ?>1" class="app_datepicker" value="<?= date('d-m-Y') ?>"  placeholder="Expire Date" title="Expire Date" onchange="validate_issueDate('issue_date<?= $offset ?>1',this.id)"/ ></td>
+    <td><input type="text" id="expiry_date<?= $offset ?>1" name="expiry_date<?= $offset ?>1" class="app_datepicker" value="<?= date('d-m-Y') ?>"  placeholder="Expiry Date" title="Expiry Date" onchange="validate_issueDate('issue_date<?= $offset ?>1',this.id)"/ ></td>
     <td ><input type="text" id="nationality<?= $offset ?>1" onchange="validate_city(this.id);" name="nationality<?= $offset ?>1" placeholder="*Nationality" title="Nationality"/></td>
 </tr>
 

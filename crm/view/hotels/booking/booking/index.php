@@ -64,9 +64,9 @@ var columns = [
 	{ title : "Booking_ID"},
 	{ title : "Customer_Name"},
 	{ title : "Booking_Date"},
-	{ title : "Amount", className : "info text-right"},
-	{ title : "Cncl_Amount" ,className : "danger text-right"},
-	{ title : "Total",className : "success text-right"},
+	{ title : "Amount", className : "info"},
+	{ title : "Cncl_Amount" ,className : "danger"},
+	{ title : "Total",className : "success"},
 	{ title : "Created_by"},
 	{ title : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", className : "text-center"}
 ];
@@ -84,7 +84,7 @@ function booking_list_reflect()
 	var company_name = $('#company_filter').val();
 	var branch_status = $('#branch_status').val();
 	$.post('booking/booking_list_reflect.php', { customer_id : customer_id, booking_id : booking_id, from_date : from_date, to_date : to_date , cust_type : cust_type, company_name : company_name, branch_status : branch_status}, function(data){
-		pagination_load(data,columns,true,true,20,'hotel_book');
+		pagination_load(data,columns,true,true,20,'hotel_book',true);
 	});
 }
 booking_list_reflect();
@@ -222,5 +222,20 @@ function voucher_display(booking_id){
 	var base_url = $('#base_url').val();
 	var url1 = base_url+'model/app_settings/print_html/voucher_html/hotel_voucher.php?hotel_accomodation_id='+booking_id;
 	loadOtherPage(url1);
+}
+function delete_entry(booking_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/hotel/booking/booking_delete.php',{ booking_id : booking_id }, function(data){
+					success_msg_alert(data);
+					booking_list_reflect();
+				});
+			}
+		}
+	});
 }
 </script>

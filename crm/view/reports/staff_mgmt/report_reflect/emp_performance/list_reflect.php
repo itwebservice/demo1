@@ -25,6 +25,7 @@ if($branch_status=='yes' && $role!='Admin'){
 <table class="table table-hover" id="tbl_performance_list" style="margin: 20px 0 !important;">
 	<thead>
 		<tr class="table-heading-row">
+			
 			<th>User_NAME</th>
 			<th>Year</th>
 			<th>Month</th>
@@ -40,6 +41,7 @@ if($branch_status=='yes' && $role!='Admin'){
 	<tbody>
 		<?php 
 		$count = 0;
+		
 		$sq_c = mysqlQuery($query);
 		while($row_c = mysqli_fetch_assoc($sq_c)){
 
@@ -73,6 +75,7 @@ if($branch_status=='yes' && $role!='Admin'){
 				$month = '';
 			?>
 			<tr>
+				
 				<td><?= $sq_emp['first_name'].' '.$sq_emp['last_name'] ?>
 				<td><?= $row_c['year'] ?>
 				<td><?= $month ?>
@@ -92,6 +95,8 @@ if($branch_status=='yes' && $role!='Admin'){
 </div> </div> </div>
 <script type="text/javascript">
 $('#tbl_performance_list').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
+
 });
 </script> 

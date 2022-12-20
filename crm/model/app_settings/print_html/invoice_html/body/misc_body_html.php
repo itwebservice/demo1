@@ -1,4 +1,4 @@
-<?php  
+<?php
 //Generic Files
 include "../../../../model.php"; 
 include "../../print_functions.php";
@@ -21,6 +21,8 @@ $total_paid = $_GET['total_paid'];
 $balance_amount = $_GET['balance_amount'];
 $sac_code = $_GET['sac_code'];
 $credit_card_charges = $_GET['credit_card_charges'];
+$bg = $_GET['bg'];
+$canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
 $total_paid += $charge;
@@ -50,7 +52,7 @@ if($bsmValues[0]->service != ''){   //inclusive service charge
 
 }
 else{
-  $tax_show =  rtrim($name, ', ').' : ' . ($service_tax_amount);
+  $tax_show =  rtrim($name, ', ').' : ' . number_format($service_tax_amount,2);
   $newSC = $service_charge;
   
 }
@@ -71,12 +73,12 @@ if($bsmValues[0]->markup != ''){ //inclusive markup
 }
 else{
   $newBasic = $basic_cost1;
-  $newSC = $service_charge + $row_misc['markup'];
-  $tax_show = rtrim($name, ', ') .' : ' . ($markupservice_tax_amount + $service_tax_amount);
+  $newSC = $service_charge;
+  $tax_show = rtrim($name, ', ') .' : ' . number_format($service_tax_amount,2);
 }
 ////////////Basic Amount Rules
 if($bsmValues[0]->basic != ''){ //inclusive markup
- $newBasic = $basic_cost1 + $service_tax_amount + $row_misc['markup'] + $markupservice_tax_amount;
+  $newBasic = $basic_cost1 + $service_tax_amount + $row_misc['markup'] + $markupservice_tax_amount;
 }
 
 $net_amount1 = 0;
@@ -87,6 +89,9 @@ $amount_in_word = $amount_to_word->convert_number_to_words($net_amount1);
 if($app_invoice_format == "Standard"){include "../headers/standard_header_html.php"; }
 if($app_invoice_format == "Regular"){include "../headers/regular_header_html.php"; }
 if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php"; }
+
+$other_charges = $markupservice_tax_amount + $row_misc['markup'];
+// $other_charges = currency_conversion($currency,$sq_hotel['currency_code'],$other_charges);
 ?>
 <?php
 
@@ -95,11 +100,11 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
 <div class="col-md-12 mg_tp_20"><p class="border_lt"><span class="font_5">SERVICES : </span>
 <?php echo $row_misc['service'];?></p></div>
 <div class="col-md-12 mg_tp_10"><p class="border_lt"><span class="font_5">NARRATION : </span><?= $row_misc['narration']?></p></div>
-<div class="col-md-12 mg_tp_10"><p class="border_lt"><span class="font_5">PASSENGER :  </span><span><?= $sq_hotel['p_name'] ?></span></p></div>
+<div class="col-md-12 mg_tp_10"><p class="border_lt"><span class="font_5">PASSENGER(S) :  </span><span><?= $sq_hotel['p_name'] ?></span></p></div>
 <div class="main_block inv_rece_table main_block">
     <div class="row">
       <div class="col-md-12">
-       <div class="table-responsive">
+      <div class="table-responsive">
         <table class="table table-bordered no-marg" id="tbl_emp_list" style="padding: 0 !important;">
           <thead>
             <tr class="table-heading-row">
@@ -114,7 +119,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
           <tbody>   
           <?php 
           $count = 1;
-          $sq_passenger = mysqlQuery("select * from miscellaneous_master_entries where misc_id = '$booking_id'");
+          $sq_passenger = mysqlQuery("select * from miscellaneous_master_entries where misc_id='$booking_id' and status!='Cancel'");
           while($row_passenger = mysqli_fetch_assoc($sq_passenger))
           {
             ?>
@@ -127,29 +132,37 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
               <td><?php echo get_date_user($row_passenger['expiry_date']); ?></td>
             </tr>
             <?php   
-               $count++;
-             } ?>
+              $count++;
+            } ?>
           </tbody>
         </table>
-       </div>
-     </div>
+      </div>
+    </div>
     </div>
   </div>
 <section class="print_sec main_block">
 
-<!-- invoice_receipt_body_calculation -->
+  <!-- invoice_receipt_body_calculation -->
   <div class="row">
     <div class="col-md-12">
       <div class="main_block inv_rece_calculation border_block">
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">AMOUNT </span><span class="float_r"><?= $currency_code." ".$newBasic ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">BASIC AMOUNT </span><span class="float_r"><?= $currency_code." ".$newBasic ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $currency_code." ".number_format($net_amount1,2) ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $currency_code." ".$newSC ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">OTHER CHARGES AND TAXES </span><span class="float_r"><?= $currency_code." ".number_format($other_charges,2) ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">CREDIT CARD CHARGES </span><span class="float_r"><?= $currency_code." ".number_format($charge,2)?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX </span><span class="float_r"><?= $currency_code." ".$tax_show ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">SERVICE CHARGE </span><span class="float_r"><?= $currency_code." ".$newSC ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $currency_code." ".number_format($total_paid,2) ?></span></p></div>
+        <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX </span><span class="float_r"><?= $currency_code." ".$tax_show ?></span></p></div>
+        <?php
+        if($bg != ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">CANCELLATION CHARGES</span><span class="float_r"><?= $currency_code." ".$canc_amount ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUND OFF </span><span class="font_5 float_r"><?= $currency_code." ".number_format($row_misc['roundoff'],2) ?></span></p></div>
+        <?php } ?>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $currency_code." ".number_format($balance_amount,2) ?></span></p></div>
-        
+        <?php
+        if($bg == ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">ROUND OFF </span><span class="font_5 float_r"><?= $currency_code." ".number_format($row_misc['roundoff'],2) ?></span></p></div>
+        <?php } ?>        
       </div>
     </div>
   </div>

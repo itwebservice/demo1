@@ -8,7 +8,7 @@ include "../../../../model/model.php";
 			<select name="exc_id" id="exc_id" style="width:100%" onchange="exc_entries_reflect()" title="Select Booking">
 		        <option value="">Select Booking</option>
 		        <?php 
-		        $sq_exc = mysqlQuery("select * from excursion_master order by exc_id desc");
+		        $sq_exc = mysqlQuery("select * from excursion_master where delete_status='0' order by exc_id desc");
 		        while($row_exc = mysqli_fetch_assoc($sq_exc)){
 
 					$date = $row_exc['created_at'];

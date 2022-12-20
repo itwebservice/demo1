@@ -125,17 +125,20 @@ $('#frm_updatetab2').validate({
         var address1 = $("#address1").val(); 
         var address2 = $("#address2").val(); 
         var pincode = $("#pincode").val();
-        var country = $('#country').val();
+        // var country = $('#country').val();
         var state = $('#cust_state').val();
         var timezone = $('#timezone').val(); 
         var address_upload_url = $('#address_upload_url').val();
 
         //Account details
         var bank_name = $("#bank_name1").val();
+        var bank_acc_name = $("#bank_acc_name1").val();
         var acc_name1 = $("#acc_name11").val();
         var bank_acc_no = $("#bank_acc_no1").val();
         var bank_branch_name = $("#bank_branch_name1").val();
         var bank_ifsc_code = $("#bank_ifsc_code1").val();
+        
+
 
         //Contact Person Details
         var contact_personf = $('#contact_personf').val();
@@ -162,9 +165,9 @@ $('#frm_updatetab2').validate({
       url: base_url+'controller/b2b_customer/b2bcustomer_update.php',
 
       data:{ register_id:register_id,company_old:company_old,company_name : company_name, acc_name : acc_name, iata_status : iata_status, iata_reg : iata_reg, nature : nature, currency : currency, telephone : telephone, latitude : latitude, turnover_slab : turnover_slab, skype_id : skype_id, website : website, company_logo:company_logo,
-        address1 : address1,address2 : address2, city : city , pincode : pincode , country : country, timezone : timezone, address_upload_url : address_upload_url,
+        address1 : address1,address2 : address2, city : city , pincode : pincode , timezone : timezone, address_upload_url : address_upload_url,
         contact_personf : contact_personf , contact_personl : contact_personl,email_id:email_id, mobile_no : mobile_no, whatsapp_no : whatsapp_no, designation : designation, pan_card : pan_card, photo_upload_url : photo_upload_url,
-        username : username, password : password,active_flag:active_flag,state:state,bank_name:bank_name,acc_name1:acc_name1,bank_acc_no:bank_acc_no,bank_branch_name:bank_branch_name,bank_ifsc_code:bank_ifsc_code},
+        username : username, password : password,active_flag:active_flag,state:state,bank_name:bank_name,bank_acc_name:bank_acc_name,acc_name1:acc_name1,bank_acc_no:bank_acc_no,bank_branch_name:bank_branch_name,bank_ifsc_code:bank_ifsc_code},
 
       success: function(message){
             var data = message.split('--');

@@ -16,7 +16,7 @@ $total_outstanding_total = 0; $not_due_total = 0; $total_due_total = 0;
 $group1_total = 0; $group2_total = 0; $group3_total=0; $group4_total=0; $group5_total=0; $group6_total=0; $group7_total=0;
 
 //FIT
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -42,7 +42,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from package_tour_booking_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from package_tour_booking_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -144,7 +144,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	}
 } 
 ///////////////////////Visa///////////////////////////
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -170,7 +170,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from visa_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from visa_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -280,15 +280,15 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 }
 
 /////////////////////////////Flight Ticket//////////////////////////////
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
 include "../../../../../model/app_settings/branchwise_filteration.php";
 $query .= ' group by customer_id';
 $sq_booking = mysqlQuery($query);
-while($row_booking = mysqli_fetch_assoc($sq_booking))
-{
+while($row_booking = mysqli_fetch_assoc($sq_booking)){
+
 	$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0;
 	$total_outstanding = 0; $not_due = 0; $total_due = 0;
 	$group1 = 0; $group2 = 0; $group3=0; $group4=0; $group5=0; $group6=0; $group7=0;
@@ -304,68 +304,81 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 		$customer_name = $sq_customer['company_name'];
 	}
 	else{
-		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
+		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 	}
-	$sq_pacakge = mysqlQuery("select * from ticket_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from ticket_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
-		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
-		$booking_amt=$row_package['ticket_total_cost'];
-		$total_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from ticket_payment_master where ticket_id='$row_package[ticket_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
-		$total_paid = $total_pay['sum'];
-		$cancel_est = $row_package['cancel_amount'];
+		// if($row_package['cancel_type'] == 0){
+			$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
+			$booking_amt=$row_package['ticket_total_cost'];
+			$total_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from ticket_payment_master where ticket_id='$row_package[ticket_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
+			$total_paid = $total_pay['sum'];
+			$cancel_est = $row_package['cancel_amount'];
 
-		//Consider sale cancel amount
-		if($cancel_est != '0'){ 			
-			if($cancel_est <= $total_paid){
-				$pending_amt  = 0;
+			//Consider sale cancel amount
+			if($row_package['cancel_type'] == '1'){
+				if($total_paid > 0){
+					if($cancel_est >0){
+						if($total_paid > $cancel_est){
+							$pending_amt = 0;
+						}else{
+							$pending_amt = $cancel_est - $total_paid;
+						}
+					}else{
+						$pending_amt = 0;
+					}
+				}
+				else{
+					$pending_amt = $cancel_est;
+				}
+			}else if($row_package['cancel_type'] == '2'||$row_package['cancel_type'] == '3'){
+				$cancel_estimate = json_decode($row_package['cancel_estimate']);
+				$pending_amt = (($booking_amt - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_est) - $total_paid;
 			}
 			else{
-				$pending_amt =  $cancel_est - $total_paid;
+				$pending_amt = $booking_amt - $total_paid;
 			}
-		}
-		else{
-			$pending_amt=$booking_amt-$total_paid;
-		}
-		$due_date = get_date_user($row_package['due_date']);
-		if(strtotime($till_date1) < strtotime($due_date)) {
-			$not_due += $pending_amt;
-		    $total_due = 0;		
-			if($pending_amt>'0'){ 
-				array_push($pending_amt_arr,'0'); 
-				array_push($not_due_arr,$pending_amt);
-				array_push($total_days_arr,'NA'); 
-			}  
-		}
-		else{
-			$not_due += 0;
-		    //////get total days count////
-		    $date1_ts = strtotime($till_date1);
-			$date2_ts = strtotime($due_date);
-			$diff = $date1_ts - $date2_ts;
-			$total_days = round($diff / 86400);
-		    //////////////////////////////
-		    if($total_days>='0' && $total_days<='30') { $group1 += $pending_amt; } 
-		    if($total_days>'30' && $total_days<='60') { $group2 += $pending_amt; } 
-		    if($total_days>'60' && $total_days<='90') { $group3 += $pending_amt;} 
-		    if($total_days>'90' && $total_days<='120') { $group4 += $pending_amt; } 
-		    if($total_days>'120' && $total_days<='180') { $group5 += $pending_amt; }
-		    if($total_days>'180' && $total_days<='360') { $group6 += $pending_amt; }
-		    if($total_days>'360'){ $group7 += $pending_amt; } 
-		    
-			if($pending_amt>'0'){ 
-				array_push($pending_amt_arr,$pending_amt); 
-				array_push($not_due_arr,'0');
-				array_push($total_days_arr,$total_days); 
-		    }
-		}
+			$due_date = get_date_user($row_package['due_date']);
+			if(strtotime($till_date1) < strtotime($due_date)) {
+				$not_due += $pending_amt;
+				$total_due = 0;		
+				if($pending_amt>'0'){ 
+					array_push($pending_amt_arr,'0'); 
+					array_push($not_due_arr,$pending_amt);
+					array_push($total_days_arr,'NA'); 
+				}  
+			}
+			else{
+				$not_due += 0;
+				//////get total days count////
+				$date1_ts = strtotime($till_date1);
+				$date2_ts = strtotime($due_date);
+				$diff = $date1_ts - $date2_ts;
+				$total_days = round($diff / 86400);
+				//////////////////////////////
+				if($total_days>='0' && $total_days<='30') { $group1 += $pending_amt; } 
+				if($total_days>'30' && $total_days<='60') { $group2 += $pending_amt; } 
+				if($total_days>'60' && $total_days<='90') { $group3 += $pending_amt;} 
+				if($total_days>'90' && $total_days<='120') { $group4 += $pending_amt; } 
+				if($total_days>'120' && $total_days<='180') { $group5 += $pending_amt; }
+				if($total_days>'180' && $total_days<='360') { $group6 += $pending_amt; }
+				if($total_days>'360'){ $group7 += $pending_amt; } 
+				
+				if($pending_amt>'0'){ 
+					array_push($pending_amt_arr,$pending_amt); 
+					array_push($not_due_arr,'0');
+					array_push($total_days_arr,$total_days); 
+				}
+			}
 
-		$total_due = $group1 + $group2 + $group3 + $group4 + $group5 + $group6 + $group7;
-		$total_outstanding += $total_due + $not_due;
-		if($pending_amt>'0'){ 
-			array_push($booking_id_arr,$row_package['ticket_id']);
-			array_push($due_date_arr,$row_package['due_date']);
-	    }
+			$total_due = $group1 + $group2 + $group3 + $group4 + $group5 + $group6 + $group7;
+			$total_outstanding += $total_due + $not_due;
+			if($pending_amt>'0'){ 
+				array_push($booking_id_arr,$row_package['ticket_id']);
+				array_push($due_date_arr,$row_package['due_date']);
+			}
+		// }
 	}
 
 	if($total_outstanding>'0'){
@@ -410,7 +423,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Train
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -436,7 +449,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from train_ticket_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from train_ticket_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -541,7 +554,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //Hotel
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -567,7 +580,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from hotel_booking_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from hotel_booking_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -670,7 +683,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 } 
 
 /////////////Bus/////////////////////////////
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0'";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -696,7 +709,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from bus_booking_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from bus_booking_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -797,7 +810,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	}
 } 
 //////////////////////Car Rental
-$query = "select * from car_rental_booking where 1 ";
+$query = "select * from car_rental_booking where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -823,7 +836,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from car_rental_booking where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from car_rental_booking where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -926,7 +939,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	}
 } 
 /////////////////miscellaneous///////////////////
-$query = "select * from miscellaneous_master where 1 ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -952,7 +965,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from miscellaneous_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from miscellaneous_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
@@ -1055,7 +1068,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 }
 
 //////////////Group/////////////////////
-$query = "select * from tourwise_traveler_details where 1 ";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
@@ -1219,12 +1232,13 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 }
 
 //Excursion
-$query = "select * from excursion_master where 1 ";
+$query = "select * from excursion_master where 1 and delete_status='0' ";
 if($customer_id!=''){
 	$query .= " and customer_id='$customer_id'";
 }
 include "../../../../../model/app_settings/branchwise_filteration.php";
 $query .= ' group by customer_id';
+$query .= " order by exc_id desc";
 $sq_booking = mysqlQuery($query);
 while($row_booking = mysqli_fetch_assoc($sq_booking))
 {	
@@ -1245,7 +1259,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking))
 	else{
 		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];	
 	}
-	$sq_pacakge = mysqlQuery("select * from excursion_master where customer_id='$row_booking[customer_id]' ");
+	$sq_pacakge = mysqlQuery("select * from excursion_master where customer_id='$row_booking[customer_id]' and delete_status='0' ");
 	while($row_package = mysqli_fetch_assoc($sq_pacakge))
 	{
 		$booking_amt =0; $pending_amt=0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;

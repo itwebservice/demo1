@@ -56,7 +56,7 @@
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	      <input type="text" class="form-control" name="customer_name" id="customer_name" onchange="fname_validate(this.id);" name="customer_name"  placeholder="*Customer Name" title="Customer Name"> 
+	    	<input type="text" class="form-control" name="customer_name" id="customer_name" onchange="fname_validate(this.id);" name="customer_name"  placeholder="*Customer Name" title="Customer Name"> 
 
 	    </div>	        		                			        		        	        		
 
@@ -69,7 +69,7 @@
 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-			<input type="text" id="mobile_no" name="mobile_no" placeholder="Whatsapp no with country code" onchange="mobile_validate(this.id);" title="Whatsapp no with country code">
+			<input type="text" id="mobile_no" name="mobile_no" placeholder="*Whatsapp no with country code" onchange="mobile_validate(this.id);" title="*Whatsapp no with country code">
 
 		</div>
 
@@ -110,25 +110,16 @@ $(document).ready(function(){
 $('#frm_tab1').validate({
 
 	rules:{
-
-			enquiry_id : { required : true },
-
+		enquiry_id : { required : true },
+		mobile_no : { required : true },
+		customer_name : { required : true },
 	},
 
 	submitHandler:function(form){
 		var customer_name = $('#customer_name').val();
-		if(customer_name == ''){
-			error_msg_alert("Please Enter Customer Name");
-			return false;
-		}
 		$('a[href="#tab2"]').tab('show');
 
-
 	}
-
 });
-
-
-
 </script>
 

@@ -83,7 +83,7 @@ $ticket_id = $_GET['ticket_id'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -154,10 +154,10 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and ticket_id in (select ticket_id from ticket_master where emp_id='$emp_id' ))";
 }
-
 if($financial_year_id != ""){
 	$query .= " and ticket_id in (select ticket_id from ticket_master where financial_year_id='$financial_year_id')";
 }
+$query .= " and ticket_id in (select ticket_id from ticket_master where delete_status='0')";
 $query .= " order by ticket_id desc";
 $row_count = 8;
 $count = 1;
@@ -167,26 +167,29 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
         ->setCellValue('C'.$row_count, "Booking ID")
         ->setCellValue('D'.$row_count, "Customer Name")
-        ->setCellValue('E'.$row_count, "Departure Date&Time")
-        ->setCellValue('F'.$row_count, "Arrival Date&Time")
-        ->setCellValue('G'.$row_count, "Airline")
-        ->setCellValue('H'.$row_count, "Cabin")
-        ->setCellValue('I'.$row_count, "Flight No")
-        ->setCellValue('J'.$row_count, "Airline PNR")
-        ->setCellValue('K'.$row_count, "Sector(From-To)");
+        ->setCellValue('E'.$row_count, "Passenger Name")
+        ->setCellValue('F'.$row_count, "Departure Date&Time")
+        ->setCellValue('G'.$row_count, "Arrival Date&Time")
+        ->setCellValue('H'.$row_count, "Airline")
+        ->setCellValue('I'.$row_count, "Cabin")
+        ->setCellValue('J'.$row_count, "Flight No")
+        ->setCellValue('K'.$row_count, "GDS PNR")
+        ->setCellValue('L'.$row_count, "Sector(From-To)")
+        ->setCellValue('M'.$row_count, "Ticket Status")
+        ->setCellValue('N'.$row_count, "Basic Fare");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
 $sq_trip = mysqlQuery($query); 
         while($row_trip = mysqli_fetch_assoc($sq_trip)){
 
-            $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_trip[ticket_id]'"));
+            $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$row_trip[ticket_id]' and delete_status='0'"));
             $date = $sq_ticket['created_at'];
-                      $yr = explode("-", $date);
-                      $year =$yr[0];
+            $yr = explode("-", $date);
+            $year =$yr[0];
 
             $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket[customer_id]'"));
             if($sq_customer_info['type'] == 'Corporate'||$sq_customer_info['type'] == 'B2B'){
@@ -194,20 +197,24 @@ $sq_trip = mysqlQuery($query);
             }else{
                 $cust_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
             }
+			$sq_pass = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where entry_id='$row_trip[passenger_id]'"));
 
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $count++)
         ->setCellValue('C'.$row_count, get_ticket_booking_id($row_trip['ticket_id'],$year))
         ->setCellValue('D'.$row_count, $cust_name)
-        ->setCellValue('E'.$row_count, get_datetime_user($row_trip['departure_datetime']))
-        ->setCellValue('F'.$row_count, get_datetime_user($row_trip['arrival_datetime']))
-        ->setCellValue('G'.$row_count, $row_trip['airlines_name'])
-        ->setCellValue('H'.$row_count, $row_trip['class'])
-        ->setCellValue('I'.$row_count, $row_trip['flight_no'])
-        ->setCellValue('J'.$row_count, $row_trip['airlin_pnr'])
-        ->setCellValue('K'.$row_count, $row_trip['departure_city']." -- ".$row_trip['arrival_city']);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('E'.$row_count, $sq_pass['first_name'].' '.$sq_pass['last_name'])
+        ->setCellValue('F'.$row_count, get_datetime_user($row_trip['departure_datetime']))
+        ->setCellValue('G'.$row_count, get_datetime_user($row_trip['arrival_datetime']))
+        ->setCellValue('H'.$row_count, $row_trip['airlines_name'])
+        ->setCellValue('I'.$row_count, $row_trip['class'])
+        ->setCellValue('J'.$row_count, $row_trip['flight_no'])
+        ->setCellValue('K'.$row_count, strtoupper($row_trip['airlin_pnr']))
+        ->setCellValue('L'.$row_count, $row_trip['departure_city']." -- ".$row_trip['arrival_city'])
+        ->setCellValue('M'.$row_count, $row_trip['ticket_status'])
+        ->setCellValue('N'.$row_count, $row_trip['basic_fare']);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($borderArray);    
 
 
 

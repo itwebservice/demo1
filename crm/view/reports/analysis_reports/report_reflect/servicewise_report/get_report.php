@@ -405,7 +405,7 @@ $grptype = 'Group Booking';
                 get_service_enq_strong('Package Booking',$type),
                 get_service_enq_hot('Package Booking',$type),
                 get_service_enq_cold('Package Booking',$type),
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Package Booking`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Package Booking`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -423,7 +423,7 @@ $grptype = 'Group Booking';
                 get_service_enq_strong('Flight Ticket',$type),
                 get_service_enq_hot('Flight Ticket',$type),
                 get_service_enq_cold('Flight Ticket',$type),                
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Flight Ticket`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Flight Ticket`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -441,7 +441,7 @@ $grptype = 'Group Booking';
                 get_service_enq_strong('Hotel',$type),
                 get_service_enq_hot('Hotel',$type),
                 get_service_enq_cold('Hotel',$type),               
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Hotel`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Hotel`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -461,7 +461,7 @@ $grptype = 'Group Booking';
                 get_service_enq_hot('Car Rental',$type),
                 get_service_enq_cold('Car Rental',$type),    
                 
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Car Rental`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Car Rental`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -479,7 +479,7 @@ $grptype = 'Group Booking';
                 get_service_enq_hot('Train Ticket',$type),
                 get_service_enq_cold('Train Ticket',$type),
               
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Train Ticket`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Train Ticket`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -498,7 +498,7 @@ $grptype = 'Group Booking';
                 get_service_enq_hot('Bus',$type),
                 get_service_enq_cold('Bus',$type),
                 
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Bus`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Bus`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -517,7 +517,7 @@ $grptype = 'Group Booking';
                 get_service_enq_hot('Visa',$type),
                 get_service_enq_cold('Visa',$type),
                 
-			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Visa`)" data-toggle="tooltip" title="Preview"><i class="fa fa-eye"></i></button>'
+			    '<button class="btn btn-info btn-sm" onclick="view_service_modal(`Visa`)" data-toggle="tooltip" title="View Details"><i class="fa fa-eye"></i></button>'
                 
         
         ),"bg" =>$bg );
@@ -536,29 +536,32 @@ $footer_data = array("footer_data" => array(
     'foot0' => "Total :",
 	'class0' => "text-left info",
 
-	'foot1' => " ".get_service_enq($enq,'total'),
+    'foot1' => " ".get_service_enq($enq,'total'),
 	'class1' => "text-left success",
 
-    'foot2' => " ".get_service_enq_strong($enq,'total'),
+    'foot2' => "".get_enq_etr_active($enq,'total'),
 	'class2' => "text-left success",
 
-    'foot3' => "".get_service_enq_hot($enq,'total'),
+    'foot3' => " ".get_enq_etr_infollow($enq,'total'),
 	'class3' => "text-left success",
 
-    'foot4' => "".get_service_enq_cold($enq,'total'),
+    'foot4' => " ".get_enq_etr_dropped($enq,'total'),
 	'class4' => "text-left success",
 
-    'foot5' => "".get_enq_etr_active($enq,'total'),
+	'foot5' => "".get_enq_etr_converted($enq,'total'),
 	'class5' => "text-left success",
 
-    'foot6' => " ".get_enq_etr_infollow($enq,'total'),
+    
+    'foot6' => " ".get_service_enq_strong($enq,'total'),
 	'class6' => "text-left success",
 
-    'foot7' => " ".get_enq_etr_dropped($enq,'total'),
+    'foot7' => "".get_service_enq_hot($enq,'total'),
 	'class7' => "text-left success",
 
-	'foot8' => "".get_enq_etr_converted($enq,'total'),
+    'foot8' => "".get_service_enq_cold($enq,'total'),
 	'class8' => "text-left success",
+
+
 	)
 );
 

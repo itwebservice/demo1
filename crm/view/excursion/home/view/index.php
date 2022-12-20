@@ -1,12 +1,12 @@
-<?php 
+<?php
 include "../../../../model/model.php";
 
 $exc_id = $_POST['exc_id'];
 
-$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
 $date = $sq_exc_info['created_at'];
-            $yr = explode("-", $date);
-           	$year =$yr[0];
+$yr = explode("-", $date);
+$year =$yr[0];
 ?>
 <div class="modal fade profile_box_modal" id="exc_display_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">

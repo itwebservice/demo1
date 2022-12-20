@@ -43,7 +43,7 @@ $branch_status = $_POST['branch_status'];
     </ul>
 </div>
 
-<div class="bk_tabs">
+<div class="bk_tabs bg-white">
     <div id="tab1" class="bk_tab active">
         <?php include_once("tab1.php"); ?>
     </div>

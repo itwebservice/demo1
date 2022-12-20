@@ -44,7 +44,7 @@ var column = [
 { title:"Service_Name"},
 { title : "SAC/HSN_Code"},
 { title : "Supplier_Name"},
-{ title : "GSTIN/UIN"},
+{ title : "Tax_No"},
 { title : "Account_State"},
 { title:"Purchase_ID"},
 { title : "Purchase_Date"},

@@ -256,14 +256,14 @@ if (sizeof($tours_result_array) > 0) {
                     </div>
 
                     <?php
-                    $tours_result_array[$i]['train_array'] = ($tours_result_array[$i]['train_array'] !== NULL) ? $tours_result_array[$i]['train_array'] : [];
-                    if (sizeof($tours_result_array[$i]['train_array']) > 0) { ?>
+                    $train_array = (isset($tours_result_array[$i]['train_array'])) ? $tours_result_array[$i]['train_array'] : [];
+                    if (sizeof($train_array) > 0) { ?>
                       <div class="col-12 m20-btm">
                         <h3 class="c-heading">
                           Train Details
                         </h3>
                         <?php
-                        for ($tr_i = 0; $tr_i < sizeof($tours_result_array[$i]['train_array']); $tr_i++) { ?>
+                        for ($tr_i = 0; $tr_i < sizeof($train_array); $tr_i++) { ?>
                           <!-- *** Train Card Info *** -->
                           <div class="c-cardListHolder">
                             <div class="c-cardListTable type-3">
@@ -273,20 +273,20 @@ if (sizeof($tours_result_array) > 0) {
                                   <div class="gridItem">
                                     <div class="infoCard c-halfText m0">
                                       <span class="infoCard_label">From Location</span>
-                                      <span class="infoCard_price"><?= $tours_result_array[$i]['train_array'][$tr_i]['from_location'] ?></span>
+                                      <span class="infoCard_price"><?= $train_array[$tr_i]['from_location'] ?></span>
                                     </div>
                                   </div>
 
                                   <div class="gridItem styleForMobile M-m0">
                                     <div class="infoCard m5-btm">
                                       <span class="infoCard_label">To Location</span>
-                                      <span class="infoCard_price"><?= $tours_result_array[$i]['train_array'][$tr_i]['to_location'] ?></span>
+                                      <span class="infoCard_price"><?= $train_array ?></span>
                                     </div>
                                   </div>
                                   <div class="gridItem styleForMobile M-m0">
                                     <div class="infoCard m5-btm">
                                       <span class="infoCard_label">Class</span>
-                                      <span class="infoCard_price"><?= $tours_result_array[$i]['train_array'][$tr_i]['class'] ?></span>
+                                      <span class="infoCard_price"><?= $train_array[$tr_i]['class'] ?></span>
                                     </div>
                                   </div>
                                 </div>
@@ -300,7 +300,7 @@ if (sizeof($tours_result_array) > 0) {
                     <?php } ?>
 
                     <?php
-                    $tours_result_array[$i]['flight_array'] = ($tours_result_array[$i]['flight_array']) ? $tours_result_array[$i]['flight_array'] : [];
+                    $tours_result_array[$i]['flight_array'] = (isset($tours_result_array[$i]['flight_array'])) ? $tours_result_array[$i]['flight_array'] : [];
                     if (sizeof($tours_result_array[$i]['flight_array']) > 0) { ?>
                       <div class="col-12 m20-btm">
                         <h3 class="c-heading">
@@ -349,7 +349,7 @@ if (sizeof($tours_result_array) > 0) {
                       </div>
                     <?php } ?>
                     <?php
-                    $tours_result_array[$i]['cruise_array'] = ($tours_result_array[$i]['cruise_array'] != '') ? $tours_result_array[$i]['cruise_array'] : [];
+                    $tours_result_array[$i]['cruise_array'] = (isset($tours_result_array[$i]['cruise_array']) != '') ? $tours_result_array[$i]['cruise_array'] : [];
                     if (sizeof($tours_result_array[$i]['cruise_array']) > 0) { ?>
                       <div class="col-12 m20-btm">
                         <h3 class="c-heading">

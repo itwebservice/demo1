@@ -6,11 +6,10 @@ $financial_year_id = $_SESSION['financial_year_id'];
 $customer_id = $_POST['customer_id'];
 $branch_status = $_POST['branch_status'];
 
-$query = "select * from package_tour_booking_master where financial_year_id = '$financial_year_id' ";
+$query = "select * from package_tour_booking_master where financial_year_id = '$financial_year_id' and delete_status='0' ";
 if($customer_id!=""){
 	$query .=" and customer_id='$customer_id'";
 }
- 
 ?>
 <option value="">Select Booking</option>
 <?php 

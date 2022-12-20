@@ -5,20 +5,20 @@ $sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master_tariff w
 $images_url = '';
 $sq_exc_img = mysqlQuery("select * from excursion_master_images where exc_id='$entry_id'");
 while($row_exc_img = mysqli_fetch_assoc($sq_exc_img)){
-  $images_url .= $row_exc_img['image_url'].',';  
+	$images_url .= $row_exc_img['image_url'].',';  
 }
 $taxation = json_decode($sq_exc['taxation']);
 $exc_name = ($sq_exc['excursion_name']);
 ?>
 <form id="frm_b2b_exc_update">
 <div class="modal fade" id="update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
-  <div class="modal-dialog" role="document" style="width:90%">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Activity</h4>
-      </div>
-      <div class="modal-body">	
+	<div class="modal-dialog" role="document" style="width:90%">
+	<div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title" id="myModalLabel">Update Activity Details And Tariff</h4>
+	</div>
+	<div class="modal-body">	
 		<div class="row">
 		<div class="col-md-12 app_accordion">
 		<div class="panel-group main_block" id="accordion" role="tablist" aria-multiselectable="true">
@@ -169,7 +169,7 @@ $exc_name = ($sq_exc['excursion_name']);
 													<option value=''>Amount In</option>
 													<option value='Flat'>Flat</option>
 													<option value='Percentage'>Percentage</option></select></td>
-												<td><input type='number' id="amount" name="amount" placeholder="*Markup Amount" class="form-control" title="Markup Amount" style="width: 147px;"/></td>
+												<td><input type='number' id="amount" name="amount" placeholder="*Markup Amount" class="form-control" title="Markup Amount" style="width: 147px;" onchange="validate_balance(this.id);"/></td>
 												<td><input type="hidden" id="entry_id" name="entry_id" /></td>
 											</tr>
 										<?php }
@@ -198,7 +198,7 @@ $exc_name = ($sq_exc['excursion_name']);
 															<option value=''>Amount In</option>
 															<option value='Flat'>Flat</option>
 															<option value='Percentage'>Percentage</option></select></td>
-														<td><input type='number' id="amount-u" name="amount" placeholder="*Markup Amount" value='<?= $row_basic['markup_cost'] ?>' class="form-control" title="Markup Amount" style="width: 147px;"/></td>
+														<td><input type='number' id="amount-u" name="amount" placeholder="*Markup Amount" value='<?= $row_basic['markup_cost'] ?>' class="form-control" title="Markup Amount" style="width: 147px;" onchange="validate_balance(this.id);"/></td>
 														<td><input type="hidden" id="entry_id" name="entry_id" value='<?= $row_basic['entry_id'] ?>' /></td>
 													</tr>
 													<script>
@@ -299,15 +299,17 @@ $exc_name = ($sq_exc['excursion_name']);
 				</div>			
 		</div>
 		</div>
-					</div>
+		</div>
 		<div class="row mg_bt_10">
 			<div class="col-md-2 col-sm-6 mg_bt_10">
-				<select name="active_flag" id="active_flag" title="Status">
+				<select class="<?= $active_inactive_flag ?>" name="active_flag" id="active_flag" title="Status">
 				<option value="<?= $sq_exc['active_flag'] ?>"><?= $sq_exc['active_flag'] ?></option>
 				<option value="Active">Active</option>
 				<option value="Inactive">Inactive</option>
 				</select>
 			</div>
+		</div>
+		<div class="row mg_bt_10">
 			<div class="col-md-8">          
 				<div class="div-upload">
 					<div id="photo_upload_btn_i" class="upload-button1"><span>Image</span></div>
@@ -323,7 +325,7 @@ $exc_name = ($sq_exc['excursion_name']);
 			</div>
 		</div>
 		<div class="row mg_tp_20 mg_bt_20" id="images_list"></div>
-      	<input type="hidden" name="hotel_image_path1" id="hotel_image_path1">
+		<input type="hidden" name="hotel_image_path1" id="hotel_image_path1">
 		<input type="hidden" name="exc_entry_id" id="exc_entry_id" value='<?= $entry_id ?>'>
 		<div class="row mg_tp_20 text-center">
 			<div class="col-md-12">

@@ -187,7 +187,7 @@ $('#frm_tab5').validate({
 
 
 		if(credit_amount != ''){ 
-        	if(parseFloat(payment_amount) > parseFloat(credit_amount)) { error_msg_alert('Low Credit note balance'); return false; }
+        	if(parseFloat(payment_amount) > parseFloat(credit_amount)) { error_msg_alert('Credit Note Balance is not available'); return false; }
         }
 
         var table = document.getElementById("tbl_dynamic_ticket_master_airfile");

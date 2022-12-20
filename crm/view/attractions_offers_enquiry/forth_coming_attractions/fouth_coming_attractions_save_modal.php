@@ -45,7 +45,7 @@
 </form>      
 <script src="<?= BASE_URL ?>js/ajaxupload.3.5.js"></script>
 <script>
-$('#txt_valid_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
+$('#txt_valid_date').datetimepicker({ timepicker:false, format:'d-m-Y', minDate: new Date() });
 
 upload_attr_attch();
 function upload_attr_attch()

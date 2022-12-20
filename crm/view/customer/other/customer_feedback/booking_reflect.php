@@ -3,7 +3,7 @@ include_once('../../../../model/model.php');
 $booking_type = $_POST['booking_type'];
 $customer_id = $_POST['customer_id'];
 if ($booking_type == "Group Booking") {
-	$query = "select * from tourwise_traveler_details where customer_id='$customer_id'";
+	$query = "select * from tourwise_traveler_details where customer_id='$customer_id' and delete_status='0'";
 	$sq_booking = mysqlQuery($query);
 	while ($row_booking = mysqli_fetch_assoc($sq_booking)) {
 
@@ -24,7 +24,7 @@ if ($booking_type == "Group Booking") {
 		}
 	}
 } elseif ($booking_type == "Package Booking") {
-	$query = "select * from package_tour_booking_master where customer_id='$customer_id' and tour_status != 'Cancel'";
+	$query = "select * from package_tour_booking_master where customer_id='$customer_id' and tour_status != 'Cancel' and delete_status='0'";
 	$sq_booking = mysqlQuery($query);
 	while ($row_booking = mysqli_fetch_assoc($sq_booking)) {
 		$created_at = $row_booking['booking_date'];

@@ -27,7 +27,7 @@ $train_ticket_id = $_POST['train_ticket_id'];
                      <tbody>
                        <?php 
                        $count = 0;
-                       $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE estimate_type LIKE 'Train Ticket Booking' AND estimate_type_id = '$train_ticket_id'");
+                       $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE status!='Cancel' and estimate_type LIKE  'Train Ticket Booking' AND estimate_type_id = '$train_ticket_id' and delete_status='0'");
 
                        while($row_entry = mysqli_fetch_assoc($sq_query))
                        {

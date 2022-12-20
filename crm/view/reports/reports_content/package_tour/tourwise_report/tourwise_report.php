@@ -5,7 +5,7 @@ $booking_id=$_POST['booking_id'];
 $array_s = array();
 $temp_arr = array();
 
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 
 if($booking_id!="")
 {
@@ -23,8 +23,8 @@ while($row1 = mysqli_fetch_assoc($sq1))
 	$sq2 = mysqlQuery("select * from package_travelers_details where booking_id = '$row1[booking_id]'");
 	while($row2 = mysqli_fetch_assoc($sq2))
 	{
-	 $count++;
-	($row2['status']=='Cancel')?$bg='danger':$bg='';
+		$count++;
+		($row2['status']=='Cancel')?$bg='danger':$bg='';
 
 	$temp_arr = array( "data" => array(
 		(int)($count),

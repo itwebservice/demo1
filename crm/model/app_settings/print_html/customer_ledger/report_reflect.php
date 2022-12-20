@@ -1,5 +1,4 @@
 <?php
-
 include "../../../../model/model.php";
 include "../print_functions.php";
 $role = $_SESSION['role'];
@@ -17,41 +16,39 @@ $count = 0;
 
 <!-- header -->
     <section class="print_header main_block">
-      <div class="col-md-8 no-pad">
-      <span class="title"><i class="fa fa-file-text"></i> Outstanding Payment Summary Report</span>
-        <div class="print_header_logo">
-          <img src="<?php echo $admin_logo_url; ?>" class="img-responsive mg_tp_10">
-        </div>
-      </div>
-      <div class="col-md-4 no-pad">
-        <div class="print_header_contact text-right">
-          <span class="title"><?php echo $app_name; ?></span><br>
-          <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p>
-          <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
-           $branch_details['contact_no'] : $app_contact_no ?></p>
-          <p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></p>
+		<div class="col-md-8 no-pad">
+		<span class="title"><i class="fa fa-file-text"></i> Outstanding Payment Summary Report</span>
+			<div class="print_header_logo">
+			<img src="<?php echo $admin_logo_url; ?>" class="img-responsive mg_tp_10">
+			</div>
+		</div>
+		<div class="col-md-4 no-pad">
+			<div class="print_header_contact text-right">
+			<span class="title"><?php echo $app_name; ?></span><br>
+			<p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address ?></p>
+			<p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i> <?php echo ($branch_status=='yes' && $role!='Admin') ? 
+			$branch_details['contact_no'] : $app_contact_no ?></p>
+			<p><i class="fa fa-envelope" style="margin-right: 5px;"></i> <?php echo $app_email_id; ?></p>
 
-        </div>
-      </div>
+			</div>
+		</div>
 
     <!-- Package -->
-      <div class="row">
-	      <div class="col-xs-12">
-	        <div class="print_info_block">
-	            <ul class="main_block noType">
-	            	<?php $cust_name=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'")); ?>
-	               <li class="col-md-12"><span>CUSTOMER NAME : </span><?= ($cust_name['type'] == 'Corporate'||$cust_name['type'] == 'B2B') ? $cust_name['company_name'] : $cust_name['first_name'].' '.$cust_name['last_name']  ?></li>
-	               <li class="col-md-6"><span>FROM DATE : </span> <?= $from_date1 ?></li>
-	               <li class="col-md-6"><span>TO DATE : </span> <?= $to_date1 ?></li>
-	            </ul>
-	        </div>
-	      </div>
-      </div>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="print_info_block">
+					<ul class="main_block noType">
+						<?php $cust_name=mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'")); ?>
+					<li class="col-md-12"><span>CUSTOMER NAME : </span><?= ($cust_name['type'] == 'Corporate'||$cust_name['type'] == 'B2B') ? $cust_name['company_name'] : $cust_name['first_name'].' '.$cust_name['last_name']  ?></li>
+					<li class="col-md-6"><span>FROM DATE : </span> <?= $from_date1 ?></li>
+					<li class="col-md-6"><span>TO DATE : </span> <?= $to_date1 ?></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 
     <!-- print-detail -->
 		<div class="row"> <div class="col-md-12"> <div class="table-responsive">
-
-			
 
 		<table class="table table-bordered cust_table" id="tbl_list" style="padding: 0 !important; background: #fff;">
 
@@ -73,7 +70,7 @@ $count = 0;
 			<?php
 			//FIT
 			if($customer_id!="" || $from_date!='' && $to_date!=''){
-				$query = "select * from package_tour_booking_master where 1 ";
+				$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 
 				if($customer_id!=""){
 					$query .=" and customer_id='$customer_id'";
@@ -108,6 +105,7 @@ $count = 0;
 						$cancel_amount = ($cancel_amount == '') ? '0' : $cancel_amount;
 						$balance_amount = $sale_total_amount - $paid_amount;
 					}
+					if($balance_amount != 0){
 					?>
 					<tr>
 						<td><?= ++$count ?></td>
@@ -124,10 +122,11 @@ $count = 0;
 					$total_paid   +=$paid_amount;
 					$total_balance+=$balance_amount;
 					$total_cancel +=$cancel_amount;
+					}
 			}
 
 			//visa
-			$query = "select * from visa_master where 1 ";
+			$query = "select * from visa_master where 1 and delete_status='0'";
 			if($customer_id!=""){
 				$query .=" and customer_id='$customer_id'";
 			}
@@ -175,7 +174,7 @@ $count = 0;
 					else{
 						$balance_amount = $sale_total_amount - $paid_amount;
 					}
-					
+					if($balance_amount != 0){
 				?>	
 				<tr>
 					<td><?= ++$count ?></td>
@@ -192,15 +191,16 @@ $count = 0;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
+					}
 			}
 
 			//Air Ticket
-			$query = "select * from ticket_master where 1 ";
+			$query = "select * from ticket_master where 1 and delete_status='0' ";
 			if($customer_id!=""){
-			  $query .=" and customer_id='$customer_id'";
+				$query .=" and customer_id='$customer_id'";
 			}
 			if($from_date!='' || $to_date!=''){
-			  $query .=" and created_at between '$from_date' and '$to_date'";
+				$query .=" and created_at between '$from_date' and '$to_date'";
 			}
 			
 			$sq_ticket = mysqlQuery($query);
@@ -209,40 +209,43 @@ $count = 0;
 				$date = $row_ticket['created_at'];
 				$yr = explode("-", $date);
 				$year =$yr[0];
-			//Sale
-			 $sale_total_amount=$row_ticket['ticket_total_cost'];
-			if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
+				//Sale
+				$sale_total_amount=$row_ticket['ticket_total_cost'];
+				if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
 
-			//Cancel
-			$cancel_amount=$row_ticket['cancel_amount'];
-			$pass_count = mysqli_num_rows(mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]'"));
-			$cancel_count = mysqli_num_rows(mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]' and status='Cancel'"));
+				//Cancel
+				$cancel_amount=$row_ticket['cancel_amount'];
+				$pass_count = mysqli_num_rows(mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]'"));
+				$cancel_count = mysqli_num_rows(mysqlQuery("select * from ticket_master_entries where ticket_id='$row_ticket[ticket_id]' and status='Cancel'"));
 
-			//Paid
-			$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from ticket_payment_master where ticket_id='$row_ticket[ticket_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
-			$paid_amount = $query['sum'];
-			$paid_amount = ($paid_amount == '')?'0':$paid_amount;
+				//Paid
+				$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from ticket_payment_master where ticket_id='$row_ticket[ticket_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
+				$paid_amount = $query['sum'];
+				$paid_amount = ($paid_amount == '')?'0':$paid_amount;
 
-			if($pass_count == $cancel_count){
-				if($paid_amount > 0){
-					if($cancel_amount >0){
-						if($paid_amount > $cancel_amount){
+				if($row_ticket['cancel_type'] == '1'){
+					if($paid_amount > 0){
+						if($cancel_amount >0){
+							if($paid_amount > $cancel_amount){
+								$balance_amount = 0;
+							}else{
+								$balance_amount = $cancel_amount - $paid_amount;
+							}
+						}else{
 							$balance_amount = 0;
-						}else{
-							$balance_amount = $cancel_amount - $paid_amount;
-						}
-						}else{
-						   $balance_amount = 0;
 						}
 					}
 					else{
 						$balance_amount = $cancel_amount;
 					}
+				}else if($row_ticket['cancel_type'] == '2'||$row_ticket['cancel_type'] == '3'){
+					$cancel_estimate = json_decode($row_ticket['cancel_estimate']);
+					$balance_amount = (($sale_total_amount - floatval($cancel_estimate[0]->ticket_total_cost)) + $cancel_amount) - $paid_amount;
 				}
 				else{
 					$balance_amount = $sale_total_amount - $paid_amount;
 				}
-
+				if($balance_amount != 0){
 			?>	
 			<tr>
 				<td><?= ++$count ?></td>
@@ -259,11 +262,12 @@ $count = 0;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
+				}
 		}
 
 
 		//Train ticket
-		$query = "select * from train_ticket_master where 1";
+		$query = "select * from train_ticket_master where 1 and delete_status='0'";
 		if($customer_id!=""){
 		  $query .=" and customer_id='$customer_id'";
 		}
@@ -311,33 +315,33 @@ $count = 0;
 			else{
 				$balance_amount = $sale_total_amount - $paid_amount;
 			}
-			?>	
-			
-			<tr>
+			if($balance_amount != 0){
+				?>
+				<tr>
 
-				<td><?= ++$count ?></td>
-					<td><?= "Train Ticket Booking" ?></td>
-				<td><?= get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year) ?></td>
-				<td><?= get_date_user($row_ticket['created_at']) ?></td>
-				<td class="text-right info"><?= number_format($sale_total_amount,2) ?></td>
-				<td  class="text-right success"><?= ($paid_amount=="") ? number_format(0,2) : number_format($paid_amount,2) ?></td>
-				<td class="text-right danger"><?= number_format($cancel_amount,2) ?></td>
-				<td class="text-right warning"><?= number_format($balance_amount,2)?></td>
-			</tr>
-
-			<?php
+					<td><?= ++$count ?></td>
+						<td><?= "Train Ticket Booking" ?></td>
+					<td><?= get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year) ?></td>
+					<td><?= get_date_user($row_ticket['created_at']) ?></td>
+					<td class="text-right info"><?= number_format($sale_total_amount,2) ?></td>
+					<td  class="text-right success"><?= ($paid_amount=="") ? number_format(0,2) : number_format($paid_amount,2) ?></td>
+					<td class="text-right danger"><?= number_format($cancel_amount,2) ?></td>
+					<td class="text-right warning"><?= number_format($balance_amount,2)?></td>
+				</tr>
+				<?php
 				$total_amount +=$sale_total_amount;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
+			}
 			
 		}
 		//Hotel 
-		$query = "select * from hotel_booking_master where 1 ";
+		$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 		$query .=" and customer_id='$customer_id'";
 
 		if($from_date!='' || $to_date!=''){
-		  $query .=" and created_at between '$from_date' and '$to_date'";
+			$query .=" and created_at between '$from_date' and '$to_date'";
 		}
 		
 		$sq_booking = mysqlQuery($query);
@@ -347,39 +351,39 @@ $count = 0;
 			$yr = explode("-", $date);
 			$year =$yr[0];
 			//sale 
-		 $sale_total_amount=$row_booking['total_fee'];
-		if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
+			$sale_total_amount=$row_booking['total_fee'];
+			if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
 
-		//Cancel
-		$cancel_amount=$row_booking['cancel_amount'];
-		$pass_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]'"));
-		$cancel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]' and status='Cancel'"));
+			//Cancel
+			$cancel_amount=$row_booking['cancel_amount'];
+			$pass_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]'"));
+			$cancel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]' and status='Cancel'"));
 
-		//Paid
-		$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from hotel_booking_payment where booking_id='$row_booking[booking_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
-		$paid_amount = $query['sum'];
-		$paid_amount = ($paid_amount == '')?'0':$paid_amount;
+			//Paid
+			$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from hotel_booking_payment where booking_id='$row_booking[booking_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
+			$paid_amount = $query['sum'];
+			$paid_amount = ($paid_amount == '')?'0':$paid_amount;
 
-		if($pass_count == $cancel_count){
-			if($paid_amount > 0){
-				if($cancel_amount >0){
-					if($paid_amount > $cancel_amount){
-						$balance_amount = 0;
+			if($pass_count == $cancel_count){
+				if($paid_amount > 0){
+					if($cancel_amount >0){
+						if($paid_amount > $cancel_amount){
+							$balance_amount = 0;
+						}else{
+							$balance_amount = $cancel_amount - $paid_amount;
+						}
 					}else{
-						$balance_amount = $cancel_amount - $paid_amount;
+					$balance_amount = 0;
 					}
-				}else{
-				   $balance_amount = 0;
+				}
+				else{
+					$balance_amount = $cancel_amount;
 				}
 			}
 			else{
-				$balance_amount = $cancel_amount;
+				$balance_amount = $sale_total_amount - $paid_amount;
 			}
-		}
-		else{
-			$balance_amount = $sale_total_amount - $paid_amount;
-		}
-
+			if($balance_amount != 0){
 			?>
 			<tr>
 				<td><?= ++$count ?></td>
@@ -396,10 +400,10 @@ $count = 0;
 			$total_paid   +=$paid_amount;
 			$total_balance+=$balance_amount;
 			$total_cancel +=$cancel_amount;
-			
+			}
 		}
 		//Bus
-		$query = "select * from bus_booking_master where 1 ";
+		$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 
 		if($customer_id!=""){
 		  $query .=" and customer_id='$customer_id'";
@@ -448,6 +452,7 @@ $count = 0;
 			else{
 				$balance_amount = $sale_total_amount - $paid_amount;
 			}
+			if($balance_amount != 0){
 			?>
 			<tr>
 				<td><?= ++$count ?></td>
@@ -464,10 +469,11 @@ $count = 0;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
+			}
 		}
 		//Car Rental
 		
-		$query = "select * from car_rental_booking where 1 ";
+		$query = "select * from car_rental_booking where 1 and delete_status='0' ";
 
 		if($customer_id!=""){
 		  $query .=" and customer_id='$customer_id'";
@@ -513,7 +519,7 @@ $count = 0;
 			else{
 				$balance_amount = $sale_total_amount - $paid_amount;
 			}
-			
+			if($balance_amount != 0){			
 			?>
 			<tr>
 				<td><?= $count ?></td>
@@ -530,15 +536,16 @@ $count = 0;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
+			}
 		}
 
 		//Group
-		$query = "select * from tourwise_traveler_details where 1 ";
+		$query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 		if($customer_id!=""){
 			$query .=" and customer_id='$customer_id'";
 		}
 		if($from_date!='' || $to_date!=''){
-			$query .=" and form_date between '$from_date' and '$to_date'";
+			$query .=" and DATE(form_date) between '$from_date' and '$to_date'";
 		}
 		
 		$sq1 =mysqlQuery($query);
@@ -556,22 +563,16 @@ $count = 0;
 			$paid_amount = $query['sum'];
 			$paid_amount = ($paid_amount == '') ? '0' : $paid_amount;
 
-			$pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row1[id]'"));
-			$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row1[id]' and status='Cancel'"));
+			$pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row1[traveler_group_id]'"));
+			$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row1[traveler_group_id]' and status='Cancel'"));
 			if($row1['tour_group_status'] == 'Cancel'){
 				//Group Tour cancel
 				$cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row1[id]'"));
 				if($cancel_tour_count2 >= '1'){
 					$cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row1[id]'"));
-					$cancel_amount2 = $cancel_tour['cancel_amount'];
+					$cancel_amount = $cancel_tour['cancel_amount'];
 				}
-				else{ $cancel_amount2 = 0; }
-			
-				if($cancel_tour_count2 >= '1'){
-					$cancel_amount = $cancel_amount1;
-				}else{
-					$cancel_amount = $cancel_amount2;
-				}	
+				else{ $cancel_amount = 0; }
 			}
 			else{
 				// Group booking cancel
@@ -604,10 +605,11 @@ $count = 0;
 					$balance_amount = $sale_total_amount - $paid_amount;
 				}
 			}
+			if($balance_amount != 0){
 			?>
 			  <tr>
 			  	<td><?php echo $count ?></td>
-					<td><?= "Group Booking" ?></td>
+				<td><?= "Group Booking" ?></td>
 			  	<td><?= get_group_booking_id($row1['id'],$year) ?></td>
 				<td><?= get_date_user($row1['form_date']) ?></td>
 			  	<td class="text-right info"><?= number_format($sale_total_amount,2) ?></td>
@@ -620,79 +622,12 @@ $count = 0;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
-		}
-		//Passport
-		$query = "select * from passport_master where 1 ";
-
-		if($customer_id!=""){
-		  $query .=" and customer_id='$customer_id'";
-		}
-		if($from_date!='' || $to_date!=''){
-			$query .=" and created_at between '$from_date' and '$to_date'";
-		}
-		
-		$sq_passport = mysqlQuery($query);
-		while($row_passport = mysqli_fetch_assoc($sq_passport)){
-
-			$date = $row_passport['created_at'];
-			$yr = explode("-", $date);
-			$year =$yr[0];
-		//sale
-		$sale_total_amount=$row_passport['passport_total_cost'];
-		if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
-
-		//Cancel
-		$cancel_amount=$row_passport['cancel_amount'];
-		$pass_count = mysqli_num_rows(mysqlQuery("select * from  passport_master_entries where passport_id='$row_passport[passport_id]'"));
-		$cancel_count = mysqli_num_rows(mysqlQuery("select * from  passport_master_entries where passport_id='$row_passport[passport_id]' and status='Cancel'"));
-
-		//Paid
-		$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from passport_payment_master where passport_id='$row_passport[passport_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
-		$paid_amount = $query['sum'];
-		$paid_amount = ($paid_amount == '')?'0':$paid_amount;
-
-		if($pass_count == $cancel_count){
-			if($paid_amount > 0){
-				if($cancel_amount >0){
-					if($paid_amount > $cancel_amount){
-						$balance_amount = 0;
-					}else{
-						$balance_amount = $cancel_amount - $paid_amount;
-					}
-				}else{
-				   $balance_amount = 0;
-				}
 			}
-			else{
-				$balance_amount = $cancel_amount;
-			}
-		}
-		else{
-			$balance_amount = $sale_total_amount - $paid_amount;
-		}
-
-			
-			?>	
-			<tr>
-				<td><?= ++$count ?></td>
-				<td><?= "Passport Booking" ?></td>
-				<td><?= get_passport_booking_id($row_passport['passport_id'],$year) ?></td>
-				<td><?= get_date_user($row_passport['created_at']) ?></td>
-				<td class="text-right info"><?= number_format($sale_total_amount,2) ?></td>
-				<td class="text-right success"><?= number_format($paid_amount,2) ?></td>
-				<td class="text-right danger"><?= number_format($cancel_amount,2)?></td>
-				<td class="text-right warning"><?= number_format($balance_amount,2)?></td>
-			</tr>
-			<?php
-				$total_amount +=$sale_total_amount;
-				$total_paid   +=$paid_amount;
-				$total_balance+=$balance_amount;
-				$total_cancel +=$cancel_amount;
 		}
 		//Excursion
-		$query = "select * from excursion_master where 1 ";
+		$query = "select * from excursion_master where 1 and delete_status='0' ";
 		if($customer_id!=""){
-		  $query .=" and customer_id='$customer_id'";
+			$query .=" and customer_id='$customer_id'";
 		}
 		if($from_date!='' || $to_date!=''){
 			$query .=" and created_at between '$from_date' and '$to_date'";
@@ -737,7 +672,7 @@ $count = 0;
 			else{
 				$balance_amount = $sale_total_amount - $paid_amount;
 			}
-
+			if($balance_amount != 0){
 			?>
 			<tr>
 				<td><?= ++$count ?></td>
@@ -754,16 +689,17 @@ $count = 0;
 				$total_paid   +=$paid_amount;
 				$total_balance+=$balance_amount;
 				$total_cancel +=$cancel_amount;
+			}
 		}
 	//Miscellaneous
-	$query = "select * from miscellaneous_master where 1 ";
+	$query = "select * from miscellaneous_master where 1 and delete_status='0'";
 	if($customer_id!=""){
 		$query .=" and customer_id='$customer_id'";
 	}
 	if($from_date!='' || $to_date!=''){
 		$query .=" and created_at between '$from_date' and '$to_date'";
 	}
-			 
+
 	$sq_visa = mysqlQuery($query);
 	while($row_visa = mysqli_fetch_assoc($sq_visa)){
 
@@ -771,60 +707,60 @@ $count = 0;
 		$yr = explode("-", $date);
 		$year =$yr[0];
 	
-	//Sale
-	$sale_total_amount=$row_visa['misc_total_cost'];
-	if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
+		//Sale
+		$sale_total_amount=$row_visa['misc_total_cost'];
+		if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
 
-	//Cancel
-	$cancel_amount=$row_visa['cancel_amount'];
-	$pass_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id='$row_visa[misc_id]'"));
-	$cancel_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id='$row_visa[misc_id]' and status='Cancel'"));
+		//Cancel
+		$cancel_amount=$row_visa['cancel_amount'];
+		$pass_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id='$row_visa[misc_id]'"));
+		$cancel_count = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id='$row_visa[misc_id]' and status='Cancel'"));
 
-	//Paid
-	$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from miscellaneous_payment_master where misc_id='$row_visa[misc_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
-	$paid_amount = $query['sum'];
+		//Paid
+		$query1 = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from miscellaneous_payment_master where misc_id='$row_visa[misc_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
+		$paid_amount = $query1['sum'];
 
-	$paid_amount = ($paid_amount == '')?'0':$paid_amount;
+		$paid_amount = ($paid_amount == '') ? '0' : $paid_amount;
 
-	if($pass_count == $cancel_count){
-				if($paid_amount > 0){
-					if($cancel_amount >0){
-						if($paid_amount > $cancel_amount){
-							$balance_amount = 0;
-						}else{
-							$balance_amount = $cancel_amount - $paid_amount;
-						}
+		if($pass_count == $cancel_count){
+			if($paid_amount > 0){
+				if($cancel_amount > 0){
+					if($paid_amount > $cancel_amount){
+						$balance_amount = 0;
 					}else{
-						 $balance_amount = 0;
+						$balance_amount = $cancel_amount - $paid_amount;
 					}
-				}
-				else{
-					$balance_amount = $cancel_amount;
+				}else{
+					$balance_amount = 0;
 				}
 			}
 			else{
-				$balance_amount = $sale_total_amount - $paid_amount;
+				$balance_amount = $cancel_amount;
 			}
-			
-		?>	
-		<tr>
-			<td><?= ++$count ?></td>
-			<td><?= "Miscellaneous Booking"?></td>
-			<td><?= get_misc_booking_id($row_visa['misc_id'],$year) ?></td>
-				<td><?= get_date_user($row_visa['created_at']) ?></td>
-			<td class="info text-right"><?= number_format($sale_total_amount,2) ?></td>
-			<td class="success text-right"><?= number_format($paid_amount,2) ?></td>
-			<td class="danger text-right"><?= number_format($cancel_amount,2) ?></td>
-			<td class="warning text-right"><?= number_format($balance_amount,2) ?></td>
-		</tr>
-		<?php
-		$total_amount +=$sale_total_amount;
-		$total_paid   +=$paid_amount;
-		$total_balance+=$balance_amount;
-		$total_cancel +=$cancel_amount;
+		}
+		else{
+			$balance_amount = $sale_total_amount - $paid_amount;
+		}
+		if($balance_amount != 0){
+			?>
+			<tr>
+				<td><?= ++$count ?></td>
+				<td><?= "Miscellaneous Booking"?></td>
+				<td><?= get_misc_booking_id($row_visa['misc_id'],$year) ?></td>
+					<td><?= get_date_user($row_visa['created_at']) ?></td>
+				<td class="info text-right"><?= number_format($sale_total_amount,2) ?></td>
+				<td class="success text-right"><?= number_format($paid_amount,2) ?></td>
+				<td class="danger text-right"><?= number_format($cancel_amount,2) ?></td>
+				<td class="warning text-right"><?= number_format($balance_amount,2) ?></td>
+			</tr>
+			<?php
+			$total_amount  += $sale_total_amount;
+			$total_paid    += $paid_amount;
+			$total_balance += $balance_amount;
+			$total_cancel  += $cancel_amount;
+		}
 	}
-
-		?>
+	?>
     <tr class="active">
 		<th colspan="4" class="text-right info">Total</th>
 		<th colspan="1" class="text-right info"><?= number_format($total_amount,2) ?></th>
@@ -838,12 +774,8 @@ $count = 0;
 	</tr>
 
 		</tbody>
-
 		</table>
-
-
 
 		</div> </div> </div>
 	</section>
 <?php } ?>
-

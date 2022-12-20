@@ -110,17 +110,17 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_vendor['email_id'], $secret_key);
 
 										                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-										                  <?php echo "<label>State <em>:</em></label>".$sq_state['state_name'] ?>
+										                  <?php echo "<label>State/Country <em>:</em></label>".$sq_state['state_name'] ?>
 
 										            </span>	
 
-							        				<span class="main_block">
+							        				<!-- <span class="main_block">
 
 							        				<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i> 
 
 							        				    <?php echo "<label>Country <em>:</em></label> " .$sq_vendor['country']; ?>
 
-							        				</span>
+							        				</span> -->
 
 							        				<span class="main_block">
 
@@ -129,7 +129,10 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_vendor['email_id'], $secret_key);
 							        				    <?php echo "<label>Website <em>:</em></label> " .$sq_vendor['website']; ?> 
 
 							        				</span>
-
+													<span class="main_block">
+															<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+															<?php echo "<label>Address <em>:</em></label> " .$sq_vendor['address']; ?>
+														</span>
 							        			</div>
 
 							        			<div class="col-md-6">
@@ -190,6 +193,20 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_vendor['email_id'], $secret_key);
 							        				    <?php echo "<label>Tax No <em>:</em></label> " .strtoupper($sq_vendor['service_tax_no']); ?>
 
 							        				</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Opening Balance <em>:</em></label> " .$sq_vendor['opening_balance']; ?>
+
+													</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Balance Side <em>:</em></label> " .$sq_vendor['side']; ?>
+
+													</span>
 							        				<span class="main_block">
 
 							        					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -201,10 +218,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_vendor['email_id'], $secret_key);
 												</div>
 												<div class="row">
 												<div class="col-md-12"> 
-														<span class="main_block">
-															<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-															<?php echo "<label>Address <em>:</em></label> " .$sq_vendor['address']; ?>
-														</span>
+														
 													</div> 
 												</div>
 								    	</div>

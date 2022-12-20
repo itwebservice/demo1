@@ -23,6 +23,13 @@ include "../../../model/model.php";
             } ?>
             </select>
         </div>
+		<div class="text-left col-md-3 col-sm-6">
+			<select id="status" name="status" title="Select Status" class="form-control" onchange="list_reflect()" style="width:100%"> 
+				<option value="">Status</option>
+				<option value="Active">Active</option>
+				<option value="Inactive">Inactive</option>
+			</select>
+		</div>
     </div>
 <div class="app_panel_content">
 
@@ -60,7 +67,8 @@ function incl_reflect(cmb_tour_type,offset=''){
 function list_reflect(dest_name){
     $('#div_tours_list').append('<div class="loader"></div>');
     var dest_id = $('#dest_name').val();
-    $.post('list_reflect.php', {dest_id : dest_id}, function(data){
+    var status = $('#status').val();
+    $.post('list_reflect.php', {dest_id : dest_id,status:status}, function(data){
         $('#div_tours_list').html(data);
     });
 }

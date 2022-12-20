@@ -443,7 +443,7 @@ h3.costBankTitle.text-center {
 }
 .constingBankingPanel h4 {
     color: #fff !important;
-    line-height: 30px;
+    line-height: 15px;
 }
 .constingBankingPanel p {
     font-size: 14px;
@@ -502,10 +502,10 @@ h3.costBankTitle.text-center {
     padding: 15px 8px 10px 28px !important;
 }
 table th, .modal table.dataTable th{
-    font-size: 14px !important;
+    font-size: 16px !important;
 	padding-left: 28px !important;
     text-transform: uppercase;
-    font-weight: 500 !important;
+    font-weight: 700 !important;
     border: 0 !important;
     border-bottom: 1px solid #ddd !important;
     border-top: 1px solid #ddd !important;

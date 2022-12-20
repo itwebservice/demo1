@@ -16,7 +16,7 @@ public function vendor_save()
 	$opening_balance = $_POST['opening_balance'];
 	$address = addslashes($_POST['address']);
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -47,9 +47,9 @@ public function vendor_save()
 	}
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(vendor_id) as max from site_seeing_vendor"));
 	$vendor_id = $sq_max['max'] + 1;
-	$sq_vendor = mysqlQuery("insert into site_seeing_vendor (vendor_id, vendor_name, city_id, mobile_no, landline_no, email_id,alternative_email_1,alternative_email_2,concern_person_name, immergency_contact_no, opening_balance, address, country, website, active_flag, created_at,bank_name,account_name,account_no,branch,ifsc_code, service_tax_no,state_id,side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$city_id', '$mobile_no', '$landline_no', '$email_id','$email_id_1','$email_id_2', '$concern_person_name', '$immergency_contact_no','$opening_balance', '$address', '$country','$website', '$active_flag', '$created_at', '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$service_tax_no','$state','$side','$supp_pan','$as_of_date')");
+	$sq_vendor = mysqlQuery("insert into site_seeing_vendor (vendor_id, vendor_name, city_id, mobile_no, landline_no, email_id,alternative_email_1,alternative_email_2,concern_person_name, immergency_contact_no, opening_balance, address, website, active_flag, created_at,bank_name,account_name,account_no,branch,ifsc_code, service_tax_no,state_id,side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$city_id', '$mobile_no', '$landline_no', '$email_id','$email_id_1','$email_id_2', '$concern_person_name', '$immergency_contact_no','$opening_balance', '$address', '$website', '$active_flag', '$created_at', '$bank_name','$account_name','$account_no','$branch','$ifsc_code', '$service_tax_no','$state','$side','$supp_pan','$as_of_date')");
 	
-	sundry_creditor_balance_update();
+	// sundry_creditor_balance_update();
 
 	if($sq_vendor){
 		$vendor_login_master = new vendor_login_master;
@@ -87,7 +87,7 @@ public function vendor_update()
 	$active_flag = $_POST['active_flag'];
 	$service_tax_no1 = $_POST['service_tax_no1'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -113,7 +113,7 @@ public function vendor_update()
 		echo "error--Vendor name already exists!";
 		exit;
 	}
-	$sq_vendor = mysqlQuery("update site_seeing_vendor set vendor_name='$vendor_name', city_id='$city_id', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id',alternative_email_1 = '$email_id_1',alternative_email_2='$email_id_2', concern_person_name='$concern_person_name',  immergency_contact_no='$immergency_contact_no', opening_balance='$opening_balance', address='$address', country='$country', website='$website', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', service_tax_no='$service_tax_no1', state_id='$state_id',side='$side',pan_no='$supp_pan',as_of_date ='$as_of_date' where vendor_id='$vendor_id'");
+	$sq_vendor = mysqlQuery("update site_seeing_vendor set vendor_name='$vendor_name', city_id='$city_id', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id',alternative_email_1 = '$email_id_1',alternative_email_2='$email_id_2', concern_person_name='$concern_person_name',  immergency_contact_no='$immergency_contact_no', opening_balance='$opening_balance', address='$address',  website='$website', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', service_tax_no='$service_tax_no1', state_id='$state_id',side='$side',pan_no='$supp_pan',as_of_date ='$as_of_date' where vendor_id='$vendor_id'");
 	
 	sundry_creditor_balance_update();
 

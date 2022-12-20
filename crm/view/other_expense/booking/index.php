@@ -29,7 +29,7 @@ include_once('expense_save_modal.php');
 				</select>
 			</div>
 			<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-				<select name="supplier_type1" id="supplier_type1" title="Supplier Type" class="form-control">
+				<select name="supplier_type1" id="supplier_type1" title="Supplier Name" class="form-control">
 					<option value="">Supplier Name</option>
 					<?php 
 					$sq_expense = mysqlQuery("select * from other_vendors order by vendor_name");
@@ -81,6 +81,21 @@ function expense_update_modal(expense_id)
 {
 	$.post('booking/expense_update_modal.php', { expense_id : expense_id}, function(data){		
 		$('#div_expense_estimate_update').html(data);
+	});
+}
+function delete_entry(expense_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/other_expense/expense_booking_delete.php',{ expense_id : expense_id }, function(data){
+					success_msg_alert(data);
+					expense_estimate_list_reflect();
+				});
+			}
+		}
 	});
 }
 </script>

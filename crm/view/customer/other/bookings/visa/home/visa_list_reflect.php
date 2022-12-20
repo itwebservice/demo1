@@ -10,7 +10,7 @@ $customer_id = $_SESSION['customer_id'];
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>
-			<th>Visa_ID</th>
+			<th>Booking_ID</th>
 			<th>Total_pax</th>
 			<th>View</th>
 			<th class="text-right info">Total_Amount</th>
@@ -21,7 +21,7 @@ $customer_id = $_SESSION['customer_id'];
 	</thead>
 	<tbody>
 		<?php 
-		$query = "select * from visa_master where 1 ";
+		$query = "select * from visa_master where 1 and delete_status='0' ";
 		$query .= " and customer_id='$customer_id'";
 		if($visa_id != ''){
 			$query .= " and visa_id='$visa_id'";
@@ -48,7 +48,7 @@ $customer_id = $_SESSION['customer_id'];
 			$yr = explode("-", $date);
 			$year =$yr[0];
 			//Get Total no of visa members
-            $sq_total_member=mysqli_num_rows(mysqlQuery("select visa_id from visa_master_entries where visa_id='$row_visa[visa_id]' and status!='Cancel'")); 
+            $sq_total_member=mysqli_num_rows(mysqlQuery("select visa_id from visa_master_entries where visa_id='$row_visa[visa_id]' ")); 
 
 			$cancel_amount=$row_visa['cancel_amount'];
 			$query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(credit_charges) as sumc from visa_payment_master where visa_id='$row_visa[visa_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
@@ -101,12 +101,12 @@ $customer_id = $_SESSION['customer_id'];
 				<td><?= get_visa_booking_id($row_visa['visa_id'],$year) ?></td>
 				<td><?php echo $sq_total_member; ?></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="visa_display_modal(<?= $row_visa['visa_id'] ?>)" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
+					<button class="btn btn-info btn-sm" onclick="visa_display_modal(<?= $row_visa['visa_id'] ?>)" title="View Details" id="visa-<?= $row_visa['visa_id'] ?>"><i class="fa fa-eye" aria-hidden="true"></i></button>
 				</td>
-				<td class="info text-right"><?php echo $sale_total_amount1; ?></td>
-				<td class="success text-right"><?= $paid_amount1 ?></td>
-				<td class="danger text-right"><?php echo $cancel_amount1; ?></td>
-				<td class="warning text-right"><?php echo $balance_amount1; ?></td>
+				<td class="info text-right"><?php echo $sale_total_amount; ?></td>
+				<td class="success text-right"><?= $paid_amount ?></td>
+				<td class="danger text-right"><?php echo $cancel_amount; ?></td>
+				<td class="warning text-right"><?php echo $balance_amount; ?></td>
 			</tr>
 			<?php
 		}

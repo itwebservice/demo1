@@ -8,7 +8,7 @@ $array_s = array();
 $temp_arr = array();
 
 
-$query = "select * from customer_master where 1";
+$query = "select * from customer_master where 1 and type!='B2B' ";
 if($traveler_id!=""){
 	$query .=" and customer_id ='$traveler_id' and active_flag='Active'";
 }
@@ -32,11 +32,11 @@ while($row = mysqli_fetch_assoc($sq))
 	}
 	//Group
 	$group_count = 0;
-	$group_tours = mysqlQuery("select * from tourwise_traveler_details where tour_group_status!='Cancel' and customer_id = '$row[customer_id]'");
+	$group_tours = mysqlQuery("select * from tourwise_traveler_details where customer_id = '$row[customer_id]' and delete_status='0'");
 	while($row1 = mysqli_fetch_assoc($group_tours)){
 		
-		$pass_count = (int)mysqli_num_rows(mysqlQuery("select * from travelers_details where status!='Cancel' and traveler_group_id = ".$row1['id']));
-		$cancel_pass_count = (int)mysqli_num_rows(mysqlQuery("select * from travelers_details where status='Cancel' and traveler_group_id = ".$row1['id']));
+		$pass_count = (int)mysqli_num_rows(mysqlQuery("select * from travelers_details where status!='Cancel' and traveler_group_id = ".$row1['traveler_group_id']));
+		$cancel_pass_count = (int)mysqli_num_rows(mysqlQuery("select * from travelers_details where status='Cancel' and traveler_group_id = ".$row1['traveler_group_id']));
 		if($pass_count != $cancel_pass_count){
 			$group_count++;
 			array_push($group_collection,$row1['traveler_group_id']);

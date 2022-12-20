@@ -92,16 +92,9 @@ public function ticket_master_update(){
 	$bsmValues = json_encode($bsmValues);
 	begin_t();
 
-
-
-	$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
-
-
-
-
+	$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
 
 	//**Update ticket
-
 	$sq_ticket = mysqlQuery("UPDATE train_ticket_master SET customer_id='$customer_id', type_of_tour='$type_of_tour', basic_fair='$basic_fair', service_charge='$service_charge', delivery_charges='$delivery_charges', gst_on='$gst_on', service_tax_subtotal='$service_tax_subtotal', net_total='$net_total', payment_due_date='$payment_due_date',created_at='$booking_date1',reflections='$reflections',bsm_values='$bsmValues',roundoff='$roundoff' WHERE train_ticket_id='$train_ticket_id'");
 
 	if(!$sq_ticket){
@@ -111,8 +104,6 @@ public function ticket_master_update(){
 		echo "error--Sorry, Ticket not updated!";
 
 	}
-
-
 
 	//**Updating entries
 
@@ -290,23 +281,15 @@ public function finance_update($sq_ticket_info, $row_spec,$particular)
 	$basic_fair = $_POST['basic_fair'];
 	$service_charge = $_POST['service_charge'];
     $delivery_charges = $_POST['delivery_charges'];
-	$gst_on = $_POST['gst_on'];
-	$taxation_type = $_POST['taxation_type'];
-	$taxation_id = $_POST['taxation_id'];
 	$service_tax = $_POST['service_tax'];
 	$service_tax_subtotal = $_POST['service_tax_subtotal'];
 	$net_total = $_POST['net_total'];
-	$bank_id1 = $_POST['bank_id'];
 	$booking_date1 = $_POST['booking_date1'];
 	$roundoff = $_POST['roundoff'];
-	$credit_charges = $_POST['credit_charges'];
-	$credit_card_details = $_POST['credit_card_details'];
 	
 	$reflections = json_decode(json_encode($_POST['reflections']));
 	$bsmValues = json_decode(json_encode($_POST['bsmValues']));
 	$booking_date = get_date_db($booking_date1);
-	$year2 = explode("-", $booking_date);
-	$yr2 = $year2[0];
 
 	foreach($bsmValues[0] as $key => $value){
 		switch($key){
@@ -315,9 +298,6 @@ public function finance_update($sq_ticket_info, $row_spec,$particular)
 		}
 	}
 	$train_sale_amount = $basic_fair;
-	//get total payment against train_ticket id
-	$sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from train_ticket_payment_master where train_ticket_id='$train_ticket_id'"));
-	$balance_amount = $net_total - $sq_train_ticket['payment_amount'];
 
   	//Getting customer Ledger
 	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
@@ -337,6 +317,7 @@ public function finance_update($sq_ticket_info, $row_spec,$particular)
 	$payment_side = "Credit";
 	$clearance_status = "";
 	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
 	////////////service charge/////////////
 	$module_name = "Train Ticket Booking";
 	$module_entry_id = $train_ticket_id;

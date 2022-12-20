@@ -1,10 +1,10 @@
 <?php
 include_once('../model.php');
 $due_date=date('Y-m-d');
-$sq_vendor = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where due_date='$due_date' and status!='Cancel'"));
+$sq_vendor = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where due_date='$due_date' and status!='Cancel' and delete_status='0'"));
 if($sq_vendor > 0){
 
-	$sq_vendor_details =  mysqlQuery("select * from vendor_estimate where due_date='$due_date' and status!='Cancel'");
+	$sq_vendor_details =  mysqlQuery("select * from vendor_estimate where due_date='$due_date' and status!='Cancel' and delete_status='0'");
 	while($row_vendor=mysqli_fetch_assoc($sq_vendor_details)){
 
 		$estimate_id = $row_vendor['estimate_id'];

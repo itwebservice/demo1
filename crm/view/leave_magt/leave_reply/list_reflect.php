@@ -30,7 +30,7 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role!='Hr' && $role!='Accountant' && $role_id!='7' && $role_id<'7'){
 	$query .= " and emp_id='$emp_id'";
 }
-$query .=" order by request_id desc";
+// $query .=" order by request_id desc";
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad mg_tp_20"> <div class="table-responsive">
 
@@ -79,6 +79,7 @@ $query .=" order by request_id desc";
 </div> </div> </div>
 <script>
 $('#tbl_customer_list').dataTable({
-		"pagingType": "full_numbers"
+		"pagingType": "full_numbers",
+		order: [[0, 'desc']],
 });
 </script>

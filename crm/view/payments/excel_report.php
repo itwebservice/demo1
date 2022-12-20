@@ -86,7 +86,7 @@ $company_name = $_GET['company_name'];
 
 //$invoice_id = ($booking_id!="") ? get_package_booking_id($booking_id): "";
 if($booking_id!=""){
-  $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id = '$booking_id'")) ;
+  $sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id = '$booking_id' and delete_status='0'")) ;
   $booking_date = $sql_booking_date['booking_date'];
   $yr = explode("-", $booking_date);
   $year =$yr[0];
@@ -234,7 +234,7 @@ $sq_payment = mysqlQuery($query);
     while($row_payment = mysqli_fetch_assoc($sq_payment)){
       if($row_payment['amount']!=0){
 
-      $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_payment[booking_id]'"));
+      $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_payment[booking_id]' and delete_status='0'"));
       $date = $sq_booking['booking_date'];
       $yr = explode("-", $date);
       $year =$yr[0];

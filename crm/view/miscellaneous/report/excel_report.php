@@ -50,24 +50,24 @@ $content_style_Array = array(
 
 //This is border array
 $borderArray = array(
-          'borders' => array(
-              'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN
-              )
-          )
-      );
+    'borders' => array(
+        'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+        )
+    )
+);
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
 
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
+    ->setLastModifiedBy("Maarten Balliauw")
+    ->setTitle("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setKeywords("office 2007 openxml php")
+    ->setCategory("Test result file");
 
 
 //////////////////////////****************Content start**************////////////////////////////////
@@ -84,7 +84,7 @@ $to_date = $_GET['to_date'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id' and delete_status='0'"));
 $date = $sq_visa_info['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -146,9 +146,8 @@ $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);
 
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B7:C7')->applyFromArray($borderArray);
- 
 
-$query = "select * from miscellaneous_master where financial_year_id='$financial_year_id' ";
+$query = "select * from miscellaneous_master where financial_year_id='$financial_year_id' and delete_status='0'";
 if($customer_id!=""){
     $query .=" and customer_id='$customer_id'";
 }

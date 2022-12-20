@@ -18,7 +18,7 @@ date_default_timezone_set('Europe/London');
 
 if (PHP_SAPI == 'cli')
 
-  die('This example should only be run from a Web Browser');
+    die('This example should only be run from a Web Browser');
 
 
 
@@ -175,7 +175,7 @@ $row_count = 6;
 $objPHPExcel->setActiveSheetIndex(0)
 
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "JV ID")
+        ->setCellValue('C'.$row_count, "Transaction ID")
         ->setCellValue('D'.$row_count, "Date")
         ->setCellValue('E'.$row_count, "Particulars")
         ->setCellValue('F'.$row_count, "Dr_Cr")
@@ -185,11 +185,9 @@ $objPHPExcel->setActiveSheetIndex(0)
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
-
-
 $row_count++;
 
-$query = "select * from journal_entry_master where financial_year_id='$financial_year_id' ";
+$query = "select * from journal_entry_master where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($from_date != '' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -199,31 +197,29 @@ $count = 0;
 $total_dr = 0; $total_cr = 0;
 $sq_journal = mysqlQuery($query);
 while($row_journal = mysqli_fetch_assoc($sq_journal)){
-  $date = $row_journal['entry_date'];
-  $yr = explode("-", $date);
-  $year =$yr[0];
+    $date = $row_journal['entry_date'];
+    $yr = explode("-", $date);
+    $year =$yr[0];
     $sq_journal_entry = mysqli_fetch_assoc(mysqlQuery("select * from journal_entry_accounts where entry_id='$row_journal[entry_id]' limit 1"));		
     $sq_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$sq_journal_entry[ledger_id]'"));
-        $sq_journal_debit = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as amount from journal_entry_accounts where type = 'Debit' and entry_id='$row_journal[entry_id]'"));
-        $total_cr += $sq_journal_debit['amount'];
-          $objPHPExcel->setActiveSheetIndex(0)
-
-              ->setCellValue('B'.$row_count, ++$count)
-              ->setCellValue('C'.$row_count, get_jv_entry_id($row_journal['entry_id'],$year))
-              ->setCellValue('D'.$row_count, get_date_user($row_journal['entry_date']))
-              ->setCellValue('E'.$row_count, $sq_ledger['ledger_name'])
-              ->setCellValue('F'.$row_count, $sq_journal_entry['type'])
-              ->setCellValue('G'.$row_count, $row_journal['narration'])
-              ->setCellValue('H'.$row_count, number_format($sq_journal_debit['amount'],2));
+    $sq_journal_debit = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as amount from journal_entry_accounts where type = 'Debit' and entry_id='$row_journal[entry_id]'"));
+    $total_cr += $sq_journal_debit['amount'];
         
-        
+    $objPHPExcel->setActiveSheetIndex(0)
 
-        
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('B'.$row_count, ++$count)
+        ->setCellValue('C'.$row_count, get_jv_entry_id($row_journal['entry_id'],$year))
+        ->setCellValue('D'.$row_count, get_date_user($row_journal['entry_date']))
+        ->setCellValue('E'.$row_count, $sq_ledger['ledger_name'])
+        ->setCellValue('F'.$row_count, $sq_journal_entry['type'])
+        ->setCellValue('G'.$row_count, $row_journal['narration'])
+        ->setCellValue('H'.$row_count, number_format($sq_journal_debit['amount'],2));
+    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
-        $row_count++;
-    }
+    $row_count++;
+}
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "")
         ->setCellValue('C'.$row_count, "")

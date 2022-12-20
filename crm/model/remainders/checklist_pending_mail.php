@@ -43,7 +43,7 @@ if($sq_tour_count > 0){
 $sq_booking_count = mysqli_num_rows(mysqlQuery("SELECT * from package_tour_booking_master where tour_from_date between '$start_date' and '$end_date'"));
 if($sq_booking_count > 0){
 
-	$sq_booking = mysqlQuery("select * from package_tour_booking_master where tour_from_date>'$today'");
+	$sq_booking = mysqlQuery("select * from package_tour_booking_master where tour_from_date>'$today' and delete_status='0'");
 	while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 		if($tommorow==$row_booking['tour_from_date']){

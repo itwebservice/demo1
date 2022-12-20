@@ -1,4 +1,4 @@
-<?php 
+<?php
 $flag = true;
 class ticket_refund{
 
@@ -23,9 +23,6 @@ public function ticket_refund_save()
 
 	$financial_year_id = $_SESSION['financial_year_id'];  
 	$branch_admin_id = $_SESSION['branch_admin_id'];
-
-	$bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $refund_amount);
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; }
 
 	begin_t(); 
 
@@ -111,8 +108,8 @@ public function finance_save($refund_id,$cid)
 
 	$sq_exc_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
   	$customer_id = $sq_exc_info['customer_id'];
-	$refund_date = date('Y-m-d', strtotime($sq_exc_info['created_at']));
-	$year = explode("-", $refund_date);
+	$refund_dates = date('Y-m-d', strtotime($sq_exc_info['created_at']));
+	$year = explode("-", $refund_dates);
 	$yr =$year[0];
 
   	//Getting cash/Bank Ledger
@@ -137,7 +134,7 @@ public function finance_save($refund_id,$cid)
 	}
 	$pax = $sq_exc_info['adults'] + $sq_exc_info['childrens'];
 	
-	$sq_trip1 = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id'");
+	$sq_trip1 = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'");
 	$i=0;
 	while($sq_trip = mysqli_fetch_assoc($sq_trip1)){
   
@@ -149,7 +146,7 @@ public function finance_save($refund_id,$cid)
 			$sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
 		$i++;
 	}
-	$sq_trip2 = mysqli_fetch_assoc(mysqlQuery("select airlin_pnr from ticket_trip_entries where ticket_id='$ticket_id'"));
+	$sq_trip2 = mysqli_fetch_assoc(mysqlQuery("select airlin_pnr from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'"));
 	$pnr = $sq_trip2['airlin_pnr'];
 	$sq_trip3 = mysqli_fetch_assoc(mysqlQuery("select ticket_no from ticket_master_entries where ticket_id='$ticket_id'"));
 	$ticket_no = $sq_trip3['ticket_no'];
@@ -217,7 +214,7 @@ public function bank_cash_book_save($refund_id)
 	}
 	$pax = $sq_exc_info['adults'] + $sq_exc_info['childrens'];
 	
-	$sq_trip1 = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id'");
+	$sq_trip1 = mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'");
 	$i=0;
 	while($sq_trip = mysqli_fetch_assoc($sq_trip1)){
   
@@ -229,7 +226,7 @@ public function bank_cash_book_save($refund_id)
 			$sector = $sector.','.str_replace(')','',$dep[1]).'-'.str_replace(')','',$arr[1]);
 		$i++;
 	}
-	$sq_trip2 = mysqli_fetch_assoc(mysqlQuery("select airlin_pnr from ticket_trip_entries where ticket_id='$ticket_id'"));
+	$sq_trip2 = mysqli_fetch_assoc(mysqlQuery("select airlin_pnr from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'"));
 	$pnr = $sq_trip2['airlin_pnr'];
 	$sq_trip3 = mysqli_fetch_assoc(mysqlQuery("select ticket_no from ticket_master_entries where ticket_id='$ticket_id'"));
 	$ticket_no = $sq_trip3['ticket_no'];

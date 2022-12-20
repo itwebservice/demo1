@@ -41,7 +41,7 @@ $row1= mysqli_fetch_array($sql1);
 $tour_amount_paid = $row1['total'];
 $total_amount = $traveling_amount_paid + $tour_amount_paid;
 
-$tourwise_details1 = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id' "));
+$tourwise_details1 = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id' and delete_status='0' "));
 
 $sq_est_info = mysqli_fetch_assoc(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$tourwise_traveler_id'"));
 
@@ -54,7 +54,7 @@ while($row = mysqli_fetch_assoc($sq)){
 	($row['clearance_status']=="Cleared")?$bg='success':$bg="";
 
 	$sq_traveler = mysqli_fetch_assoc(mysqlQuery("select * from travelers_details where traveler_id='$row[traveler_id]'"));
-	$sq_traveler_year = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where traveler_group_id='$sq_traveler[traveler_group_id]'"));
+	$sq_traveler_year = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where traveler_group_id='$sq_traveler[traveler_group_id]' and delete_status='0'"));
 	$date = $sq_traveler_year['form_date'];
 	$yr = explode("-", $date);
 	$year =$yr[0];

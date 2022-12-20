@@ -4,10 +4,10 @@ include "../../../../model/model.php";
 $package_tour_montly_weekly_select = $_POST['package_tour_montly_weekly_select'];
 
 if($package_tour_montly_weekly_select=='Weekly'){
-	$sq_package_tours = mysqlQuery("select * from package_tour_booking_master where WEEKOFYEAR(tour_from_date)=WEEKOFYEAR(NOW())");
+	$sq_package_tours = mysqlQuery("select * from package_tour_booking_master where WEEKOFYEAR(tour_from_date)=WEEKOFYEAR(NOW()) and delete_status='0'");
 }
 if($package_tour_montly_weekly_select=="Monthly"){
-	$sq_package_tours = mysqlQuery("select * from package_tour_booking_master where YEAR(tour_from_date) = YEAR(NOW()) AND MONTH(tour_from_date)=MONTH(NOW())");
+	$sq_package_tours = mysqlQuery("select * from package_tour_booking_master where YEAR(tour_from_date) = YEAR(NOW()) AND MONTH(tour_from_date)=MONTH(NOW()) and delete_status='0'");
 }
 ?>
 <div class="row"> <div class="col-md-12"> <div class="table-responsive">

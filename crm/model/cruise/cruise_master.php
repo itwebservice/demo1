@@ -17,7 +17,7 @@ public function cruise_save()
 	$service_tax_no = $_POST['service_tax_no'];
 	$state = $_POST['state'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -46,7 +46,7 @@ public function cruise_save()
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(cruise_id) as max from cruise_master"));
 	$cruise_id = $sq_max['max'] + 1;
-	$sq_cruise = mysqlQuery("insert into cruise_master (cruise_id, city_id, company_name, mobile_no, landline_no, email_id, contact_person_name,immergency_contact_no, cruise_address,state, country, website, opening_balance, bank_name,account_name,account_no,branch,ifsc_code, service_tax_no, active_flag, created_at,side,pan_no,as_of_date) values ('$cruise_id', '$cmb_city_id', '$company_name', '$mobile_no', '$landline_no', '$email_id', '$contact_person_name','$immergency_contact_no' ,'$cruise_address','$state','$country','$website', '$opening_balance','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$service_tax_no', '$active_flag', '$created_at','$side','$supp_pan','$as_of_date' ) ");
+	$sq_cruise = mysqlQuery("insert into cruise_master (cruise_id, city_id, company_name, mobile_no, landline_no, email_id, contact_person_name,immergency_contact_no, cruise_address,state, website, opening_balance, bank_name,account_name,account_no,branch,ifsc_code, service_tax_no, active_flag, created_at,side,pan_no,as_of_date) values ('$cruise_id', '$cmb_city_id', '$company_name', '$mobile_no', '$landline_no', '$email_id', '$contact_person_name','$immergency_contact_no' ,'$cruise_address','$state','$website', '$opening_balance','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$service_tax_no', '$active_flag', '$created_at','$side','$supp_pan','$as_of_date' ) ");
 	sundry_creditor_balance_update();
 
 	if($sq_cruise){
@@ -84,7 +84,7 @@ public function cruise_update()
 	$active_flag = $_POST['active_flag'];
 	$service_tax_no1 = $_POST['service_tax_no1'];
 	$immergency_contact_no =$_POST['immergency_contact_no'];
-	$country = $_POST['country'];
+	// $country = $_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -110,7 +110,7 @@ public function cruise_update()
 	}
 
 	$cruise_address = mysqlREString($cruise_address);
-	$sq_cruise = mysqlQuery("update cruise_master set company_name='$company_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', city_id='$cmb_city_id1', cruise_address='$cruise_address', country='$country', website='$website', service_tax_no='$service_tax_no1', opening_balance='$opening_balance', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', active_flag='$active_flag', side='$side', state='$state',pan_no='$supp_pan',as_of_date='$as_of_date' where cruise_id='$cruise_id' ");
+	$sq_cruise = mysqlQuery("update cruise_master set company_name='$company_name', mobile_no='$mobile_no', landline_no='$landline_no', email_id='$email_id', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', city_id='$cmb_city_id1', cruise_address='$cruise_address', website='$website', service_tax_no='$service_tax_no1', opening_balance='$opening_balance', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', active_flag='$active_flag', side='$side', state='$state',pan_no='$supp_pan',as_of_date='$as_of_date' where cruise_id='$cruise_id' ");
 
 	if($sq_cruise){
 		$vendor_login_master = new vendor_login_master;

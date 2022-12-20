@@ -1,6 +1,6 @@
-<div class="row mg_bt_10" >
+<div class="row mg_tp_10 mg_bt_10" >
     <div class="col-md-4 col-sm-6">
-        <input type="checkbox" id="chk_cruise_select_all" onchange="select_all('tbl_dynamic_cruise_package_booking',this.id);  calculate_cruise_expense('tbl_dynamic_cruise_package_booking',true)" checked>&nbsp;&nbsp;<label for="chk_cruise_select_all">Select All</label>
+        <input type="checkbox" id="chk_cruise_select_all" onchange="select_all('tbl_dynamic_cruise_package_booking',this.id);  calculate_cruise_expense('tbl_dynamic_cruise_package_booking',true)">&nbsp;&nbsp;<label for="chk_cruise_select_all">Select All</label>
     </div>
     <div class="col-md-8 col-sm-6 text-right">
         <button type="button" class="btn btn-excel btn-sm" onClick="addRow('tbl_dynamic_cruise_package_booking')" title="Add Row"><i class="fa fa-plus"></i></button>
@@ -21,18 +21,18 @@
             <td><input class="css-checkbox" id="chk_cruise1" type="checkbox" onchange="calculate_cruise_expense('tbl_dynamic_cruise_package_booking',true)" ><label class="css-label" for="chk_cruise1"><label></td>
             <td><input maxlength="15" value="1" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
             <td><input type="text" style="width:165px" id="cruise_departure_date" onchange="get_to_datetime(this.id, 'cruise_arrival_date');validate_transportDate('cruise_departure_date' , 'cruise_arrival_date')" name="cruise_departure_date" placeholder="Departure Date & Time" title="Departure Date & Time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>"></td>
-            <td><input type="text"style="width:165px" id="cruise_arrival_date" onchange="validate_validDatetime('cruise_departure_date',this.id)" name="cruise_arrival_date" placeholder="Arrival Date & Time" title="Arrival Date & Time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>"></td>
-            <td><input type="text" id="route" name="route" placeholder="*Route" onchange="validate_specialChar(this.id); " title="Route"></td>
-            <td><input type="text" id="cabin" name="cabin" placeholder="*Cabin" onchange="validate_specialChar(this.id); " title="Cabin"></td>
-            <td class="col-md-2"><select id="sharing" name="sharing" style="width:100%;" title="Sharing">
+            <td><input type="text" style="width:165px" id="cruise_arrival_date" onchange="validate_validDatetime('cruise_departure_date',this.id)" name="cruise_arrival_date" placeholder="Arrival Date & Time" title="Arrival Date & Time" class="app_datetimepicker" value="<?= date('d-m-Y H:i') ?>"></td>
+            <td><input type="text" style="width:150px" id="route" name="route" placeholder="*Route" onchange="validate_specialChar(this.id); " title="Route"></td>
+            <td><input type="text" style="width:150px" id="cabin" name="cabin" placeholder="*Cabin" onchange="validate_specialChar(this.id); " title="Cabin"></td>
+            <td class="col-md-2"><select id="sharing" name="sharing" style="width:160px;" title="Sharing">
                     <option value="">Sharing</option>
                     <option value="Single">Single</option>
                     <option value="Double">Double</option>
                     <option value="Triple Quad">Triple Quad</option>
                 </select></td>
-            <td class="col-md-1"><input type="text" id="txt_cruise_total_seat1" name="txt_cruise_total_seat1" placeholder="Total Seats" title="Total Seats" maxlength="3" onchange="validate_balance(this.id);" /></td>
+            <td class="col-md-1"><input type="text" id="txt_cruise_total_seat1" name="txt_cruise_total_seat1" placeholder="Total Seats" title="Total Seats" style="width:95px;" maxlength="3" onchange="validate_balance(this.id);" /></td>
 
-            <td style="width: 130px;"><input type="text" id="txt_cruise_amount1" name="txt_cruise_amount1" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id); calculate_cruise_expense('tbl_dynamic_cruise_package_booking',true);" /></td>
+            <td><input type="text" id="txt_cruise_amount1" name="txt_cruise_amount1" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id); calculate_cruise_expense('tbl_dynamic_cruise_package_booking',true);" style="width: 170px;"/></td>
         </tr>
     </table>
 

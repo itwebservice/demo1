@@ -30,17 +30,17 @@ $branch_status = $sq['branch_status'];
 
 					<div class="app_panel_content Filter-panel">
 						<div class="row">
-							<div class="col-md-4 col-sm-4 col-xs-12 mg_bt_10_xs">
+							<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_xs">
 								<input type="text" id="from_date_filter"  name="from_date_filter" placeholder="From Date" title="From Date" onchange="get_to_date(this.id,'to_date_filter');quotation_list_reflect()">
 							</div>
-							<div class="col-md-4 col-sm-3 col-xs-12 mg_bt_10_xs">
+							<div class="col-md-3 col-sm-3 col-xs-12 mg_bt_10_xs">
 								<input type="text" id="to_date_filter" name="to_date_filter" placeholder="To Date" title="To Date" onchange="validate_validDate('from_date_filter','to_date_filter');quotation_list_reflect()">
 							</div>
-							<div class="col-md-4 col-sm-4 col-xs-12 mg_bt_10_xs">
+							<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_xs">
 								<select name="quotation_id" title="Select Quotation" id="quotation_id" onchange="quotation_list_reflect()" style="width:100%">
 									<option value="">Select Quotation</option>
 									<?php 
-									$query = "select * from car_rental_quotation_master where 1 and financial_year_id='$financial_year_id'";
+									$query = "select * from car_rental_quotation_master where 1 and financial_year_id='$financial_year_id' and status='1'";
 									if($role=='Sales' || $role=='Backoffice'){
 										$query .= " and emp_id='$emp_id'";
 									}
@@ -61,6 +61,13 @@ $branch_status = $sq['branch_status'];
 										<?php
 									}
 									?>
+								</select>
+							</div>
+							<div class="col-md-3 col-sm-6 col-xs-12">
+								<select name="status" id="status" title="Status" style="width:100%" onchange="quotation_list_reflect()">
+									<option value="">Status</option>
+									<option value="1">Active</option>
+									<option value="0">Inactive</option>
 								</select>
 							</div>
 						</div>
@@ -102,9 +109,10 @@ function quotation_list_reflect()
 	var to_date = $('#to_date_filter').val();
 	var quotation_id = $('#quotation_id').val();
 	var branch_status = $('#branch_status').val();
+	var status = $('#status').val();
 
-	$.post('quotation_list_reflect.php', { from_date : from_date, to_date : to_date, quotation_id : quotation_id , branch_status : branch_status}, function(data){
-		pagination_load(data, column, false, false, 20, 'car_table');
+	$.post('quotation_list_reflect.php', { from_date : from_date, to_date : to_date, quotation_id : quotation_id , branch_status : branch_status,status:status}, function(data){
+		pagination_load(data, column, true, false, 20, 'car_table');
 		$('.loader').remove();
 	})
 }

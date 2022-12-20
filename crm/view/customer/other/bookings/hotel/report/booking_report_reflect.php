@@ -4,7 +4,7 @@ include "../../../../../../model/model.php";
 $customer_id = $_SESSION['customer_id'];
 $booking_id = $_POST['booking_id'];
 
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 $query .=" and customer_id='$customer_id'";
 if($booking_id!=""){
 	$query .=" and booking_id='$booking_id'";
@@ -13,7 +13,7 @@ if($booking_id!=""){
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
 	
-<table class="table table-bordered cust_table" id="tbl_report" style="margin:20px 0 !important;">
+<table class="table table-bordered bg_white cust_table" id="tbl_report" style="margin:20px 0 !important;">
 	<thead>
 		<tr class="table-heading-row">
 			<th>S_No.</th>

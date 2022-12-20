@@ -34,7 +34,7 @@ $branch_status = $_POST['branch_status'];
 			<select name="train_ticket_id_filter" id="train_ticket_id_filter" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
 		        <?php 
-		        $query = "select * from train_ticket_master where 1 ";
+		        $query = "select * from train_ticket_master where 1 and delete_status='0' ";
 		        include "../../../../model/app_settings/branchwise_filteration.php";
 		        $query .= " order by train_ticket_id desc ";
 		        $sq_ticket = mysqlQuery($query);
@@ -83,74 +83,89 @@ $branch_status = $_POST['branch_status'];
 <div id="receipt_data"></div>
 
 <script>
-	$('#payment_from_date_filter, #payment_to_date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
-	$('#customer_id_filter, #train_ticket_id_filter,#cust_type_filter').select2();
-	dynamic_customer_load('','');
-	var columns = [
-		{ title : "S_No"},
-		{ title : " "},
-		{ title : "Booking_ID"},
-		{ title : "Customer_Name"},
-		{ title : "Receipt_Date"},
-		{ title : "Mode"},
-		{ title : "Branch_Name"},
-		{ title : "Amount", className : "success"},
-		{ title : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", className : "text-center"},
-	];
-	function train_ticket_payment_list_reflect()
-	{
-		var customer_id = $('#customer_id_filter').val();
-		var train_ticket_id = $('#train_ticket_id_filter').val();
-		var payment_mode = $('#payment_mode_filter').val();
-		var financial_year_id = $('#financial_year_id_filter').val();
-		var payment_from_date = $('#payment_from_date_filter').val();
-		var payment_to_date = $('#payment_to_date_filter').val();
-		var cust_type = $('#cust_type_filter').val();
-		var company_name = $('#company_filter').val();
-		var branch_status = $('#branch_status').val();
-		$.post('payment/ticket_payment_list_reflect.php', { customer_id : customer_id, train_ticket_id : train_ticket_id, payment_mode : payment_mode, financial_year_id : financial_year_id, payment_from_date : payment_from_date, payment_to_date : payment_to_date, cust_type : cust_type, company_name : company_name, branch_status : branch_status  }, function(data){
-			//$('#div_train_ticket_payment_list').html(data);
-			pagination_load(data,columns,true,true,10,'hotel_r_book');
-		});
-	}
-	train_ticket_payment_list_reflect();
-	$(document).ready(function () {
-		$("[data-toggle='tooltip']").tooltip({placement: 'bottom'});
-		$("[data-toggle='tooltip']").click(function(){$('.tooltip').remove()})
+$('#payment_from_date_filter, #payment_to_date_filter').datetimepicker({ timepicker:false, format:'d-m-Y' });
+$('#customer_id_filter, #train_ticket_id_filter,#cust_type_filter').select2();
+dynamic_customer_load('','');
+var columns = [
+	{ title : "S_No"},
+	{ title : " "},
+	{ title : "Booking_ID"},
+	{ title : "Customer_Name"},
+	{ title : "Receipt_Date"},
+	{ title : "Mode"},
+	{ title : "Branch_Name"},
+	{ title : "Amount", className : "success"},
+	{ title : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", className : "text-center"},
+];
+function train_ticket_payment_list_reflect()
+{
+	var customer_id = $('#customer_id_filter').val();
+	var train_ticket_id = $('#train_ticket_id_filter').val();
+	var payment_mode = $('#payment_mode_filter').val();
+	var financial_year_id = $('#financial_year_id_filter').val();
+	var payment_from_date = $('#payment_from_date_filter').val();
+	var payment_to_date = $('#payment_to_date_filter').val();
+	var cust_type = $('#cust_type_filter').val();
+	var company_name = $('#company_filter').val();
+	var branch_status = $('#branch_status').val();
+	$.post('payment/ticket_payment_list_reflect.php', { customer_id : customer_id, train_ticket_id : train_ticket_id, payment_mode : payment_mode, financial_year_id : financial_year_id, payment_from_date : payment_from_date, payment_to_date : payment_to_date, cust_type : cust_type, company_name : company_name, branch_status : branch_status  }, function(data){
+		//$('#div_train_ticket_payment_list').html(data);
+		pagination_load(data,columns,true,true,10,'hotel_r_book',true);
 	});
-	function train_ticket_payment_update_modal(payment_id)
-	{
-		var branch_status = $('#branch_status').val();
-		$.post('payment/ticket_payment_update_modal.php', { payment_id : payment_id, branch_status : branch_status  }, function(data){
-			$('#div_train_ticket_payment_update').html(data);
-		});
-	}
+}
+train_ticket_payment_list_reflect();
+$(document).ready(function () {
+	$("[data-toggle='tooltip']").tooltip({placement: 'bottom'});
+	$("[data-toggle='tooltip']").click(function(){$('.tooltip').remove()})
+});
+function train_ticket_payment_update_modal(payment_id)
+{
+	var branch_status = $('#branch_status').val();
+	$.post('payment/ticket_payment_update_modal.php', { payment_id : payment_id, branch_status : branch_status  }, function(data){
+		$('#div_train_ticket_payment_update').html(data);
+	});
+}
 
-	function excel_report()
-		{
-			var customer_id = $('#customer_id_filter').val();
-			var train_ticket_id = $('#train_ticket_id_filter').val();
-			var payment_from_date = $('#payment_from_date_filter').val();
-			var payment_to_date = $('#payment_to_date_filter').val();
-			var payment_mode = $('#payment_mode_filter').val();
-			var financial_year_id = $('#financial_year_id_filter').val();
-			var cust_type = $('#cust_type_filter').val();
-			var company_name = $('#company_filter').val();
-			var branch_status = $('#branch_status').val();
-			window.location = 'payment/excel_report.php?customer_id='+customer_id+'&train_ticket_id='+train_ticket_id+'&payment_from_date='+payment_from_date+'&payment_to_date='+payment_to_date+'&payment_mode='+payment_mode+'&financial_year_id='+financial_year_id+'&cust_type='+cust_type+'&company_name='+company_name+'&branch_status='+branch_status;
+function excel_report()
+{
+	var customer_id = $('#customer_id_filter').val();
+	var train_ticket_id = $('#train_ticket_id_filter').val();
+	var payment_from_date = $('#payment_from_date_filter').val();
+	var payment_to_date = $('#payment_to_date_filter').val();
+	var payment_mode = $('#payment_mode_filter').val();
+	var financial_year_id = $('#financial_year_id_filter').val();
+	var cust_type = $('#cust_type_filter').val();
+	var company_name = $('#company_filter').val();
+	var branch_status = $('#branch_status').val();
+	window.location = 'payment/excel_report.php?customer_id='+customer_id+'&train_ticket_id='+train_ticket_id+'&payment_from_date='+payment_from_date+'&payment_to_date='+payment_to_date+'&payment_mode='+payment_mode+'&financial_year_id='+financial_year_id+'&cust_type='+cust_type+'&company_name='+company_name+'&branch_status='+branch_status;
+}
+function bank_receipt(){
+	var payment_mode = $('#payment_mode_filter').val();
+	var base_url = $('#base_url').val();
+	$.post(base_url+'view/hotels/booking/payment/bank_receipt_generate.php',{payment_mode : payment_mode}, function(data){
+		$('#receipt_data').html(data);
+	});
+}
+function whatsapp_send_r(booking_id, payment_amount, base_url){
+	$.post(base_url+'controller/visa_passport_ticket/train_ticket/receipt_whatsapp_send.php',{booking_id:booking_id, payment_amount:payment_amount}, function(data){
+		console.log(data)
+		window.open(data);
+	});
+}
+function delete_entry(payment_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/visa_passport_ticket/train_ticket/ticket_master_payment_delete.php',{ payment_id : payment_id }, function(data){
+					success_msg_alert(data);
+					train_ticket_payment_list_reflect();
+				});
+			}
 		}
-		function bank_receipt(){
-			var payment_mode = $('#payment_mode_filter').val();
-			var base_url = $('#base_url').val();
-			$.post(base_url+'view/hotels/booking/payment/bank_receipt_generate.php',{payment_mode : payment_mode}, function(data){
-				$('#receipt_data').html(data);
-			});
-		}
-		function whatsapp_send_r(booking_id, payment_amount, base_url){
-			$.post(base_url+'controller/visa_passport_ticket/train_ticket/receipt_whatsapp_send.php',{booking_id:booking_id, payment_amount:payment_amount}, function(data){
-				console.log(data)
-				window.open(data);
-			});
-		}
+	});
+}
 </script>
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

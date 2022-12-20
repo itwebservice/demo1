@@ -8,7 +8,7 @@ include "../../../../model/model.php";
 			<select name="visa_id" id="visa_id" style="width:100%" title="Select Booking" onchange="visa_entries_reflect()">
 		        <option value="">Select Booking</option>
 		        <?php 
-		        $sq_visa = mysqlQuery("select * from miscellaneous_master order by misc_id desc");
+		        $sq_visa = mysqlQuery("select * from miscellaneous_master where delete_status='0' order by misc_id desc");
 		        while($row_visa = mysqli_fetch_assoc($sq_visa)){
 
 					$date = $row_visa['created_at'];
@@ -20,9 +20,9 @@ include "../../../../model/model.php";
 					}else{
 						$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
 					}
-		          ?>
-		          <option value="<?= $row_visa['misc_id'] ?>"><?= get_misc_booking_id($row_visa['misc_id'],$year).' : '.$cust_name ?></option>
-		          <?php
+					?>
+					<option value="<?= $row_visa['misc_id'] ?>"><?= get_misc_booking_id($row_visa['misc_id'],$year).' : '.$cust_name ?></option>
+					<?php
 		        }
 		        ?>
 		    </select>

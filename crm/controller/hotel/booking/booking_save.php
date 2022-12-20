@@ -1,4 +1,4 @@
-<?php 
+<?php
 include "../../../model/model.php";
 include "../../../model/hotel/booking_master.php";
 include "../../../model/hotel/payment_master.php";

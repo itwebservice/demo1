@@ -1,4 +1,21 @@
 <?php include "../../model/model.php";
+
+$token = filter_input(INPUT_POST, 'token', FILTER_DEFAULT);
+
+if (!$token || $token !== $_SESSION['token']) {
+    // return 405 http status code
+    header($_SERVER['SERVER_PROTOCOL'] . ' 405 Method Not Allowed');
+    exit;
+}
+
+if(!empty($_SESSION['attempt']))
+{
+	if($_SESSION['attempt']>=5)
+	{
+	  echo "Many Attempts Detected!! Login Blocked!";
+	  exit;
+	}
+}
 global $encrypt_decrypt,$secret_key;
 $username=mysqlREString($_POST['username']);
 $password=mysqlREString($_POST['password']);
@@ -14,7 +31,7 @@ if($row_count>0){
 	$_SESSION['password'] = $password;	
 	$_SESSION['financial_year_id'] = $financial_year_id;
 	$_SESSION['app_version'] = $app_version;
-
+	$_SESSION['attempt'] = 0;
 	$sq = mysqlQuery("select * from roles where user_name='$username' and password='$password' ");
 	if($row= mysqli_fetch_assoc($sq)){
 		$sq_role = mysqli_fetch_assoc(mysqlQuery("select * from role_master where role_id='$row[role_id]'"));
@@ -66,6 +83,16 @@ if($row_count>0){
 }	
 else
 {
+	if(empty($_SESSION['attempt']))
+	{
+	$_SESSION['attempt'] = 1;
+	}
+	else
+	{
+		$_SESSION['attempt'] += 1;
+	}
+	
+	
+	
 	echo "Your Username and/or password do not match!";
 }
-?>

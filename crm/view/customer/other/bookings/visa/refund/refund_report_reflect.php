@@ -9,7 +9,7 @@ $query = "select * from visa_refund_master where 1 ";
 if($visa_id!=""){
 	$query .=" and visa_id='$visa_id'";
 }
-$query .=" and visa_id in ( select visa_id from visa_master where customer_id='$customer_id' )";
+$query .=" and visa_id in ( select visa_id from visa_master where customer_id='$customer_id' and delete_status='0' )";
 
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12"> <div class="table-responsive">
@@ -39,7 +39,7 @@ $query .=" and visa_id in ( select visa_id from visa_master where customer_id='$
 			$pen_amt = 0;
 			$can_amt = 0;
 			$traveler_name = "";
-			$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$row_refund[visa_id]'"));
+			$sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$row_refund[visa_id]' and delete_status='0'"));
 			$date = $sq_visa['created_at'];
 			$yr = explode("-", $date);
 			$year1 =$yr[0];

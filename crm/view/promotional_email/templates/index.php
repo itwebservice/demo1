@@ -52,7 +52,7 @@ function list_reflect(){
   var template_type = $('#template_type').val();
 
   $.post('templates/list_reflect.php', {template_type:template_type}, function(data){
-        pagination_load(data,columns, true, false, 20, 'tbl_list');
+        pagination_load(data,columns, true, false, 20, 'tbl_list',true);
 		$('.loader').remove();
 	});
 }

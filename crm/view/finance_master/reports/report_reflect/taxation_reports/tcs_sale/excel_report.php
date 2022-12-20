@@ -121,7 +121,7 @@ $sq_setting = mysqli_fetch_assoc(mysqlQuery("select * from app_settings where se
 $sq_supply = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_setting[state_id]'"));
 
 //GIT Booking
-$query = "select * from tourwise_traveler_details where 1 and tcs_tax!='0' ";
+$query = "select * from tourwise_traveler_details where 1 and tcs_tax!='0' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);
@@ -174,7 +174,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //FIT Booking
-$query = "select * from package_tour_booking_master where 1 and tcs_tax!='0' ";
+$query = "select * from package_tour_booking_master where 1 and tcs_tax!='0' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -225,7 +225,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
   }
 }
 //Hotel Booking
-$query = "select * from hotel_booking_master where 1 and tcs_tax!='0' ";
+$query = "select * from hotel_booking_master where 1 and tcs_tax!='0' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
   $from_date = get_date_db($from_date);
   $to_date = get_date_db($to_date);

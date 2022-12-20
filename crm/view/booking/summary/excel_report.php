@@ -98,7 +98,7 @@ else{
 }
 
 if($id!=""){
-    $row_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$id'"));
+    $row_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$id' and delete_status='0'"));
 	$booking_date = $row_booking['form_date'];
 	$yr = explode("-", $booking_date);
 	$year =$yr[0];
@@ -171,7 +171,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
-        $query = "select * from tourwise_traveler_details where 1 ";
+        $query = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
         if($customer_id!=""){
             $query .= " and customer_id='$customer_id'";
         }
@@ -254,8 +254,8 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
         while($row_booking = mysqli_fetch_assoc($sq_package))
         {
             
-            $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[id]'"));
-            $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[id]' and status='Cancel'"));    
+            $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[traveler_group_id]'"));
+            $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_booking[traveler_group_id]' and status='Cancel'"));    
             $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$row_booking[emp_id]'"));
             if($sq_emp['first_name'] == '') { $emp_name='Admin';}
             else{ $emp_name = $sq_emp['first_name'].' '.$sq_emp['last_name']; }
@@ -263,7 +263,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
             $sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
             $branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
             
-            $sq_total_member = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id = '$row_booking[id]' AND status!='Cancel'"));
+            $sq_total_member = mysqli_num_rows(mysqlQuery("select traveler_group_id from travelers_details where traveler_group_id = '$row_booking[traveler_group_id]'"));
             $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
             $contact_no = $encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
             $email_id = $encrypt_decrypt->fnDecrypt($sq_customer_info['email_id'], $secret_key);
@@ -277,45 +277,20 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
             $paid_amount = $sq_paid_amount['sum'];
             $credit_card_charges = $sq_paid_amount['sumc'];
 
+            $sq_est_count = mysqli_num_rows(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
             if($sq_est_count!='0'){
-                $sq_est_info= mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
-                $tour_esti=$sq_est_info['cancel_amount'];
+                $sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
+                $cancel_amount = $sq_tour_refund['cancel_amount'];
             }
             else{
-                    $sq_est_info = mysqli_fetch_assoc(mysqlQuery("select * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
-                    $tour_esti=$sq_est_info['cancel_amount'];
+                $sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
+                $cancel_amount = $sq_tour_refund['cancel_amount'];
             }
             //sale amount
 	        $tour_fee = $row_booking['net_total'];
-            $total_amount = $tour_fee - $tour_esti;
-
-            if($row_booking['tour_group_status'] == 'Cancel'){
-                //Group Tour cancel
-                $cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
-                if($cancel_tour_count2 >= '1'){
-                    $cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
-                    $cancel_amount2 = $cancel_tour['cancel_amount'];
-                }
-                else{ $cancel_amount2 = 0; }
-        
-                if($cancel_esti_count1 >= '1'){
-                    $cancel_amount = $cancel_amount1;
-                }else{
-                    $cancel_amount = $cancel_amount2;
-                }	
-            }
-            else{
-                // Group booking cancel
-                $cancel_esti_count1=mysqli_num_rows(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
-                if($pass_count==$cancelpass_count){
-                    $cancel_esti1=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
-                    $cancel_amount = $cancel_esti1['cancel_amount'];
-                }
-                else{ $cancel_amount = 0; }
-        
-            }
-        
             $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
+            $total_amount = $tour_fee - $cancel_amount;
+        
             if($row_booking['tour_group_status'] == 'Cancel'){
                 if($cancel_amount > $paid_amount){
                     $total_balance = $cancel_amount - $paid_amount;
@@ -346,15 +321,15 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray);
             $total_purchase = 0;
             $purchase_amt = 0;
             $i=0;
-            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]'"));
+            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]' and delete_status='0'"));
             if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-            $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]'");
+            $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]' and delete_status='0'");
             while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
                 $p_due_date = get_date_user($row_purchase['due_date']);             
                 $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
                 $total_purchase = $total_purchase + $purchase_amt;
             }
-            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]'"));        
+            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]' and delete_status='0'"));        
             $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
             if($vendor_name == ''){ $vendor_name1 = 'NA';  }
             else{ $vendor_name1 = $vendor_name; }

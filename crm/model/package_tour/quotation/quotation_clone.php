@@ -594,8 +594,8 @@ public function clone_program_entries($quotation_id, $quotation_max)
  			  }
 
 		      else{
-
-		      	$insertSQL .= "'".$r[$col]."'";	
+				$dyn_content = addslashes($r[$col]);
+		      	$insertSQL .= "'".$dyn_content."'";	
 
 		      }
 

@@ -2,7 +2,14 @@
 //Generic Files
 include "../../../../model.php"; 
 include "printFunction.php";
-global $app_quot_img,$currency;
+global $app_quot_img,$currency,$quot_note;
+
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/car_flight/flight/index.php'"));
+$branch_status = $sq['branch_status'];
+
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 
 $quotation_id = $_GET['quotation_id'];
 $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Flight Quotation' and active_flag ='Active'"));
@@ -163,7 +170,7 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
       <div class="row">
         <div class="col-md-6">
           <div class="section_heding">
-            <h2>COSTING</h2>
+            <h2>COSTING DETAILS</h2>
             <div class="section_heding_img">
               <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
             </div>
@@ -189,14 +196,29 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
             </div>
           </div>
           <div class="print_info_block">
-            <ul class="main_block">
+          <div class="row"> 
+              <div class="col-md-6">
+              <ul class="main_block">
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK NAME : </span><?= ($bank_name_setting != '') ? $bank_name_setting : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NAME : </span><?= ($acc_name != '') ? $acc_name : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BRANCH : </span><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C TYPE : </span><?= ($acc_name != '') ? $acc_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BRANCH : </span><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? strtoupper($bank_ifsc_code) : 'NA' ?>)</li>
               <li class="col-md-12 mg_tp_10 mg_bt_10"><span>A/C NO : </span><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>IFSC : </span><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></li>
-              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>SWIFT CODE : </span><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>BANK ACCOUNT NAME : </span>
+              
+              <?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></li>
+              <li class="col-md-12 mg_tp_10 mg_bt_10"><span>SWIFT CODE : </span><?= ($bank_swift_code != '') ? strtoupper($bank_swift_code) : 'NA' ?></li>
             </ul>
+              </div>
+              <?php 
+              if(check_qr()) { ?>
+              <div class="col-md-6 text-center">
+                     <?= get_qr('Protrait Standard') ?>
+                        <br>
+                        <h4 class="no-marg">Scan & Pay </h4>
+         
+              </div>
+              <?php } ?>
+            </div>  
           </div>
         </div>
       </div>
@@ -220,12 +242,12 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
           <table class="table table-bordered no-marg" id="tbl_emp_list">
             <thead>
               <tr class="table-heading-row">
-                <th>From</th>
-                <th>To</th>
+                <th>From_Sector</th>
+                <th>To_Sector</th>
                 <th>Airline</th>
                 <th>Class</th>
-                <th>Departure</th>
-                <th>Arrival</th>
+                <th>Departure_D/T</th>
+                <th>Arrival_D/T</th>
               </tr>
             </thead>
             <tbody>
@@ -236,16 +258,16 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
               <tr>
                 <td><?= $row_plane['from_location'] ?></td>
                 <td><?= $row_plane['to_location'] ?></td>
-                <td><?= $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')' ?></td>
-                <td><?= $row_plane['class'] ?></td>
+                <td><?= ($sq_airline['airline_name'] != '') ? $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')':'NA' ?></td>
+                <td><?= ($row_plane['class'] != '') ? $row_plane['class'] : 'NA' ?></td>
                 <td><?= get_datetime_user($row_plane['dapart_time']) ?></td>
                 <td><?= get_datetime_user($row_plane['arraval_time']) ?></td>
               </tr>
               <?php } ?>
             </tbody>
           </table>
-         </div>
-       </div>
+        </div>
+      </div>
       </div>
     </section>
     <?php } ?>
@@ -256,14 +278,22 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
       <div class="row">
         <div class="col-md-12">
           <div class="section_heding">
-            <h2>Terms and Conditions</h2>
+            <h2>TERMS AND CONDITIONS</h2>
             <div class="section_heding_img">
               <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
             </div>
           </div>
           <div class="print_text_bolck">
-           <?= $sq_terms_cond['terms_and_conditions'] ?>
+            <?= $sq_terms_cond['terms_and_conditions'] ?>
           </div>
+        </div>
+      </div>
+    <?php } ?>
+    <?php
+    if($quot_note!=''){?>
+      <div class="row mg_tp_10">
+        <div class="col-md-12">
+          <?php echo $quot_note; ?>
         </div>
       </div>
     <?php } ?>

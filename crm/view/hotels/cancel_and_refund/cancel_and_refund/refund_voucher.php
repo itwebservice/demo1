@@ -4,7 +4,7 @@ $refund_id = $_GET['refund_id'];
 
 
 $sq_refund = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_refund_master where refund_id='$refund_id'"));
-$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$sq_refund[booking_id]'"));
+$sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$sq_refund[booking_id]' and delete_status='0'"));
 
 $hotel_name = "";
 $sq_refund_entries = mysqlQuery("select * from hotel_booking_refund_entries where refund_id='$refund_id'");

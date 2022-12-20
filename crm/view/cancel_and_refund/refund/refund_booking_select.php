@@ -10,7 +10,7 @@ include "../../../../model/model.php";
 		<select id="booking_id" name="booking_id" style="width:100%" title="Select Booking" onchange="refund_booking_reflect();"> 
 		    <option value="">Select Booking</option>
 		    <?php 
-		        $sq_booking = mysqlQuery("select * from package_tour_booking_master order by booking_id desc");
+		        $sq_booking = mysqlQuery("select * from package_tour_booking_master where delete_status='0' order by booking_id desc");
 		        while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		            $sq_traveler = mysqlQuery("select m_honorific, first_name, last_name from package_travelers_details where booking_id='$row_booking[booking_id]' and status='Cancel'");
 		            $date = $row_booking['booking_date'];

@@ -9,7 +9,7 @@ $emp_id = $_POST['emp_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 $purchase = $_POST['purchase'];
 
-$sq_total_amount = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where emp_id='$emp_id' and booking_id='$booking_id' and emp_id='$emp_id'"));
+$sq_total_amount = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where emp_id='$emp_id' and booking_id='$booking_id' and emp_id='$emp_id' and delete_status='0'"));
 $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$emp_id'"));
 
 $incentive = $sq_emp['incentive_per'];

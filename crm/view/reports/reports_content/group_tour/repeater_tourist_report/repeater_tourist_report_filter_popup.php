@@ -35,10 +35,10 @@ $count_p = 1;
 									if($group_ids[0] != ""){
 										for($i=0; $i<sizeof($group_ids); $i++)
 										{
-											$sq = mysqli_fetch_assoc(mysqlQuery("select id,tour_id,tour_group_id,form_date,tour_group_status from tourwise_traveler_details where traveler_group_id='$group_ids[$i]' "));
+											$sq = mysqli_fetch_assoc(mysqlQuery("select id,tour_id,tour_group_id,form_date,tour_group_status,traveler_group_id from tourwise_traveler_details where traveler_group_id='$group_ids[$i]' "));
 											
-											$pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$sq[id]'"));
-											$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$sq[id]' and status='Cancel'"));
+											$pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$sq[traveler_group_id]'"));
+											$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$sq[traveler_group_id]' and status='Cancel'"));
 											
 											$bg="";
 											if($sq['tour_group_status']=="Cancel"){
@@ -55,7 +55,7 @@ $count_p = 1;
 											$sq3 = mysqli_fetch_assoc(mysqlQuery("select tour_name from tour_master where tour_id='$tour_id'"));
 											$tour_name = $sq3['tour_name'];
 
-											$sq2 = mysqli_fetch_assoc(mysqlQuery("select from_date, to_date from tour_groups where tour_id='$tour_id'"));
+											$sq2 = mysqli_fetch_assoc(mysqlQuery("select from_date, to_date from tour_groups where tour_id='$tour_id' and group_id='$tour_group_id'"));
 											$tour_group_from = $sq2['from_date'];
 											$tour_group_to = $sq2['to_date'];
 											

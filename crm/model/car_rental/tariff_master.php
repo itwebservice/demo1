@@ -48,7 +48,7 @@ public function vendor_save()
             }
             if($GLOBALS['flag']){
                 commit_t();
-                echo "Car Rental Tariff has been successfully saved.";
+                echo "Vehicle Tariff has been successfully saved.";
                 exit;
               }
               else{
@@ -134,7 +134,7 @@ public function vendor_update()
 	{
 	    if($GLOBALS['flag']){
 	      commit_t();
-	      echo "Car Rental Tariff has been successfully updated.";
+	      echo "Vehicle Tariff has been successfully updated.";
 	      exit;
 	    }
 	    else{

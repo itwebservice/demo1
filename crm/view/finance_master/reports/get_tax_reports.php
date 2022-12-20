@@ -5,7 +5,7 @@ $report_id = $_POST['report_id'];
 <select id="tax_report_list" width="100%" class="form-control" onchange="tax_report_reflect(this.id);get_sale_purchase_cancel(this.id);">
 	<?php if($report_id == 'GST Reports'){
 	?>
-		<option value="ITC Report">ITC Report</option>
+		<option value="ITC Report">GST-R2</option>
 		<option value="GST on Sales">GST on Sales</option>
 		<option value="GST on Cancellation">GST on Cancellation</option>
 	<?php

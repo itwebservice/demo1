@@ -42,7 +42,7 @@
 	}
 
 
-	$sq_booking = mysqlQuery("select * from package_tour_booking_master where tour_from_date>'$today'");
+	$sq_booking = mysqlQuery("select * from package_tour_booking_master where tour_from_date>'$today' and delete_status='0'");
 	while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 		if($tommorow==$row_booking['tour_from_date']){

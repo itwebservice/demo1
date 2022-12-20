@@ -7,7 +7,7 @@ ini_set('display_startup_errors', TRUE);
 date_default_timezone_set('Europe/London');
 
 if (PHP_SAPI == 'cli')
-  die('This example should only be run from a Web Browser');
+    die('This example should only be run from a Web Browser');
 
 /** Include PHPExcel */
 require_once '../../../../../classes/PHPExcel-1.8/Classes/PHPExcel.php';
@@ -19,7 +19,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -49,23 +49,23 @@ $content_style_Array = array(
 
 //This is border array
 $borderArray = array(
-          'borders' => array(
-              'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN
-              )
-          )
-      );
+    'borders' => array(
+        'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+        )
+    )
+);
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
+    ->setLastModifiedBy("Maarten Balliauw")
+    ->setTitle("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setKeywords("office 2007 openxml php")
+    ->setCategory("Test result file");
 
 //////////////////////////****************Content start**************////////////////////////////////
 
@@ -95,39 +95,38 @@ $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('C2', 'Followup Update Report')
             ->setCellValue('B3', 'From-To-Date')
             ->setCellValue('C3', $date_str);
-             
+
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($borderArray);
 
 $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);
 
-
 $query = "select * from enquiry_master_entries where 1 ";
 if($from_date!="" && $to_date !=''){
-  $from_date = date('Y-m-d H:i',strtotime($from_date));
-  $to_date = date('Y-m-d H:i',strtotime($to_date));
-  $query .=" and followup_date between '$from_date' and '$to_date'  ";
+    $from_date = date('Y-m-d H:i',strtotime($from_date));
+    $to_date = date('Y-m-d H:i',strtotime($to_date));
+    $query .=" and followup_date between '$from_date' and '$to_date'  ";
 }else{
-  $query .=" and followup_date between '$today_date1' and '$today_date2'  ";
+    $query .=" and followup_date between '$today_date1' and '$today_date2'  ";
 }
 if($branch_status=='yes' && $role!='Admin'){
     $query .=" and enquiry_id in(select enquiry_id from enquiry_master where branch_admin_id='$branch_admin_id')";
 }
 
 $row_count = 6;
-
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr.No")
         ->setCellValue('C'.$row_count, "Customer Name")
-        ->setCellValue('D'.$row_count, "Assigned To")
-        ->setCellValue('E'.$row_count, "Followup Date")
-        ->setCellValue('F'.$row_count, "Followup Type")
-        ->setCellValue('G'.$row_count, "Followup Status")
-        ->setCellValue('H'.$row_count, "Followup Description");
+        ->setCellValue('D'.$row_count, "Enquiry No")
+        ->setCellValue('E'.$row_count, "Assigned To")
+        ->setCellValue('F'.$row_count, "Followup Date")
+        ->setCellValue('G'.$row_count, "Followup Type")
+        ->setCellValue('H'.$row_count, "Followup Status")
+        ->setCellValue('I'.$row_count, "Followup Description");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 $count = 0;
@@ -139,17 +138,22 @@ while($row=mysqli_fetch_assoc($sq))
         $sq_enq = mysqli_fetch_assoc(mysqlQuery("select * from enquiry_master where enquiry_id='$row[enquiry_id]'"));
         $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$sq_enq[assigned_emp_id]'"));
     
+        $enquiry_id = $row['enquiry_id'];
+        $date = $sq_enq['enquiry_date'];
+        $yr = explode("-", $date);
+        $year = $yr[0];
         $objPHPExcel->setActiveSheetIndex(0)
                 ->setCellValue('B'.$row_count, $count)
                 ->setCellValue('C'.$row_count, $sq_enq['name'])
-                ->setCellValue('D'.$row_count, $sq_emp['first_name'].' '.$sq_emp['last_name'])
-                ->setCellValue('E'.$row_count, get_datetime_user($row['followup_date']))
-                ->setCellValue('F'.$row_count, $row['followup_type'])
-                ->setCellValue('G'.$row_count, $row['followup_status'])
-                ->setCellValue('H'.$row_count,  $row['followup_reply']);
+                ->setCellValue('D'.$row_count, get_enquiry_id($enquiry_id,$year))
+                ->setCellValue('E'.$row_count, $sq_emp['first_name'].' '.$sq_emp['last_name'])
+                ->setCellValue('F'.$row_count, get_datetime_user($row['followup_date']))
+                ->setCellValue('G'.$row_count, $row['followup_type'])
+                ->setCellValue('H'.$row_count, $row['followup_status'])
+                ->setCellValue('I'.$row_count,  $row['followup_reply']);
 
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
-        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($content_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':I'.$row_count)->applyFromArray($borderArray);
 
         $row_count++;
     }
@@ -159,15 +163,12 @@ while($row=mysqli_fetch_assoc($sq))
 // Rename worksheet
 $objPHPExcel->getActiveSheet()->setTitle('Simple');
 
-
 for($col = 'A'; $col !== 'N'; $col++) {
     $objPHPExcel->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
 }
 
-
 // Set active sheet index to the first sheet, so Excel opens this as the first sheet
 $objPHPExcel->setActiveSheetIndex(0);
-
 
 // Redirect output to a client’s web browser (Excel5)
 header('Content-Type: application/vnd.ms-excel');

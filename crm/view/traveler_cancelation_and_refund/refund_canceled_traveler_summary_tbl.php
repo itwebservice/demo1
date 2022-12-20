@@ -65,7 +65,7 @@ $tourwise_id = $_POST['cmb_tourwise_traveler_id'];
             $sq_refund_id = mysqli_fetch_assoc(mysqlQuery("select * from refund_traveler_cancalation_entries where refund_id='$row_refund[refund_id]'"));
             $sq_traveler_name = mysqli_fetch_assoc( mysqlQuery( "select * from travelers_details where traveler_id='$sq_refund_id[traveler_id]'" ) );
 
-            $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id'"));
+            $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_id' and delete_status='0'"));
 
             $v_voucher_no = get_group_booking_traveler_refund_id($row_refund['refund_id'],$year);
             $v_refund_date = $row_refund['refund_date'];
@@ -75,7 +75,7 @@ $tourwise_id = $_POST['cmb_tourwise_traveler_id'];
             $v_payment_mode = $row_refund['refund_mode'];
             $customer_id = $sq_cust['customer_id'];
             $refund_id = $row_refund['refund_id'];
-            $url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&currency_code=$sq_cust[currency_code]";
+            $url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&booking_id=".get_group_booking_id($tourwise_id,$year)."&currency_code=$sq_cust[currency_code]";
         ?>
         <td class="text-right"><?php echo number_format($row_refund['total_refund'],2) ?></td>
         <td><?php echo date("d-m-Y", strtotime($row_refund['refund_date'])) ?></td>

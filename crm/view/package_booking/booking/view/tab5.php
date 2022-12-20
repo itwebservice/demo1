@@ -53,7 +53,12 @@ include "../../../../model/app_settings/generic_sale_widget.php";
 								$bg = "warning";
 							} else if ($row_package_payment['clearance_status'] == "Cancelled") {
 								$bg = "danger";
+							}else if ($row_package_payment['clearance_status'] == "Cleared") {
+								$bg = "success";
+							}else{
+								$bg = "";
 							}
+							
 						?>
 							<tr class="<?php echo $bg; ?>">
 								<td><?php echo $count; ?></td>

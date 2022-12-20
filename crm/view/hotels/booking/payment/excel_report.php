@@ -87,7 +87,7 @@ $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
 if($booking_id!="") {
-    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+    $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
     $date = $sq_booking['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];

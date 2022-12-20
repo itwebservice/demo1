@@ -85,7 +85,7 @@
 
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-		                  <?php echo "<label>State <em>:</em></label>".$sq_state['state_name'] ?>
+		                  <?php echo "<label>State/Country <em>:</em></label>".$sq_state['state_name'] ?>
 
 		            </span>	
 		            <span class="main_block" >
@@ -176,6 +176,20 @@
 	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
 	                  <?php echo "<label>PAN No/TAN No <em>:</em></label> ".strtoupper($row_customer['pan_no']); ?>
+
+	                </span>	  
+		            <span class="main_block">
+
+	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+	                  <?php echo "<label>Opening Balance <em>:</em></label> ".$row_customer['op_balance']; ?>
+
+	                </span>	
+		            <span class="main_block">
+
+	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+	                  <?php echo "<label>Balance Side <em>:</em></label> ".$row_customer['balance_side']; ?>
 
 	                </span>	 
 

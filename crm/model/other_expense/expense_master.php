@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $flag = true;
 
@@ -9,7 +9,7 @@ public function expense_save()
 	$expense_type = $_POST['expense_type'];
 	$supplier_type = $_POST['supplier_type'];
 	$sub_total = $_POST['sub_total'];
- 	$ledger_ids = $_POST['ledger_ids'];
+	$ledger_ids = $_POST['ledger_ids'];
 	$service_tax_subtotal = $_POST['service_tax_subtotal'];
 	$tds = $_POST['tds'];
 	$net_total = $_POST['net_total'];
@@ -74,6 +74,110 @@ public function expense_save()
 	}
 }
 
+function expense_delete(){
+
+		global $delete_master,$transaction_master,$bank_cash_book_master;
+		$expense_id = $_POST['expense_id'];
+		$branch_admin_id = $_SESSION['branch_admin_id'];
+		$deleted_date = date('Y-m-d');
+		$row_spec = "other expense";
+	
+		$row_expense = mysqli_fetch_assoc(mysqlQuery("select * from other_expense_master where expense_id='$expense_id'"));
+		$ledger_ids = $row_expense['ledgers'];
+		$expense_type = $row_expense['expense_type_id'];
+		$supplier_type = $row_expense['supplier_id'];
+		$booking_date = $row_expense['expense_date'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		
+		$sq_exp = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$expense_type' "));
+		$sq_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$supplier_type' and user_type='Other Vendor'"));
+		$cust_gl = $sq_ledger['ledger_id'];
+	
+		$sq_supplier = mysqli_fetch_assoc(mysqlQuery("select * from other_vendors where vendor_id='$row_expense[supplier_id]'"));
+		
+		$delete_master->delete_master_entries('Voucher',$sq_exp['ledger_name'],$expense_id,get_other_expense_booking_id($row_expense['expense_id'],$year),$sq_supplier['vendor_name'],$row_expense['total_fee']);
+
+		////////////Basic Expense Amount/////////////
+		$module_name = "Other Expense Booking";
+		$module_entry_id = $expense_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $deleted_date;
+		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, 0, '');    
+		$ledger_particular = get_ledger_particular('By','Cash/Bank');
+		$old_gl_id = $gl_id = $expense_type;
+		$payment_side = "Debit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'VOUCHER');
+
+		//Tax Amount
+		$ledger_ids_arr = explode(',',$ledger_ids);
+		if(sizeof($ledger_ids_arr) == 1){
+
+			// Debit
+			$module_name = "Other Expense Booking";
+			$module_entry_id = $expense_id;
+			$transaction_id = "";
+			$payment_amount = 0;
+			$payment_date = $booking_date;
+			$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, 0,  '');
+			$ledger_particular = get_ledger_particular('To','Expense');
+			$old_gl_id = $gl_id = $ledger_ids_arr[0];
+			$payment_side = "Debit";
+			$clearance_status = "";
+			$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'VOUCHER');
+		}
+		else{
+			for($i=0;$i<sizeof($ledger_ids_arr);$i++){
+
+				//Debit
+				$module_name = "Other Expense Booking";
+				$module_entry_id = $expense_id;
+				$transaction_id = "";
+				$payment_amount = 0;
+				$payment_date = $booking_date;
+				$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, 0, '');
+				$ledger_particular = get_ledger_particular('To','Expense');
+				$old_gl_id = $gl_id = $ledger_ids_arr[$i];
+				$payment_side = "Debit";
+				$clearance_status = "";
+				$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'VOUCHER');
+			}
+		}
+		
+		/////////TDS Debit////////
+		$module_name = "Other Expense Booking";
+		$module_entry_id = $expense_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $booking_date;
+		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, 0,  '');
+		$ledger_particular = get_ledger_particular('To','Expense');
+		$old_gl_id = $gl_id = 126;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'VOUCHER');
+
+		////////Net total Amount//////
+		$module_name = "Other Expense Booking";
+		$module_entry_id = $expense_id;
+		$transaction_id = "";
+		$payment_amount = 0;
+		$payment_date = $booking_date;
+		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, 0,  '');
+		$ledger_particular = get_ledger_particular('To','Expense');
+		$old_gl_id = $gl_id = $cust_gl;
+		$payment_side = "Credit";
+		$clearance_status = "";
+		$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'VOUCHER');
+
+		$sq_delete = mysqlQuery("update other_expense_master set amount = '0',service_tax_subtotal='0',tds='0',total_fee='0',delete_status='1' where expense_id='$expense_id'");
+		if($sq_delete){
+			echo 'Entry deleted successfully!';
+			exit;
+		}
+}
 
 public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_id){
 
@@ -86,14 +190,10 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
 	$service_tax_subtotal = $_POST['service_tax_subtotal'];
 	$tds = $_POST['tds'];
 	$net_total = $_POST['net_total'];
-	$due_date = $_POST['due_date'];
 	$booking_date = $_POST['booking_date'];
-	$invoice_no = $_POST['invoice_no'];
-	$id_upload_url =$_POST['id_upload_url'];
 	$payment_date = $_POST['payment_date'];
 	$payment_mode = $_POST['payment_mode'];
 	$payment_amount1 = $_POST['payment_amount'];
-	$bank_name =$_POST['bank_name'];
 	$transaction_id = $_POST['transaction_id'];
 	$bank_id = $_POST['bank_id'];
     $branch_admin_id = $_POST['branch_admin_id'];
@@ -103,11 +203,7 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
 
 	$yr = explode("-", $booking_date);
 	$year = $yr[0];
-	$str="select * from ledger_master where customer_id='$supplier_type' and user_type='Other Vendor'";
-	//exit();
-	//Getting customer Ledger
-	$sq_cust = mysqli_fetch_assoc(mysqlQuery($str));
-	
+	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$supplier_type' and user_type='Other Vendor'"));
 	$cust_gl = $sq_cust['ledger_id'];
 
 	//Getting cash/Bank Ledger
@@ -125,7 +221,7 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
     $transaction_id = "";
     $payment_amount = $sub_total;
     $payment_date = $booking_date;
-    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $sub_total, $payment_mode);    
+    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $sub_total, $payment_mode);    
     $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $gl_id = $expense_type;
     $payment_side = "Debit";
@@ -141,7 +237,7 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
 		$transaction_id = "";
 		$payment_amount = $service_tax_subtotal;
 		$payment_date = $booking_date;
-		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $service_tax_subtotal, $payment_mode);    
+		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $service_tax_subtotal, $payment_mode);    
 		$ledger_particular = get_ledger_particular('By','Cash/Bank');
 		$gl_id = $ledger_ids_arr[0];
 		$payment_side = "Debit";
@@ -156,7 +252,7 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
 			$transaction_id = "";
 			$payment_amount = $service_tax_subtotal1;
 			$payment_date = $booking_date;
-			$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $service_tax_subtotal1, $payment_mode);    
+			$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $service_tax_subtotal1, $payment_mode);    
 			$ledger_particular = get_ledger_particular('By','Cash/Bank');
 			$gl_id = $ledger_ids_arr[$i];
 			$payment_side = "Debit";
@@ -170,7 +266,7 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
     $transaction_id = "";
     $payment_amount = $tds;
     $payment_date = $booking_date;
-    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $tds, $payment_mode);
+    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $tds, $payment_mode);
     $ledger_particular = get_ledger_particular('To','Expense');
     $gl_id = 126;
     $payment_side = "Credit";
@@ -183,71 +279,74 @@ public function finance_save($expense_id, $payment_id, $row_spec, $branch_admin_
     $transaction_id = "";
     $payment_amount = $net_total;
     $payment_date = $booking_date;
-    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $net_total, $payment_mode);    
+    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $net_total, $payment_mode);    
     $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $gl_id = $cust_gl;
     $payment_side = "Credit";
     $clearance_status = "";
 	$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'VOUCHER');
-	
+
+    //Getting cash/Bank Ledger
+    if($payment_mode == 'Cash') { $type = 'CASH PAYMENT'; }
+    else{
+		$type = 'BANK PAYMENT';
+    }
+
     //////Payment Amount///////
-    $module_name = "Other Expense Booking";
-    $module_entry_id = $expense_id;
+    $module_name = "Other Expense Booking Payment";
+    $module_entry_id = $payment_id;
     $transaction_id = "";
     $payment_amount = $payment_amount1;
     $payment_date = $payment_date1;
-    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $payment_date1, $payment_amount1, $payment_mode);
-    $ledger_particular = get_ledger_particular('To','Expense');
+    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $payment_date1, $payment_amount1, $payment_mode);
+    $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $gl_id = $pay_gl;
     $payment_side = "Credit";
     $clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
-    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'VOUCHER');
+    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
     ////////Supplier Payment Amount//////
-	$module_name = "Other Expense Booking";
-	$module_entry_id = $expense_id;
+	$module_name = "Other Expense Booking Payment";
+	$module_entry_id = $payment_id;
 	$transaction_id = "";
 	$payment_amount = $payment_amount1;
 	$payment_date = $payment_date1;
-	$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $payment_date1, $payment_amount1, $payment_mode);
-	$ledger_particular = get_ledger_particular('To','Expense');
+	$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $payment_date1, $payment_amount1, $payment_mode);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
 	$gl_id = $cust_gl;
 	$payment_side = "Debit";
 	$clearance_status = "";
-	$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,'VOUCHER'); 
+	$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date,$payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 }
 
 public function bank_cash_book_save($expense_id, $payment_id, $branch_admin_id)
 {
-  global $bank_cash_book_master;
+	global $bank_cash_book_master;
 
-  $supplier_type = $_POST['supplier_type'];
-  $expense_type = $_POST['expense_type'];
-  $payment_date = $_POST['payment_date'];
-  $payment_amount = $_POST['payment_amount'];
-  $payment_mode = $_POST['payment_mode'];
-  $bank_name =$_POST['bank_name'];
-  $transaction_id = $_POST['transaction_id'];
-  $bank_id = $_POST['bank_id'];
+	$supplier_type = $_POST['supplier_type'];
+	$payment_date = $_POST['payment_date'];
+	$payment_amount = $_POST['payment_amount'];
+	$payment_mode = $_POST['payment_mode'];
+	$bank_name =$_POST['bank_name'];
+	$transaction_id = $_POST['transaction_id'];
+	$bank_id = $_POST['bank_id'];
+	$yr = explode("-", $payment_date);
+	$year = $yr[0];
 
-  $yr = explode("-", $payment_date);
-  $year = $yr[0];
+	$module_name = "Other Expense Booking";
+	$module_entry_id = $payment_id;
+	$payment_date = $payment_date;
+	$payment_amount = $payment_amount;
+	$payment_mode = $payment_mode;
+	$bank_name = $bank_name;
+	$transaction_id = $transaction_id;
+	$bank_id = $bank_id; 
+	$particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $payment_date, $payment_amount, $payment_mode);
+	$clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
+	$payment_side = "Credit";
+	$payment_type = ($payment_mode=="Cash") ? "Cash" : "Bank";
 
-  $module_name = "Other Expense Booking";
-  $module_entry_id = $payment_id;
-  $payment_date = $payment_date;
-  $payment_amount = $payment_amount;
-  $payment_mode = $payment_mode;
-  $bank_name = $bank_name;
-  $transaction_id = $transaction_id;
-  $bank_id = $bank_id; 
-  $particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $payment_date, $payment_amount, $payment_mode);
-  $clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
-  $payment_side = "Credit";
-  $payment_type = ($payment_mode=="Cash") ? "Cash" : "Bank";
-
-  $bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
-  
+	$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
 }
 public function expense_update(){
 	$row_spec = 'other expense';
@@ -314,24 +413,14 @@ public function finance_update($expense_id, $row_spec)
     $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$supplier_type' and user_type='Other Vendor'"));
     $cust_gl = $sq_cust['ledger_id'];
 
-    //Getting cash/Bank Ledger
-    if($payment_mode == 'Cash') {  $pay_gl = 20; }
-    else{ 
-        $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
-        $pay_gl = $sq_bank['ledger_id'];
-    }
-
     global $transaction_master;
-    $sq_exp = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from other_expense_payment_master where supplier_id='$supplier_type' and expense_type_id='$expense_type' and clearance_status!='Cancelled'"));
-	$balance_amount = $net_total - $sq_exp['payment_amount'];
-
     ////////////Basic Expense Amount/////////////
     $module_name = "Other Expense Booking";
     $module_entry_id = $expense_id;
     $transaction_id = "";
     $payment_amount = $sub_total;
     $payment_date = $booking_date;
-    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $sub_total, $payment_mode);    
+    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $sub_total, '');    
     $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $old_gl_id = $gl_id = $expense_type;
     $payment_side = "Debit";
@@ -348,7 +437,7 @@ public function finance_update($expense_id, $row_spec)
 		$transaction_id = "";
 		$payment_amount = $service_tax_subtotal;
 		$payment_date = $booking_date;
-		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $service_tax_subtotal, $payment_mode);
+		$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $service_tax_subtotal,  '');
 		$ledger_particular = get_ledger_particular('To','Expense');
 		$old_gl_id = $gl_id = $ledger_ids_arr[0];
 		$payment_side = "Debit";
@@ -365,7 +454,7 @@ public function finance_update($expense_id, $row_spec)
 			$transaction_id = "";
 			$payment_amount = $service_tax_subtotal;
 			$payment_date = $booking_date;
-			$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $service_tax_subtotal, $payment_mode);
+			$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $service_tax_subtotal, '');
 			$ledger_particular = get_ledger_particular('To','Expense');
 			$old_gl_id = $gl_id = $ledger_ids_arr[$i];
 			$payment_side = "Debit";
@@ -380,7 +469,7 @@ public function finance_update($expense_id, $row_spec)
     $transaction_id = "";
     $payment_amount = $tds;
     $payment_date = $booking_date;
-    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $tds, $payment_mode);
+    $payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $tds,  '');
     $ledger_particular = get_ledger_particular('To','Expense');
     $old_gl_id = $gl_id = 126;
     $payment_side = "Credit";
@@ -393,13 +482,12 @@ public function finance_update($expense_id, $row_spec)
 	$transaction_id = "";
 	$payment_amount = $net_total;
 	$payment_date = $booking_date;
-	$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $expense_type, $booking_date, $net_total, $payment_mode);
+	$payment_particular = get_expense_paid_particular(get_other_expense_booking_id($expense_id,$year), $supplier_type, $booking_date, $net_total,  '');
 	$ledger_particular = get_ledger_particular('To','Expense');
 	$old_gl_id = $gl_id = $cust_gl;
 	$payment_side = "Credit";
 	$clearance_status = "";
 	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'VOUCHER'); 
-	
 }
 
 }

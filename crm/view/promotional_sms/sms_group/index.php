@@ -15,7 +15,6 @@ $branch_status = $_POST['branch_status'];
 	</table>
 </div></div></div>
 </div>
-<!-- <div id="div_sms_group_list" class="loader_parent"></div> -->
 
 <div id="div_sms_group_edit_content"></div>
 <?php include_once('sms_group_save_modal.php'); ?>
@@ -30,7 +29,7 @@ function sms_group_list_reflect()
 	$('#div_sms_group_list').append('<div class="loader"></div>');
 	var branch_status = $('#branch_status').val();
 	$.post('sms_group/sms_group_list_reflect.php', {  branch_status : branch_status }, function(data){
-		pagination_load(data, column, true, false, 20, 'email_id');
+		pagination_load(data, column, true, false, 20, 'email_id',true);
 	});
 }
 sms_group_list_reflect();

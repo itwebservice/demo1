@@ -13,7 +13,7 @@ if($row=mysqli_fetch_assoc($sq)){
 $booker_name = $first_name." ".$last_name; 
 
 $booking_id = $_POST['booking_id'];
-$sq_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+$sq_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $quot_id =$sq_booking_info['quotation_id'];
 $reflections = json_decode($sq_booking_info['reflections']);
 

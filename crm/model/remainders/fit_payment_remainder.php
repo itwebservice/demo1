@@ -3,11 +3,11 @@ include_once('../model.php');
  
  	$due_date=date('Y-m-d');
 
- 	$sq_package = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where due_date='$due_date' and tour_status!='cancel'"));
+ 	$sq_package = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where due_date='$due_date' and tour_status!='cancel' and delete_status='0'"));
 
 	if($sq_package>0){
 
-	 	$sq_tour_details = mysqlQuery("select * from package_tour_booking_master where due_date='$due_date' and tour_status!='cancel'");
+	 	$sq_tour_details = mysqlQuery("select * from package_tour_booking_master where due_date='$due_date' and tour_status!='cancel' and delete_status='0'");
 
 		while($row_tour_details= mysqli_fetch_assoc($sq_tour_details)){
 

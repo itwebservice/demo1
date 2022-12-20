@@ -41,7 +41,7 @@ $email = $encrypt_decrypt->fnDecrypt($sq_vendor['email'], $secret_key);
 
 
 
-		            <div class="panel panel-default panel-body fieldset profile_background no-pad-sm">
+		            <div class="panel panel-default panel-body fieldset profile_background no-pad-sm" style="border:none;">
 
 						<!-- Tab panes1 -->
 
@@ -51,8 +51,8 @@ $email = $encrypt_decrypt->fnDecrypt($sq_vendor['email'], $secret_key);
 
 						    <div role="tabpanel" class="tab-pane active" id="basic_information">
 								
-								<h3 class="editor_title">Supplier Information</h3>
-						     	<div class="panel panel-default panel-body app_panel_style">
+								
+						     	<div class="panel panel-default panel-body app_panel_style" style="border:none;">
 						     		<div class="row">
 
 										<div class="col-md-12">
@@ -135,17 +135,17 @@ $email = $encrypt_decrypt->fnDecrypt($sq_vendor['email'], $secret_key);
 
 											                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-											                  <?php echo "<label>State <em>:</em></label>".$sq_state['state_name'] ?>
+											                  <?php echo "<label>State/Country <em>:</em></label>".$sq_state['state_name'] ?>
 
 											            </span>	
 
-										        		<span class="main_block">
+										        		<!-- <span class="main_block">
 
 								        				<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i> 
 
 								        				    <?php echo "<label>Country <em>:</em></label> " .$sq_vendor['country']; ?>
 
-								        				</span>
+								        				</span> -->
 								        				<span class="main_block">
 
 								        					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -215,6 +215,20 @@ $email = $encrypt_decrypt->fnDecrypt($sq_vendor['email'], $secret_key);
 								        				    <?php echo "<label>Tax No <em>:</em></label> " .strtoupper($sq_vendor['service_tax_no']); ?>
 
 								        				</span>
+														<span class="main_block">
+
+															<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+															<?php echo "<label> Opening Balance <em>:</em></label> " .$sq_vendor['opening_balance']; ?>
+
+														</span>
+														<span class="main_block">
+
+															<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+															<?php echo "<label> Balance Side <em>:</em></label> " .$sq_vendor['side']; ?>
+
+														</span>
 								        				<span class="main_block">
 
 								        					<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>

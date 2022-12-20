@@ -527,7 +527,6 @@ $sq_cust_fit_feedback = mysqli_num_rows(mysqlQuery("select * from remainder_stat
 			{
 				var base_url = $('#base_url').val();
 				$.post(base_url+'model/remainders/weekly_summary_report.php', { }, function(data){
-
 				});
 			}
 			weekly_summary_report();
@@ -590,25 +589,25 @@ $sq_cust_fit_feedback = mysqli_num_rows(mysqlQuery("select * from remainder_stat
 
 	}
 
-	var user_visa = $('#user_visa').val();
+	// var user_visa = $('#user_visa').val();
 
-			if(user_visa==0){
+	// 		if(user_visa==0){
 
-		function user_visa_remainder()
+	// 	function user_visa_remainder()
 
-		{
+	// 	{
 
-			var base_url = $('#base_url').val();
+	// 		var base_url = $('#base_url').val();
 
-			$.post(base_url+'model/remainders/user_visa.php', { }, function(data){
-				alert(data);
-			});
+	// 		$.post(base_url+'model/remainders/user_visa.php', { }, function(data){
+	// 			alert(data);
+	// 		});
 
-		}
+	// 	}
 
-		user_visa_remainder();
+	// 	user_visa_remainder();
 
-	}
+	// }
 
 	var tax_pay = $('#tax_pay').val();
 

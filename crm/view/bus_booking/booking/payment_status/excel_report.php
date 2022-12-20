@@ -85,7 +85,7 @@ $booker_id = $_GET['booker_id'];
 $branch_id = $_GET['branch_id'];
 
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id = '$booking_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -168,7 +168,7 @@ $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($header_style_
 $objPHPExcel->getActiveSheet()->getStyle('B9:C9')->applyFromArray($borderArray); 
 
 
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($booking_id!=""){
     $query .= " and booking_id='$booking_id'";
 }
@@ -258,7 +258,7 @@ $objPHPExcel->setActiveSheetIndex(0)
 
             $sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
             $branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
-            $sq_total_member = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_entries where booking_id = '$row_booking[booking_id]' AND status!='Cancel'"));
+            $sq_total_member = mysqli_num_rows(mysqlQuery("select booking_id from bus_booking_entries where booking_id = '$row_booking[booking_id]'"));
 
             $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from bus_booking_payment_master where booking_id='$row_booking[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
@@ -302,14 +302,14 @@ $objPHPExcel->setActiveSheetIndex(0)
             $purchase_amt = 0;
             $i=0;
             $p_due_date = '';
-            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]'"));
+            $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'"));
             if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
-            $sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]'");
+            $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'");
             while($row_purchase = mysqli_fetch_assoc($sq_purchase)){     
                 $purchase_amt = $row_purchase['net_total'] - $row_purchase['cancel_amount'];
                 $total_purchase = $total_purchase + $purchase_amt;
             }
-            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]'"));      
+            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'"));      
             $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
             if($vendor_name == ''){ $vendor_name1 = 'NA';  }
             else{ $vendor_name1 = $vendor_name; }

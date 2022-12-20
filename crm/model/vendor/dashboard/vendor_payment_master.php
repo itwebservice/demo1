@@ -31,9 +31,6 @@ public function vendor_payment_save()
 
 	$financial_year_id = $_SESSION['financial_year_id'];
 
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $payment_amount);
-  	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }  
-
 
 	begin_t();
 
@@ -70,7 +67,7 @@ public function vendor_payment_save()
 
 	if(!$sq_payment){
 		rollback_t();
-		echo "error--Sorry, Payment not saved!";
+		echo "error--Sorry,Supplier Payment not saved!";
 		exit;
 	}
 	else{
@@ -82,13 +79,127 @@ public function vendor_payment_save()
 
 		if($GLOBALS['flag']){
 			commit_t();
-	    	echo "Payment has been successfully saved.";
+	    	echo "Supplier Payment has been successfully saved.";
 			exit;	
 		}
 		
 	}
 }
+public function vendor_payment_delete(){
+	
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$payment_id = $_POST['payment_id'];
+	$deleted_date = date('Y-m-d');
+	$row_spec = "purchase";
 
+	$sq_estimate_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where payment_id='$payment_id'"));
+    $estimate_type = $sq_estimate_info['estimate_type'];
+    $vendor_type = $sq_estimate_info['vendor_type'];
+    $vendor_type_id = $sq_estimate_info['vendor_type_id'];
+    $payment_date = $sq_estimate_info['payment_date'];
+    $payment_amount = $sq_estimate_info['payment_amount'];
+	$payment_old_mode = $payment_mode = $sq_estimate_info['payment_mode'];
+	$bank_name = $sq_estimate_info['bank_name'];
+	$transaction_id = $sq_estimate_info['transaction_id'];
+	$bank_id = $sq_estimate_info['bank_id'];
+	$clearance_status = $sq_estimate_info['clearance_status'];
+	$payment_amount1 = 0;
+
+	$vendor_name = get_vendor_name($vendor_type,$vendor_type_id);
+	$vendor_name = addslashes($vendor_name);
+	$estimate_type_val = get_estimate_type_name($sq_estimate_info['estimate_type'], $sq_estimate_info['estimate_type_id']);
+	$year1 = explode("-", $payment_date);
+    $yr1 = $year1[0];
+	
+	$delete_master->delete_master_entries('Payment('.$payment_mode.')',$estimate_type,$payment_id,$estimate_type_val,$vendor_name,$payment_amount);
+
+    //Getting New cash/Bank Ledger
+    if($payment_mode == 'Cash') {  $pay_gl = 20; $type='CASH PAYMENT'; }
+    else{ 
+	    $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+	    $pay_gl = $sq_bank['ledger_id'];
+		$type='BANK PAYMENT';
+    }
+
+    //Getting supplier Ledger
+	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$vendor_type_id' and user_type='$vendor_type' and group_sub_id='105'"));
+	$supplier_gl = $sq_cust['ledger_id'];
+	
+	////////Supplier Amount//////   
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$transaction_id = $transaction_id;
+	$payment_amount = 0;
+	$payment_date = $payment_date;
+	$payment_particular = get_purchase_paid_partucular(get_vendor_payment_id($payment_id,$yr1), $payment_date, 0, $vendor_type, $vendor_type_id,$payment_mode,$bank_id,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$old_gl_id = $gl_id = $supplier_gl;
+	$payment_side = "Debit";
+	$clearance_status = "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,'',$type);
+	
+	//////Advance Nullify Amount///////
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$transaction_id = $transaction_id;
+	$payment_amount = 0;
+	$payment_date = $payment_date;
+	$payment_particular = get_purchase_paid_partucular(get_vendor_payment_id($payment_id,$yr1), $payment_date, 0, $vendor_type, $vendor_type_id,$payment_mode,$bank_id,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$old_gl_id = $gl_id = $supplier_gl;
+	$payment_side = "Credit";
+	$clearance_status = ''; 
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,'',$type);
+	
+	//////Payment Amount///////
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$transaction_id = $transaction_id;
+	$payment_amount = $payment_amount1;
+	$payment_date = $payment_date;
+	$payment_particular = get_purchase_paid_partucular(get_vendor_payment_id($payment_id,$yr1), $payment_date, 0, $vendor_type, $vendor_type_id,$payment_mode,$bank_id,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$old_gl_id = $gl_id = $pay_gl;
+	$payment_side = "Credit";
+	$clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,'',$type);
+
+	//////Advance Nullify Amount///////
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$transaction_id = $transaction_id;
+	$payment_amount = 0;
+	$payment_date = $payment_date;
+	$payment_particular = get_purchase_paid_partucular(get_vendor_payment_id($payment_id,$yr1), $payment_date, 0, $vendor_type, $vendor_type_id,$payment_mode,$bank_id,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$old_gl_id = $gl_id = $supplier_gl;
+	$payment_side = "Debit";
+	$clearance_status = ''; 
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id, '',$payment_side, $clearance_status, $row_spec,'',$type);
+
+	//Bank cash book
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$payment_date = $deleted_date;
+	$payment_amount = 0;
+	$payment_mode = $payment_mode;
+	$bank_name = $bank_name;
+	$transaction_id = $transaction_id;
+	$bank_id = $bank_id;
+	$particular = get_purchase_paid_partucular(get_vendor_payment_id($payment_id,$yr1), $payment_date, $payment_amount, $vendor_type, $vendor_type_id,$payment_mode,$bank_id,$transaction_id);
+	$clearance_status = $clearance_status;
+	$payment_side = "Credit";
+	$payment_type = ($payment_mode=="Cash") ? "Cash" : "Bank";
+
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type,$branch_admin_id);
+
+	$sq_up1 = mysqlQuery("update vendor_payment_master set payment_amount = '0', delete_status = '1' where payment_id='$payment_id'");
+	if($sq_up1){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+}
 public function finance_save($payment_id,$row_spec,$branch_admin_id)
 {
 	$vendor_type = $_POST['vendor_type'];
@@ -323,10 +434,7 @@ public function vendor_payment_update()
 
 	$financial_year_id = $_SESSION['financial_year_id'];
 
-	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where payment_id='$payment_id'"));
-
-	$bank_balance_status = bank_cash_balance_check($payment_mode, $bank_id, $payment_amount, $sq_payment_info['payment_amount']);
-  	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($payment_mode, $bank_id); exit; }  
+	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where payment_id='$payment_id'")); 
 
 	$clearance_status = ($sq_payment_info['payment_mode']=='Cash' && $payment_mode!="Cash") ? "Pending" : $sq_payment_info['clearance_status'];
 	if($payment_mode=="Cash"){ $clearance_status = ""; }
@@ -336,7 +444,7 @@ public function vendor_payment_update()
 	$sq_payment = mysqlQuery("update vendor_payment_master set financial_year_id='$financial_year_id', vendor_type='$vendor_type', vendor_type_id='$vendor_type_id', estimate_type='$estimate_type', estimate_type_id='$estimate_type_id', payment_date='$payment_date', payment_amount='$payment_amount', payment_mode='$payment_mode', bank_name='$bank_name', transaction_id='$transaction_id', bank_id='$bank_id', payment_evidence_url='$payment_evidence_url', clearance_status='$clearance_status' where payment_id='$payment_id' ");
 	if(!$sq_payment){
 		rollback_t();
-		echo "error--Sorry, Payment not updated!";
+		echo "error--Sorry, Supplier Payment not updated!";
 		exit;
 	}
 	else{
@@ -350,7 +458,7 @@ public function vendor_payment_update()
 		}
 		if($GLOBALS['flag']){
 			commit_t();
-	    	echo "Payment has been successfully updated.";
+	    	echo "Supplier Payment has been successfully updated.";
 			exit;	
 		}
 		

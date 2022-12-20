@@ -136,13 +136,14 @@ if(sizeof($hotel_list_arr) > 0){
         <div class="col-md-12">
           <div class="print_info_block">
             <?php for($i=0;$i<sizeof($hotel_traveller_arr);$i++){
-              if($hotel_id == $hotel_traveller_arr[$i]->service->id){
-                $room_types = explode('-',$hotel_list_arr[$hi]->service->item_arr[$i]);
-                $room_cat = $room_types[1]; ?>
+              if($hotel_id == $hotel_traveller_arr[$i]->service->id){ ?>
                 <?php
-                for($j=0;$j<sizeof($hotel_traveller_arr[$i]->service->room_arr);$j++){ ?>
+                for($j=0;$j<sizeof($hotel_traveller_arr[$i]->service->room_arr);$j++){ 
+                  $room_types = explode('-',$hotel_list_arr[$hi]->service->item_arr[$j]);
+                  $room_cat = $room_types[1];
+                  ?>
                   <ul class="main_block noType">
-                    <li class="col-md-4 mg_tp_10"><h6><?= 'Room '.($j+1).' : '.$room_cat ?></h6></li>
+                    <li class="col-md-12 mg_tp_10"><h6><?= 'Room '.($j+1).' Category : '.$room_cat ?></h6></li>
                   </ul>
                   <ul class="main_block noType">
                         <!-- Adults -->
@@ -180,6 +181,9 @@ if(sizeof($hotel_list_arr) > 0){
       </div>
     </section>
 
+    <?php
+    $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Hotel Service Voucher' and active_flag ='Active'"));
+    if($sq_terms_cond['terms_and_conditions']!=''||$sq_terms_cond['terms_and_conditions']!=' '){ ?>
     <!-- Terms and Conditions -->
     <section class="print_sec main_block">
       <div class="row">
@@ -191,13 +195,13 @@ if(sizeof($hotel_list_arr) > 0){
             </div>
           </div>
           <div class="print_text_bolck">
-            <?php 
-            $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Hotel Service Voucher' and active_flag ='Active'"));
+            <?php
             echo $sq_terms_cond['terms_and_conditions'];   ?> 
           </div>
         </div>
       </div>
     </section>
+    <?php } ?>
     
     <!-- ID Proof -->
     <?php     
@@ -591,7 +595,7 @@ if(sizeof($activity_list_arr) > 0){
       <?php } ?>
       <!-- Terms and Conditions -->
       <?php
-      if($sq_exc['terms_condition'] != ' '){?> 
+      if($sq_exc['terms_condition'] != '' || $sq_exc['terms_condition'] != ' '){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -611,7 +615,7 @@ if(sizeof($activity_list_arr) > 0){
       <?php } ?>
       <!-- Booking Policy -->
       <?php
-      if($sq_exc['booking_policy'] != ' '){?> 
+      if($sq_exc['booking_policy'] != '' || $sq_exc['booking_policy'] != ' '){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -631,7 +635,7 @@ if(sizeof($activity_list_arr) > 0){
       <?php } ?>
       <!-- Cancellation -->
       <?php
-      if($sq_exc['canc_policy'] != ' '){?> 
+      if($sq_exc['canc_policy'] != '' || $sq_exc['canc_policy'] != ' '){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -774,7 +778,7 @@ if(sizeof($ferry_list_arr) > 0){
       </section>
       <!-- Incl -->
       <?php
-      if($sq_ferry['inclusions'] != ' '){?> 
+      if($sq_ferry['inclusions'] != '' || $sq_ferry['inclusions'] != ' '){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -794,7 +798,7 @@ if(sizeof($ferry_list_arr) > 0){
       <?php } ?>
       <!-- Excl -->
       <?php
-      if($sq_ferry['exclusions'] != ' '){?> 
+      if($sq_ferry['exclusions'] != '' || $sq_ferry['exclusions'] != ' '){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -814,7 +818,7 @@ if(sizeof($ferry_list_arr) > 0){
       <?php } ?>
       <!-- Terms and Conditions -->
       <?php
-      if($sq_ferry['terms'] != ' '){?> 
+      if($sq_ferry['terms'] != ''){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -1121,7 +1125,7 @@ if(sizeof($tours_list_arr) > 0){
 
       <!-- Incl -->
       <?php
-      if($sq_pckg['inclusions'] != ' '){?> 
+      if($sq_pckg['inclusions'] != '' || $sq_pckg['inclusions'] != ' '){?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -1141,7 +1145,7 @@ if(sizeof($tours_list_arr) > 0){
       <?php } ?>
       <!-- Excl -->
       <?php
-      if($sq_pckg['exclusions'] != ' '){?>
+      if($sq_pckg['exclusions'] != '' || $sq_pckg['exclusions'] != ' '){?>
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
@@ -1162,12 +1166,12 @@ if(sizeof($tours_list_arr) > 0){
       <!-- Terms -->
       <?php
       $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Package Service Voucher' and active_flag ='Active'"));
-      if($sq_terms_cond['terms_and_conditions'] != ' '){?> 
+      if($sq_terms_cond['terms_and_conditions'] != '' && $sq_terms_cond['terms_and_conditions'] != ' '){ ?> 
       <section class="print_sec main_block">
         <div class="row">
           <div class="col-md-12">
             <div class="section_heding">
-              <h2>Terms & Condition</h2>
+              <h2>Terms & Conditions</h2>
               <div class="section_heding_img">
                 <img src="<?php echo BASE_URL.'images/heading_border.png'; ?>" class="img-responsive">
               </div>

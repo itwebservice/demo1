@@ -83,14 +83,16 @@ $(function(){
         $('#btn_visa_send').button('reset'); 
         return false;
       }
-      if(mail == false && whatsapp == false){
+      if(mail === false && whatsapp === false){
         error_msg_alert("Send information on mail or on whatsapp atleast!");
 			  $('#btn_visa_send').prop('disabled', false);
         $('#btn_visa_send').button('reset'); 
         return false;
       }
-      if(mail == true){
+      var msg = '';
+      if(mail === true){
 
+        $('#btn_visa_send').prop('disabled', true);
         $('#btn_visa_send').button('loading');
         $.ajax({
           type:'post',
@@ -104,9 +106,11 @@ $(function(){
           }  
         });
       }
-      if(whatsapp == true){
+      if(whatsapp === true){
+			  $('#btn_visa_send').prop('disabled', true);
         $('#btn_visa_send').button('loading');
-        whatsapp_send(country_code+contact_no,entry_id,'visa_send_modal');
+        var wcontact_no = country_code+contact_no;
+        whatsapp_send(wcontact_no,entry_id,'visa_send_modal');
         $('#btn_visa_send').button('reset');
 			  $('#btn_visa_send').prop('disabled', false); 
       }

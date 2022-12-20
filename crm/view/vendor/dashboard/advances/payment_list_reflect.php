@@ -12,7 +12,7 @@ $financial_year_id = $_POST['financial_year_id'];
 $array_s = array();
 $temp_arr = array();
 
-$query = "select * from vendor_advance_master where 1";
+$query = "select * from vendor_advance_master where 1 and delete_status='0'";
 if($financial_year_id!=""){
 	$query .= " and financial_year_id='$financial_year_id'";
 }
@@ -24,7 +24,7 @@ if($vendor_type_id!=""){
 }
 
 include "../../../../model/app_settings/branchwise_filteration.php";
-$query .= " order by payment_id desc ";
+// $query .= " order by payment_id desc ";
 $total_paid_amt = 0;
 $count = 0;
 
@@ -73,7 +73,8 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$row_payment['bank_name'],
 		$row_payment['transaction_id'],
 		''.$evidence.'
-		<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'] .')" data-toggle="tooltip" title="Edit this advance"><i class="fa fa-pencil-square-o"></i></button>'
+		<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'] .')" data-toggle="tooltip" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>'.
+		'<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="advance_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>'
 	
 		), "bg" =>$bg);
 	array_push($array_s,$temp_arr); 

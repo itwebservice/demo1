@@ -1,14 +1,19 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:500);
-h1,p{
-    font-family: 'Roboto', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+h1,
+p {
+  font-family: 'Poppins', sans-serif !important;
 }
-button{
-    font-family: 'Roboto', sans-serif;
+
+button {
+  font-family: 'Poppins', sans-serif !important;
 }
 
 button:focus {
   outline: none !important;
 }
+
 .btn {
   border-radius: 2px;
   border: 0;
@@ -22,7 +27,9 @@ button:focus {
   box-shadow: 0px 1px 0 rgba(0, 0, 0, 0.1), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
 }
 
-.btn:active, .btn:focus, .btn.active {
+.btn:active,
+.btn:focus,
+.btn.active {
   outline: 0;
   color: #fff;
 }
@@ -32,27 +39,34 @@ button:focus {
   background: #4285F4;
 }
 
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover,
+.btn-primary:focus {
   background-color: #5a95f5 !important;
 }
 
 .btn-primary.active {
   background-color: #0b51c5 !important;
 }
+
 /*Secondary*/
 .btn-secondary {
   background-color: #aa66cc;
 }
-.btn-secondary:hover, .btn-secondary:focus {
+
+.btn-secondary:hover,
+.btn-secondary:focus {
   background-color: #b579d2 !important;
   color: #fff;
 }
+
 .btn-secondary.active {
   background-color: #773399 !important;
 }
+
 .btn-secondary.active:hover {
   color: #fff;
 }
+
 .btn-secondary.active:focus {
   color: #fff;
 }
@@ -61,9 +75,12 @@ button:focus {
 .btn-default {
   background: #2BBBAD;
 }
-.btn-default:hover, .btn-default:focus {
+
+.btn-default:hover,
+.btn-default:focus {
   background-color: #30cfc0 !important;
 }
+
 .btn-default.active {
   background-color: #186860 !important;
 }
@@ -75,9 +92,12 @@ button:focus {
 .btn-info {
   background: #33b5e5;
 }
-.btn-info:hover, .btn-info:focus {
+
+.btn-info:hover,
+.btn-info:focus {
   background-color: #4abde8 !important;
 }
+
 .btn-info.active {
   background-color: #14799e !important;
 }
@@ -86,9 +106,12 @@ button:focus {
 .btn-warning {
   background: #FF8800;
 }
-.btn-warning:hover, .btn-warning:focus {
+
+.btn-warning:hover,
+.btn-warning:focus {
   background-color: #ff961f !important;
 }
+
 .btn-warning.active {
   background-color: #cc8800 !important;
 }
@@ -97,9 +120,12 @@ button:focus {
 .btn-danger {
   background: #CC0000;
 }
-.btn-danger:hover, .btn-danger:focus {
+
+.btn-danger:hover,
+.btn-danger:focus {
   background-color: #db0000 !important;
 }
+
 .btn-danger.active {
   background-color: maroon !important;
 }
@@ -109,7 +135,9 @@ button:focus {
   background-color: transparent;
   color: #000;
 }
-.btn-link:hover, .btn-link:focus {
+
+.btn-link:hover,
+.btn-link:focus {
   background-color: transparent;
   color: #000;
 }

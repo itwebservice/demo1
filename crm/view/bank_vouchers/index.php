@@ -10,7 +10,7 @@ $branch_status = $sq['branch_status'];
 <div class="row text-center text_left_sm_xs mg_bt_20">
   <label for="rd_cash_deposit" class="app_dual_button mg_bt_10 active">
       <input type="radio" id="rd_cash_deposit" name="rd_bank1" checked onchange="bank_dashboard_content_reflect()">
-      &nbsp;&nbsp;Cash Deposits
+      &nbsp;&nbsp;Cash Deposit
   </label>
   <label for="rd_cash_withdraw" class="app_dual_button mg_bt_10">
       <input type="radio" id="rd_cash_withdraw" name="rd_bank1" onchange="bank_dashboard_content_reflect()">

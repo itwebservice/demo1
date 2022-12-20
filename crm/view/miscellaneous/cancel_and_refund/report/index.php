@@ -14,7 +14,7 @@ include "../../../../model/model.php";
 			<select name="visa_id" id="visa_id" style="width:100%" title="Booking ID">
 		        <option value="">Booking ID</option>
 		        <?php 
-					$sq_visa = mysqlQuery("select * from miscellaneous_master where misc_id in ( select misc_id from miscellaneous_master_entries where status='Cancel')order by misc_id desc");
+					$sq_visa = mysqlQuery("select * from miscellaneous_master where misc_id in ( select misc_id from miscellaneous_master_entries where status='Cancel') and delete_status='0' order by misc_id desc");
 					while($row_visa = mysqli_fetch_assoc($sq_visa)){
 
 					$date = $row_visa['created_at'];

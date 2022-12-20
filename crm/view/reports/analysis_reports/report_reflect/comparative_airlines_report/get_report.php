@@ -1,26 +1,21 @@
 <?php
 include "../../../../../model/model.php";
-$airlinetype = !empty($_POST['airlinetype']) ? $_POST['airlinetype']:'Domestic';
+$airlinetype = !empty($_POST['airlinetype']) ? $_POST['airlinetype']:null;
 $airlineid = !empty($_POST['airlineid']) ? $_POST['airlineid']:null;
 $fromdate = !empty($_POST['fromdate']) ? get_date_db($_POST['fromdate']) :null;
 $todate = !empty($_POST['todate']) ? get_date_db($_POST['todate']) :null;
 $array_s = array();
 
-if(isset($_SESSION['dateqry']) && isset($_SESSION['group_qry']) && isset($_SESSION['package_qry']))
-{
-    unset( $_SESSION['dateqry']);
-   unset( $_SESSION['group_qry']);
-   unset( $_SESSION['package_qry']);
-}
 
-if(empty($fromdate) && empty($todate) || empty($airlinetype) || empty($airlineid))
-{
+
+// if(empty($fromdate) || empty($todate) || empty($airlinetype) || empty($airlineid))
+// {
     $_SESSION['dateqry'] = "";
     $_SESSION['group_qry'] = "";
     $_SESSION['package_qry'] = "";
-}
-else
-{
+// }
+// else
+// {
     if(!empty($airlinetype))
     {
         $_SESSION['dateqry'] .= "and airline_master.airline_id ='".$airlineid."' and ticket_master.tour_type='".$airlinetype."'";    
@@ -40,14 +35,14 @@ else
         $_SESSION['group_qry'] .= "and tourwise_traveler_details.form_date between '".$fromdate."' and '".$todate."' ";    
         $_SESSION['package_qry'] .= "and package_tour_booking_master.tour_from_date between '".$fromdate."' and '".$todate."' ";    
     }
-}
+// }
 
 
 
 
 function get_seats($airline){
    
-    $query1 = "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where airline_master.airline_id='".$airline."'".$_SESSION['dateqry'];
+    $query1 = "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where airline_master.airline_id='".$airline."'".$_SESSION['dateqry'];
     $res = mysqlQuery($query1);
     $seats = 0; 
     $count = mysqli_num_rows($res);
@@ -66,7 +61,7 @@ function get_seats($airline){
 
 function get_amount($airline){
    
-    $query1 = "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where airline_master.airline_id='".$airline."' ".$_SESSION['dateqry'];
+    $query1 = "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where airline_master.airline_id='".$airline."' ".$_SESSION['dateqry'];
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -86,7 +81,7 @@ function get_group_seats($airline){
     $count = mysqli_num_rows($res);
     while($db = mysqli_fetch_array($res))
     {
-            $seats+= $db['seats'];
+            $seats+= (int)$db['seats'];
     }
       return  $seats; 
 }
@@ -148,11 +143,11 @@ $main = array();
 //Airline
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id GROUP BY airline_master.airline_id";
+    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['dateqry']." GROUP BY airline_master.airline_id";
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['dateqry']."GROUP BY airline_master.airline_id";
+    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['dateqry']."GROUP BY airline_master.airline_id";
 }
 
 $result = mysqlQuery($query);
@@ -160,7 +155,7 @@ $count = 1;
 while($dataAirlines = mysqli_fetch_assoc($result))
 {
         $temp = [
-            'airline_name' => $dataAirlines['airline_name'],
+            'airline_name' => $dataAirlines['airlines_name'],
             'airline_id' => $dataAirlines['airline_id'],
         ];
         array_push($main,$temp);
@@ -170,12 +165,12 @@ while($dataAirlines = mysqli_fetch_assoc($result))
 //group
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM plane_master INNER JOIN tourwise_traveler_details on plane_master.tourwise_traveler_id = tourwise_traveler_details.traveler_group_id INNER JOIN airline_master on plane_master.company = airline_master.airline_id INNER JOIN customer_master on tourwise_traveler_details.customer_id = customer_master.customer_id INNER JOIN tour_master on tourwise_traveler_details.tour_id= tour_master.tour_id group by airline_master.airline_id ";
+    $query=  "SELECT * FROM plane_master INNER JOIN tourwise_traveler_details on plane_master.tourwise_traveler_id = tourwise_traveler_details.traveler_group_id INNER JOIN airline_master on plane_master.company = airline_master.airline_id INNER JOIN customer_master on tourwise_traveler_details.customer_id = customer_master.customer_id INNER JOIN tour_master on tourwise_traveler_details.tour_id= tour_master.tour_id where 1=1 ".$_SESSION['group_qry']."group by airline_master.airline_id ";
 
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM plane_master INNER JOIN tourwise_traveler_details on plane_master.tourwise_traveler_id = tourwise_traveler_details.traveler_group_id INNER JOIN airline_master on plane_master.company = airline_master.airline_id INNER JOIN customer_master on tourwise_traveler_details.customer_id = customer_master.customer_id INNER JOIN tour_master on tourwise_traveler_details.tour_id= tour_master.tour_id where 1=1 ".$_SESSION['group_qry'];
+    $query=  "SELECT * FROM plane_master INNER JOIN tourwise_traveler_details on plane_master.tourwise_traveler_id = tourwise_traveler_details.traveler_group_id INNER JOIN airline_master on plane_master.company = airline_master.airline_id INNER JOIN customer_master on tourwise_traveler_details.customer_id = customer_master.customer_id INNER JOIN tour_master on tourwise_traveler_details.tour_id= tour_master.tour_id where 1=1 ".$_SESSION['group_qry']."group by airline_master.airline_id ";
 
 }
 $result = mysqlQuery($query);
@@ -195,12 +190,12 @@ while($dataGroup = mysqli_fetch_assoc($result))
 //package
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM package_plane_master INNER JOIN airline_master ON package_plane_master.company = airline_master.airline_id INNER JOIN package_tour_booking_master on package_plane_master.booking_id = package_tour_booking_master.booking_id INNER JOIN customer_master on package_tour_booking_master.customer_id = customer_master.customer_id group by airline_master.airline_id ";
+    $query=  "SELECT * FROM package_plane_master INNER JOIN airline_master ON package_plane_master.company = airline_master.airline_id INNER JOIN package_tour_booking_master on package_plane_master.booking_id = package_tour_booking_master.booking_id INNER JOIN customer_master on package_tour_booking_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['package_qry'] ."group by airline_master.airline_id ";
 
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM package_plane_master INNER JOIN airline_master ON package_plane_master.company = airline_master.airline_id INNER JOIN package_tour_booking_master on package_plane_master.booking_id = package_tour_booking_master.booking_id INNER JOIN customer_master on package_tour_booking_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['package_qry'];
+    $query=  "SELECT * FROM package_plane_master INNER JOIN airline_master ON package_plane_master.company = airline_master.airline_id INNER JOIN package_tour_booking_master on package_plane_master.booking_id = package_tour_booking_master.booking_id INNER JOIN customer_master on package_tour_booking_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['package_qry'] ."group by airline_master.airline_id ";
 
 }
 

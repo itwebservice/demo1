@@ -2,7 +2,13 @@
 //Generic Files
 include "../../../../model.php"; 
 include "printFunction.php";
-global $app_quot_img,$currency;
+global $app_quot_img,$currency,$quot_note;
+
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/car_flight/flight/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 
 $quotation_id = $_GET['quotation_id'];
 
@@ -110,13 +116,13 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
         <div class="row">
           <div class="col-md-4">
             <div class="landigPageCustomer mg_tp_20">
-              <h3 class="customerFrom">Prepared for</h3>
+              <h3 class="customerFrom">PREPARED FOR</h3>
               <span class="customerName mg_tp_10"><i class="fa fa-user"></i> :
                 <?= $sq_quotation['customer_name'] ?></span><br>
               <span class="customerMail mg_tp_10"><i class="fa fa-envelope"></i> :
                 <?= $sq_quotation['email_id'] ?></span><br>
               <span class="customerMobile mg_tp_10"><i class="fa fa-phone"></i> : <?= $sq_quotation['mobile_no'] ?></span><br>
-              <span class="generatorName mg_tp_10">Prepared By <?= $emp_name?></span><br>
+              <span class="generatorName mg_tp_10">PREPARED BY <?= $emp_name?></span><br>
             </div>
           </div>
           <div class="col-md-8">
@@ -125,10 +131,10 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
             </div>
             <div class="print_header_contact text-right main_block">
               <span class="title"><?php echo $app_name; ?></span><br>
-              <?php if($app_address != ''){?><p class="address no-marg"><?php echo $app_address; ?></p><?php } ?>
-              <?php if($app_contact_no != ''){?><p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i><?php echo $app_contact_no; ?></p><?php } ?>
-              <?php if($app_email_id != ''){?><p class="no-marg"><i class="fa fa-envelope" style="margin-right: 5px;"></i><?php echo $app_email_id; ?></p><?php } ?>
-              <?php if($app_website != ''){?><p><i class="fa fa-globe" style="margin-right: 5px;"></i><?php echo $app_website; ?></p><?php } ?>
+              <p class="address no-marg"><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
+              <p class="no-marg"><i class="fa fa-phone" style="margin-right: 5px;"></i><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
+              <p class="no-marg"><i class="fa fa-envelope" style="margin-right: 5px;"></i><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
+              <?php if($app_website != ''){ ?><p><i class="fa fa-globe" style="margin-right: 5px;"></i><?php echo $app_website; ?></p><?php } ?>
             </div>
           </div>
         </div>
@@ -165,12 +171,12 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
               <table class="table table-bordered no-marg" id="tbl_emp_list">
                 <thead>
                   <tr class="table-heading-row">
-                    <th>From</th>
-                    <th>To</th>
+                    <th>From_sector</th>
+                    <th>To_sector</th>
                     <th>Airline</th>
                     <th>Class</th>
-                    <th>Departure</th>
-                    <th>Arrival</th>
+                    <th>Departure_D/T</th>
+                    <th>Arrival_D/T</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -182,8 +188,8 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
                   <tr>
                     <td><?= $row_plane['from_location'] ?></td>
                     <td><?= $row_plane['to_location'] ?></td>
-                    <td><?= $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')' ?></td>
-                    <td><?= $row_plane['class'] ?></td>
+                    <td><?= ($sq_airline['airline_name'] != '') ? $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')' : 'NA' ?></td>
+                    <td><?= ($row_plane['class'] != '') ? $row_plane['class'] : 'NA' ?></td>
                     <td><?= get_datetime_user($row_plane['dapart_time']) ?></td>
                     <td><?= get_datetime_user($row_plane['arraval_time']) ?></td>
                   </tr>
@@ -206,14 +212,18 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
 
         <div class="col-md-12 mg_tp_30">
           <div class="incluExcluTermsTabPanel main_block mg_tp_30">
-            <h3 class="tncTitle">Terms &amp; Conditions</h3>
+            <h3 class="tncTitle">TERMS AND CONDITIONS</h3>
             <div class="tncContent">
               <pre class="real_text"><?= $sq_terms_cond['terms_and_conditions'] ?></pre>
             </div>
           </div>
         </div>
       </div>
-
+      <div class="row mg_tp_30">
+        <div class="col-md-12 mg_tp_30">
+        <pre style="margin-left:128px!important;" class="real_text"><?= $quot_note ?></pre>
+        </div>
+      </div>
     </section>
     <?php } ?>
 
@@ -225,7 +235,7 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
 
         <!-- Costing -->
         <div class="col-md-5 constingBankingPanel endPageLeft fullHeightLand">
-          <h3 class="costBankTitle text-right">COSTING Details</h3>
+          <h3 class="costBankTitle text-right">COSTING DETAILS</h3>
           <div class="col-md-12 text-right mg_bt_20">
             <?php
             $fare_cost = currency_conversion($currency,$currency,(floatval($newBasic) + $sq_quotation['roundoff']));
@@ -246,6 +256,14 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
             <h4 class="no-marg"><?= $quotation_cost ?></h4>
             <p>QUOTATION COST</p>
           </div>
+          <?php 
+              if(check_qr()) { ?>
+          <div class="col-md-12 text-right" style="margin-top:20px; margin-bottom:20px;">
+                        <?= get_qr('Landscape Creative') ?>
+                        <br>
+                        <h4 class="no-marg">Scan & Pay </h4>
+          </div>
+          <?php } ?>
         </div>
 
         <!-- Guest Detail -->
@@ -263,13 +281,13 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
               </div>
               <div class="col-md-12 text-left mg_bt_20">
                 <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/branchName.png" class="img-responsive"></div>
-                <h4 class="no-marg"><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></h4>
-                <p>BRANCH</p>
+                <h4 class="no-marg"><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? strtoupper($bank_ifsc_code) : 'NA' ?>)</h4>
+            <p>BRANCH</p>
               </div>
               <div class="col-md-12 text-left mg_bt_20">
                 <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
                 <h4 class="no-marg"><?= ($acc_name != '') ? $acc_name : 'NA' ?></h4>
-                <p>A/C NAME</p>
+                <p>A/C TYPE</p>
               </div>
               <div class="col-md-12 text-left mg_bt_20">
                 <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
@@ -278,14 +296,15 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
               </div>
               <div class="col-md-12 text-left mg_bt_20">
                 <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-                <h4 class="no-marg"><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></h4>
-                <p>IFSC</p>
+                <h4 class="no-marg"><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></h4>
+            <p>BANK ACCOUNT NAME</p>
               </div>
               <div class="col-md-12 text-left">
                 <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-                <h4 class="no-marg"><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></h4>
+                <h4 class="no-marg"><?= ($bank_swift_code != '') ? strtoupper($bank_swift_code) : 'NA' ?></h4>
                 <p>Swift Code</p>
               </div>
+              
         </div>
 
       </div>

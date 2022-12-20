@@ -21,10 +21,7 @@ public function hotel_refund_save()
     else {  $clearance_status = ""; } 
     
 	$financial_year_id = $_SESSION['financial_year_id'];
-	$branch_admin_id = $_SESSION['branch_admin_id'];
-
-	$bank_balance_status = bank_cash_balance_check($refund_mode, $bank_id, $refund_amount);
-	if(!$bank_balance_status){ echo bank_cash_balance_error_msg($refund_mode, $bank_id); exit; }    
+	$branch_admin_id = $_SESSION['branch_admin_id'];  
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(refund_id) as max from hotel_booking_refund_master"));
 	$refund_id = $sq_max['max'] + 1;
@@ -214,45 +211,44 @@ public function bank_cash_book_save($refund_id)
 }
 
 public function refund_mail_send($booking_id,$refund_amount,$refund_date,$refund_mode,$transaction_id){
-  global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website,$encrypt_decrypt,$secret_key,$currency_logo;
-  global $mail_em_style, $mail_em_style1, $mail_font_family, $mail_strong_style, $mail_color;
-   
-  $sq_sq_train_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
-  $cust_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_sq_train_info[customer_id]'"));
-  $email_id = $encrypt_decrypt->fnDecrypt($cust_email['email_id'], $secret_key);
-  if($cust_email['type']== 'Corporate' || $cust_email['type']== 'B2B'){
-	  $cust_name = $cust_email['company_name'];
-  }else{
-	  $cust_name = $cust_email['first_name'].' '.$cust_email['last_name'];
-  }
-  $date = $sq_sq_train_info['created_at'];
-  $yr = explode("-", $date);
-  $year =$yr[0];
 
-  $sq_payment_total = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from hotel_booking_payment where booking_id='$booking_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
-	$sq_ref_pay_total = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from hotel_booking_refund_master where booking_id='$booking_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+	global $encrypt_decrypt,$secret_key,$currency_logo,$currency;
 
-	$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from hotel_booking_refund_master where booking_id='$booking_id'"));
-	$sq_ref_pen_total = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from hotel_booking_refund_master where booking_id='$booking_id' and clearance_status='Pending'"));
-	$sq_ref_can_total = mysqli_fetch_assoc(mysqlQuery("select sum(refund_amount) as sum from hotel_booking_refund_master where booking_id='$booking_id' and clearance_status='Cancelled'"));
+	$sq_sq_train_info = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id'"));
+	$cust_email = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_sq_train_info[customer_id]'"));
+	$email_id = $encrypt_decrypt->fnDecrypt($cust_email['email_id'], $secret_key);
+	if($cust_email['type']== 'Corporate' || $cust_email['type']== 'B2B'){
+		$cust_name = $cust_email['company_name'];
+	}else{
+		$cust_name = $cust_email['first_name'].' '.$cust_email['last_name'];
+	}
+	$date = $sq_sq_train_info['created_at'];
+	$yr = explode("-", $date);
+	$year =$yr[0];
 
-	$toal_refund_sum=$sq_pay['sum'] - $sq_ref_can_total['sum'];
+	$sq_payment_total = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from hotel_booking_payment where booking_id='$booking_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+
 	$paid_amount = $sq_payment_total['sum'];
 	$sale_amount =$sq_sq_train_info['total_fee'];
 	$cancel_amount = $sq_sq_train_info['cancel_amount'];
 
-  $content = '
-  <tr>
-  <table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Service Type</td>   <td style="text-align:left;border: 1px solid #888888;">Hotel Booking</td></tr>
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Selling Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$currency_logo.' '.number_format($sale_amount,2).'</td></tr>
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$currency_logo.' '.number_format($paid_amount,2).'</td></tr>
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Cancellation Charges</td>   <td style="text-align:left;border: 1px solid #888888;">'.$currency_logo.' '.number_format($cancel_amount,2).'</td></tr>
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Refund Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$currency_logo.' '.number_format($refund_amount,2).'</td></tr>
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Refund Mode</td>   <td style="text-align:left;border: 1px solid #888888;">'.$refund_mode.'</td></tr>
-	  <tr><td style="text-align:left;border: 1px solid #888888;">Refund Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($refund_date).'</td></tr>
-  </table>
-</tr>';
+	$sale_amount = currency_conversion($currency,$sq_sq_train_info['currency_code'],$sale_amount);
+	$paid_amount = currency_conversion($currency,$sq_sq_train_info['currency_code'],$paid_amount);
+	$cancel_amount = currency_conversion($currency,$sq_sq_train_info['currency_code'],$cancel_amount);
+	$refund_amount = currency_conversion($currency,$sq_sq_train_info['currency_code'],$refund_amount);
+	
+	$content = '
+	<tr>
+	<table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
+		<tr><td style="text-align:left;border: 1px solid #888888;">Service Type</td>   <td style="text-align:left;border: 1px solid #888888;">Hotel Booking</td></tr>
+		<tr><td style="text-align:left;border: 1px solid #888888;">Selling Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$sale_amount.'</td></tr>
+		<tr><td style="text-align:left;border: 1px solid #888888;">Paid Amount</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$paid_amount.'</td></tr>
+		<tr><td style="text-align:left;border: 1px solid #888888;">Cancellation Charges</td>   <td style="text-align:left;border: 1px solid #888888;">'.$cancel_amount.'</td></tr>
+		<tr><td style="text-align:left;border: 1px solid #888888;">Refund Amount</td>   <td style="text-align:left;border: 1px solid #888888;">'.$refund_amount.'</td></tr>
+		<tr><td style="text-align:left;border: 1px solid #888888;">Refund Mode</td>   <td style="text-align:left;border: 1px solid #888888;">'.$refund_mode.'</td></tr>
+		<tr><td style="text-align:left;border: 1px solid #888888;">Refund Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($refund_date).'</td></tr>
+	</table>
+	</tr>';
 
 	$content .= '</tr>';
 	$subject = 'Hotel Cancellation Refund ( '.get_hotel_booking_id($sq_sq_train_info['booking_id'],$year).' )';	

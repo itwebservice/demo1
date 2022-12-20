@@ -38,7 +38,7 @@ while($row_payment_det = mysqli_fetch_assoc($sq_payment_det))
 {
 	$bg1 = '';
 	$total += $row_payment_det['amount'];
-	$sq_tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$row_payment_det[tourwise_traveler_id]'"));
+	$sq_tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$row_payment_det[tourwise_traveler_id]' and delete_status='0'"));
 	$date = $sq_tourwise_details['form_date'];
 	$yr = explode("-", $date);
 	$year = $yr[0];

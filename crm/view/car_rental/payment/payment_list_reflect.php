@@ -28,13 +28,13 @@ if($payment_from_date!='' && $payment_to_date!=''){
 	$query .=" and payment_date between '$payment_from_date' and '$payment_to_date'";
 }
 include "../../../model/app_settings/branchwise_filteration.php";
-$query .=" order by payment_id desc";
+// $query .=" order by payment_id desc";
 $array_s = array();
-		$temp_arr = array();
-		$footer_data = array();
-		$count = 0;
-		$sq_payment = mysqlQuery($query);
-		$total_paid_amt=0;
+$temp_arr = array();
+$footer_data = array();
+$count = 0;
+$sq_payment = mysqlQuery($query);
+$total_paid_amt=0;
 		while($row_payment = mysqli_fetch_assoc($sq_payment))
 			if($row_payment['payment_amount']!=0){
 			{
@@ -62,6 +62,9 @@ $array_s = array();
 				else if($row_payment['clearance_status']=="Cancelled"){ $bg='danger';
 					$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'] + $row_payment['credit_charges'];
 				}
+				else if($row_payment['clearance_status']=="Cleared"){ 
+					$bg='success';
+				}
 				else{
 					$bg='';
 				}
@@ -74,7 +77,6 @@ $array_s = array();
 				$booking_name = "Car Rental Booking";
 				
 				$travel_date = date('d-m-Y',strtotime($sq_booking['from_date'])).' To '.date('d-m-Y',strtotime($sq_booking['to_date']));
-				
 				
 				$payment_amount = $row_payment['payment_amount'] + $row_payment['credit_charges'];
 				$payment_mode1 = $row_payment['payment_mode'];
@@ -90,12 +92,14 @@ $array_s = array();
 				if($payment_mode=="Cheque"){
 					$payshow = '<input type="text" id="branch_name_'.$count.'" name="branch_name_d" class="form-control" placeholder="Branch Name" style="width:120px">';
 				}
-				$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=car_rental_payment&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&currency_code=$sq_booking[currency_code]";
+				$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=car_rental_payment&customer_field=booking_id&in_customer_id=$row_payment[booking_id]&currency_code=$sq_booking[currency_code]&status=$row_payment[status]";
 
 				if($row_payment['payment_mode'] == 'Credit Note' || ($row_payment['payment_mode'] == 'Credit Card' && $row_payment['clearance_status']=="Cleared")){
 					$edit_btn = '';
+					$delete_btn = '';
 				}else{
 					$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='payment_update_modal(".$row_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+					$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 				}
 
 				$temp_arr = array( "data" => array(
@@ -110,9 +114,9 @@ $array_s = array();
 					$row_payment['credit_charges'],2) ,
 					'<a onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 		
-					'.$edit_btn
-				  ), "bg" =>$bg );
-				  array_push($array_s,$temp_arr); 
+					'.$edit_btn.$delete_btn
+					), "bg" =>$bg );
+					array_push($array_s,$temp_arr); 
 				}}
 				$footer_data = array("footer_data" => array(
 					'total_footers' => 4,

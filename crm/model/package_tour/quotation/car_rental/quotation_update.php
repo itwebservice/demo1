@@ -35,6 +35,8 @@ public function quotation_master_update()
 	$quotation_date  = $_POST['quotation_date'];
 	$local_places_to_visit = $_POST['local_places_to_visit'];
 	$markup_show = $_POST['markup_show'];
+	$active_flag = $_POST['active_flag'];
+
 	$traveling_date = get_datetime_db($traveling_date);	
 	$quotation_date = get_date_db($quotation_date);
 	$from_date = get_datetime_db($from_date);
@@ -51,20 +53,19 @@ public function quotation_master_update()
 	$roundoff = $_POST['roundoff'];
 
 	$bsmValues = json_decode(json_encode($_POST['bsmValues']));
-  	foreach($bsmValues[0] as $key => $value){
-      switch($key){
-		case 'basic' : $subtotal = ($value != "") ? $value : $subtotal;break;
-		case 'service' : $service_charge = ($value != "") ? $value : $service_charge;break;
-		case 'markup' : $markup_cost = ($value != "") ? $value : $markup_cost;break;
-      }
+	foreach($bsmValues[0] as $key => $value){
+		switch($key){
+			case 'basic' : $subtotal = ($value != "") ? $value : $subtotal;break;
+			case 'service' : $service_charge = ($value != "") ? $value : $service_charge;break;
+			case 'markup' : $markup_cost = ($value != "") ? $value : $markup_cost;break;
+		}
     }
 	$bsmValues = json_encode($bsmValues);
 	$customer_name = addslashes($customer_name);
 	$route = addslashes($route);
 	$local_places_to_visit = addslashes($local_places_to_visit);
-	$query = "update car_rental_quotation_master set enquiry_id = '$enquiry_id',customer_name='$customer_name', total_pax = '$total_pax', days_of_traveling ='$days_of_traveling', traveling_date = '$traveling_date', travel_type='$travel_type', places_to_visit = '$route', vehicle_name = '$vehicle_name', from_date = '$from_date', to_date = '$to_date', route = '$route', extra_km_cost='$extra_km_cost', extra_hr_cost = '$extra_hr_cost', subtotal = '$subtotal',markup_cost ='$markup_cost',markup_cost_subtotal='$markup_cost_subtotal', taxation_id = '$taxation_id', service_charge = '$service_charge', service_tax_subtotal = '$service_tax_subtotal', permit='$permit', toll_parking='$toll_parking',driver_allowance='$driver_allowance',email_id='$email_id',mobile_no='$mobile_no', total_tour_cost = '$total_tour_cost', quotation_date='$quotation_date',total_hrs='$total_hrs',total_km	='$total_km',rate='$rate',total_max_km='$total_max_km',state_entry='$state_entry',other_charge='$other_charges',capacity='$capacity',local_places_to_visit='$local_places_to_visit',roundoff = '$roundoff', bsm_values = '$bsmValues' where quotation_id = '$quotation_id'";
-	// echo $query;
-	$sq_quotation = mysqlQuery($query);
+
+	$sq_quotation = mysqlQuery("update car_rental_quotation_master set enquiry_id = '$enquiry_id',customer_name='$customer_name', total_pax = '$total_pax', days_of_traveling ='$days_of_traveling', traveling_date = '$traveling_date', travel_type='$travel_type', places_to_visit = '$route', vehicle_name = '$vehicle_name', from_date = '$from_date', to_date = '$to_date', route = '$route', extra_km_cost='$extra_km_cost', extra_hr_cost = '$extra_hr_cost', subtotal = '$subtotal',markup_cost ='$markup_cost',markup_cost_subtotal='$markup_cost_subtotal', taxation_id = '$taxation_id', service_charge = '$service_charge', service_tax_subtotal = '$service_tax_subtotal', permit='$permit', toll_parking='$toll_parking',driver_allowance='$driver_allowance',email_id='$email_id',mobile_no='$mobile_no', total_tour_cost = '$total_tour_cost', quotation_date='$quotation_date',total_hrs='$total_hrs',total_km	='$total_km',rate='$rate',total_max_km='$total_max_km',state_entry='$state_entry',other_charge='$other_charges',capacity='$capacity',local_places_to_visit='$local_places_to_visit',roundoff = '$roundoff', bsm_values = '$bsmValues',status='$active_flag' where quotation_id = '$quotation_id'");
 
 	if($sq_quotation){
 		echo "Quotation has been successfully updated.";	

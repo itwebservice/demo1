@@ -22,7 +22,7 @@ $count = 0;
 		</thead>
 		<tbody>
 			<?php
-			$query = "select * from package_tour_booking_master where 1";
+			$query = "select * from package_tour_booking_master where 1 and delete_status='0'";
 			if($booking_id!=""){
 				$query .= " and booking_id='$booking_id'";
 			}

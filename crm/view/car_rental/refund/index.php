@@ -3,7 +3,7 @@ include "../../../model/model.php";
 /*======******Header******=======*/
 require_once('../../layouts/admin_header.php');
 ?>
-<?= begin_panel('Car Rental Refund',70) ?>
+<?= begin_panel('Car Rental Booking Refund',70) ?>
 
 <div class="row text-center mg_bt_20">
 		

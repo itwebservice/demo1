@@ -32,7 +32,8 @@ include "../../model/model.php";
 						<option value="Insurance">Insurance</option>
 						<option value="Train Ticket">Train Ticket</option>
 						<option value="Other">Other</option>
-						<option value="Bus">Bus</option>
+						<!-- <option value="Bus">Bus</option> -->
+						<option value="Cruise">Cruise</option>
 		            </select>
 				</div>
 			</div>
@@ -101,7 +102,7 @@ function upload_pic_attch()
 		action: 'upload_image_proof.php',
 		name: 'uploadfile',
 		onSubmit: function(file, ext){  
-			if (! (ext && /^(xlsx|xls|doc|docx|pdf)$/.test(ext))){ 
+			if (! (ext && /^(xlsx|xls|doc|docx|pdf|csv)$/.test(ext))){ 
 			error_msg_alert('Only Word,Excel or PDF files are allowed');
 			return false;
 			}
@@ -127,20 +128,6 @@ function upload_pic_attch()
 		}
     });
 }
-// $('#photo_upload_btn_i').click(function(){ 
-// 	$('#fileuploading').trigger('click'); 
-// });
-// $('#fileuploading').change(function(){
-// 	$('#photo_upload_btn_i').find('span').text('Uploading');
-// 	var ext = $(this).val().split('.').pop();
-// 	if (! (ext && /^(xlsx|xls|doc|docx|pdf)$/.test(ext))){
-		
-// 		$('#photo_upload_btn_i').find('span').text('Upload');
-// 		error_msg_alert('Only Word,Excel or PDF files are allowed');
-// 		return false;
-// 	}
-// 	$('#photo_upload_btn_i').find('span').text('Uploaded');
-// });
 $(function(){
 	$('#frm_save').validate({
 		rules:{

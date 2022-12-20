@@ -4,7 +4,7 @@ global $currency;
 $tourwise_traveler_id = $_POST['tourwise_traveler_id'];
 $customer_id = $_SESSION['customer_id'];
 
-$query = "select * from refund_tour_cancelation where tourwise_traveler_id in (select id from tourwise_traveler_details where customer_id='$customer_id') ";
+$query = "select * from refund_tour_cancelation where tourwise_traveler_id in (select id from tourwise_traveler_details where customer_id='$customer_id' and delete_status='0') ";
 if($tourwise_traveler_id!=""){
     $query .=" and tourwise_traveler_id='$tourwise_traveler_id'";
 }
@@ -19,7 +19,7 @@ if($tourwise_traveler_id!=""){
             <th>Bank_Name</th>
             <th>Refund_Mode</th>
             <th>Cheque_No/ID</th>
-            <th class="text-right success">Amount</th>
+            <th class="success">Amount</th>
         </tr>    
     </thead>
     <tbody>    
@@ -32,7 +32,7 @@ if($tourwise_traveler_id!=""){
         while($row = mysqli_fetch_assoc($sq))
         {
             $sr_no++;
-            $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$row[tourwise_traveler_id]'"));
+            $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$row[tourwise_traveler_id]' and delete_status='0'"));
             $date = $sq_booking['form_date'];
             $yr = explode("-", $date);
             $year =$yr[0];

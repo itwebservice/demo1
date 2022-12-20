@@ -13,7 +13,7 @@ public function cancel_booking_save($traveler_id_arr, $booking_id)
 
 	}
 
-	echo "Package booking has been successfully Cancelled.";
+	echo "Package Tour booking has been successfully Cancelled.";
 	//Cancelation mail send
     $this->traveler_cancelation_mail_send($traveler_id_arr, $booking_id);
 }

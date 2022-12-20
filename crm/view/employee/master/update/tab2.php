@@ -85,17 +85,13 @@
           <h3 class="editor_title">Deductions</h3>
           <div class="row mg_tp_10">
 
-              <div class="col-md-3 col-sm-6 mg_bt_10">
+         
 
-                  <input type="text" id="employer_pf1" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="calculate_total_payable('1');validate_balance(this.id);" value="<?= $emp_info['employer_pf'] ?>" >
+          <div class="col-md-3 col-sm-6 mg_bt_10">
 
-              </div> 
+<input class="form-control" id="employee_pf1" name="employee_pf" type="text" placeholder="Employee PF" title="Employee PF" onchange="calculate_total_payable('1');validate_balance(this.id);" value="<?= $emp_info['employee_pf'] ?>" />
 
-              <div class="col-md-3 col-sm-6 mg_bt_10">
-
-                  <input class="form-control" id="employee_pf1" name="employee_pf" type="text" placeholder="Employee PF" title="Employee PF" onchange="calculate_total_payable('1');validate_balance(this.id);" value="<?= $emp_info['employee_pf'] ?>" />
-
-              </div> 
+</div>
               <div class="col-md-3 col-sm-6 mg_bt_10">
 
                   <input class="form-control" id="txt_esic1" name="txt_esic" type="text" placeholder="ESIC" title="ESIC" onchange="calculate_total_payable('1');validate_balance(this.id)" value="<?= $emp_info['esic'] ?>" />
@@ -122,6 +118,12 @@
                   <input class="form-control" id="txt_deduction1" name="txt_deduction" type="text" placeholder="Total Deductions" title="Total Deductions" value="<?= $emp_info['deduction'] ?>"  disabled/>
 
               </div>
+               
+              <div class="col-md-3 col-sm-6 mg_bt_10">
+
+<input type="text" id="employer_pf1" name="employer_pf" placeholder="Employer PF" title="Employer PF" onchange="calculate_total_payable('1');validate_balance(this.id);" value="<?= $emp_info['employer_pf'] ?>" >
+
+</div> 
                
             </div>
              <div class="row mg_tp_10">

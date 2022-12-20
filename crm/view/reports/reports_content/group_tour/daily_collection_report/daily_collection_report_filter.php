@@ -22,7 +22,7 @@ $to_date = $_GET['to_date'];
 </thead>
 <tbody>	
 <?php
-	$query1 = "select * from tourwise_traveler_details where  ";
+	$query1 = "select * from tourwise_traveler_details where 1 and delete_status='0' ";
 	if($booker_id != '')
 	{
 		$query1 = $query1." booker_id='$booker_id'";

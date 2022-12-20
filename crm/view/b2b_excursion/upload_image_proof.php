@@ -38,7 +38,7 @@
 
 $current_dir = '../../uploads/';
 
-$current_dir = check_dir($current_dir ,'emp_photo_proof');
+$current_dir = check_dir($current_dir ,'b2b_activity');
 
 $current_dir = check_dir($current_dir , $year);
 

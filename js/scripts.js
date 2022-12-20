@@ -1862,6 +1862,81 @@ function validate_validDate1(from, to) {
     return true;
 
 }
+function get_hotel_listing_page(hotel_id){
+    
+    var base_url = $('#crm_base_url').val();
+    var b2c_base_url = $('#base_url').val();
+    var hotel_array = [];
+
+    var today = new Date();
+    today.setDate(today.getDate());
+    var day = today.getDate();
+    var month = today.getMonth() + 1;
+    var year = today.getFullYear();
+    if (day < 10) {
+        day = '0' + day;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+    var today_date = month + "/" + day + "/" + year;
+
+    var tomm = new Date();
+    tomm.setDate(tomm.getDate() + 1);
+    var day = tomm.getDate();
+    var month = tomm.getMonth() + 1
+    var year = tomm.getFullYear();
+    if (day < 10) {
+        day = '0' + day;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+    var tomm_date = month + "/" + day + "/" + year;
+
+    hotel_array.push({
+        'city_id': '',
+        'hotel_id': hotel_id,
+        'check_indate': today_date,
+        'check_outdate': tomm_date,
+        'star_category_arr': [],
+        'total_rooms': ''
+    });
+    $.post(base_url + 'controller/hotel/b2c_search_session_save.php', { hotel_array: hotel_array }, function(data) {
+        window.location.href = b2c_base_url + 'view/hotel/hotel-listing.php';
+    });
+}
+
+function get_act_listing_page(activity_id){
+    
+    var base_url = $('#crm_base_url').val();
+    var b2c_base_url = $('#base_url').val();
+    var activity_array = [];
+
+    var today = new Date();
+    today.setDate(today.getDate());
+    var day = today.getDate();
+    var month = today.getMonth() + 1;
+    var year = today.getFullYear();
+    if (day < 10) {
+        day = '0' + day;
+    }
+    if (month < 10) {
+        month = '0' + month;
+    }
+    var today_date = month + "/" + day + "/" + year;
+    activity_array.push({
+        'activity_city_id': '',
+        'activities_id': activity_id,
+        'checkDate': today_date,
+        'adult': parseInt(1),
+        'child': parseInt(0),
+        'infant': parseInt(0)
+    });
+    $.post(base_url + 'controller/b2b_excursion/b2b/search_session_save.php', { activity_array: activity_array }, function(data) {
+        window.location.href = b2c_base_url + 'view/activities/activities-listing.php';
+    });
+}
 
 function get_tours_data(dest_id, type) {
 
@@ -2053,61 +2128,33 @@ function get_tours_data(dest_id, type) {
 
     } else if (type == '4') {
 
-
-
         var activity_array = [];
 
-
-
         var today = new Date();
-
         today.setDate(today.getDate());
-
         var day = today.getDate();
-
         var month = today.getMonth() + 1;
-
         var year = today.getFullYear();
-
         if (day < 10) {
-
             day = '0' + day;
-
         }
-
         if (month < 10) {
-
             month = '0' + month;
-
         }
-
         var today_date = month + "/" + day + "/" + year;
-
-
-
         activity_array.push({
-
             'activity_city_id': '',
-
             'activities_id': '',
-
             'checkDate': today_date,
-
             'adult': parseInt(1),
-
             'child': parseInt(0),
-
             'infant': parseInt(0)
-
         });
-
         $.post(base_url + 'controller/b2b_excursion/b2b/search_session_save.php', { activity_array: activity_array }, function(data) {
-
             window.location.href = b2c_base_url + 'view/activities/activities-listing.php';
-
         });
-
-    } else if (type == '5') {
+    }
+    else if (type == '5') {
 
 
 

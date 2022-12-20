@@ -16,10 +16,9 @@ function canceled_travelers_reflect()
 {
   var tour_id = document.getElementById("cmb_tour_name").value;
   var tour_group_id = document.getElementById("cmb_tour_group").value;
- 
   $.get( "refund_tour/cancelled_traveler_reflect.php" , { tour_id : tour_id, tour_group_id : tour_group_id } , function ( data ) {
-                $ ("#cmb_traveler_group_id").html( data ) ;
-          } ) ; 
+    $ ("#cmb_traveler_group_id").html(data);
+  }) ;
 }
 
 function refund_cancelled_tour_group_reflect()
@@ -28,9 +27,8 @@ function refund_cancelled_tour_group_reflect()
   var tour_group_id = document.getElementById("cmb_tour_group").value;
   var traveler_group_id = document.getElementById("cmb_traveler_group_id").value;
   $.get( "refund_tour/cancel/refund_cancelled_tour_group_reflect.php" , { tour_id : tour_id, tour_group_id : tour_group_id, traveler_group_id : traveler_group_id  } , function ( data ) {
-                $ ("#div_traveler_refund_details").html( data ) ;
-                        
-          } ) ; 
+        $("#div_traveler_refund_details").html( data ) ;
+  } ) ; 
 }
 
 function refund_cancelled_tour_group_traveler_reflect()

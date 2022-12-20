@@ -9,19 +9,18 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $branch_status = $_GET['branch_status'];
 $branch_id= $_GET['branch_id_filter'];
 
-$query = "select * from tourwise_traveler_details where 1";
+$query = "select * from tourwise_traveler_details where 1 and delete_status='0'";
 if($tour_id!="")
 {
 	$query = $query." and tour_id='$tour_id' ";
 }
- if($group_id!="")
- {
- 	$query = $query." and tour_group_id ='$group_id' ";
- }
-
- if($role=='Sales')
+if($group_id!="")
 {
- 
+	$query = $query." and tour_group_id ='$group_id' ";
+}
+
+if($role=='Sales')
+{
 	$query = $query." and emp_id='$emp_id' ";	
 }	
 if($branch_id!=""){
@@ -31,7 +30,7 @@ if($branch_id!=""){
 if($branch_status=='yes' && $role=='Branch Admin'){
     $query .= " and  branch_admin_id = '$branch_admin_id'";
 }
- $query = $query." and tour_group_status!='Cancel' ";
+$query = $query." and tour_group_status!='Cancel' ";
 
 $count = 0;
 $sq1 =mysqlQuery($query);

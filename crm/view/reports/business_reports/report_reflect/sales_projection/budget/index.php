@@ -3,11 +3,11 @@ include "../../../../../../model/model.php";
 $role = $_SESSION['role'];
 $from_date = $_SESSION['from_date'] ;
 $to_date = $_SESSION['to_date'];
- 
+
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $branch_status = $_GET['branch_status'];
 ?>
- <input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>" >
+	<input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>" >
 	<div class="app_panel">
 	<div class="app_panel_content Filter-panel">
 		<div class="row">
@@ -35,17 +35,17 @@ $('#customer_id').select2();
 $( "#from_date, #to_date" ).datetimepicker({ timepicker:false, format:'d-m-Y' });        
 function list_reflect()
 {
-  $('#div_report').append('<div class="loader"></div>');
-  var from_date = $("#from_date").val();  
-  var to_date = $("#to_date").val(); 
-  var branch_status = $('#branch_status').val();
+	$('#div_report').append('<div class="loader"></div>');
+	var from_date = $("#from_date").val();  
+	var to_date = $("#to_date").val(); 
+	var branch_status = $('#branch_status').val();
 
-  if(from_date == ''){ error_msg_alert("Select From date"); return false; }
-  if(to_date == ''){ error_msg_alert("Select To date"); return false; }
+	if(from_date == ''){ error_msg_alert("Select From date"); return false; }
+	if(to_date == ''){ error_msg_alert("Select To date"); return false; }
 
-  $.get( "report_reflect/sales_projection/budget/list_reflect.php" , { from_date : from_date, to_date : to_date, branch_status : branch_status } , function ( data ) {
-        $ ("#div_list").html( data ) ;
-  } ) ; 
+	$.get("report_reflect/sales_projection/budget/list_reflect.php" , { from_date : from_date, to_date : to_date, branch_status : branch_status } , function (data) {
+		$("#div_list").html(data);
+	});
 }
 </script>
 <script src="<?= BASE_URL ?>js/app/footer_scripts.js"></script>

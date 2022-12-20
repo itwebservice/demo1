@@ -9,7 +9,7 @@ $customer_id = $_POST['customer_id'];
 ?>
 <option value="">Select Booking ID</option>
 <?php
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($customer_id !=''){
 	$query .= " and customer_id='$customer_id'";
 }

@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="visa_id_filter1" id="visa_id_filter1" class="form-control" onchange="visa_payment_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_visa = mysqlQuery("select * from visa_master where customer_id='$customer_id'");
+			        $sq_visa = mysqlQuery("select * from visa_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_visa = mysqli_fetch_assoc($sq_visa)){
 						$date = $row_visa['created_at'];
 						$yr = explode("-", $date);

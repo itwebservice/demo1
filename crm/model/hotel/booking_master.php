@@ -192,26 +192,214 @@ class booking_master{
       }
     }
   }
+  function hotel_booking_delete(){
 
-function get_particular($customer_id,$pax,$nights,$check_date,$room_type,$hotel_id){
+      global $delete_master,$transaction_master;
+      $booking_id = $_POST['booking_id'];
+  
+      $deleted_date = date('Y-m-d');
+      $row_spec = "sales";
+    
+      $row_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
+      $row_hotel_entry = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id'"));
+      $reflections = json_decode($row_hotel['reflections']);
+      $service_tax_markup = $row_hotel['markup_tax'];
+      $service_tax_subtotal = $row_hotel['service_tax_subtotal'];
+      $customer_id = $row_hotel['customer_id'];
+      $booking_date = $row_hotel['created_at'];
+      $nights = $row_hotel_entry['no_of_nights'];
+      $check_in = get_date_user($row_hotel_entry['check_in']);
+      $room_type = $row_hotel_entry['room_type'];
+      $hotel_id = $row_hotel_entry['hotel_id'];
+      $yr = explode("-", $booking_date);
+      $year = $yr[0];
+      
+      $sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+      if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
+        $cust_name = $sq_ct['company_name'];
+      }else{
+        $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+      }
+      $pax = intval($row_hotel['adults']) + intval($row_hotel['childrens']);
+      $particular = $this->get_particular($customer_id,$pax,$nights,$check_in,$room_type,$hotel_id);
+  
+      $delete_master->delete_master_entries('Invoice','Hotel',$booking_id,get_hotel_booking_id($booking_id,$year),$cust_name,$row_hotel['total_fee']);
+  
+      //Getting Customer Ledger
+      $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
+      $cust_gl = $sq_cust['ledger_id'];
+  
+      ////////////Sales/////////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = 63;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
 
-  $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
-  $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-  $sq_ht = mysqli_fetch_assoc(mysqlQuery("select hotel_name from hotel_master where hotel_id='$hotel_id'"));
-  $hotel_name = $sq_ht['hotel_name'];
-  return $nights.' Night(s) stay from '.get_date_user($check_date).' in '.$room_type.' Room at '.$hotel_name .' * '.$pax.' '.$cust_name;
-}
+      ////////////service charge/////////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = ($reflections[0]->hotel_sc != '') ? $reflections[0]->hotel_sc : 186;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
 
-public function employee_sign_up_mail($first_name, $last_name, $username, $password, $email_id)
-{
-  global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website;
-  global $mail_em_style, $mail_em_style1, $mail_font_family, $mail_strong_style, $mail_color;
-  $link = BASE_URL.'view/customer';
-  $content = mail_login_box($username, $password, $link);
-  $subject ='Welcome aboard!';
-  global $model;
-  $model->app_email_send('2',$first_name,$email_id, $content,$subject,'1');
-}
+      /////////Service Charge Tax Amount////////
+      // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+      $service_tax_subtotal = explode(',',$service_tax_subtotal);
+      $tax_ledgers = explode(',',$reflections[0]->hotel_taxes);
+      for($i=0;$i<sizeof($service_tax_subtotal);$i++){
+
+        $ledger = $tax_ledgers[$i];
+
+        $module_name = "Hotel Booking";
+        $module_entry_id = $booking_id;
+        $transaction_id = "";
+        $payment_amount = 0;
+        $payment_date = $deleted_date;
+        $payment_particular = $particular;
+        $ledger_particular = get_ledger_particular('To','Hotel Sales');
+        $old_gl_id = $gl_id = $ledger;
+        $payment_side = "Credit";
+        $clearance_status = "";
+        $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+      }
+      
+      ////////////tcs charge/////////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = 232;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+      ////////////markup/////////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = ($reflections[0]->hotel_markup != '') ? $reflections[0]->hotel_markup : 198;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+      
+      /////////Markup Tax Amount////////
+      // Eg. CGST:(9%):24.77, SGST:(9%):24.77
+      $service_tax_markup = explode(',',$service_tax_markup);
+      $tax_ledgers = explode(',',$reflections[0]->hotel_markup_taxes);
+      for($i=0;$i<sizeof($service_tax_markup);$i++){
+
+        $service_tax = explode(':',$service_tax_markup[$i]);
+        $ledger = $tax_ledgers[$i];
+
+        $module_name = "Hotel Booking";
+        $module_entry_id = $booking_id;
+        $transaction_id = "";
+        $payment_amount = 0;
+        $payment_date = $deleted_date;
+        $payment_particular = $particular;
+        $ledger_particular = get_ledger_particular('To','Hotel Sales');
+        $old_gl_id = $gl_id = $ledger;
+        $payment_side = "Credit";
+        $clearance_status = "";
+        $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'1', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+      }
+      /////////roundoff/////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = 230;
+      $payment_side = "Credit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+      /////////Discount////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = 36;
+      $payment_side = "Debit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+      /////////TDS////////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = ($reflections[0]->hotel_tds != '') ? $reflections[0]->hotel_tds : 127;
+      $payment_side = "Debit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+
+      ////////Customer Amount//////
+      $module_name = "Hotel Booking";
+      $module_entry_id = $booking_id;
+      $transaction_id = "";
+      $payment_amount = 0;
+      $payment_date = $deleted_date;
+      $payment_particular = $particular;
+      $ledger_particular = get_ledger_particular('To','Hotel Sales');
+      $old_gl_id = $gl_id = $cust_gl;
+      $payment_side = "Debit";
+      $clearance_status = "";
+      $transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,'INVOICE');
+      
+      $sq_delete = mysqlQuery("update hotel_booking_master set sub_total = '0',markup='0',markup_tax='', service_tax_subtotal='',service_charge='0', total_fee ='0',tds='0',discount='0', roundoff='0', delete_status='1' where booking_id='$booking_id'");
+      if($sq_delete){
+        echo 'Entry deleted successfully!';
+        exit;
+      }
+  }
+  function get_particular($customer_id,$pax,$nights,$check_date,$room_type,$hotel_id){
+
+    $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
+    $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
+    $sq_ht = mysqli_fetch_assoc(mysqlQuery("select hotel_name from hotel_master where hotel_id='$hotel_id'"));
+    $hotel_name = $sq_ht['hotel_name'];
+    return $nights.' Night(s) stay from '.get_date_user($check_date).' in '.$room_type.' Room at '.$hotel_name .' * '.$pax.' '.$cust_name;
+  }
+
+  public function employee_sign_up_mail($first_name, $last_name, $username, $password, $email_id)
+  {
+    global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website;
+    global $mail_em_style, $mail_em_style1, $mail_font_family, $mail_strong_style, $mail_color;
+    $link = BASE_URL.'view/customer';
+    $content = mail_login_box($username, $password, $link);
+    $subject ='Welcome aboard!';
+    global $model;
+    $model->app_email_send('2',$first_name,$email_id, $content,$subject,'1');
+  }
 
 public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_id,$particular)
 {
@@ -428,8 +616,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 		if($payment_mode == 'Credit Card'){
 
 			//////Customer Credit charges///////
-			$module_name = "Hotel Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Hotel Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -441,8 +629,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
 			//////Credit charges ledger///////
-			$module_name = "Hotel Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Hotel Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_charges;
 			$payment_date = $payment_date1;
@@ -469,8 +657,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$credit_company_amount = $payment_amount1 - $finance_charges;
 
 			//////Finance charges ledger///////
-			$module_name = "Hotel Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Hotel Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $finance_charges;
 			$payment_date = $payment_date1;
@@ -481,8 +669,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$clearance_status = ($payment_mode=="Cheque"||$payment_mode=="Credit Card") ? "Pending" : "";
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 			//////Credit company amount///////
-			$module_name = "Hotel Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Hotel Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $credit_company_amount;
 			$payment_date = $payment_date1;
@@ -495,8 +683,8 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 		}
 		else{
 
-			$module_name = "Hotel Booking";
-			$module_entry_id = $booking_id;
+			$module_name = "Hotel Booking Payment";
+			$module_entry_id = $payment_id;
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
@@ -508,10 +696,9 @@ public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_
 			$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 		}
 
-
     //////Customer Payment Amount///////
-    $module_name = "Hotel Booking";
-    $module_entry_id = $booking_id;
+    $module_name = "Hotel Booking Payment";
+    $module_entry_id = $payment_id;
     $transaction_id = $transaction_id1;
     $payment_amount = $payment_amount1;
     $payment_date = $payment_date1;
@@ -558,7 +745,7 @@ public function bank_cash_book_save($booking_id, $payment_id, $branch_admin_id)
     $customer_id = $sq_max['max'];
   }
   
-  $module_name = "Hotel Booking";
+  $module_name = "Hotel Booking Payment";
   $module_entry_id = $payment_id;
   $payment_date = $payment_date;
   $payment_amount = $payment_amount;
@@ -958,6 +1145,8 @@ public function whatsapp_send(){
     $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
     }
   $mobile_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
+  $customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
+
   $sq_emp_info = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id= '$emp_id'"));
   if($emp_id == 0){
     $contact = $app_contact_no;
@@ -966,7 +1155,7 @@ public function whatsapp_send(){
     $contact = $sq_emp_info['mobile_no'];
   }
 
-$whatsapp_msg = rawurlencode('Hello Dear '.$sq_customer['first_name'].',
+$whatsapp_msg = rawurlencode('Dear '.$customer_name.',
 Hope you are doing great. This is to inform you that your booking is confirmed with us. We look forward to provide you a great experience.
 *Booking Date* : '.get_date_user($booking_date).'
 

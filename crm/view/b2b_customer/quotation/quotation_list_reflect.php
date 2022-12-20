@@ -73,7 +73,7 @@ $array_s = array();
 			$cust_name,
 			$sq_curr['currency_code'].' '.number_format($quotation_cost,2),
 			'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>
-			<button style="display:inline-block" class="btn btn-info btn-sm" onclick="delete_quotation('.$row_quotation['quotation_id'] .')" title="Delete Quotation" data-toggle="tooltip"><i class="fa fa-trash" aria-hidden="true"></i></button>',
+			<button style="display:inline-block" class="btn btn-danger btn-sm" onclick="delete_quotation('.$row_quotation['quotation_id'] .')" title="Delete Quotation" data-toggle="tooltip"><i class="fa fa-trash" aria-hidden="true"></i></button>',
 		);
 		array_push($array_s,$temp_arr); 
 }

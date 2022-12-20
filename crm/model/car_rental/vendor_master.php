@@ -14,7 +14,7 @@ public function vendor_save()
 	$immergency_contact_no =$_POST['immergency_contact_no'];
 	$contact_person_name =$_POST['contact_person_name'];
 	$landline_no = $_POST['landline_no'];
-	$country =$_POST['country'];
+	// $country =$_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -53,7 +53,7 @@ public function vendor_save()
 	
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(vendor_id) as max from car_rental_vendor"));
 	$vendor_id = $sq_max['max'] + 1;
-	$sq_vendor = mysqlQuery("insert into car_rental_vendor (vendor_id, vendor_name, city_id, mobile_no, landline_no, contact_person_name,immergency_contact_no, address,country,website, opening_balance, active_flag, created_at,service_tax_no, email,bank_name,account_name,account_no,branch,ifsc_code,state_id,side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$city_id', '$mobile_no','$landline_no','$contact_person_name','$immergency_contact_no', '$address','$country','$website', '$opening_balance', '$active_flag', '$created_at','$service_tax_no','$email_id','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$state','$side','$supp_pan','$as_of_date')");
+	$sq_vendor = mysqlQuery("insert into car_rental_vendor (vendor_id, vendor_name, city_id, mobile_no, landline_no, contact_person_name,immergency_contact_no, address,website, opening_balance, active_flag, created_at,service_tax_no, email,bank_name,account_name,account_no,branch,ifsc_code,state_id,side,pan_no,as_of_date) values ('$vendor_id', '$vendor_name', '$city_id', '$mobile_no','$landline_no','$contact_person_name','$immergency_contact_no', '$address','$website', '$opening_balance', '$active_flag', '$created_at','$service_tax_no','$email_id','$bank_name','$account_name','$account_no','$branch','$ifsc_code','$state','$side','$supp_pan','$as_of_date')");
 	sundry_creditor_balance_update();
 
 	if($sq_vendor)
@@ -79,19 +79,19 @@ public function vendor_save()
 
 	    if($GLOBALS['flag']){
 
-	      commit_t();
+			commit_t();
 
-	      echo "Vehicle Supplier has been successfully saved.";
+			echo "Vehicle Supplier has been successfully saved.";
 
-	      exit;
+			exit;
 
 	    }
 
 	    else{
 
-	      rollback_t();
+			rollback_t();
 
-	      exit;
+			exit;
 
 	    }
 
@@ -135,7 +135,7 @@ public function vendor_update()
 	$immergency_contact_no =$_POST['immergency_contact_no'];
 	$contact_person_name =$_POST['contact_person_name'];
 	$landline_no = $_POST['landline_no'];
-	$country =$_POST['country'];
+	// $country =$_POST['country'];
 	$website = $_POST['website'];
 	$bank_name =$_POST['bank_name'];
 	$account_name = $_POST['account_name'];
@@ -162,7 +162,7 @@ public function vendor_update()
 		exit;
 	}
 
-	$sq_vendor = mysqlQuery("update car_rental_vendor set city_id='$city_id', vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', address='$address', country='$country', website='$website', opening_balance='$opening_balance', service_tax_no='$service_tax_no1', email='$email_id1', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', state_id='$state',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
+	$sq_vendor = mysqlQuery("update car_rental_vendor set city_id='$city_id', vendor_name='$vendor_name', mobile_no='$mobile_no', landline_no='$landline_no', contact_person_name='$contact_person_name', immergency_contact_no='$immergency_contact_no', address='$address', website='$website', opening_balance='$opening_balance', service_tax_no='$service_tax_no1', email='$email_id1', active_flag='$active_flag', bank_name='$bank_name',account_name='$account_name' ,account_no='$account_no', branch='$branch', ifsc_code='$ifsc_code', state_id='$state',side='$side',pan_no='$supp_pan',as_of_date='$as_of_date' where vendor_id='$vendor_id'");
 	sundry_creditor_balance_update();
 	
 	if($sq_vendor)

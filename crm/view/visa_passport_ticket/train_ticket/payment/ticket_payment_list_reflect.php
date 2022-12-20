@@ -53,7 +53,7 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and train_ticket_id in (select train_ticket_id from train_ticket_master where emp_id ='$emp_id')";
 }
-$query .= " order by train_ticket_id desc";
+// $query .= " order by train_ticket_id desc";
 $count = 0;
 
 $sq_pending_amount=0;
@@ -96,6 +96,12 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 		$bg='danger';
 		$sq_cancel_amount = $sq_cancel_amount + $row_train_ticket_payment['payment_amount'] + $row_train_ticket_payment['credit_charges'];
 	}
+	else if($row_train_ticket_payment['clearance_status']=="Cleared"){ 
+		$bg='success';
+	}
+	else if($row_train_ticket_payment['clearance_status']==""){ 
+		$bg='';
+	}
 	$sq_paid_amount = $sq_paid_amount + $row_train_ticket_payment['payment_amount'] + $row_train_ticket_payment['credit_charges'];
 	
 	$payment_id_name = "Train Ticket Payment ID";
@@ -112,7 +118,7 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 	$bank_name = $row_train_ticket_payment['bank_name'];
 	$receipt_type ="Train Ticket Receipt";
 	
-	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=train_ticket_payment_master&customer_field=train_ticket_id&in_customer_id=$row_train_ticket_payment[train_ticket_id]";
+	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=train_ticket_payment_master&customer_field=train_ticket_id&in_customer_id=$row_train_ticket_payment[train_ticket_id]&status=$row_train_ticket_payment[status]";
 	$checkshow = "";
 	if($row_train_ticket_payment['payment_mode']=="Cash" || $row_train_ticket_payment['payment_mode']=="Cheque"){
 		$checshow = "<input type=\"checkbox\" id=\"chk_train_ticket_payment".$count."\" name=\"chk_train_ticket_payment\" value=". $row_train_ticket_payment['payment_id'].">";
@@ -123,8 +129,10 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 	}
 	if($row_train_ticket_payment['payment_mode'] == 'Credit Note' || ($row_train_ticket_payment['payment_mode'] == 'Credit Card' && $row_train_ticket_payment['clearance_status']=="Cleared")){
 		$edit_btn = '';
+		$delete_btn = '';
 	}else{
 		$edit_btn = '<button class="btn btn-info btn-sm" data-toggle="tooltip"  onclick="train_ticket_payment_update_modal('.$row_train_ticket_payment['payment_id'].')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_train_ticket_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 
 
@@ -138,7 +146,7 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 		$payshow,
 		number_format($row_train_ticket_payment['payment_amount'] + $row_train_ticket_payment['credit_charges'],2),
 		'<a onclick="loadOtherPage(\''. $url1 .'\')" data-toggle="tooltip" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
-		'.$edit_btn
+		'.$edit_btn.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr); 
 }

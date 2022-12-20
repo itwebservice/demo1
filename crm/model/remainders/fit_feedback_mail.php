@@ -4,10 +4,10 @@ $today = date('Y-m-d');
 $end_date = date('Y-m-d', strtotime('-3 days', strtotime($today)));
 
 global $secret_key,$encrypt_decrypt;
-$sq_booking_info = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where tour_to_date='$end_date'"));
+$sq_booking_info = mysqli_num_rows(mysqlQuery("select * from package_tour_booking_master where tour_to_date='$end_date' and delete_status='0'"));
 if($sq_booking_info>0){
 
-	$sq_booking = mysqlQuery("select * from package_tour_booking_master where tour_to_date='$end_date'");
+	$sq_booking = mysqlQuery("select * from package_tour_booking_master where tour_to_date='$end_date' and delete_status='0'");
 	while($row_booking= mysqli_fetch_assoc($sq_booking)){
 		$customer_id = $row_booking['customer_id'];
 		$email_id = $row_booking['email_id'];

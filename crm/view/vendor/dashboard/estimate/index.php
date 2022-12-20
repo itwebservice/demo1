@@ -72,6 +72,7 @@ $branch_status = $_POST['branch_status'];
 <script>
 var column = [
 	{ title : "S_No."},
+	{ title:"Purchase_Date"},
 	{ title:"Purchase_Type"},
 	{ title : "Purchase_ID"},
 	{ title : "Supplier_Type"},
@@ -141,7 +142,7 @@ function vendor_estimate_list_reflect()
 	var vendor_type_id = get_vendor_type_id('vendor_type2', '2');
 
 	$.post('estimate/vendor_estimate_list_reflect.php', { estimate_type : estimate_type, estimate_type_id : estimate_type_id, vendor_type : vendor_type, vendor_type_id : vendor_type_id , branch_status : branch_status}, function(data){
-		pagination_load(data, column, true, true, 20, 'estimate');
+		pagination_load(data, column, true, true, 20, 'estimate',true);
 		$('.loader').remove();
 	});
 }
@@ -193,6 +194,21 @@ function excel_report()
 	window.location = 'estimate/excel_report.php?estimate_type='+estimate_type+'&vendor_type='+vendor_type+'&vendor_type_id='+vendor_type_id+'&estimate_type_id='+estimate_type_id+'&branch_status='+branch_status;
 
 
+}
+function purchase_delete_entry(estimate_id)
+{
+	$('#vi_confirm_box').vi_confirm_box({
+		callback: function(data1){
+			if(data1=="yes"){
+				var branch_status = $('#branch_status').val();
+				var base_url = $('#base_url').val();
+				$.post(base_url+'controller/vendor/dashboard/estimate/vendor_estimate_delete.php',{ estimate_id : estimate_id }, function(data){
+					success_msg_alert(data);
+					vendor_estimate_list_reflect();
+				});
+			}
+		}
+	});
 }
 $('#estimate_save_modal').on('shown.bs.modal', function(){
 	$('input[name=service_tax_subtotal_s]').val('');

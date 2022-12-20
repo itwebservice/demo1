@@ -37,7 +37,7 @@ $search_form = date('Y-m-01 H:i',strtotime($cur_date));
 $search_to =  date('Y-m-t H:i',strtotime($cur_date));
 
 //Completed Target                
-$sq_group_bookings = mysqlQuery("select * from tourwise_traveler_details where emp_id = '$emp_id' and financial_year_id='$financial_year_id' and  tour_group_status != 'Cancel' and (form_date between '$search_form' and '$search_to')");
+$sq_group_bookings = mysqlQuery("select * from tourwise_traveler_details where emp_id = '$emp_id' and financial_year_id='$financial_year_id' and  tour_group_status != 'Cancel' and delete_status='0' and (form_date between '$search_form' and '$search_to')");
 
 $total_group  = 0;
 while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
@@ -54,7 +54,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
   $total_group = $total_group + $tour_total_amount1;
 }
 
-  $sq_package_booking = mysqlQuery("select * from package_tour_booking_master where emp_id ='$emp_id' and financial_year_id='$financial_year_id' and tour_status !='Cancel' and (booking_date between '$search_form' and '$search_to')");
+  $sq_package_booking = mysqlQuery("select * from package_tour_booking_master where emp_id ='$emp_id' and financial_year_id='$financial_year_id' and tour_status !='Cancel' and (booking_date between '$search_form' and '$search_to') and delete_status='0'");
   $total_package = 0;
   while($row_package_booking = mysqli_fetch_assoc($sq_package_booking)){
     $sq_can_count = mysqli_num_rows(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$row_package_booking[booking_id]'"));
@@ -115,7 +115,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
 
                         <div class="dashboard_widget_single_conetent">
 
-                          <span class="dashboard_widget_conetent_amount"><?php echo $assigned_enq_count; ?></span>
+                          <span class="dashboard_widget_conetent_amount dashboard-counter" data-max=<?php echo $assigned_enq_count; ?>></span>
 
                           <span class="dashboard_widget_conetent_text widget_blue_text">Total</span>
 
@@ -127,7 +127,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
 
                         <div class="dashboard_widget_single_conetent">
 
-                          <span class="dashboard_widget_conetent_amount"><?php echo $followup_count; ?></span>
+                          <span class="dashboard_widget_conetent_amount dashboard-counter" data-max=<?php echo $followup_count; ?>></span>
 
                           <span class="dashboard_widget_conetent_text widget_yellow_text">Active</span>
 
@@ -139,7 +139,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
 
                         <div class="dashboard_widget_single_conetent">
 
-                          <span class="dashboard_widget_conetent_amount"><?php echo $infollowup_count; ?></span>
+                          <span class="dashboard_widget_conetent_amount dashboard-counter" data-max=<?php echo $infollowup_count; ?>></span>
 
                           <span class="dashboard_widget_conetent_text widget_gray_text">In-Followup</span>
 
@@ -151,7 +151,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
 
                         <div class="dashboard_widget_single_conetent">
 
-                          <span class="dashboard_widget_conetent_amount"><?php echo $converted_count; ?></span>
+                          <span class="dashboard_widget_conetent_amount dashboard-counter" data-max=<?php echo $converted_count; ?>></span>
 
                           <span class="dashboard_widget_conetent_text widget_green_text">Converted</span>
 
@@ -162,7 +162,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                       <div class="col-sm-2">
 
                         <div class="dashboard_widget_single_conetent">
-                          <span class="dashboard_widget_conetent_amount"><?php echo $closed_count; ?></span>
+                          <span class="dashboard_widget_conetent_amount dashboard-counter" data-max=<?php echo $closed_count; ?>></span>
                           <span class="dashboard_widget_conetent_text widget_red_text">Dropped</span>
                         </div>
 
@@ -195,7 +195,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
               $search_to =  date('Y-m-t H:i',strtotime($cur_date));
               
               //Completed Target                
-              $sq_group_bookings = mysqlQuery("select * from tourwise_traveler_details where emp_id = '$emp_id' and financial_year_id='$financial_year_id' and (form_date between '$first_day_this_month' and '$last_day_this_month')");
+              $sq_group_bookings = mysqlQuery("select * from tourwise_traveler_details where emp_id = '$emp_id' and delete_status='0' and financial_year_id='$financial_year_id' and (form_date between '$first_day_this_month' and '$last_day_this_month')");
               while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings)){
 
                 $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_group_bookings[id]'"));
@@ -205,7 +205,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                 }
               }
 
-              $sq_package_booking = mysqlQuery("select * from package_tour_booking_master where emp_id ='$emp_id' and financial_year_id='$financial_year_id' and (booking_date between '$first_day_this_month' and '$last_day_this_month')");
+              $sq_package_booking = mysqlQuery("select * from package_tour_booking_master where emp_id ='$emp_id' and financial_year_id='$financial_year_id' and (booking_date between '$first_day_this_month' and '$last_day_this_month') and delete_status='0'");
               while($row_package_booking = mysqli_fetch_assoc($sq_package_booking)){
                 $pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_package_booking[booking_id]'"));
 			          $cancle_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_package_booking[booking_id]' and status='Cancel'"));
@@ -214,7 +214,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                 }
               }
 
-               $sq_bus = mysqlQuery("select * from bus_booking_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'"); 
+               $sq_bus = mysqlQuery("select * from bus_booking_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month' and delete_status='0' and financial_year_id='$financial_year_id'"); 
               //  echo $sq_bus;   
                 while($sq_total_amount = mysqli_fetch_assoc($sq_bus)){
 
@@ -225,7 +225,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                     $total_bus_cost = $total_bus_cost+$total_exp_amount;
                   } 
                 }
-                $sq_exc=mysqlQuery("select * from excursion_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
+                $sq_exc=mysqlQuery("select * from excursion_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id' and delete_status='0'");
                 while($sq_total_amount = mysqli_fetch_assoc($sq_exc)){
                   $pass_count = mysqli_num_rows(mysqlQuery("select * from  excursion_master_entries where exc_id='$sq_total_amount[exc_id]'"));
                   $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  excursion_master_entries where exc_id='$sq_total_amount[exc_id]' and status='Cancel'"));
@@ -234,14 +234,14 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                     $total_exc_cost = $total_exc_cost+$total_exp_amount;
                   }
                 }
-                $sq_car = mysqlQuery("select * from car_rental_booking where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id' and status!='Cancel'");
+                $sq_car = mysqlQuery("select * from car_rental_booking where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id' and status!='Cancel' and delete_status='0'");
                 while($sq_total_amount = mysqli_fetch_assoc($sq_car)){
                   
                     $total_exp_amount = $sq_total_amount['total_fees'];
                     $total_car_cost = $total_car_cost +  $total_exp_amount;
                   
                 }
-                $sq_hotel = mysqlQuery("select * from hotel_booking_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
+                $sq_hotel = mysqlQuery("select * from hotel_booking_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id' and delete_status='0'");
                 while($sq_total_amount = mysqli_fetch_assoc($sq_hotel )){
                   $pass_count = mysqli_num_rows(mysqlQuery("select * from  hotel_booking_entries where booking_id='$sq_total_amount[booking_id]'"));
                   $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  hotel_booking_entries where booking_id='$sq_total_amount[booking_id]' and status='Cancel'"));
@@ -250,7 +250,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                     $total_hotel_cost = $total_hotel_cost +  $total_exp_amount;
                   }
                 }
-                $sq_misc = mysqlQuery("select * from miscellaneous_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
+                $sq_misc = mysqlQuery("select * from miscellaneous_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month' and financial_year_id='$financial_year_id' and delete_status='0'");
                 while( $sq_total_amount = mysqli_fetch_assoc($sq_misc)){
                   $pass_count = mysqli_num_rows(mysqlQuery("select * from  miscellaneous_master_entries where misc_id='$sq_total_amount[misc_id]'"));
                   $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  miscellaneous_master_entries where misc_id='$sq_total_amount[misc_id]' and status='Cancel'"));
@@ -268,7 +268,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                     $total_pass_cost = $total_pass_cost +  $total_exp_amount;
                   }
                 }
-                $sq_ticket = mysqlQuery("select * from ticket_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
+                $sq_ticket = mysqlQuery("select * from ticket_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month' and financial_year_id='$financial_year_id' and delete_status='0'");
                 while($sq_total_amount = mysqli_fetch_assoc($sq_ticket)){
                   $pass_count = mysqli_num_rows(mysqlQuery("select * from  passport_master_entries where passport_id='$sq_total_amount[passport_id]'"));
                   $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  passport_master_entries where passport_id='$sq_total_amount[passport_id]' and status='Cancel'"));
@@ -277,7 +277,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                     $total_ticket_cost = $total_ticket_cost +  $total_exp_amount;
                   }
                 }
-                $sq_train = mysqlQuery("select * from train_ticket_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
+                $sq_train = mysqlQuery("select * from train_ticket_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month' and delete_status='0' and financial_year_id='$financial_year_id'");
                 while($sq_total_amount = mysqli_fetch_assoc($sq_train)){
                   $pass_count = mysqli_num_rows(mysqlQuery("select * from  ticket_master_entries where ticket_id='$sq_total_amount[ticket_id]'"));
                   $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  ticket_master_entries where ticket_id='$sq_total_amount[ticket_id]' and status='Cancel'"));
@@ -286,7 +286,7 @@ while($row_group_bookings = mysqli_fetch_assoc($sq_group_bookings))
                     $total_train_cost = $total_train_cost +  $total_exp_amount;
                   }
                 }
-                $sq_visa = mysqlQuery("select * from visa_master where emp_id='$emp_id' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
+                $sq_visa = mysqlQuery("select * from visa_master where emp_id='$emp_id' and delete_status='0' and created_at<='$last_day_this_month' and created_at>='$first_day_this_month'  and financial_year_id='$financial_year_id'");
                 while($sq_total_amount = mysqli_fetch_assoc($sq_visa)){
                   $pass_count = mysqli_num_rows(mysqlQuery("select * from  visa_master_entries where visa_id='$sq_total_amount[visa_id]'"));
                   $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  visa_master_entries where visa_id='$sq_total_amount[visa_id]' and status='Cancel'"));

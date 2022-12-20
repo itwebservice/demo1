@@ -77,55 +77,21 @@
 			<input type="text" id="mobile_no1" name="mobile_no1" placeholder="Whatsapp no with country code" onchange="mobile_validate(this.id);" title="Whatsapp no with country code" value="<?= $sq_quotation['mobile_no'] ?>">
 
 		</div>
-<!-- 
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
-	      <input type="text" id="travel_datetime1" name="travel_datetime1" placeholder="Travel Date/Time" title="Travel Date/Time" value="<?= get_datetime_user($sq_quotation['traveling_date']) ?>">
+	    	<input type="text" class="form-control" id="quotation_date1" name="quotation_date1" placeholder="Quotation Date" title="Quotation Date" value="<?= get_date_user($sq_quotation['quotation_date']) ?>" onchange="get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','service_charge', true);"> 
 
 	    </div>
-
-	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	      <input type="text" id="sector_from1" name="sector_from1" title="Sector From" placeholder="Sector From" onchange="validate_city(this.id);" value="<?= $sq_quotation['sector_from'] ?>">
-
-	    </div>
-
-	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	      <input type="text" id="sector_to1" name="sector_to1" title="Sector To" placeholder="Sector To" onchange="validate_city(this.id);" value="<?= $sq_quotation['sector_to'] ?>">
-
-	    </div>	        		            
-
-		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-			<input type="text" id="preffered_airline1" name="preffered_airline1" placeholder="Preferred Airline" onchange="validate_city(this.id);" title="Preferred Airline" value="<?= $sq_quotation['preffered_airline'] ?>">
-
-		</div>	
-
-		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	      <input type="text" name="class_type1" id="class_type1" title="Class Type" placeholder="Class Type" onchange="validate_city(this.id);" value="<?= $sq_quotation['class_type'] ?>">
-
-	    </div>
-
-	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	    	<input type="text" name="trip_type1" id="trip_type1" placeholder="Trip Type" title="Trip Type" onchange="validate_city(this.id);" value="<?= $sq_quotation['trip_type'] ?>">
-
-	    </div>
-
-	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	      <input type="text" id="total_seats1" name="total_seats1" placeholder="Total Seats" title="Total Seats" onchange="validate_balance(this.id);" value="<?= $sq_quotation['total_seats'] ?>" >
-
-	    </div>	        		           
-  -->
-
-		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-	      <input type="text" class="form-control" id="quotation_date1" name="quotation_date1" placeholder="Quotation Date" title="Quotation Date" value="<?= get_date_user($sq_quotation['quotation_date']) ?>" onchange="get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','service_charge', true);"> 
-
-	    </div>
+		<div class="col-md-3 col-sm-6">
+		<?php
+		$status = ($sq_quotation['status'] == '1') ? 'Active' : 'Inactive';
+		?>
+		<select class="<?= $active_inactive_flag ?>" name="active_flag1" id="active_flag1" title="Status">
+		<option  value="<?php echo $sq_quotation['status']; ?>"><?php echo $status; ?></option>
+			<option value="1">Active</option>
+			<option value="0">Inactive</option>
+		</select>
+		</div>
 	</div>	
 
 	<div class="row text-center mg_tp_20">

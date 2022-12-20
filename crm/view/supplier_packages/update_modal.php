@@ -41,7 +41,7 @@ $sq_ser = mysqli_fetch_assoc(mysqlQuery("select * from supplier_packages where p
 						<option value="Insurance">Insurance</option>
 						<option value="Train Ticket">Train Ticket</option>
 						<option value="Other">Other</option>
-						<option value="Bus">Bus</option>
+						<option value="Cruise">Cruise</option>
 					</select>
 				</div>
 			</div>
@@ -106,7 +106,7 @@ function upload_pic_attch()
 		action: 'upload_image_proof.php',
 		name: 'uploadfile',
 		onSubmit: function(file, ext){  
-			if (! (ext && /^(xlsx|xls|doc|docx|pdf)$/.test(ext))){ 
+			if (! (ext && /^(xlsx|xls|doc|docx|pdf|csv)$/.test(ext))){ 
 			error_msg_alert('Only Word,Excel or PDF files are allowed');
 			return false;
 			}
@@ -162,36 +162,17 @@ $(function(){
 			var upload_url = $('#upload_url1').val();
 
 			var formDataup = new FormData($('#frm_update')[0]);
-			// for(var value of formDataup.values()){
-			// 	if(typeof(value) == "object"){
-			// 		var ext = value["name"].split('.').pop();
-			// 		if(ext!=''){
-			// 			if (! (ext && /^(xlsx|xls|doc|docx|pdf)$/.test(ext))){ 
-			// 				error_msg_alert('Only Word,Excel or PDF files are allowed');
-			// 				return false;
-			// 			}
-			// 		}
-			// 	}
-			// }
 			$('#btn_update').button('loading');
 			$.ajax({
-
 				type:'post',
 				processData: false,
 				contentType: false,
-
 				url: base_url()+'controller/supplier_packages/package_update.php',
-
 				data : formDataup,
-
 				success:function(result){
-
 					msg_alert(result);
-
 					$('#update_modal').modal('hide');
-
 					list_reflect();
-
 				}
 
 			});

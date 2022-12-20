@@ -5,7 +5,7 @@ $branch_status = $_POST['branch_status'];
 
 $total_sale = 0; $total_purchase = 0;
 //Sale
-$tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+$tourwise_details = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 //Cancel consideration
 $sq_tr_refund = mysqli_num_rows(mysqlQuery("select * from package_refund_traveler_cancalation_entries where traveler_id='$tourwise_details[id]'"));
 $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(credit_charges) as sumc from package_payment_master where booking_id='$tourwise_details[booking_id]' and clearance_status!='Cancelled'"));
@@ -27,7 +27,7 @@ $cancle_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_detai
 $bg = ($pass_count==$cancle_count) ? 'danger':'';
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
 	$total_purchase += $row_purchase['net_total'];
 	//Service Tax 
@@ -150,7 +150,7 @@ $profit_loss = $total_sale - $total_purchase;
 		<?php
 		$sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$tourwise_details[emp_id]'"));
 		$emp = ($tourwise_details['emp_id'] == 0)?'Admin': $sq_emp['first_name'].' '.$sq_emp['last_name'];
-		$btn = ($bg == '') ? '<button class="btn btn-info btn-sm" onclick="package_other_expnse_modal('. $booking_id .')" title="Add Other Miscellaneous amount"><i class="fa fa-plus"></i></button>' : 'NA';
+		$btn = ($bg == '') ? '<button class="btn btn-info btn-sm" onclick="package_other_expnse_modal('. $booking_id .')" title="Add Other expense amount"><i class="fa fa-plus"></i></button>' : 'NA';
 		?>
 			<tr class="<?=$bg?>">
 				<td><?= 1 ?></td>

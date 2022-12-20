@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="exc_id_filter" id="exc_id_filter" style="width:100%" onchange="exc_customer_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_exc = mysqlQuery("select * from excursion_master where customer_id='$customer_id'");
+			        $sq_exc = mysqlQuery("select * from excursion_master where customer_id='$customer_id' and delete_status='0'");
 			        while($row_exc = mysqli_fetch_assoc($sq_exc)){
 						$date = $row_exc['created_at'];
 						$yr = explode("-", $date);
@@ -41,9 +41,11 @@ $('#exc_id_filter').select2();
 	exc_customer_list_reflect();
 	
 	function exc_display_modal(exc_id)
-	{
+	{	
+		$('#exc-'+exc_id).button('loading');
 		$.post('bookings/excursion/home/view/index.php', { exc_id : exc_id }, function(data){
 			$('#div_exc_content_display').html(data);
+			$('#exc-'+exc_id).button('reset');
 		});
 	}
 </script>

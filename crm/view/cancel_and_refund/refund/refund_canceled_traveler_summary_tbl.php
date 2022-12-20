@@ -35,7 +35,7 @@ $booking_id = $_POST['booking_id'];
         <td>
         <?php 
         $sq_refund_entry = mysqlQuery("select traveler_id from package_refund_traveler_cancalation_entries where refund_id='$row_refund[refund_id]'");
-        $sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_refund[booking_id]'"));
+        $sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$row_refund[booking_id]' and delete_status='0'"));
         $customer_id = $sq_package_info['customer_id'];
         $date = $row_refund['refund_date'];
         $yr = explode("-", $date);
@@ -44,7 +44,7 @@ $booking_id = $_POST['booking_id'];
         while($row_refund_entry = mysqli_fetch_assoc($sq_refund_entry) )
         {
             $sq_traveler = mysqli_fetch_assoc( mysqlQuery( "select m_honorific, first_name, last_name from package_travelers_details where traveler_id='$row_refund_entry[traveler_id]'" ) );
-             echo $sq_traveler['m_honorific'].' '.$sq_traveler['first_name'].' '.$sq_traveler_query['last_name']."<br>";
+            echo $sq_traveler['m_honorific'].' '.$sq_traveler['first_name'].' '.$sq_traveler_query['last_name']."<br>";
         }   
         $v_voucher_no = get_package_booking_refund_id($row_refund['refund_id'],$year);
         $v_refund_date = $row_refund['refund_date'];
@@ -82,5 +82,5 @@ $booking_id = $_POST['booking_id'];
         </tr>
     </tfoot>
 </table>
-<input type="hidden" id="ref_amt" value="<?= ($sq_refund['sum']=="") ? 0 : $sq_refund[sum] ?>">
+<input type="hidden" id="ref_amt" value="<?= ($sq_refund['sum']=="") ? 0 : $sq_refund['sum'] ?>">
 </div></div>

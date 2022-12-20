@@ -13,7 +13,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Update Car Rental Tariff</h4>
+                <h4 class="modal-title" id="myModalLabel">Update Vehicle Tariff</h4>
             </div>
             <div class="modal-body">
                 <form id="frm_car_rental_vendor_update">
@@ -56,7 +56,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
                                     <input type="text" id="local_extra_km" name="local_extra_km" data-toggle="tooltip" placeholder="Extra KM Rate" title="Extra KM Rate" class="form-control" value="<?= $sq_vendor['extra_km_rate']?>"/>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
-                                    <input type="text" id="local_rate" name="local_rate" data-toggle="tooltip" placeholder="Rate" title="Rate" class="form-control" value="<?= $sq_vendor['rate']?>"/>
+                                    <input type="text" id="local_rate" name="local_rate" data-toggle="tooltip" placeholder="Cost" title="Cost" class="form-control" value="<?= $sq_vendor['rate']?>"/>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10" >
                                     <select name="local_status" id="local_status" data-toggle="tooltip" title="Status" class="form-control">
@@ -114,7 +114,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
                                     <input type="text" id="total_max_km" name="total_max_km" data-toggle="tooltip" placeholder="Total Max KM" title="Total Max KM" class="form-control" value="<?= $sq_vendor['total_max_km']?>"/>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
-                                    <input type="text" id="rate" name="rate" data-toggle="tooltip" placeholder="Rate" title="Rate" class="form-control" value="<?= $sq_vendor['rate']?>"/>
+                                    <input type="text" id="rate" name="rate" data-toggle="tooltip" placeholder="Cost" title="Cost" class="form-control" value="<?= $sq_vendor['rate']?>"/>
                                 </div>
 
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
@@ -140,9 +140,9 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
                                     </select>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
-                                    <select name="tour_type" class="form-control" id="tour_type" title="Tour Type" disabled>
+                                    <select name="tour_type" class="form-control" id="tour_type" title="Travel Type" disabled>
                                         <option value="<?=$sq_vendor['tour_type'] ?>"><?= $sq_vendor['tour_type'] ?></option>
-                                        <option value="">Select Tour Type</option>
+                                        <option value="">Select Travel Type</option>
                                         <option value="Local">Local</option>
                                         <option value="outstation">OutStation</option>
                                     </select>

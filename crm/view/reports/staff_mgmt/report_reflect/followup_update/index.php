@@ -6,6 +6,8 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='reports/staff_mgmt/index.php'"));
 $branch_status_follow = $sq['branch_status'];
 
+$today_date1 = date('Y-m-d 00:00');
+$today_date2 = date('Y-m-d 23:00');
 ?>
 <div class="row text-right mg_bt_10">
 	<div class="col-md-12">
@@ -42,9 +44,10 @@ $('#emp_id_filter').select2();
 $('#from_date_filteru, #to_date_filteru').datetimepicker({ format:'d-m-Y H:i' });
 var column = [
 { title : "S_No."},
-{ title:"Customer_Name"},
+{ title : "Enquiry_No"},
+{ title : "Customer_Name"},
 { title : "Assigned_To"},
-{ title : "Followup_Date"},
+{ title : "Followup_Date_TIME"},
 { title : "Followup_Type"},
 { title : "followup_status"},
 { title : "Followup_Description"}	
@@ -55,7 +58,7 @@ function report_reflect()
 	var to_date = $('#to_date_filteru').val();
 	var branch_status = $('#branch_status_follow').val();
 	$.post('report_reflect/followup_update/report_reflect.php', { from_date : from_date, to_date : to_date,branch_status : branch_status}, function(data){
-		pagination_load(data, column, true, false, 20, 'group_tour_report');
+		pagination_load(data, column, true, false, 20, 'group_tour_report',true);
 	});
 }
 

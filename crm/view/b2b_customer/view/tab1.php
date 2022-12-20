@@ -111,21 +111,14 @@
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 		                  <?php echo "<label>Pincode <em>:</em></label> ".$query['pincode']; ?>
 		            </span>
-		            <span class="main_block">
-		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-						  <?php 
-						  $sq_country = mysqli_fetch_assoc(mysqlQuery("select * from country_list_master where country_id='$query[country]'"));
-						  $country_name = ($query['country']!='0') ? $sq_country['country_name'].'('.$sq_country['country_code'].')':'';
-						  ?>
-						  <?php echo "<label>Country <em>:</em></label> ".$country_name; ?>
-		            </span> 
+		            
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 						  <?php 
 						  $sq_country = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$query[state]'"));
 						  $country_name = ($query['state']!='0') ? $sq_country['state_name']:'';
 						  ?>
-						  <?php echo "<label>State <em>:</em></label> ".$country_name; ?>
+						  <?php echo "<label>State/Country <em>:</em></label> ".$country_name; ?>
 		            </span> 
 		            <span class="main_block">
 		                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>

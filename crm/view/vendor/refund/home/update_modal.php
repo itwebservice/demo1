@@ -4,7 +4,7 @@ include_once('../../inc/vendor_generic_functions.php');
 
 $refund_id = $_POST['refund_id'];
 $sq_vendor_refund_master = mysqli_fetch_assoc(mysqlQuery("select * from vendor_refund_master where refund_id='$refund_id'"));
-$sq_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$sq_vendor_refund_master[estimate_id]'"));
+$sq_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$sq_vendor_refund_master[estimate_id]' and delete_status='0'"));
 
 $purchase = $sq_estimate['estimate_amount'] - $sq_estimate['refund_total_amount'];
 
@@ -48,7 +48,7 @@ $enable = ($sq_vendor_refund_master['payment_mode']=="Cash") ? "disabled" : "";
 			        <option value="<?= $sq_estimate['estimate_id'] ?>"><?= get_vendor_estimate_id($sq_estimate['estimate_id'],$year)." : ".$vendor_type_val."(".$sq_estimate['vendor_type'].")" ?></option>
 			        <option value="">Supplier Costing</option>
 			        <?php 
-			        $sq_estimate1 = mysqlQuery("select * from vendor_estimate where status='Cancel' order by estimate_id desc");
+			        $sq_estimate1 = mysqlQuery("select * from vendor_estimate where status='Cancel' and delete_status='0' order by estimate_id desc");
 			        while($row_estimate = mysqli_fetch_assoc($sq_estimate1)){
 			          $vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
 			          ?>

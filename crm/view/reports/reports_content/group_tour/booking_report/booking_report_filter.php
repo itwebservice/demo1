@@ -27,7 +27,7 @@
 $tourwise_traveler_id = $_GET['tourwise_traveler_id'];
 
 $count=0;
-$sq_tourwise_details = mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id'");
+$sq_tourwise_details = mysqlQuery("select * from tourwise_traveler_details where id='$tourwise_traveler_id' and delete_status='0'");
 while($row_tourwise_details=mysqli_fetch_assoc($sq_tourwise_details))
 {
 	$first_time = true;

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 //Group booking ID return
 
@@ -140,7 +140,7 @@ function get_emp_salary_id($salary_id,$year = ''){ global $app_version;
 //Office Expense ID return
 
 function get_other_expense_payment_id($expense_id,$year = ''){ global $app_version;
-  $year = ($year == '') ? $app_version : $year; return 'OEP/'.$year.'/'.$expense_id; }
+  $year = ($year == '') ? $app_version : $year; return 'OE/'.$year.'/P/'.$expense_id; }
 function get_other_expense_booking_id($expense_id,$year = ''){ global $app_version;
   $year = ($year == '') ? $app_version : $year; return 'OE/'.$year.'/'.$expense_id; }
 
@@ -256,7 +256,7 @@ function get_jv_entry_id($jv_id,$year = ''){ global $app_version;
 function get_credit_note_id($credit_id){ global $app_version;
   return 'CN/'.$credit_id; }
 function get_debit_note_id($debit_id,$year = ''){ global $app_version;
-  $year = ($year == '') ? $app_version : $year; return 'DN/'.$year.'/'.$debit_id; }
+  $year = ($year == '') ? $app_version : $year; return 'DN/'.$debit_id; }
 
 //customer Advance payment ID
 function get_custadv_payment_id($payment_id,$year = ''){ global $app_version;

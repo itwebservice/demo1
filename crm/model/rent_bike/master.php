@@ -38,6 +38,12 @@ class master{
     function bike_type_save(){
         
         $bike_type = addslashes($_POST['bike_type']);
+        if(empty($bike_type) || ctype_space($bike_type))
+		{
+		  rollback_t();
+		  echo "error--Bike Type Cannot Be Null!";
+		  exit;
+		} 
         $sq_count = mysqli_num_rows(mysqlQuery("select entry_id from bike_type_master where bike_type='$bike_type'"));
         if($sq_count > 0){
             echo 'error--Bike type already added';

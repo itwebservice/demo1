@@ -34,7 +34,7 @@ $image_array = explode(',',$sq_ferry['image_url']);
           </div>
           <div class="row mg_tp_20">
             <div class="col-sm-4">
-              <select name="active_flag" id="active_flag" title="Status">
+              <select class="<?= $active_inactive_flag ?>" name="active_flag" id="active_flag" title="Status">
                 <option value="<?= $sq_ferry['active_flag'] ?>"><?= $sq_ferry['active_flag'] ?></option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -57,27 +57,6 @@ $image_array = explode(',',$sq_ferry['image_url']);
         <div class="row mg_tp_20 mg_bt_20" id="images_list"></div>
         <input type="hidden" id="image_array1" value='<?= $sq_ferry['image_url'] ?>'/>
         <input type="hidden" id="img_array1"/>
-          <div class="row mg_tp_20 hidden">
-            <div class="col-sm-12">
-              <h3 class="editor_title">Age criterias for Child and Infant Costing</h3>
-              <div class="row mg_tp_10">
-                <div class="col-sm-6">
-                  <input type="number" id="childfrom1" name="childfrom" placeholder="*Child From Age" title="Child From Age"  value="<?= $sq_ferry['child_from'] ?>" required>
-                </div>
-                <div class="col-sm-6">
-                  <input type="number" id="childto1" name="childto" placeholder="*Child To Age" title="Child To Age" value="<?= $sq_ferry['child_to'] ?>" required>
-                </div>
-              </div>
-              <div class="row mg_tp_10">
-                <div class="col-sm-6">
-                  <input type="number" id="infantfrom1" name="infantfrom" placeholder="*Infant From Age" title="Infant From Age" value="<?= $sq_ferry['infant_from'] ?>" required>
-                </div>
-                <div class="col-sm-6">
-                  <input type="number" id="infantto1" name="infantto" placeholder="*Infant To Age" title="Infant To Age" value="<?= $sq_ferry['infant_to'] ?>" required>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="row mg_tp_20">
             <div class="col-md-4 col-sm-4 mg_bt_10_sm_xs">
               <h3 class="editor_title">Inclusions</h3>
@@ -187,7 +166,7 @@ function upload_ferry_image1(){
               }
             }
             var total = parseInt(img_count) + parseInt(upload_count);
-            if(total > 4){
+            if(total > 3){
               error_msg_alert("Sorry, you can upload up to 3 images"); return false;
             }else{
               $("#img_array1").val(img_array);
@@ -212,10 +191,10 @@ $(function(){
       var ferry_type = $('#ferry_type1').val();
       var ferry_name = $('#ferry_name1').val();
       var seating_capacity = $('#seating_capacity1').val();
-      var childfrom = $('#childfrom1').val();
-      var childto = $('#childto1').val();
-      var infantfrom = $('#infantfrom1').val();
-      var infantto = $('#infantto1').val();
+      var childfrom = 0;
+      var childto = 0;
+      var infantfrom = 0;
+      var infantto = 0;
       var active_flag = $('#active_flag').val();
 			var inclusions = $('#inclusions1').val();
 			var exclusions = $('#exclusions1').val();

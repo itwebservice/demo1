@@ -62,13 +62,12 @@ function get_sales_particular($invoice_id, $date, $amount, $customer_id){
 function get_purchase_partucular($invoice_id, $date, $amount, $vendor_type, $vendor_type_id){
   $date = get_date_user($date);
   $vendor_name = get_vendor_name($vendor_type, $vendor_type_id);
-  $particular = "Being Purchases made against Inv. No ".$invoice_id." from ".$vendor_name;
+  $particular = "Being Purchases made against purchase id ".$invoice_id." from ".$vendor_name;
 
   return $particular;
 }
 
-function get_sales_paid_particular($payment_id, $date, $amount, $customer_id, $payment_mode, $invoice,$bank_id,$cheque_no)
-
+function get_sales_paid_particular($payment_id, $date, $amount, $customer_id, $payment_mode, $invoice,$bank_id,$cheque_no,$canc_status='')
 {
 
   $date = get_date_user($date);
@@ -83,7 +82,9 @@ function get_sales_paid_particular($payment_id, $date, $amount, $customer_id, $p
   $sq_bank = mysqli_fetch_assoc(mysqlQuery("select bank_name from bank_master where bank_id='$bank_id'"));
   $bank_name = $sq_bank['bank_name'];
 
-  $particular = "Received against Inv. No ".$invoice." through ".$payment_mode." from ".$customer_name." Dt. ".$date;
+  $particular = ($canc_status == 'Cancelled') ? 'Cancellation Charges r' : 'R';
+  
+  $particular .= "eceived against Inv. No ".$invoice." through ".$payment_mode." from ".$customer_name." Dt. ".$date;
   if($payment_mode != 'Cash' && $payment_mode != 'Credit Card' && $payment_mode != '' && $payment_mode != 'Credit Note'){
     $particular .= ' in '.$bank_name.' Cheque no / ID . '.$cheque_no;
   }
@@ -118,17 +119,11 @@ function get_purchase_paid_partucular($invoice_id, $date, $amount, $vendor_type,
 
 
 function get_expense_paid_particular($invoice_id, $expense_type_id, $date, $amount, $payment_mode)
-
 {
-
   $date = get_date_user($date);
 
-
-
-  $sq_expense_type = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$expense_type_id'"));
-
-  $expense_type = $sq_expense_type['ledger_name'];
-
+  $sq_expense_type = mysqli_fetch_assoc(mysqlQuery("select * from other_vendors where vendor_id='$expense_type_id'"));
+  $expense_type = $sq_expense_type['vendor_name'];
 
   if($payment_mode != ''){
     $particular = "Paid "." through ".$payment_mode.' on Dt. '.$date;
@@ -136,9 +131,9 @@ function get_expense_paid_particular($invoice_id, $expense_type_id, $date, $amou
   else{
     $particular = "Paid ".' on Dt. '.$date;
   }
+  $particular .= ' to '.$expense_type;
 
   return $particular;
-
 }
 
 
@@ -181,10 +176,13 @@ function get_salary_paid_particular($login_id, $month, $year, $date){
 
 function get_advance_particular($customer_id,$payment_mode,$date,$bank_id,$cheque_no1)
 {
-
   $date = get_date_user($date);
   $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
-  $customer_name = $sq_customer_info['company_name'];
+	if($sq_customer_info['type'] == 'Corporate'||$sq_customer_info['type']=='B2B'){
+		$customer_name = $sq_customer_info['company_name'];
+	}else{
+		$customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
+	}
 
   if($payment_mode == 'Cash'||$payment_mode=='Credit Card'){
     $cheque_no = ''; 

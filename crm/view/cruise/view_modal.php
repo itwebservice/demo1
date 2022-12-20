@@ -123,7 +123,12 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise['email_id'], $secret_key);
 
 							        				<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i> 
 
-							        				    <?php echo "<label>Country <em>:</em></label> " .$sq_cruise['country']; ?>
+													<?php 
+
+														$getState = mysqli_fetch_assoc(mysqlQuery('select * from state_master where id="'.$sq_cruise['state'].'"'));
+															$stateName = !empty($getState) ? $getState['state_name'] : null;
+														?>
+							        				    <?php echo "<label>State/Country <em>:</em></label> ".$stateName; ?>
 
 							        				</span>
 
@@ -134,6 +139,13 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise['email_id'], $secret_key);
 							        				    <?php echo "<label>Website <em>:</em></label> " .$sq_cruise['website']; ?>
 
 							        				</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label>Address <em>:</em></label> " .$sq_cruise['cruise_address']; ?>
+
+													</span>
 
 							        			</div>
 
@@ -189,6 +201,20 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise['email_id'], $secret_key);
 							        				    <?php echo "<label>Tax No <em>:</em></label> " .strtoupper($sq_cruise['service_tax_no']) ?>
 
 							        				</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Opening Balance <em>:</em></label> " .$sq_cruise['opening_balance']; ?>
+
+													</span>
+													<span class="main_block">
+
+														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+														<?php echo "<label> Balance Side <em>:</em></label> " .$sq_cruise['side']; ?>
+
+													</span>
 
 							        				
 
@@ -207,13 +233,7 @@ $email_id = $encrypt_decrypt->fnDecrypt($sq_cruise['email_id'], $secret_key);
 											<div class="row">
 												<div class="col-md-12">
 
-													<span class="main_block">
-
-														<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-
-														<?php echo "<label>Address <em>:</em></label> " .$sq_cruise['cruise_address']; ?>
-
-													</span>
+													
 												</div> 
 											</div>
 

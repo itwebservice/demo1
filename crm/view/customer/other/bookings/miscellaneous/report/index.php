@@ -11,7 +11,7 @@ $customer_id = $_SESSION['customer_id'];
 				<select name="miscellaneous_id_filter2" id="miscellaneous_id_filter2" style="width:100%" onchange="miscellaneous_report_list_reflect()">
 			        <option value="">Select Booking</option>
 			        <?php 
-			        $sq_miscellaneous = mysqlQuery("select * from miscellaneous_master where customer_id='$customer_id' ");
+			        $sq_miscellaneous = mysqlQuery("select * from miscellaneous_master where customer_id='$customer_id' and delete_status='0' ");
 			        while($row_miscellaneous = mysqli_fetch_assoc($sq_miscellaneous)){
 						$date = $row_miscellaneous['created_at'];
 						$yr = explode("-", $date);

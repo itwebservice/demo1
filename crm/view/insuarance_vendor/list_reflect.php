@@ -15,8 +15,7 @@ if($active_flag!=""){
 			<th>Company_name</th>
 			<th>Mobile</th>
 			<th>Contact_Person</th>
-			<th>View</th>
-			<th>Edit</th>
+			<th>Actions</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -33,10 +32,8 @@ if($active_flag!=""){
 				<td><?= $mobile_no ?></td>
 				<td><?= $row_vendor['concern_person_name'] ?></td>
 				<td>
-					<button class="btn btn-info btn-sm" onclick="view_modal(<?= $row_vendor['vendor_id'] ?>)" title="View Information"><i class="fa fa-eye"></i></button>
-				</td>
-				<td>
-					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_vendor['vendor_id'] ?>)" title="Edit"><i class="fa fa-pencil-square-o"></i></button>
+					<button class="btn btn-info btn-sm" onclick="view_modal(<?= $row_vendor['vendor_id'] ?>)" title="View Details"><i class="fa fa-eye"></i></button>
+					<button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_vendor['vendor_id'] ?>)" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
 				</td>
 			</tr>
 			<?php

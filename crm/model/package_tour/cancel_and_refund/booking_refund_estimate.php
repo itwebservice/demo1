@@ -88,12 +88,12 @@ public function finance_save($booking_id,$row_spec){
     $year1 = explode("-", $created_at);
     $yr1 =$year1[0];
 
-  $sq_pck_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
-  $customer_id = $sq_pck_info['customer_id'];
-  $total_sale_amount = $sq_pck_info['basic_amount'];
-  $tour_service_tax_subtotal = $sq_pck_info['tour_service_tax_subtotal'];
-  $reflections = json_decode($sq_pck_info['reflections']);
-  $service_charge = $sq_pck_info['service_charge'];
+    $sq_pck_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+    $customer_id = $sq_pck_info['customer_id'];
+    $total_sale_amount = $sq_pck_info['basic_amount'];
+    $tour_service_tax_subtotal = $sq_pck_info['tour_service_tax_subtotal'];
+    $reflections = json_decode($sq_pck_info['reflections']);
+    $service_charge = $sq_pck_info['service_charge'];
     //Getting customer Ledger
     $sq_cust1 = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$customer_id' and user_type='customer'"));
     $cust_gl = $sq_cust1['ledger_id'];

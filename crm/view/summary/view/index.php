@@ -3,7 +3,7 @@ include "../../../../model/model.php";
 
 $booking_id = $_POST['booking_id'];
 
-$sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+$sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' and delete_status='0'"));
 ?>
 <div class="modal fade profile_box_modal" id="package_display_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -30,7 +30,7 @@ $sq_package_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_boo
 				                       	<th>Adole</th>
 				                       	<th>Passport_No.</th>
 				                       	<th>Issue_Date</th>
-				                       	<th>Expire_Date</th>
+				                       	<th>Expiry_Date</th>
 			                        </tr>
 			                    </thead>
 		                        <tbody>

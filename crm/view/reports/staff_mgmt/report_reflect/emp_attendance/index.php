@@ -123,7 +123,7 @@ function report_reflect(){
 	var col4 = col3.concat(column2);
 	$('#report th').empty();
 	$.post(base_url+'view/reports/staff_mgmt/report_reflect/emp_attendance/report_reflect.php', { year : year, month : month, emp_id : emp_id ,branch_status:branch_status_att}, function(data){
-		pagination_load(data, col4, false, false, 20, 'att_report');
+		pagination_load(data, col4, false, false, 20, 'att_report',true);
 		$('.loader').remove();
 	});
 }

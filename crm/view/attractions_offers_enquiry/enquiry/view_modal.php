@@ -159,6 +159,15 @@ $enquiry_content_arr1 = json_decode($enquiry_content, true);
 								                  <?php echo "<label>Reference <em>:</em></label> ".$sq_ref['reference_name']; ?>
 
 								                </span>
+												<?php
+												$sq_user = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from emp_master where emp_id='$sq_enq_info[assigned_emp_id]'")); ?>
+								                <span class="main_block">
+
+								                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+								                  <?php echo "<label>Allocate To <em>:</em></label> ".$sq_user['first_name'].' '.$sq_user['last_name']; ?>
+
+								                </span>
 												<?php 
 													if($sq_enq_info['reference_id']=='3')
 													{
@@ -324,6 +333,15 @@ if($sq_enq_info['enquiry_type']!='Flight Ticket'){
 						}
 						if($name=="Days of traveling"){
 							$name="Days of travelling";
+						}
+						if($name=="Adult"){
+							$name="Adult(s)";
+						}
+						if($name=="Infant"){
+							$name="Infant(s)";
+						}
+						if($name=="Total Passenger"){
+							$name="Total Guest(s)";
 						}
 						if($name!='Hotel requirements'){ ?>
 							<div class="col-md-6">

@@ -10,12 +10,12 @@ $query1 = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `b2b_settings_second`"));
     <legend>Banner Images</legend>
     <div class="row mg_bt_20">
         <div class="col-md-3">
-          <select class="form-control" style="width:100%" name="banner_count" id="banner_count" onchange="banner_images_reflect(this.id);" title="Select No of Images" data-toggle="tooltip">
-            <option value=""><?= 'No of Images' ?></option>
-            <?php for($i=1;$i<=5;$i++){ ?>
-            <option value="<?= $i ?>"><?= $i ?></option>
-            <?php } ?>
-          </select>
+            <select class="form-control" style="width:100%" name="banner_count" id="banner_count" onchange="banner_images_reflect(this.id);" title="Select No of Images" data-toggle="tooltip">
+                <option value=""><?= 'No of Images' ?></option>
+                <?php for($i=1;$i<=5;$i++){ ?>
+                    <option value="<?= $i ?>"><?= $i ?></option>
+                <?php } ?>
+            </select>
         </div> 
     </div>
     <div id='banner_images'></div>
@@ -332,7 +332,7 @@ elseif ($section_name == '6') {
             </tr>
             <script>
             $(document).ready(function(){
-                city_lzloading('#city_name-<?= ($i+1) ?>');
+                city_lzloading('#city_name-1<?= ($i) ?>_u');
             });
             </script>
             <?php }

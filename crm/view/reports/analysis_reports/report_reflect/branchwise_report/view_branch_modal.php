@@ -20,7 +20,7 @@ $sq_count = mysqli_num_rows($sq_query);
                       <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Enquiry No.</th>
+                                    <th scope="col">Sr No.</th>
                                     <th scope="col">Enquiry Date</th>
                                     <th scope="col">Customer name</th>
                                     <th scope="col">Tour Type</th>
@@ -67,11 +67,11 @@ $sq_count = mysqli_num_rows($sq_query);
                                             $style = "";
                                             if($db['followup_status'] == 'Dropped')
                                             {
-                                                $style = 'danger';
+                                                $style = 'bg-danger';
                                             }
                                             if($db['followup_status'] == 'Converted')
                                             {
-                                                $style = 'success';
+                                                $style = 'bg-success';
                                             }   
 
                                               

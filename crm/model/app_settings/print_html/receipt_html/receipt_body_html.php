@@ -24,6 +24,8 @@ $payment_mode = $_GET['payment_mode'];
 $outstanding = $_GET['outstanding'];
 $currency_code = $_GET['currency_code'];
 $tour = $_GET['tour'];
+$status = $_GET['status'];
+
 // This is new customization for displaying history
 $table_name = $_GET['table_name'];
 $inside_customer_id = $_GET['in_customer_id'];
@@ -38,18 +40,18 @@ if ($table_name != "payment_master" && $table_name != "package_payment_master") 
   $amount_key = "amount";
   $credit_charges = "credit_charges";
 }
-$values_query .= " and $amount_key !='0'";
+$values_query .= " and $amount_key !='0' order by $date_key desc";
 
 //***END****/
-if($receipt_type == 'Hotel Receipt' || $receipt_type == 'Tour Receipt' || $receipt_type == 'Activity Receipt' || $receipt_type == 'Visa Receipt'){
+if ($receipt_type == 'Hotel Receipt' || $receipt_type == 'Tour Receipt' || $receipt_type == 'Activity Receipt' || $receipt_type == 'Visa Receipt') {
 
-  $payment_amount1 = currency_conversion($currency,$currency_code,$payment_amount);
-  $outstanding1 = currency_conversion($currency,$currency_code,$outstanding);
-  $amount_in_word = $amount_to_word->convert_number_to_words($payment_amount1,$currency_code);
-}else{
-  $payment_amount1 = number_format($payment_amount,2);
-  $outstanding1 = number_format($outstanding,2);
-  $amount_in_word = $amount_to_word->convert_number_to_words($payment_amount,'');
+  $payment_amount1 = currency_conversion($currency, $currency_code, $payment_amount);
+  $outstanding1 = currency_conversion($currency, $currency_code, $outstanding);
+  $amount_in_word = $amount_to_word->convert_number_to_words($payment_amount1, $currency_code);
+} else {
+  $payment_amount1 = number_format($payment_amount, 2);
+  $outstanding1 = number_format($outstanding, 2);
+  $amount_in_word = $amount_to_word->convert_number_to_words($payment_amount, '');
 }
 
 if ($payment_mode == 'Cheque') {
@@ -71,33 +73,34 @@ include "standard_header_html.php";
 ?>
 
 <section class="print_sec_bt_s main_block">
-  <!-- invoice_receipt_body_table-->
-  <div class="border_block inv_rece_back_detail">
-    <div class="row">
-      <div class="col-md-4">
-        <p class="border_lt"><span class="font_5">RECEIPT AMOUNT : </span><?php echo $payment_amount1; ?></p>
-      </div>
-      <div class="col-md-4">
-        <p class="border_lt"><span class="font_5">Payment Date : </span><?php echo get_date_user($payment_date); ?></p>
-      </div>
-      <div class="col-md-4">
-        <p class="border_lt"><span class="font_5">Payment Mode : </span><?php echo $payment_mode1; ?></p>
-      </div>
-      <?php if ($outstanding > 0) { ?><div class="col-md-4">
-          <p class="border_lt"><span class="font_5">Balance : </span><?php echo $outstanding1; ?></p>
-        </div><?php } ?>
-      <div class="col-md-4">
-        <p class="border_lt"><span class="font_5">For Services : </span><?php echo $booking_name; ?></p>
-      </div>
-      <?php if ($tour != '') { ?><div class="col-md-4">
-          <p class="border_lt"><span class="font_5">Tour Name : </span><?php echo $tour; ?></p>
-        </div><?php } ?>
+    <!-- invoice_receipt_body_table-->
+    <div class="border_block inv_rece_back_detail">
+        <div class="row">
+            <div class="col-md-4">
+                <p class="border_lt"><span class="font_5">Receipt Amount : </span><?php echo $payment_amount1; ?></p>
+            </div>
+            <div class="col-md-4">
+                <p class="border_lt"><span class="font_5">Payment Date :
+                    </span><?php echo get_date_user($payment_date); ?></p>
+            </div>
+            <div class="col-md-4">
+                <p class="border_lt"><span class="font_5">Payment Mode : </span><?php echo $payment_mode1; ?></p>
+            </div>
+            <?php if ($status != 'Cancelled' && $outstanding > 0) { ?><div class="col-md-4">
+                <p class="border_lt"><span class="font_5">Balance : </span><?php echo $outstanding1; ?></p>
+            </div><?php } ?>
+            <div class="col-md-4">
+                <p class="border_lt"><span class="font_5">For Services : </span><?php echo $booking_name; ?></p>
+            </div>
+            <?php if ($tour != '') { ?><div class="col-md-4">
+                <p class="border_lt"><span class="font_5">Tour Name : </span><?php echo $tour; ?></p>
+            </div><?php } ?>
 
-      <div class="col-md-4">
-        <p class="border_lt"><span class="font_5">Travel Date : </span><?php echo $travel_date; ?></p>
-      </div>
+            <div class="col-md-6">
+                <p class="border_lt"><span class="font_5">Travel Date : </span><?php echo $travel_date; ?></p>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 <?php
 //Footer

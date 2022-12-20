@@ -28,7 +28,9 @@ public function app_basic_info_save()
 	$tax_type = $_POST['tax_type'];
 	$tax_pay_date = $_POST['tax_pay_date'];
 	$tax_pay_date1 = get_date_db($tax_pay_date);
-
+	$qr_url = $_POST['qr_url'];
+	$sign_url = $_POST['sign_url'];
+	
  	$sq_app_setting_count = mysqli_num_rows(mysqlQuery("select * from app_settings"));
  	$app_address = addslashes($app_address);	
  	$app_name = addslashes($app_name);
@@ -37,7 +39,8 @@ public function app_basic_info_save()
 
 		$setting_id = $sq_max['max'] + 1;
 
-		$query = "insert into app_settings ( setting_id, app_version,currency, app_contact_no, app_landline_no,  tax_name, service_tax_no, app_address, app_website, app_name,app_cin, policy_url , state_id, accountant_email, tax_type, tax_pay_date, credit_card_charges,country) values ( '$setting_id', '$app_version','$currency_code', '$app_contact_no', '$app_landline_no', '$tax_name', '$service_tax_no', '$app_address', '$app_website', '$app_name','$app_cin', '$cancel_pdf_url','$state','$acc_email','$tax_type','$tax_pay_date1','$credit_card','$country')";
+		$query = "insert into app_settings ( setting_id, app_version,currency, app_contact_no, app_landline_no,  tax_name, service_tax_no, app_address, app_website, app_name,app_cin, policy_url , state_id, accountant_email, tax_type, tax_pay_date, credit_card_charges,country,qr_url,sign_url) 
+		values ( '$setting_id', '$app_version','$currency_code', '$app_contact_no', '$app_landline_no', '$tax_name', '$service_tax_no', '$app_address', '$app_website', '$app_name','$app_cin', '$cancel_pdf_url','$state','$acc_email','$tax_type','$tax_pay_date1','$credit_card','$country','$qr_url','$sign_url')";
 
 		$sq_setting = mysqlQuery($query);
 
@@ -59,8 +62,17 @@ public function app_basic_info_save()
 	}
 
 	else{
-		
-		$query = "update app_settings set app_version = '$app_version', app_contact_no = '$app_contact_no', app_landline_no='$app_landline_no', tax_name='$tax_name', service_tax_no = '$service_tax_no', app_address = '$app_address', app_website = '$app_website', app_name = '$app_name',app_cin='$app_cin', policy_url='$cancel_pdf_url', currency='$currency_code', state_id='$state', accountant_email='$acc_email', tax_type='$tax_type', tax_pay_date='$tax_pay_date1',credit_card_charges='$credit_card',country='$country' where setting_id='1'";
+		$checkUpload = mysqli_fetch_assoc(mysqlQuery("select * from app_settings"));
+		if(empty($qr_url) && !empty($checkUpload['qr_url']))
+		{
+			$qr_url = $checkUpload['qr_url'];
+		}
+		if(empty($sign_url) && !empty($checkUpload['sign_url']))
+		{
+			$sign_url = $checkUpload['sign_url'];
+		}
+		$query = "update app_settings set app_version = '$app_version', app_contact_no = '$app_contact_no', app_landline_no='$app_landline_no', tax_name='$tax_name', service_tax_no = '$service_tax_no', app_address = '$app_address', app_website = '$app_website', app_name = '$app_name',app_cin='$app_cin', policy_url='$cancel_pdf_url', currency='$currency_code', state_id='$state', accountant_email='$acc_email', tax_type='$tax_type', tax_pay_date='$tax_pay_date1',credit_card_charges='$credit_card',country='$country',qr_url='$qr_url',sign_url='$sign_url'
+		 where setting_id='1'";
 		$sq_setting = mysqlQuery($query);
 	
 		if($sq_setting){

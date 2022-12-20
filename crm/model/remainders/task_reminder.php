@@ -25,9 +25,6 @@ while($row_tasks = mysqli_fetch_assoc($sq_task)){
 
 function task_mail($emp_name,$email_id,$task,$due_date,$mobile_no,$remind_by,$task_type)
 {
-    global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website;
-    global $mail_em_style, $mail_font_family, $mail_strong_style, $mail_color;
-
     $email_content = '
     <tr>
         <table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
@@ -48,10 +45,10 @@ Tasks : ".$task." , Due Datetime:".date('d-m-Y H:i', strtotime($due_date));
         $model->send_message($mobile_no, $sms_content);
 
     }
-    if($remind_by=="Email"){
+    else if($remind_by=="Email"){
         $model->app_email_send('71',$emp_name,$email_id, $email_content,$subject,'1');
     }
-    if($remind_by=="SMS"){
+    else if($remind_by=="SMS"){
         $model->send_message($mobile_no, $sms_content);
     }
 }

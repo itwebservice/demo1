@@ -20,7 +20,6 @@ $total_ms = $_SESSION['total_ms'];
 $total = $_SESSION['total'];
 $from_date1 = date('Y-m-d', strtotime($from_date));
 $to_date1 = date('Y-m-d', strtotime($to_date));
-
 include('enquiry_budget.php');
 ?>
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
@@ -31,9 +30,9 @@ include('enquiry_budget.php');
                 <th>Sr.NO.</th>
                 <th>ENQUIRY Type</th>
                 <th>Budgeted Sales</th> 
-                <th>Actuals Sales</th>
+                <th>Actual Sales</th>
                 <th>Variance</th>
-                <th>% of Actuals on Budgeted</th>
+                <th>% of Actual on Budgeted</th>
                 <th>Expected Probability</th>
                 <th>Variance in %</th>
             </tr>

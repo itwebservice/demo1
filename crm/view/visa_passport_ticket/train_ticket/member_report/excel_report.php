@@ -82,7 +82,7 @@ $to_date = $_GET['to_date'];
 $cust_type = $_GET['cust_type'];
 $company_name = $_GET['company_name'];
 
-$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id'")) ;
+$sql_booking_date = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id = '$train_ticket_id' and delete_status='0'")) ;
 $booking_date = $sql_booking_date['created_at'];
 $yr = explode("-", $booking_date);
 $year =$yr[0];
@@ -175,8 +175,10 @@ if($branch_status=='yes'){
 elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
 	$query .= " and train_ticket_id in (select train_ticket_id from train_ticket_master where emp_id='$emp_id' )";
 }
-    $row_count = 11;
-    $count = 0;
+$query .= " and train_ticket_id in (select train_ticket_id from train_ticket_master where delete_status='0')";
+$query .= " order by train_ticket_id desc";
+$row_count = 11;
+$count = 0;
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
         ->setCellValue('C'.$row_count, "Booking ID")
@@ -196,7 +198,7 @@ $count = 0;
 $sq_ticket = mysqlQuery($query);
 while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 
-    $sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_ticket[train_ticket_id]'"));
+    $sq_train_ticket = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_ticket[train_ticket_id]' and delete_status='0'"));
     $date = $sq_train_ticket['created_at'];
     $yr = explode("-", $date);
     $year =$yr[0];

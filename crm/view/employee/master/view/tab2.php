@@ -156,13 +156,7 @@
 
 	            <div class="col-md-6" style="border-right: 1px solid #ddd">
 
-	                <span class="main_block">
-
-	                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-
-	                  <?php echo "<label>Employer PF <em>:</em></label> ".number_format($sq_emp['employer_pf'],2); ?>
-
-	                </span>
+	             
 
 	                <span class="main_block">
 
@@ -214,7 +208,13 @@
 	                  <?php echo "<label>Total Deductions <em>:</em></label> ".number_format($sq_emp['deduction'],2); ?>
 
 	                </span>		                
+					<span class="main_block">
 
+<i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+
+<?php echo "<label>Employer PF <em>:</em></label> ".number_format($sq_emp['employer_pf'],2); ?>
+
+</span>
 	        	</div>
 
 	        	</div>

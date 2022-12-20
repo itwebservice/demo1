@@ -1,8 +1,15 @@
 <?php
 //Generic Files
 include "../../../../model.php"; 
+
 include "printFunction.php";
 global $app_quot_img,$similar_text,$quot_note,$currency;
+
+$role = $_SESSION['role'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='package_booking/quotation/home/index.php'"));
+$branch_status = $sq['branch_status'];
+$branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 
 $quotation_id = $_GET['quotation_id'];
 
@@ -31,7 +38,11 @@ else{
   $emp_name = $sq_emp_info['first_name'].' '.$sq_emp_info['last_name'];
 }
 ?>
-
+<style>
+.package_costing table tr:nth-child(even) {
+  background-color: #efefef !important;
+}
+</style>
     <!-- landingPage -->
     <section class="landingSec main_block">
       <div class="col-md-8 no-pad">
@@ -79,7 +90,7 @@ else{
           <h3 class="customerFrom">PREPARED FOR</h3>
           <span class="customerName"><em><i class="fa fa-user"></i></em> : <?= $sq_quotation['customer_name'] ?></span><br>
           <span class="customerMail"><em><i class="fa fa-envelope"></i></em> : <?= $sq_quotation['email_id'] ?></span><br>
-          <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['mobile_no'] ?></span>
+          <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['mobile_no'] ?></span><br>
         </div>
       </div>
     </section>
@@ -154,6 +165,8 @@ else{
           <?php
           }
       }
+      ?>
+      <?php
       if($sq_plane_count){ ?>
       <!-- Flight -->
       <section class="transportDetailsPanel transportDetailsleft main_block mg_tp_10">
@@ -199,85 +212,85 @@ else{
         </div>
       </section>
       <?php } ?>
-      <?php if($sq_transport_count){ ?>
-        <!-- transport -->
-        <section class="transportDetailsPanel transportDetailsleft main_block mg_tp_10">
-          <div class="travsportInfoBlock">
-            <div class="transportIcon">
-              <img src="<?= BASE_URL ?>images/quotation/p4/TI_car.png" class="img-responsive">
-            </div>
+        <?php if($sq_transport_count){ ?>
+          <!-- transport -->
+          <section class="transportDetailsPanel transportDetailsleft main_block mg_tp_10">
+            <div class="travsportInfoBlock">
+              <div class="transportIcon">
+                <img src="<?= BASE_URL ?>images/quotation/p4/TI_car.png" class="img-responsive">
+              </div>
 
-            <div class="transportDetails">
-              <div class="table-responsive">
-                <table class="table no-marg tableTrnasp">
-                  <thead>
-                    <tr class="table-heading-row">
-                      <th>VEHICLE</th>
-                      <th>START DATE</th>
-                      <th>END DATE</th>
-                      <th>PICKUP LOCATION</th>
-                      <th>DROP LOCATION</th>
-                      <th>TOTAL VEHICLES</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php 
-                    $count = 0;
-                    $sq_hotel = mysqlQuery("select * from package_tour_quotation_transport_entries2 where quotation_id='$quotation_id'");
-                    while($row_hotel = mysqli_fetch_assoc($sq_hotel))
-                    {
-                      $transport_name = mysqli_fetch_assoc(mysqlQuery("select * from b2b_transfer_master where entry_id='$row_hotel[vehicle_name]'"));
-                      // Pickup
-                      if($row_hotel['pickup_type'] == 'city'){
-                        $row = mysqli_fetch_assoc(mysqlQuery("select city_id,city_name from city_master where city_id='$row_hotel[pickup]'"));
-                        $pickup = $row['city_name'];
-                      }
-                      else if($row_hotel['pickup_type'] == 'hotel'){
-                        $row = mysqli_fetch_assoc(mysqlQuery("select hotel_id,hotel_name from hotel_master where hotel_id='$row_hotel[pickup]'"));
-                        $pickup = $row['hotel_name'];
-                      }
-                      else{
-                        $row = mysqli_fetch_assoc(mysqlQuery("select airport_name, airport_code, airport_id from airport_master where airport_id='$row_hotel[pickup]'"));
-                        $airport_nam = clean($row['airport_name']);
-                        $airport_code = clean($row['airport_code']);
-                        $pickup = $airport_nam." (".$airport_code.")";
-                      }
-                      //Drop-off
-                      if($row_hotel['drop_type'] == 'city'){
-                        $row = mysqli_fetch_assoc(mysqlQuery("select city_id,city_name from city_master where city_id='$row_hotel[drop]'"));
-                        $drop = $row['city_name'];
-                      }
-                      else if($row_hotel['drop_type'] == 'hotel'){
-                        $row = mysqli_fetch_assoc(mysqlQuery("select hotel_id,hotel_name from hotel_master where hotel_id='$row_hotel[drop]'"));
-                        $drop = $row['hotel_name'];
-                      }
-                      else{
-                        $row = mysqli_fetch_assoc(mysqlQuery("select airport_name, airport_code, airport_id from airport_master where airport_id='$row_hotel[drop]'"));
-                        $airport_nam = clean($row['airport_name']);
-                        $airport_code = clean($row['airport_code']);
-                        $drop = $airport_nam." (".$airport_code.")";
-                      }
-                      ?>
-                      <tr>
-                        <td><?= $transport_name['vehicle_name'].$similar_text ?></td>
-                        <td><?= date('d-m-Y', strtotime($row_hotel['start_date'])) ?></td>
-                        <td><?= date('d-m-Y', strtotime($row_hotel['end_date'])) ?></td>
-                        <td><?= $pickup ?></td>
-                        <td><?= $drop ?></td>
-                        <td><?= $row_hotel['vehicle_count'] ?></td>
+              <div class="transportDetails">
+                <div class="table-responsive">
+                  <table class="table no-marg tableTrnasp">
+                    <thead>
+                      <tr class="table-heading-row">
+                        <th>VEHICLE</th>
+                        <th>T_START_DATE</th>
+                        <th>T_END_DATE</th>
+                        <th>PICKUP_LOCATION</th>
+                        <th>DROP_LOCATION</th>
+                        <th>TOTAL_VEHICLES</th>
                       </tr>
-                    <?php } ?>
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      <?php
+                      $count = 0;
+                      $sq_hotel = mysqlQuery("select * from package_tour_quotation_transport_entries2 where quotation_id='$quotation_id'");
+                      while($row_hotel = mysqli_fetch_assoc($sq_hotel))
+                      {
+                        $transport_name = mysqli_fetch_assoc(mysqlQuery("select * from b2b_transfer_master where entry_id='$row_hotel[vehicle_name]'"));
+                        // Pickup
+                        if($row_hotel['pickup_type'] == 'city'){
+                          $row = mysqli_fetch_assoc(mysqlQuery("select city_id,city_name from city_master where city_id='$row_hotel[pickup]'"));
+                          $pickup = $row['city_name'];
+                        }
+                        else if($row_hotel['pickup_type'] == 'hotel'){
+                          $row = mysqli_fetch_assoc(mysqlQuery("select hotel_id,hotel_name from hotel_master where hotel_id='$row_hotel[pickup]'"));
+                          $pickup = $row['hotel_name'];
+                        }
+                        else{
+                          $row = mysqli_fetch_assoc(mysqlQuery("select airport_name, airport_code, airport_id from airport_master where airport_id='$row_hotel[pickup]'"));
+                          $airport_nam = clean($row['airport_name']);
+                          $airport_code = clean($row['airport_code']);
+                          $pickup = $airport_nam." (".$airport_code.")";
+                        }
+                        //Drop-off
+                        if($row_hotel['drop_type'] == 'city'){
+                          $row = mysqli_fetch_assoc(mysqlQuery("select city_id,city_name from city_master where city_id='$row_hotel[drop]'"));
+                          $drop = $row['city_name'];
+                        }
+                        else if($row_hotel['drop_type'] == 'hotel'){
+                          $row = mysqli_fetch_assoc(mysqlQuery("select hotel_id,hotel_name from hotel_master where hotel_id='$row_hotel[drop]'"));
+                          $drop = $row['hotel_name'];
+                        }
+                        else{
+                          $row = mysqli_fetch_assoc(mysqlQuery("select airport_name, airport_code, airport_id from airport_master where airport_id='$row_hotel[drop]'"));
+                          $airport_nam = clean($row['airport_name']);
+                          $airport_code = clean($row['airport_code']);
+                          $drop = $airport_nam." (".$airport_code.")";
+                        }
+                        ?>
+                        <tr>
+                          <td><?= $transport_name['vehicle_name'].$similar_text ?></td>
+                          <td><?= date('d-m-Y', strtotime($row_hotel['start_date'])) ?></td>
+                          <td><?= date('d-m-Y', strtotime($row_hotel['end_date'])) ?></td>
+                          <td><?= $pickup ?></td>
+                          <td><?= $drop ?></td>
+                          <td><?= $row_hotel['vehicle_count'] ?></td>
+                        </tr>
+                      <?php } ?>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      <?php } ?>
+          </section>
+        <?php } ?>
     </section>
   </section>
   <?php } ?>
-    <?php if($sq_train_count || $sq_cruise_count){ ?>
+    <?php if($sq_cruise_count || $sq_exc_count){ ?>
     <!-- traveling Information -->
     <section class="pageSection main_block">
       <!-- background Image -->
@@ -285,45 +298,45 @@ else{
 
       <section class="travelingDetails main_block mg_tp_30 pageSectionInner">
 
-        <?php if($sq_train_count){ ?>
-        <!-- Train -->
-        <section class="transportDetailsPanel transportDetailsleft main_block">
-          <div class="travsportInfoBlock">
-            <div class="transportIcon">
-              <img src="<?= BASE_URL ?>images/quotation/p4/TI_train.png" class="img-responsive">
-            </div>
-            <div class="transportDetails">
-              <div class="table-responsive">
-                <table class="table tableTrnasp no-marg" id="tbl_emp_list">
-                  <thead>
-                    <tr class="table-heading-row">
-                      <th>From_Location</th>
-                      <th>To_Location</th>
-                      <th>Class</th>
-                      <th>Departure_D/T</th>
-                      <th>Arrival_D/T</th>
-                    </tr>
-                  </thead>
-                  <tbody>  
-                  <?php 
-                  $sq_train = mysqlQuery("select * from package_tour_quotation_train_entries where quotation_id='$quotation_id'");
-                  while($row_train = mysqli_fetch_assoc($sq_train)){  
-                    ?>
-                    <tr>
-                      <td><?= $row_train['from_location'] ?></td>
-                      <td><?= $row_train['to_location'] ?></td>
-                      <td><?php echo ($row_train['class']!='')?$row_train['class']:'NA'; ?></td>
-                      <td><?= get_datetime_user($row_train['departure_date']) ?></td>
-                      <td><?= get_datetime_user($row_train['arrival_date']) ?></td>
-                    </tr>
-                  <?php } ?>
-                  </tbody>
-                </table>
-              </div>
+      <?php if($sq_train_count){ ?>
+      <!-- Train -->
+      <section class="transportDetailsPanel transportDetailsleft main_block mg_tp_20">
+        <div class="travsportInfoBlock">
+          <div class="transportIcon">
+            <img src="<?= BASE_URL ?>images/quotation/p4/TI_train.png" class="img-responsive">
+          </div>
+          <div class="transportDetails">
+            <div class="table-responsive">
+              <table class="table tableTrnasp no-marg" id="tbl_emp_list">
+                <thead>
+                  <tr class="table-heading-row">
+                    <th>From_Location</th>
+                    <th>To_Location</th>
+                    <th>Class</th>
+                    <th>Departure_D/T</th>
+                    <th>Arrival_D/T</th>
+                  </tr>
+                </thead>
+                <tbody>  
+                <?php 
+                $sq_train = mysqlQuery("select * from package_tour_quotation_train_entries where quotation_id='$quotation_id'");
+                while($row_train = mysqli_fetch_assoc($sq_train)){  
+                  ?>
+                  <tr>
+                    <td><?= $row_train['from_location'] ?></td>
+                    <td><?= $row_train['to_location'] ?></td>
+                    <td><?php echo ($row_train['class']!='')?$row_train['class']:'NA'; ?></td>
+                    <td><?= get_datetime_user($row_train['departure_date']) ?></td>
+                    <td><?= get_datetime_user($row_train['arrival_date']) ?></td>
+                  </tr>
+                <?php } ?>
+                </tbody>
+              </table>
             </div>
           </div>
-        </section>
-        <?php } ?>
+        </div>
+      </section>
+      <?php } ?>
         <?php if($sq_cruise_count){ ?>
         <!-- Cruise -->
         <section class="transportDetailsPanel transportDetailsleft main_block mg_tp_10">
@@ -378,7 +391,7 @@ else{
                       <thead>
                         <tr class="table-heading-row">
                           <th>City </th>
-                          <th>Activity Date</th>
+                          <th>Activity Date/Time</th>
                           <th>Activity Name</th>
                           <th>Transfer Option</th>
                           <th>Adult(s)</th>
@@ -418,8 +431,11 @@ else{
     <?php } ?>
 
     <!-- Itinerary -->
-    <?php 
+    <?php
       $count = 1;
+      $i = 0;
+      $dates =(array) get_dates_for_package_itineary($_GET['quotation_id']);
+      
       $checkPageEnd = 0;
       while($row_itinarary = mysqli_fetch_assoc($sq_package_program)){
         
@@ -458,7 +474,7 @@ else{
                 </div>
                 <div class="itneraryText">
                   <div class="itneraryDayInfo">
-                    <i class="fa fa-map-marker" aria-hidden="true"></i><span> Day <?= $count ?> : <?= $row_itinarary['attraction'] ?> </span>
+                    <i class="fa fa-map-marker" aria-hidden="true"></i><span> Day <?= $count ?><small> (<?= $dates[$i++] ?>) </small> : <?= $row_itinarary['attraction'] ?> </span>
                   </div>
                   <div class="itneraryDayPlan">
                     <p><?= $row_itinarary['day_wise_program'] ?></p>
@@ -475,7 +491,6 @@ else{
           if($go == $checkPageEnd){
             $flag = 1;
             ?>
-
               </section>
             </section>
             <?php
@@ -539,17 +554,16 @@ else{
 
       <!-- Terms and Conditions -->
       <?php if($sq_terms_cond['terms_and_conditions'] !='' && $sq_terms_cond['terms_and_conditions'] != ' '){?>
-        <!-- Terms and Conditions -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="termsPanel">
-                <h3 class="incexTitleTwo">TERMS AND CONDITIONS</h3>
-                <div class="tncContent">
-                    <pre class="real_text"><?php echo $sq_terms_cond['terms_and_conditions']; ?></pre>      
+            <div class="row">
+              <div class="col-md-12 mg_tp_30 mg_bt_30">
+                <div class="incluExcluTermsTabPanel exclusions main_block">
+                    <h3 class="incexTitle">TERMS AND CONDITIONS</h3>
+                    <div class="tabContent">
+                        <pre class="real_text"><?= $sq_terms_cond['terms_and_conditions'] ?></pre>
+                    </div>
                 </div>
+              </div>
             </div>
-          </div>
-        </div>
       <?php } ?>
       <!-- Note -->
       <div class="row">
@@ -583,7 +597,7 @@ else{
     <div class="row">
       
       <!-- Guest Detail -->
-      <div class="col-md-12 passengerPanel endPagecenter mg_bt_30">
+      <div class="col-md-12 passengerPanel endPagecenter mg_bt_20">
             <h3 class="endingPageTitle text-center">TOTAL GUEST</h3>
             <div class="col-md-3 text-center mg_bt_30">
               <div class="iconPassengerBlock">
@@ -633,7 +647,7 @@ else{
     </div>
     <div class="row">
       <!-- Costing -->
-      <div class="col-md-12 passengerPanel endPagecenter mg_bt_30">
+      <div class="col-md-12 passengerPanel endPagecenter mg_bt_10">
         <?php
         $discount1 = currency_conversion($currency,$sq_quotation['currency_code'],$sq_quotation['discount']);
         if($sq_quotation['discount']!=0){ $discount = ' (Applied Discount : '.$discount1.')'; } else{ $discount = ''; }
@@ -646,76 +660,77 @@ else{
         if($sq_quotation['costing_type'] == 1){ ?>
         
         <div class="travsportInfoBlock1">
-            <div class="transportDetails_costing">
-                  <div class="table-responsive">
-                    <table class="table no-marg tableTrnasp">
-                      <thead>
-                        <tr class="table-heading-row">
-                          <th>Package_Type</th>
-                          <th>Tour Cost</th>
-                          <th>Tax</th>
-                          <th>Travel Cost</th>
-                          <th>Total Cost</th>
-                        </tr>
-                  </thead>
-                  <tbody>
-                    <?php
-                    $sq_costing1 = mysqlQuery("select * from package_tour_quotation_costing_entries where quotation_id='$quotation_id' order by package_type");
-                    while($sq_costing = mysqli_fetch_assoc($sq_costing1)){
+          <div class="transportDetails_costing package_costing">
+                <div class="table-responsive">
+                  <table class="table no-marg tableTrnasp">
+                    <thead>
+                      <tr class="table-heading-row">
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Package_Type</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Tour Cost</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Tax</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">TRAVEL/OTHER</th>
+                        <th style="font-size: 16px !important; font-weight: 600 !important; padding: 8px  20px !important;">Total Cost</th>
+                      </tr>
+                </thead>
+                <tbody>
+                  <?php
+                  $sq_costing1 = mysqlQuery("select * from package_tour_quotation_costing_entries where quotation_id='$quotation_id' order by package_type");
+                  while($sq_costing = mysqli_fetch_assoc($sq_costing1)){
 
-                      $basic_cost = $sq_costing['basic_amount'];
-                      $service_charge = $sq_costing['service_charge'];
-                      $tour_cost= $basic_cost + $service_charge;
-                      $service_tax_amount = 0;
+                    $basic_cost = $sq_costing['basic_amount'];
+                    $service_charge = $sq_costing['service_charge'];
+                    $tour_cost= $basic_cost + $service_charge;
+                    $service_tax_amount = 0;
+                    $tax_show = '';
+                    $bsmValues = json_decode($sq_costing['bsmValues']);
+                    $name = '';
+                    if($sq_costing['service_tax_subtotal'] !== 0.00 && ($sq_costing['service_tax_subtotal']) !== ''){
+                      $service_tax_subtotal1 = explode(',',$sq_costing['service_tax_subtotal']);
+                      for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
+                        $service_tax = explode(':',$service_tax_subtotal1[$i]);
+                        $service_tax_amount +=  $service_tax[2];
+                        $name .= $service_tax[0] . $service_tax[1] .', ';
+                      }
+                    }
+                    $service_tax_amount_show = currency_conversion($currency,$sq_quotation['currency_code'],$service_tax_amount);
+                    if($bsmValues[0]->service != ''){   //inclusive service charge
+                      $newBasic = $tour_cost + $service_tax_amount;
                       $tax_show = '';
-                      $bsmValues = json_decode($sq_costing['bsmValues']);
-                      $name = '';
-                      if($sq_costing['service_tax_subtotal'] !== 0.00 && ($sq_costing['service_tax_subtotal']) !== ''){
-                        $service_tax_subtotal1 = explode(',',$sq_costing['service_tax_subtotal']);
-                        for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
-                          $service_tax = explode(':',$service_tax_subtotal1[$i]);
-                          $service_tax_amount +=  $service_tax[2];
-                          $name .= $service_tax[0] . $service_tax[1] .', ';
-                        }
-                      }
-                      $service_tax_amount_show = currency_conversion($currency,$sq_quotation['currency_code'],$service_tax_amount);
-                      if($bsmValues[0]->service != ''){   //inclusive service charge
-                        $newBasic = $tour_cost + $service_tax_amount;
-                        $tax_show = '';
-                      }
-                      else{
-                        $tax_show =  rtrim($name, ', ').' : ' . ($service_tax_amount);
-                        $newBasic = $tour_cost;
-                      }
-                      
-                      ////////////Basic Amount Rules
-                      if($bsmValues[0]->basic != ''){ //inclusive markup
-                        $newBasic = $tour_cost + $service_tax_amount;
-                        $tax_show = '';
-                      }
-                      $quotation_cost = $basic_cost + $service_charge + $service_tax_amount + $sq_quotation['train_cost'] + $sq_quotation['cruise_cost'] + $sq_quotation['flight_cost'] + $sq_quotation['visa_cost'] + $sq_quotation['guide_cost'] + $sq_quotation['misc_cost'];
-                      ////////////////Currency conversion ////////////
-                      $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code'],$quotation_cost);
-                      
-                      $newBasic = currency_conversion($currency,$sq_quotation['currency_code'],$newBasic);
-                      $travel_cost = floatval($sq_quotation['train_cost']) + floatval($sq_quotation['flight_cost']) + floatval($sq_quotation['cruise_cost']) + floatval($sq_quotation['visa_cost']) + floatval($sq_quotation['guide_cost'])+ floatval($sq_quotation['misc_cost']);
-                      $travel_cost = currency_conversion($currency,$sq_quotation['currency_code'],$travel_cost);
-                    ?>
-                    <tr>
-                      <td><?php echo $sq_costing['package_type']?></td>
-                      <td><?= $newBasic ?></td>
-                      <td><?= str_replace(',','',$name).$service_tax_amount_show ?></td>
-                      <td><?= $travel_cost ?></td>
-                      <td><?= $currency_amount1 ?></td>
-                    </tr>
-                    <?php
-                  } ?>
-                </tbody>
-              </table>
-            </div>
-            </div>
+                    }
+                    else{
+                      $tax_show =  rtrim($name, ', ').' : ' . ($service_tax_amount);
+                      $newBasic = $tour_cost;
+                    }
+                    
+                    ////////////Basic Amount Rules
+                    if($bsmValues[0]->basic != ''){ //inclusive markup
+                      $newBasic = $tour_cost + $service_tax_amount;
+                      $tax_show = '';
+                    }
+
+                    $quotation_cost = $basic_cost + $service_charge + $service_tax_amount + $sq_quotation['train_cost'] + $sq_quotation['cruise_cost'] + $sq_quotation['flight_cost'] + $sq_quotation['visa_cost'] + $sq_quotation['guide_cost'] + $sq_quotation['misc_cost'];
+                    ////////////////Currency conversion ////////////
+                    $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code'],$quotation_cost);
+                    
+                    $newBasic = currency_conversion($currency,$sq_quotation['currency_code'],$newBasic);
+                    $travel_cost = floatval($sq_quotation['train_cost']) + floatval($sq_quotation['flight_cost']) + floatval($sq_quotation['cruise_cost']) + floatval($sq_quotation['visa_cost']) + floatval($sq_quotation['guide_cost'])+ floatval($sq_quotation['misc_cost']);
+                    $travel_cost = currency_conversion($currency,$sq_quotation['currency_code'],$travel_cost);
+                  ?>
+                  <tr>
+                    <td style="font-size: 14px !important; padding: 8px  20px !important;"><?php echo $sq_costing['package_type']?></td>
+                    <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= $newBasic ?></td>
+                    <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= str_replace(',','',$name).$service_tax_amount_show ?></td>
+                    <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= $travel_cost ?></td>
+                    <td style="font-size: 14px !important; padding: 8px  20px !important;"><?= $currency_amount1 ?></td>
+                  </tr>
+                  <?php
+                } ?>
+              </tbody>
+            </table>
           </div>
-          <?php
+          </div>
+        </div>
+        <?php
         }
         else{
           ?>
@@ -743,10 +758,10 @@ else{
                     $total_pax = intval($sq_quotation['total_adult'])+intval($sq_quotation['children_with_bed'])+intval($sq_quotation['children_without_bed'])+intval($sq_quotation['total_infant']);
                     $per_service_charge = floatval($service_charge)/floatval($total_pax);
           
-                    $adult_cost = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['adult_cost']+floatval($per_service_charge))));
-                    $child_with = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_with']+floatval($per_service_charge))));
-                    $child_without = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_without']+floatval($per_service_charge))));
-                    $infant_cost = currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['infant_cost']+floatval($per_service_charge))));
+                    $adult_cost = ($sq_quotation['total_adult']!='0')? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['adult_cost']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                    $child_with = ($sq_quotation['children_with_bed']!='0') ? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_with']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                    $child_without = ($sq_quotation['children_without_bed']!='0')? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['child_without']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
+                    $infant_cost = ($sq_quotation['total_infant']!='0') ? currency_conversion($currency,$sq_quotation['currency_code'],(floatval($sq_costing['infant_cost']+floatval($per_service_charge)))) : currency_conversion($currency,$sq_quotation['currency_code'],0);
           
                     $tour_cost= $basic_cost + $service_charge;
                     $service_tax_amount = 0;
@@ -786,10 +801,10 @@ else{
                     ?>
                     <tr>
                       <td><?php echo $sq_costing['package_type'].'<b>'.' ('.$currency_amount1.')' ?></td>
-                      <td><?= ($sq_quotation['total_adult']!='0')?$adult_cost:number_format(0,2) ?></td>
-                      <td><?= ($sq_quotation['children_with_bed']!='0')?$child_with:number_format(0,2) ?></td>
-                      <td><?= ($sq_quotation['children_without_bed']!='0')?$child_without:number_format(0,2)  ?></td>
-                      <td><?= ($sq_quotation['total_infant']!='0')?$infant_cost:number_format(0,2) ?></td>
+                      <td><?= $adult_cost ?></td>
+                      <td><?= $child_with ?></td>
+                      <td><?= $child_without  ?></td>
+                      <td><?= $infant_cost ?></td>
                       <td><?= str_replace(',','',$name).$service_tax_amount_show ?></td>
                       <td><?= $travel_cost ?></td>
                     </tr>
@@ -799,10 +814,11 @@ else{
               </div>
               </div>
             </div>
-          <!-- </div> -->
         <?php } ?>
       </div>
     </div>
+  </section>
+  <section class="endPageSection main_block mg_tp_10">
 
     <!-- Bank Detail -->
     <div class="row constingBankingPanelRow">
@@ -816,13 +832,13 @@ else{
           </div>
           <div class="col-md-4 text-center mg_bt_30">
             <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/branchName.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></h4>
-            <p>BRANCH</p>
+            <h4 class="no-marg"><?= ($bank_branch_name != '') ? $bank_branch_name : 'NA' ?>(<?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?>)</h4>
+          <p>BRANCH</p>
           </div>
           <div class="col-md-4 text-center mg_bt_30">
             <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
             <h4 class="no-marg"><?= ($acc_name != '') ? $acc_name : 'NA' ?></h4>
-            <p>A/C NAME</p>
+            <p>A/C TYPE</p>
           </div>
           <div class="col-md-4 text-center mg_bt_30">
             <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
@@ -831,14 +847,22 @@ else{
           </div>
           <div class="col-md-4 text-center mg_bt_30">
             <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></h4>
-            <p>IFSC</p>
+            <h4 class="no-marg"><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></h4>
+          <p>BANK ACCOUNT NAME</p>
           </div>
           <div class="col-md-4 text-center mg_bt_30">
             <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
             <h4 class="no-marg"><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></h4>
             <p>SWIFT CODE</p>
           </div>
+          <?php 
+              if(check_qr()) { ?>
+          <div class="col-md-12 text-center">
+              <?= get_qr('Protrait Advance') ?>
+              <br>
+              <h4 class="no-marg">Scan & Pay </h4>
+          </div>
+          <?php } ?>
       </div>
     </div>
 
@@ -855,24 +879,24 @@ else{
           </div>
           <div class="companyContactDetail">
               <h3><?= $app_name ?></h3>
-              <?php if($app_address != ''){?>
+              <?php //if($app_address != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-map-marker"></i>
-                <p><?php echo $app_address; ?></p>
+                <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['address1'].','.$branch_details['address2'].','.$branch_details['city'] : $app_address; ?></p>
               </div>
-              <?php } ?>
-              <?php if($app_contact_no != ''){?>
+              <?php //}?>
+              <?php //if($app_contact_no != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-phone"></i>
-                <p><?php echo $app_contact_no; ?></p>
+                <p><?php echo ($branch_status=='yes' && $role!='Admin') ? $branch_details['contact_no']  : $app_contact_no; ?></p>
               </div>
-              <?php } ?>
-              <?php if($app_email_id != ''){?>
+              <?php //}?>
+              <?php //if($app_email_id != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-envelope"></i>
-                <p><?php echo $app_email_id; ?></p>
+                <p><?php echo ($branch_status=='yes' && $role!='Admin' && $branch_details['email_id'] != '') ? $branch_details['email_id'] : $app_email_id; ?></p>
               </div>
-              <?php } ?>
+              <?php //}?>
               <?php if($app_website != ''){?>
               <div class="contactBlock">
                 <i class="fa fa-globe"></i>
@@ -881,7 +905,7 @@ else{
               <?php } ?>
               <div class="contactBlock">
                 <i class="fa fa-pencil-square-o"></i>
-                <p>Prepared By : <?= $emp_name?></p>
+                <p>PREPARED BY : <?= $emp_name?></p>
               </div>
           </div>
       </section>

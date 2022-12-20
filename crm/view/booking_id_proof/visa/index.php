@@ -11,21 +11,21 @@ $branch_status = $_POST['branch_status'];
       <div class="col-sm-4 col-sm-offset-4">
         <select id="fcmb_traveler_id" name="fcmb_traveler_id" title="Passenger Name" style="width:100%;" onchange="traveler_id_proof_info_reflect()" title="Passenger">
             <option value="">Passenger Name</option>
-            <?php 
-                  $query = "select * from visa_master_entries where 1";
-                  if($branch_status=='yes' && $role!='Admin'){
-                      $query .= " and visa_id in (select visa_id from visa_master where branch_admin_id = '$branch_admin_id')";
-                  }
-                  elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
-                    $query .= " and visa_id in (select visa_id from visa_master where emp_id ='$emp_id')";
-                  }
-                  $query .= " and status != 'Cancel'";
-                  $query .= " order by visa_id desc";  
+            <?php
+            $query = "select * from visa_master_entries where 1 and visa_id in (select visa_id from visa_master where delete_status='0')";
+            if($branch_status=='yes' && $role!='Admin'){
+                $query .= " and visa_id in (select visa_id from visa_master where branch_admin_id = '$branch_admin_id')";
+            }
+            elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
+              $query .= " and visa_id in (select visa_id from visa_master where emp_id ='$emp_id')";
+            }
+            $query .= " and status != 'Cancel'";
+            $query .= " order by visa_id desc";
 
-                  $sq_travelers_details = mysqlQuery($query);   
-                  while($row_travelers_details = mysqli_fetch_assoc( $sq_travelers_details ))
+            $sq_travelers_details = mysqlQuery($query);   
+            while($row_travelers_details = mysqli_fetch_assoc( $sq_travelers_details ))
                   {
-                    $sql_booking = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$row_travelers_details[visa_id]'"));
+                    $sql_booking = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id = '$row_travelers_details[visa_id]' and delete_status='0'"));
                     $booking_date = $sql_booking['created_at'];
                     $yr = explode("-", $booking_date);
                     $year = $yr[0];

@@ -10,7 +10,7 @@ public function income_save()
 	$sub_total = $_POST['sub_total'];
 	$service_tax = $_POST['service_tax'];
 	$taxation_type = $_POST['taxation_type'];
-  	$taxation_id = $_POST['taxation_id'];
+	$taxation_id = $_POST['taxation_id'];
 	$service_tax_subtotal = $_POST['service_tax_subtotal'];
 	$tds = $_POST['tds'];
 	$net_total = $_POST['net_total'];
@@ -71,21 +71,96 @@ public function income_save()
 
 }
 
+public function income_delete(){
+
+	global $delete_master,$transaction_master,$bank_cash_book_master;
+	$income_id = $_POST['entry_id'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
+	$deleted_date = date('Y-m-d');
+	$row_spec = "other income";
+
+	$sq_income = mysqli_fetch_assoc(mysqlQuery("select * from other_income_master where income_id='$income_id'"));
+	$sq_income_p = mysqli_fetch_assoc(mysqlQuery("select * from other_income_payment_master where income_type_id='$income_id'"));
+	$particular = $sq_income['particular'];
+	$payment_mode = $sq_income_p['payment_mode'];
+	$income_type_id = $sq_income['income_type_id'];
+	$bank_id = $sq_income_p['bank_id'];
+	$bank_name = $sq_income_p['bank_name'];
+
+	$sq_income_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$income_type_id'"));
+	//Getting cash/Bank Ledger
+	if($payment_mode == 'Cash') {  $pay_gl = 20; $type='CASH RECEIPT'; }
+	else{ 
+		$sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
+		$pay_gl = $sq_bank['ledger_id'];
+		$type='BANK RECEIPT';
+	}
+	
+	$year1 = explode("-", $sq_income_p['payment_date']);
+	$yr1 = $year1[0];
+	$f_income_id = get_other_income_payment_id($income_id,$yr1);
+
+	$delete_master->delete_master_entries('Other Income('.$payment_mode.')','Other Income',$income_id,$f_income_id,$sq_income['receipt_from'],$sq_income_p['payment_amount']);
+
+	//Bank Or Cash    
+	$module_name = "Other Income Payment";
+	$module_entry_id = $income_id;
+	$transaction_id = $sq_income_p['transaction_id'];
+	$payment_amount = 0;
+	$payment_date = $deleted_date;
+	$payment_particular = get_other_income_particular($payment_mode, $deleted_date, $sq_income_ledger['ledger_name'], 0,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$old_gl_id = $gl_id = $pay_gl;
+	$payment_side = "Debit";
+	$clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
+
+	//Dynamic GL
+	$module_name = "Other Income Payment";
+	$module_entry_id = $income_id;
+	$transaction_id = $sq_income_p['transaction_id'];
+	$payment_amount = 0;
+	$payment_date = $deleted_date;
+	$payment_particular = get_other_income_particular($payment_mode, $deleted_date, $sq_income_ledger['ledger_name'], 0,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$old_gl_id = $gl_id = $income_type_id;
+	$payment_side = "Credit";
+	$clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
+	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
+	
+	$module_name = "Other Income Payment";
+	$module_entry_id = $income_id;
+	$payment_date = $deleted_date;
+	$payment_amount = 0;
+	$payment_mode = $payment_mode;
+	$bank_name = $bank_name;
+	$transaction_id = $sq_income_p['transaction_id'];
+	$bank_id = $bank_id;
+	$particular = get_other_income_particular($payment_mode, $deleted_date, $sq_income_ledger['ledger_name'], $payment_amount,$transaction_id);
+	$clearance_status = '';
+	$payment_side = "Debit";
+	$payment_type = ($payment_mode=="Cash") ? "Cash" : "Bank";
+	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
+
+	$sq_up = mysqlQuery("update other_income_master set delete_status = '1', amount = '0' , service_tax_subtotal = '0', tds='0', total_fee='0'  where income_id='$income_id'");
+	$sq_up1 = mysqlQuery("update other_income_payment_master set payment_amount = '0' where income_type_id='$income_id'");
+	if($sq_up1){
+		echo 'Entry deleted successfully!';
+		exit;
+	}
+}
+
 public function finance_save($income_id,$row_spec)
 {
 	$income_type_id = $_POST['income_type_id'];
 	$payment_amount1 = $_POST['payment_amount'];
-	$booking_date = $_POST['booking_date'];
 	$payment_mode = $_POST['payment_mode'];
-	$bank_name = $_POST['bank_name'];
 	$transaction_id1 = $_POST['transaction_id'];
 	$bank_id = $_POST['bank_id'];
-	$particular = $_POST['particular'];
 	$payment_date = $_POST['payment_date'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
 
 	$payment_date1 = date('Y-m-d', strtotime($payment_date));
-
-
 	global $transaction_master;
 
 	$sq_income_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$income_type_id'"));
@@ -97,7 +172,7 @@ public function finance_save($income_id,$row_spec)
 		$type='BANK RECEIPT';
 	} 
 
-	//Bank Or Cash    
+	//Bank Or Cash
 	$module_name = "Other Income Payment";
 	$module_entry_id = $income_id;
 	$transaction_id = $transaction_id1;
@@ -219,6 +294,7 @@ public function finance_update($sq_payment_info, $clearance_status1,$row_spec)
 	$transaction_id1 = $_POST['transaction_id'];
 	$bank_id = $_POST['bank_id'];
 	$payment_old_value =  $_POST['payment_old_value'];
+	$branch_admin_id = $_SESSION['branch_admin_id'];
 
 	$sq_income_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$income_type_id'"));
 

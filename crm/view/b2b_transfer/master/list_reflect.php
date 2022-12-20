@@ -1,9 +1,19 @@
 <?php 
 include "../../../model/model.php";
+$status = $_POST['status'];
+
 $array_s = array();
 $temp_arr = array();
 $count = 0;
-$sq_vehicle = mysqlQuery("select * from b2b_transfer_master where 1 ");
+
+if($status != ''){
+	$query = "select * from b2b_transfer_master where 1 and status='$status'";
+}else{
+	
+	$query = "select * from b2b_transfer_master where 1 and status='Active'";
+}
+
+$sq_vehicle = mysqlQuery($query);
 while($row_vehicle = mysqli_fetch_assoc($sq_vehicle))
 {
 	$vehicle_data = json_decode($row_vehicle['vehicle_data']);

@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once('../../../../model/model.php');
 
 include_once('../../inc/vendor_generic_functions.php');
@@ -17,7 +17,7 @@ $to_date = $_POST['to_date'];
 $array_s = array();
 $temp_arr = array();
 
-$query = "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, purchase_date as date, net_total as credit, '' as debit from vendor_estimate where 1 and financial_year_id='$financial_year_id' ";
+$query = "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, purchase_date as date, net_total as credit, '' as debit from vendor_estimate where financial_year_id='$financial_year_id' and delete_status='0' and status!='Cancel' ";
 if($estimate_type!=""){
 	$query .= " and estimate_type='$estimate_type' ";
 }
@@ -44,7 +44,7 @@ if($from_date!="" && $to_date!=""){
 include "../../../../model/app_settings/branchwise_filteration.php";
 $query .= " union all ";
 
-$query .= "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, payment_date as date1, '' as credit1, payment_amount as debit1 from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled' and financial_year_id='$financial_year_id' ";
+$query .= "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, payment_date as date1, '' as credit1, payment_amount as debit1 from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled' and financial_year_id='$financial_year_id' and delete_status='0' and payment_amount!='0'";
 if($vendor_type!=""){
 	$query .= " and vendor_type='$vendor_type' ";
 }
@@ -64,7 +64,7 @@ if($from_date!="" && $to_date!=""){
 }
 include "../../../../model/app_settings/branchwise_filteration.php";
 
-$query .=" order by date desc";
+// $query .=" order by date desc";
 $sq_estimate = mysqlQuery($query);
 $total_estimate_amt = 0;
 $total_paid_amt = 0;
@@ -72,6 +72,7 @@ $count = 0;
 $total_arr = array (0 => array("data" => array("","","","","","","<strong>Opening_Balance(".$side.")</strong>", number_format($opening_bal,2)), "bg" => "warning"));
 while($row_report = mysqli_fetch_assoc($sq_estimate)){
 
+	$bg = ($row_report['status'] == 'Cancel') ? 'danger' : '';
 	$total_estimate_amt = $total_estimate_amt + floatval($row_report['credit']);
 	$vendor_type_val = get_vendor_name($row_report['vendor_type'], $row_report['vendor_type_id']);
 

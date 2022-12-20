@@ -4,7 +4,7 @@ include "../../../model/model.php";
 $payment_id = $_POST['payment_id'];
 
 $sq_payment = mysqli_fetch_assoc(mysqlQuery("select * from package_payment_master where payment_id='$payment_id'"));
-$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_payment[booking_id]'"));
+$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$sq_payment[booking_id]' and delete_status='0'"));
 $date = $sq_tour['booking_date'];
 $yr = explode("-", $date);
 $year =$yr[0];
@@ -13,7 +13,6 @@ $sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where cu
 $bank_detail_state = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="Credit Note" || $sq_payment['payment_mode']=="Credit Card" || $sq_payment['payment_mode'] == "Advance") ? "disabled" : "";
 
 $travel_state = ($sq_payment['payment_for']=="Tour") ? "disabled" : "";
-// 
 ?>
 
 <input type="hidden" id="payment_id" name="payment_id" value="<?= $payment_id ?>">
@@ -48,12 +47,12 @@ $travel_state = ($sq_payment['payment_for']=="Tour") ? "disabled" : "";
                 <div class="col-md-4">
 
                     <select id="booking_id" name="booking_id" style="width:100%" title="Booking ID" disabled>
-                         <?php
-                         if($sq_cust['type'] == 'Corporate'||$sq_cust['type'] == 'B2B'){ ?>
-                           <option value="<?= $sq_payment['booking_id'] ?>"><?= get_package_booking_id($sq_payment['booking_id'],$year) .':'. $sq_cust['company_name'] ?></option>
-                         <?php }else{ ?> 
-                           <option value="<?= $sq_payment['booking_id'] ?>"><?= get_package_booking_id($sq_payment['booking_id'],$year) .':'. $sq_cust['first_name'].' '.$sq_cust['last_name'] ?></option>
-                           <?php } ?>     
+                          <?php
+                          if($sq_cust['type'] == 'Corporate'||$sq_cust['type'] == 'B2B'){ ?>
+                            <option value="<?= $sq_payment['booking_id'] ?>"><?= get_package_booking_id($sq_payment['booking_id'],$year) .':'. $sq_cust['company_name'] ?></option>
+                          <?php }else{ ?> 
+                            <option value="<?= $sq_payment['booking_id'] ?>"><?= get_package_booking_id($sq_payment['booking_id'],$year) .':'. $sq_cust['first_name'].' '.$sq_cust['last_name'] ?></option>
+                            <?php } ?>     
                         <?php get_package_booking_dropdown('', '', '', '') ?>
 
                     </select>
@@ -173,10 +172,7 @@ $travel_state = ($sq_payment['payment_for']=="Tour") ? "disabled" : "";
                 <?php } ?>
 
             </div>
-
-
-            
-
+            <input type="hidden" id="canc_status1" name="canc_status1" class="form-control" value="<?= $sq_payment['status'] ?>"/>
 
             <div class="row text-center mg_tp_20">
 
@@ -264,7 +260,8 @@ $('#frm_update_payment').validate({
       var credit_charges = $('#credit_charges1').val();
       var credit_card_details = $('#credit_card_details1').val();
       var credit_charges_old = $('#credit_charges_old').val();
-      
+      var canc_status = $('#canc_status1').val();
+
       if(!check_updated_amount(payment_old_value,payment_amount)){
         error_msg_alert("You can update receipt to 0 only!");
         return false;
@@ -298,21 +295,21 @@ $('#frm_update_payment').validate({
 
         $.post( 
 
-           base_url()+"controller/package_tour/payment/package_tour_payment_master_update_c.php",
+          base_url()+"controller/package_tour/payment/package_tour_payment_master_update_c.php",
 
-           { payment_id : payment_id, booking_id : booking_id, payment_date : payment_date, payment_mode : payment_mode, payment_amount : payment_amount, bank_name : bank_name, transaction_id : transaction_id, payment_for : payment_for, p_travel_type : p_travel_type, bank_id : bank_id, payment_old_value : payment_old_value,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old },
+          { payment_id : payment_id, booking_id : booking_id, payment_date : payment_date, payment_mode : payment_mode, payment_amount : payment_amount, bank_name : bank_name, transaction_id : transaction_id, payment_for : payment_for, p_travel_type : p_travel_type, bank_id : bank_id, payment_old_value : payment_old_value,credit_charges:credit_charges,credit_card_details:credit_card_details,credit_charges_old:credit_charges_old,canc_status:canc_status },
 
-           function(data) {       
+          function(data) {       
 
-               $('#update_modal').modal('hide');             
+              $('#update_modal').modal('hide');             
 
-               msg_alert(data);
+              msg_alert(data);
 
-               list_reflect();
+              list_reflect();
 
-               $('#btn_update').button('reset');
+              $('#btn_update').button('reset');
 
-           });
+          });
 
 
 

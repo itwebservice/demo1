@@ -93,7 +93,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //FIT Booking
-$query = "select * from package_tour_booking_master where 1 ";
+$query = "select * from package_tour_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -169,7 +169,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Visa Booking
-$query = "select * from visa_master where 1 ";
+$query = "select * from visa_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -253,7 +253,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 }
 //Bus Booking
-$query = "select * from bus_booking_master where 1 ";
+$query = "select * from bus_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -339,7 +339,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Activity Booking
-$query = "select * from excursion_master where 1 ";
+$query = "select * from excursion_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -424,7 +424,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Hotel Booking
-$query = "select * from hotel_booking_master where 1 ";
+$query = "select * from hotel_booking_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -510,7 +510,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 }
 
 //Car Rental Booking
-$query = "select * from car_rental_booking where status = 'Cancel' ";
+$query = "select * from car_rental_booking where status = 'Cancel' and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -587,7 +587,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	array_push($array_s,$temp_arr);
 } 
 //Flight Booking
-$query = "select * from ticket_master where 1 ";
+$query = "select * from ticket_master where 1 and delete_status='0'";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -673,7 +673,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 } 
 //Train Booking
-$query = "select * from train_ticket_master where 1 ";
+$query = "select * from train_ticket_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 	$from_date = get_date_db($from_date);
 	$to_date = get_date_db($to_date);
@@ -750,7 +750,7 @@ while($row_query = mysqli_fetch_assoc($sq_query))
 	}
 } 
 //Miscellaneous Booking
-$query = "select * from miscellaneous_master where 1 ";
+$query = "select * from miscellaneous_master where 1 and delete_status='0' ";
 if($from_date !='' && $to_date != ''){
 $from_date = get_date_db($from_date);
 $to_date = get_date_db($to_date);
@@ -840,10 +840,10 @@ $footer_data = array("footer_data" => array(
 	
 	'foot0' => 'Total TAX :'.number_format($tax_total,2),
 	'col0' => 14,
-	'class0' =>"info text-left",
+	'class0' =>"info text-right",
 
 	'foot1' => '',
-	'col1' => 1,
+	'col1' => 2,
 	'class1' =>"info text-left",
 
 	'foot2' => 'Total Markup TAX :'.number_format($markup_tax_total,2),

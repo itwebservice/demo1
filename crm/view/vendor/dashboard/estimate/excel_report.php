@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -50,25 +50,24 @@ $content_style_Array = array(
 
 //This is border array
 $borderArray = array(
-          'borders' => array(
-              'allborders' => array(
-                  'style' => PHPExcel_Style_Border::BORDER_THIN
-              )
-          )
-      );
+    'borders' => array(
+        'allborders' => array(
+            'style' => PHPExcel_Style_Border::BORDER_THIN
+        )
+    )
+);
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
 
 // Set document properties
 $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
-                             ->setLastModifiedBy("Maarten Balliauw")
-                             ->setTitle("Office 2007 XLSX Test Document")
-                             ->setSubject("Office 2007 XLSX Test Document")
-                             ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
-                             ->setKeywords("office 2007 openxml php")
-                             ->setCategory("Test result file");
-
+    ->setLastModifiedBy("Maarten Balliauw")
+    ->setTitle("Office 2007 XLSX Test Document")
+    ->setSubject("Office 2007 XLSX Test Document")
+    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+    ->setKeywords("office 2007 openxml php")
+    ->setCategory("Test result file");
 
 //////////////////////////****************Content start**************////////////////////////////////
 $emp_id = $_SESSION['emp_id'];
@@ -84,7 +83,7 @@ $vendor_type_id = $_GET['vendor_type_id'];
 $estimate_type_id = $_GET['estimate_type_id'];
 
 if($vendor_type!=""){
-     $vendor_str=$vendor_type;
+    $vendor_str=$vendor_type;
 }
 else{
     $vendor_str = "";
@@ -113,33 +112,33 @@ else{
 
 // Add some data
 $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('B2', 'Report Name')
-            ->setCellValue('C2', 'Purchase Cost')
-            ->setCellValue('B3', 'Purchase Type')
-            ->setCellValue('C3', $est_str)
-            ->setCellValue('B4', 'Supplier Type')
-            ->setCellValue('C4', $vendor_str)
-            ->setCellValue('B5', 'Purchase ID')
-            ->setCellValue('C5', $est_str1)
-            ->setCellValue('B6', 'Supplier Name')
-            ->setCellValue('C6', $vendor_str1);
+    ->setCellValue('B2', 'Report Name')
+    ->setCellValue('C2', 'Purchase Cost')
+    ->setCellValue('B3', 'Purchase Type')
+    ->setCellValue('C3', $est_str)
+    ->setCellValue('B4', 'Supplier Type')
+    ->setCellValue('C4', $vendor_str)
+    ->setCellValue('B5', 'Purchase ID')
+    ->setCellValue('C5', $est_str1)
+    ->setCellValue('B6', 'Supplier Name')
+    ->setCellValue('C6', $vendor_str1);
 
 $objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B2:C2')->applyFromArray($borderArray);
 
 $objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B3:C3')->applyFromArray($borderArray);
 
 $objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);  
+$objPHPExcel->getActiveSheet()->getStyle('B4:C4')->applyFromArray($borderArray);
 
 $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray); 
+$objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);
 
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);   
+$objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);
 
-$query = "select * from vendor_estimate where financial_year_id='$financial_year_id' ";
+$query = "select * from vendor_estimate where financial_year_id='$financial_year_id' and delete_status='0' ";
 if($estimate_type!=""){
     $query .= "and estimate_type='$estimate_type'";
 }
@@ -177,18 +176,19 @@ $row_count = 8;
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Purchase Type")
-        ->setCellValue('D'.$row_count, "Purchase ID")
-        ->setCellValue('E'.$row_count, "Supplier Type")
-        ->setCellValue('F'.$row_count, "Supplier Name")
-        ->setCellValue('G'.$row_count, "Remark")
-        ->setCellValue('H'.$row_count, "Amount")
-        ->setCellValue('I'.$row_count, "Cncl_Amount")
-        ->setCellValue('J'.$row_count, "Total_Amount")
-        ->setCellValue('K'.$row_count, "Created By");
+        ->setCellValue('C'.$row_count, "Purchase Date")
+        ->setCellValue('D'.$row_count, "Purchase Type")
+        ->setCellValue('E'.$row_count, "Purchase ID")
+        ->setCellValue('F'.$row_count, "Supplier Type")
+        ->setCellValue('G'.$row_count, "Supplier Name")
+        ->setCellValue('H'.$row_count, "Remark")
+        ->setCellValue('I'.$row_count, "Amount")
+        ->setCellValue('J'.$row_count, "Cncl_Amount")
+        ->setCellValue('K'.$row_count, "Total_Amount")
+        ->setCellValue('L'.$row_count, "Created By");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 $total_balance = 0;
@@ -237,19 +237,20 @@ while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
     $total_balance += $balance_amount;
     $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $row_estimate['estimate_id'])
-        ->setCellValue('C'.$row_count, $row_estimate['estimate_type'])
-        ->setCellValue('D'.$row_count, $estimate_type_val)
-        ->setCellValue('E'.$row_count, $row_estimate['vendor_type'])
-        ->setCellValue('F'.$row_count, $vendor_type_val)
-        ->setCellValue('G'.$row_count, $row_estimate['remark'])
-        ->setCellValue('H'.$row_count, number_format($purchase_amount,2))
-        ->setCellValue('I'.$row_count, ($row_estimate['cancel_amount']=="") ? 0 : number_format($row_estimate['cancel_amount'],2))
-        ->setCellValue('J'.$row_count, number_format($row_estimate['net_total'],2))
-        ->setCellValue('K'.$row_count,$emp_name);
+        ->setCellValue('C'.$row_count, get_date_user($row_estimate['purchase_date']))
+        ->setCellValue('D'.$row_count, $row_estimate['estimate_type'])
+        ->setCellValue('E'.$row_count, $estimate_type_val)
+        ->setCellValue('F'.$row_count, $row_estimate['vendor_type'])
+        ->setCellValue('G'.$row_count, $vendor_type_val)
+        ->setCellValue('H'.$row_count, $row_estimate['remark'])
+        ->setCellValue('I'.$row_count, number_format($row_estimate['net_total'],2))
+        ->setCellValue('J'.$row_count, ($row_estimate['cancel_amount']=="") ? 0 : number_format($row_estimate['cancel_amount'],2))
+        ->setCellValue('K'.$row_count,  number_format($purchase_amount,2))
+        ->setCellValue('L'.$row_count,$emp_name);
 	
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
 
 	$row_count++;
 
@@ -258,15 +259,16 @@ while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
         ->setCellValue('C'.$row_count, "")
         ->setCellValue('D'.$row_count, "")
         ->setCellValue('E'.$row_count, "")
-        ->setCellValue('F'.$row_count, "Total Amount : ".number_format($total_estimate_amt, 2))
-        ->setCellValue('G'.$row_count, "Total Cancel : ".number_format($total_cancel_amt, 2))
-        ->setCellValue('H'.$row_count, "Total Purchase : ".number_format($total_purchase_amt, 2))
-        ->setCellValue('I'.$row_count, "Total Paid : ".number_format($total_paid_amt, 2))
-        ->setCellValue('J'.$row_count, "Balance : ".number_format($total_balance, 2))
-        ->setCellValue('K'.$row_count, "");
+        ->setCellValue('F'.$row_count, "")
+        ->setCellValue('G'.$row_count, "Total Amount : ".number_format($total_estimate_amt, 2))
+        ->setCellValue('H'.$row_count, "Total Cancel : ".number_format($total_cancel_amt, 2))
+        ->setCellValue('I'.$row_count, "Total Purchase : ".number_format($total_purchase_amt, 2))
+        ->setCellValue('J'.$row_count, "Total Paid : ".number_format($total_paid_amt, 2))
+        ->setCellValue('K'.$row_count, "Balance : ".number_format($total_balance, 2))
+        ->setCellValue('L'.$row_count, "");
         
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);
 }
 	
 

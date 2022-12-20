@@ -34,7 +34,7 @@ else
 
 function get_total($sector_from, $sector_to){
 
-    $query1 = "SELECT departure_city,arrival_city,count(*) as total FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where ticket_trip_entries.departure_city='".$sector_from."' AND ticket_trip_entries.arrival_city='".$sector_to."'".$_SESSION['dateqry'];
+    $query1 = "SELECT departure_city,arrival_city,count(*) as total FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where ticket_trip_entries.departure_city='".$sector_from."' AND ticket_trip_entries.arrival_city='".$sector_to."'".$_SESSION['dateqry'];
     $res = mysqlQuery($query1);
     $allTotal = 0; 
     $count = mysqli_num_rows($res);
@@ -51,7 +51,7 @@ function get_total($sector_from, $sector_to){
 
 function get_amount($sector_from, $sector_to){
    
-    $query1 = "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where ticket_trip_entries.departure_city='".$sector_from."' AND ticket_trip_entries.arrival_city='".$sector_to."' ".$_SESSION['dateqry'];
+    $query1 = "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id where ticket_trip_entries.departure_city='".$sector_from."' AND ticket_trip_entries.arrival_city='".$sector_to."' ".$_SESSION['dateqry'];
     $res = mysqlQuery($query1);
     $amount = 0.00; 
     $count = mysqli_num_rows($res);
@@ -135,11 +135,11 @@ $main = array();
 //Airline
 if(empty($fromdate) && empty($todate))
 {
-    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id ";
+    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id ";
 }
 else
 {                                                                                                                                                      
-    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_code = ticket_trip_entries.flight_no inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['dateqry']."";
+    $query=  "SELECT * FROM airline_master INNER JOIN ticket_trip_entries on airline_master.airline_id = ticket_trip_entries.airline_id inner join ticket_master on ticket_trip_entries.ticket_id = ticket_master.ticket_id INNER JOIN customer_master on ticket_master.customer_id = customer_master.customer_id where 1=1 ".$_SESSION['dateqry']."";
 }
 $result = mysqlQuery($query);
 $count = 1;

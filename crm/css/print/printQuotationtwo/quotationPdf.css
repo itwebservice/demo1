@@ -39,10 +39,6 @@ table.table{
 .itinerary-link{text-decoration:underline!important;color:blue!important;}
 .itinerary-img{height:25px;width:25px;display: inline-block;}
 
-
-
-
-
-
-
-
+img{
+  max-width: 100%;
+}

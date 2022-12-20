@@ -3,6 +3,7 @@ global $app_quot_format,$whatsapp_switch;
 $from_date = $_POST['from_date'];
 $to_date = $_POST['to_date'];
 $quotation_id = $_POST['quotation_id'];
+$status = $_POST['status'];
 $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
@@ -10,7 +11,13 @@ $branch_status = $_POST['branch_status'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $financial_year_id = $_SESSION['financial_year_id'];
 
-$query = "select * from flight_quotation_master where financial_year_id='$financial_year_id' ";
+if($status != ''){
+
+	$query = "select * from flight_quotation_master where financial_year_id='$financial_year_id' and status='$status'";
+}else{
+
+	$query = "select * from flight_quotation_master where financial_year_id='$financial_year_id' and status='1' ";
+}
 if($from_date!='' && $to_date!=""){
 
 	$from_date = date('Y-m-d', strtotime($from_date));
@@ -71,21 +78,30 @@ $array_s = array();
 		if($whatsapp_switch == "on"){
 			$whatsapp_show = '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>';
 		}
-		$temp_arr = array(
+		
+		if($row_quotation['status'] == 0) {
+			$bg = 'danger';
+			$pdf_show = '';
+			$whatsapp_show = '';
+		}else{
+			$bg = '';
+			$pdf_show = '<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>';
+			$whatsapp_show = '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>';
+		}
+		
+		$temp_arr = array( "data" => array(
 			(int)(++$count),
 			get_quotation_id($row_quotation['quotation_id'],$year),
 			$row_quotation['customer_name'],
 			get_date_user($row_quotation['quotation_date']),
 			number_format($row_quotation['quotation_cost'],2),
 			$emp_name,
-			'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>
+			$pdf_show.$whatsapp_show.' 
 
-			'.$whatsapp_show.' 
-
-			<button class="btn btn-info btn-sm" onclick="update_modal('.$row_quotation['quotation_id'].')" title="Update Details" data-toggle="tooltip"><i class="fa fa-pencil-square-o"></i></button>
+			<button class="btn btn-info btn-sm" onclick="update_modal('.$row_quotation['quotation_id'].')" title="Edit Details" data-toggle="tooltip"><i class="fa fa-pencil-square-o"></i></button>
 			
-			<a href="quotation_view.php?quotation_id='.$row_quotation['quotation_id'].'" target="_BLANK" class="btn btn-info btn-sm" title="View Details"><i class="fa fa-eye"></i></a>',
-		  );
+			<a href="quotation_view.php?quotation_id='.$row_quotation['quotation_id'].'" target="_BLANK" class="btn btn-info btn-sm" title="View Details"><i class="fa fa-eye"></i></a>'
+		), "bg" =>$bg);
 		array_push($array_s,$temp_arr); 
 }
 echo json_encode($array_s);

@@ -13,7 +13,7 @@ $customer_id = $_SESSION['customer_id'];
 		<th>Mode</th>
 		<th>Bank_Name</th>
 		<th>Cheque_No/ID</th>
-		<th class="success text-right">Amount</th>
+		<th class="success">Amount</th>
 		<th>Receipt </th>
 	</tr>
 	</thead>
@@ -79,7 +79,10 @@ $customer_id = $_SESSION['customer_id'];
 			else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg='danger';
 				$sq_cancel_amount = $row_visa_payment['payment_amount']+ $row_visa_payment['credit_charges'];
 			}	
-			
+			else if($row_visa_payment['clearance_status']=="Cancelled"){ $bg='success';
+			}else{
+				$bg='';
+			}
 			$paid_amount = currency_conversion($currency,$sq_visa_info['currency_code'],$row_visa_payment['payment_amount']+$row_visa_payment['credit_charges']);
 			$sq_paid_amount_string = explode(' ',$paid_amount);
 			$footer_paid_total += str_replace(',', '', $sq_paid_amount_string[1]);
@@ -110,7 +113,7 @@ $customer_id = $_SESSION['customer_id'];
 			$bank_name = $row_visa_payment['bank_name'];
 			$receipt_type = "Visa Receipt";			
 
-			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&outstanding=$outstanding&branch_status=$branch_status&table_name=visa_payment_master&customer_field=visa_id&in_customer_id=$row_visa_payment[visa_id]&currency_code=$sq_visa_info[currency_code]";
+			$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&outstanding=$outstanding&branch_status=$branch_status&table_name=visa_payment_master&customer_field=visa_id&in_customer_id=$row_visa_payment[visa_id]&currency_code=$sq_visa_info[currency_code]&status=$row_visa_payment[status]";
 			?>
 			<tr class="<?= $bg?>">
 				<td><?= $count ?></td>
@@ -119,7 +122,7 @@ $customer_id = $_SESSION['customer_id'];
 				<td><?= $row_visa_payment['payment_mode'] ?></td>
 				<td><?= $row_visa_payment['bank_name']; ?></td>
 				<td><?= $row_visa_payment['transaction_id']; ?></td>
-				<td class="text-right success"><?= $paid_amount ?></td>
+				<td class="success"><?= $paid_amount ?></td>
 				<td>
 					<a onclick="loadOtherPage('<?= $url1 ?>')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>
 				</td>

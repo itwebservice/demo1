@@ -1,8 +1,6 @@
 <?php
 include "../../../model/model.php";
-
 $dest_id = $_POST['dest_id'];
-
 $sq_dest = mysqli_fetch_assoc(mysqlQuery("select * from destination_master where dest_id='$dest_id'"));
 ?>
 <form id="frm_update">
@@ -22,7 +20,7 @@ $sq_dest = mysqli_fetch_assoc(mysqlQuery("select * from destination_master where
               <input type="text" id="dest_name" name="dest_name"  onchange="fname_validate(this.id);" placeholder="Destination Name" title="Destination Name" value="<?= $sq_dest['dest_name'] ?>">
             </div>
             <div class="col-sm-6 mg_bt_10">
-              <select name="active_flag1" id="active_flag1" title="Status" style="width:100%">
+              <select class="<?= $active_inactive_flag ?>" name="active_flag1" id="active_flag1" title="Status" style="width:100%">
                 <option value="<?= $sq_dest['status'] ?>"><?= $sq_dest['status'] ?></option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
