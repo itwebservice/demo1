@@ -7,7 +7,7 @@ include "get_cache_currencies.php";
 include "array_column.php";
 
 // LIVE Cache file reading
-$file_get_c = file_get_contents('https://' . $_SERVER['SERVER_NAME'] . '/crm/view/b2c_cache.php');
+$file_get_c = get_content('https://' . $_SERVER['SERVER_NAME'] . '/crm/view/b2c_cache.php');
 $cached_array = json_decode($file_get_c);
 
 //local
@@ -16,14 +16,14 @@ $cached_array = json_decode($file_get_c);
 $cached_array = json_decode($file_get_c);
 */
 
-/*function get_content($URL){
+function get_content($URL){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $URL);
     $data = curl_exec($ch);
     curl_close($ch);
     return $data;
-} */
+} 
 
 // LOCAL Cache file readingc
 

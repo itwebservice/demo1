@@ -280,7 +280,7 @@ if (sizeof($tours_result_array) > 0) {
                                   <div class="gridItem styleForMobile M-m0">
                                     <div class="infoCard m5-btm">
                                       <span class="infoCard_label">To Location</span>
-                                      <span class="infoCard_price"><?= $train_array ?></span>
+                                      <span class="infoCard_price"><?= $train_array[$tr_i]['to_location'] ?></span>
                                     </div>
                                   </div>
                                   <div class="gridItem styleForMobile M-m0">

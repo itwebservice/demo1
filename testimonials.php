@@ -92,41 +92,28 @@ $b2c_testm = $cached_array[0]->cms_data[4];
                 $testm = $b2c_testm->customer_testimonials;
                 for($testm_count=0;$testm_count<=sizeof($testm)-1;$testm_count++){
 
-                        
-
                     //Image
-
                     $url = $testm[$testm_count]->image;
-
                     $pos = strstr($url,'uploads');
-
-                    if ($pos != false)   {
-
-                        $newUrl = preg_replace('/(\/+)/','/',$url); 
-
-                        $newUrl1 = BASE_URL.str_replace('../', '', $newUrl);
-
+                    if ($pos != false){
+                      $newUrl = preg_replace('/(\/+)/','/',$url);
+                      $newUrl1 = BASE_URL.str_replace('../', '', $newUrl);
                     }
-
                     else{
-
-                        $newUrl1 =  $url; 
-
+                      $newUrl1 =  $url;
                     }
 
                     $name = ($testm[$testm_count]->designation!='') ? $testm[$testm_count]->name. '('.$testm[$testm_count]->designation.')' : $testm[$testm_count]->name;
 
                     if($name!=''){
-
                         ?>
-
                         <div class="col col-12 col-md-6 col-lg-12">
 
                             <div class="ts-customer-testimonial-card">
 
                                 <div class="ts-customer-testimonial-img">
 
-                                    <img src="<?= $newUrl1 ?>" alt="Customer Image" class="img-fluid">
+                                    <img src="<?= ($url != '') ? $newUrl1 : 'images/traveler.png' ?>" alt="Customer Image" class="img-fluid">
 
                                     <h3 class="ts-customer-testimonial-name"><?= $name ?></h3>
 

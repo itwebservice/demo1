@@ -1047,21 +1047,15 @@ if (sizeof($b2c_testmtest) != 0) {
                 for ($testm_count = 0; $testm_count <= sizeof($testm) - 1; $testm_count++) {
 
                     //Image
-
                     $url = $testm[$testm_count]->image;
-
-                    $pos = strstr($url, 'uploads');
-
-                    if ($pos != false) {
-
-                        $newUrl = preg_replace('/(\/+)/', '/', $url);
-
-                        $newUrl1 = BASE_URL . str_replace('../', '', $newUrl);
-                    } else {
-
-                        $newUrl1 =  $url;
+                    $pos = strstr($url,'uploads');
+                    if ($pos != false){
+                      $newUrl = preg_replace('/(\/+)/','/',$url);
+                      $newUrl1 = BASE_URL.str_replace('../', '', $newUrl);
                     }
-
+                    else{
+                      $newUrl1 =  $url;
+                    }
                     $name = ($testm[$testm_count]->designation != '') ? $testm[$testm_count]->name . '(' . $testm[$testm_count]->designation . ')' : $testm[$testm_count]->name;
 
                     if ($name != '') {
@@ -1076,7 +1070,7 @@ if (sizeof($b2c_testmtest) != 0) {
 
                                     <div class="ts-testimonial-img">
 
-                                        <img src="<?= file_exists($newUrl1) ? $newUrl1 : 'images/traveler.png'  ?>" alt="Customer Image" class="img-fluid">
+                                        <img src="<?= ($url != '') ? $newUrl1 : 'images/traveler.png'  ?>" alt="Customer Image" class="img-fluid">
 
                                     </div>
 
@@ -1194,7 +1188,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                                 <div class="ts-update-img">
 
-                                    <img src="<?= file_exists($newUrl1) ? $newUrl1 : 'images/activity_default.png' ?>" alt="Blog Image" class="img-fluid">
+                                    <img src="<?= ($url!='') ? $newUrl1 : 'images/whoweare.png' ?>" alt="Blog Image" class="img-fluid">
 
                                 </div>
 
