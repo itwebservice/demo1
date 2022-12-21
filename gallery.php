@@ -85,17 +85,14 @@ $result = array_unique($dest_array);
             foreach($gallary_array as $j){
               $dest_id = $j->dest_id;
               if($i == $dest_id){
-
-
                 $url = $j->image_url;
                 $pos = strstr($url,'uploads');
-
                 if ($pos != false){
-                  $newUrl1 = preg_replace('/(\/+)/','/',$url); 
+                  $newUrl1 = preg_replace('/(\/+)/','/',$url);
                   $newUrl = BASE_URL.str_replace('../', '', $newUrl1);
                 }
                 else{
-                  $newUrl =  $url; 
+                  $newUrl =  $url;
                 }
                 ?>
                 <a href="<?= $newUrl ?>" class="light-gallery-item">
