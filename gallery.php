@@ -83,22 +83,24 @@ $result = array_unique($dest_array);
             <legend><?= $dest_name ?></legend>
             <?php
             foreach($gallary_array as $j){
+              
               $dest_id = $j->dest_id;
               if($i == $dest_id){
+
+                $newUrl = '';
                 $url = $j->image_url;
                 $pos = strstr($url,'uploads');
                 if ($pos != false){
                   $newUrl1 = preg_replace('/(\/+)/','/',$url);
                   $newUrl = BASE_URL.str_replace('../', '', $newUrl1);
                 }
-                else{
-                  $newUrl =  $url;
+                if($newUrl != ''){
+                  ?>
+                  <a href="<?= $newUrl ?>" class="light-gallery-item">
+                    <img title="<?= $dest_name ?>" alt="" src="<?= $newUrl ?>" class="img-fluid" />
+                  </a>
+                  <?php
                 }
-                ?>
-                <a href="<?= $newUrl ?>" class="light-gallery-item">
-                  <img title="<?= $dest_name ?>" alt="" src="<?= $newUrl ?>" class="img-fluid" />
-                </a>
-                <?php
               }
             }
           } ?>
