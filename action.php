@@ -409,7 +409,7 @@ else if($type == '7') {
 
                                             ?>
 
-                                            <option value="<?= $package_type_arr[$i] ?>"><?= $package_type_arr[$i] ?></option>
+                                            <option value="<?= $package_type_arr[$i] ?>"><?php echo strtoupper($package_type_arr[$i]); ?></option>
 
                                             <?php }
 
