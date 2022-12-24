@@ -336,17 +336,17 @@ foreach ($int_dest_id_arr as $int_id) {
 
                                         <!--<li>
 
-                      <div class="c-select2DD st-clear">
+                                        <div class="c-select2DD st-clear">
 
-                        <select name="state">
+                                            <select name="state">
 
-                          <option value="English">English</option>
+                                            <option value="English">English</option>
 
-                        </select>
+                                            </select>
 
-                      </div>
+                                        </div>
 
-                    </li> -->
+                                        </li> -->
 
                                     </ul>
 

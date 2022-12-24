@@ -11,11 +11,7 @@ foreach ($gallary_array as $val) {
 }
 $result = array_unique($dest_array);
 ?>
-
-
-
 <!-- ********** Component :: Page Title ********** -->
-
 <div class="c-pageTitleSect ts-pageTitleSect">
 
   <div class="container">
@@ -23,7 +19,6 @@ $result = array_unique($dest_array);
     <div class="row">
 
       <div class="col-md-7 col-12">
-
 
 
         <!-- *** Search Head **** -->
@@ -70,37 +65,41 @@ $result = array_unique($dest_array);
 
 <section class="ts-destinations-section">
 
-  <div class="container">
+    <div class="container">
 
-    <div id="lightGalleryImage" class="light-gallery-list">
+        <div id="lightGalleryImage" class="light-gallery-list">
 
-      <?php
-      foreach ($result as $i) {
+          <?php
+          foreach($result as $i){
+            
+            $sq_dest = mysqli_fetch_assoc(mysqlQuery("select dest_name from destination_master where dest_id='$i'"));
+            $dest_name = $sq_dest['dest_name'];
+            ?>
+            <legend><?= $dest_name ?></legend>
+            <?php
+            foreach($gallary_array as $j){
+              
+              $dest_id = $j->dest_id;
+              if($i == $dest_id){
 
-        $sq_dest = mysqli_fetch_assoc(mysqlQuery("select dest_name from destination_master where dest_id='$i'"));
-        $dest_name = $sq_dest['dest_name'];
-      ?>
-        <legend><?= $dest_name ?></legend>
-        <?php
-        foreach ($gallary_array as $j) {
-          $dest_id = $j->dest_id;
-          if ($i == $dest_id) {
-            $url = $j->image_url;
-            $pos = strstr($url, 'uploads');
-            if ($pos != false) {
-              $newUrl1 = preg_replace('/(\/+)/', '/', $url);
-              $newUrl = BASE_URL . str_replace('../', '', $newUrl1);
-            } else {
-              $newUrl =  $url;
+                $newUrl = '';
+                $url = $j->image_url;
+                $pos = strstr($url,'uploads');
+                if ($pos != false){
+                  $newUrl1 = preg_replace('/(\/+)/','/',$url);
+                  $newUrl = BASE_URL.str_replace('../', '', $newUrl1);
+                }
+                if($newUrl != ''){
+                  ?>
+                  <a href="<?= $newUrl ?>" class="light-gallery-item">
+                    <img title="<?= $dest_name ?>" alt="" src="<?= $newUrl ?>" class="img-fluid" />
+                  </a>
+                  <?php
+                }
+              }
             }
-        ?>
-            <a href="<?= $newUrl ?>" class="light-gallery-item">
-              <img title="<?= $dest_name ?>" alt="" src="<?= $newUrl ?>" class="img-fluid" style="height:130px !important;" />
-            </a>
-      <?php
           }
-        }
-      } ?>
+          ?>
 
     </div>
 

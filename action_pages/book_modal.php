@@ -239,7 +239,7 @@ $costing_desc = strip_tags($costing_desc);
                         <label>*Select State</label>
                         <?php
                         $service = ($type == '1') ? 'Package Tour' : 'Group Tour'; ?>
-                        <select name="state" id="state" title="Select State" style="width : 100%" onchange="get_tax(this.id,'total_cost','<?= $service ?>');">
+                        <select name="state" id="state" title="Select State/Country" style="width : 100%" onchange="get_tax(this.id,'total_cost','<?= $service ?>');">
                         <?php get_states_dropdown() ?>
                         </select>
                     </div>

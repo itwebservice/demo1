@@ -1152,116 +1152,50 @@ if (sizeof($b2c_blog) != 0) { ?>
             <div class="ts-testimonial-slider owl-carousel">
 
                 <?php
-
                 foreach ($b2c_blogs as $blog) {
-
-
 
                     for ($blog_count = 0; $blog_count < sizeof($blog); $blog_count++) {
 
                         if ($blog_count > 5) {
-
                             break;
                         }
-
                         //Image
-
                         $url = $blog[$blog_count]->image;
-
                         $pos = strstr($url, 'uploads');
-
                         if ($pos != false) {
-
                             $newUrl = preg_replace('/(\/+)/', '/', $url);
-
                             $newUrl1 = BASE_URL . str_replace('../', '', $newUrl);
                         } else {
-
                             $newUrl1 =  $url;
                         }
-
-                ?>
-
+                        ?>
                         <div class="row justify-content-center">
 
                             <div class="col col-12 col-md-6 col-lg-5">
-
                                 <div class="ts-update-img">
-
                                     <img src="<?= ($url!='') ? $newUrl1 : 'images/whoweare.png' ?>" alt="Blog Image" class="img-fluid">
-
                                 </div>
-
                             </div>
 
                             <div class="col col-12 col-md-6 col-lg-5">
-
                                 <div class="ts-update-content">
-
                                     <a href="single-blog.php?blog_id=<?= $blog[$blog_count]->entry_id ?>" target="_blank" class="ts-update-title"><?= $blog[$blog_count]->title ?></a>
-
-                                    <!-- <ul class="ts-update-info-list">
-
-                                        <li class="ts-update-info-item">
-
-                                            <i class="fa fa-user-o"></i>
-
-                                            <a href="#" class="ts-update-info-text">Gauri Salvi</a>
-
-                                        </li>
-
-                                        <li class="ts-update-info-item">
-
-                                        <i class="fa fa-calendar"></i>
-
-                                            <a href="#" class="ts-update-info-text"> August 7, 2019 </a>
-
-                                        </li>
-
-                                        <li class="ts-update-info-item">
-
-                                        <i class="fa fa-files-o"></i>
-
-                                            <a href="#" class="ts-update-info-text">Piligrim Tour</a>
-
-                                        </li>
-
-                                        <li class="ts-update-info-item">
-
-                                            <i class="fa fa-comments-o"></i>
-
-                                            <a href="#" class="ts-update-info-text">0 Comment</a>
-
-                                        </li>
-
-                                    </ul> -->
-
                                     <p class="ts-updates-description">
 
                                     <div class="custom_texteditor">
-
                                         <?= substr($blog[$blog_count]->description, 0, 500) ?>
-
                                     </div>
                                     </p>
-
                                     <a href="single-blog.php?blog_id=<?= $blog[$blog_count]->entry_id ?>" target="_blank" class="ts-readmore-link">
-
                                         <span>Read More</span>
-
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512">
                                             <path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z" fill="#f68c34" />
                                         </svg>
-
                                     </a>
-
                                 </div>
-
                             </div>
-
                         </div>
-
-                <?php }
+                    <?php }
                 } ?>
 
             </div>
@@ -1324,7 +1258,7 @@ if (sizeof($b2c_blog) != 0) { ?>
 
                         </span>
 
-                        <a <?= $cached_array[0]->company_profile_data[0]->contact_no ?>" class="ts-contact-info-link"><?= $cached_array[0]->company_profile_data[0]->contact_no ?></a>
+                        <a href="<?= $cached_array[0]->company_profile_data[0]->contact_no ?>" class="ts-contact-info-link"><?= $cached_array[0]->company_profile_data[0]->contact_no ?></a>
 
                     </li>
 
