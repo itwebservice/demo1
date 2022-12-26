@@ -234,7 +234,7 @@ if (sizeof($tours_result_array) > 0) {
 
                                 <div class="gridItem">
                                   <div class="infoCard c-halfText m0">
-                                    <span class="infoCard_label">Hotel Type</span>
+                                    <span class="infoCard_label">Hotel Category</span>
                                     <span class="infoCard_price"><?= $tours_result_array[$i]['hotels_array'][$hotel_i]['hotel_type'] ?></span>
                                   </div>
                                 </div>

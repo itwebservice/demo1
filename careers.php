@@ -245,7 +245,7 @@ include 'layouts/header.php';
 
                                 <div class="div-upload">
 
-                                        <div id="hotel_btn1" class="upload-button1"><span>Upload Resume</span></div>
+                                        <div id="hotel_btn1" class="upload-button1"><span>*Upload Resume</span></div>
 
                                         <span id="id_proof_status" ></span>
 
@@ -301,7 +301,7 @@ function upload_pic_attch()
 
     var btnUpload=$('#hotel_btn1');
 
-    $(btnUpload).find('span').text('Upload Resume');
+    $(btnUpload).find('span').text('*Upload Resume');
 
     $("#inputFile_url").val('');
 

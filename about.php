@@ -165,7 +165,7 @@ $_SESSION['page_type'] = 'about';
                         <h3 class="ts-reason-card-title">Customizable Tour Packages</h3>
 
                         <p class="ts-reason-card-description">We understand our guests needs to perfection and thus
-                            provide them with flexible customized holiday packages according to their needs are
+                            provide them with flexible customized holiday packages according to their needs and
                             requirements.</p>
 
                     </div>
