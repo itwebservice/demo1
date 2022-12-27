@@ -31,7 +31,7 @@ $date1 = str_replace('-', '/', $date);
 
         <?php
 
-        $images = (($cached_array[0]->cms_data[0]->banner_images) != '' && ($cached_array[0]->cms_data[0]->banner_images) != NULL) ? json_decode($cached_array[0]->cms_data[0]->banner_images) : [];
+        $images = (($cached_array[0]->cms_data[0]->banner_images) != '' && ($cached_array[0]->cms_data[0]->banner_images) != 'null') ? json_decode($cached_array[0]->cms_data[0]->banner_images) : [];
 
         for ($i = 0; $i < sizeof($images); $i++) {
 

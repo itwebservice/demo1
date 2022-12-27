@@ -288,7 +288,7 @@ function error_msg_alert(message, base_url = '') {
         var base_url1 = base_url + 'notification_modal.php';
 
     }
-
+    console.log('hi-1');
     var class_name = 'alert-danger';
 
     $.post(base_url1, { message: message, class_name: class_name }, function(data) {

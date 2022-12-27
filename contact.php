@@ -320,9 +320,9 @@ global $app_contact_no;
 
                                     <option value="">Select</option>
 
-                                    <option value="Group Tour Package">Group Tour Package</option>
+                                    <option value="Group Tour">Group Tour</option>
 
-                                    <option value="Holiday Tour Package">Holiday Tour Package</option>
+                                    <option value="Holiday Tour">Holiday Tour</option>
 
                                     <option value="Hotel Booking">Hotel Booking</option>
 

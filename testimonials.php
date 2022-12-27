@@ -7,6 +7,7 @@ include 'config.php';
 include 'layouts/header.php';
 
 $b2c_testm = $cached_array[0]->cms_data[4];
+$_SESSION['page_type'] = 'testimonials';
 
 ?>
 
