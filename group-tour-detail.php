@@ -4,15 +4,15 @@ include 'config.php';
 
 $service = $_GET['service'];
 
-global $app_contact_no,$currency;
+global $app_contact_no, $currency;
 
 
 
-$tour_id=explode('.',explode('-',basename($_SERVER['PHP_SELF']))[1])[0];
+$tour_id = explode('.', explode('-', basename($_SERVER['PHP_SELF']))[1])[0];
 
 $sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tour_master where tour_id = '$tour_id'"));
 
-$sq_destination= mysqli_fetch_assoc(mysqlQuery("select * from destination_master where dest_id=$sq_tour[dest_id]"));
+$sq_destination = mysqli_fetch_assoc(mysqlQuery("select * from destination_master where dest_id=$sq_tour[dest_id]"));
 
 $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Group Quotation' and active_flag ='Active'"));
 
@@ -36,7 +36,7 @@ $costing_array = array();
 
 $offer_options_array = array();
 
-$all_orgcosts_array= array();
+$all_orgcosts_array = array();
 
 $total_cost1 = 0;
 
@@ -54,7 +54,7 @@ $total_cost1 = floatval($sq_tour['adult_cost']);
 
 $h_currency_id = $currency;
 
-$c_amount1 = ($to_currency_rate!=0) ? ($from_currency_rate / $to_currency_rate * $total_cost1) : 0;
+$c_amount1 = ($to_currency_rate != 0) ? ($from_currency_rate / $to_currency_rate * $total_cost1) : 0;
 
 ?>
 
@@ -88,11 +88,11 @@ style="background-image: url(../images/title-background.jpg); -->
 
                         <div class="ts-best-place-price-body">
 
-                                <span class="p_currency currency-icon"></span>
+                            <span class="p_currency currency-icon"></span>
 
-                                <span class="best-currency-price"><?= $total_cost1 ?></span>
+                            <span class="best-currency-price"><?= $total_cost1 ?></span>
 
-                                <span class="c-hide best-currency-id"><?= $h_currency_id ?></span>(PP)
+                            <span class="c-hide best-currency-id"><?= $h_currency_id ?></span>(PP)
 
                             </p>
 
@@ -138,29 +138,25 @@ style="background-image: url(../images/title-background.jpg); -->
 
                     <?php
 
-                    if($sq_tour['dest_image']!= 0){
+                    if ($sq_tour['dest_image'] != 0) {
 
                         $row_gallary = mysqli_fetch_assoc(mysqlQuery("select * from gallary_master where entry_id='$sq_tour[dest_image]'"));
 
                         $url = $row_gallary['image_url'];
 
-                        $pos = strstr($url,'uploads');
+                        $pos = strstr($url, 'uploads');
 
-                        if ($pos != false)   {
+                        if ($pos != false) {
 
-                            $newUrl1 = preg_replace('/(\/+)/','/',$row_gallary['image_url']); 
+                            $newUrl1 = preg_replace('/(\/+)/', '/', $row_gallary['image_url']);
 
-                            $newUrl = BASE_URL.str_replace('../', '', $newUrl1);
+                            $newUrl = BASE_URL . str_replace('../', '', $newUrl1);
+                        } else {
 
+                            $newUrl =  $row_gallary['image_url'];
                         }
 
-                        else{
-
-                            $newUrl =  $row_gallary['image_url']; 
-
-                        }
-
-                        ?>
+                    ?>
 
                         <div class="item">
 
@@ -176,33 +172,28 @@ style="background-image: url(../images/title-background.jpg); -->
 
                     $sq_gallary = mysqlQuery("select * from gallary_master where dest_id='$sq_tour[dest_id]' order by entry_id desc");
 
-                    while($row_gallary = mysqli_fetch_assoc($sq_gallary)){
+                    while ($row_gallary = mysqli_fetch_assoc($sq_gallary)) {
 
-                        if($img_count>9){
+                        if ($img_count > 9) {
 
                             break;
-
                         }
 
                         $url = $row_gallary['image_url'];
 
-                        $pos = strstr($url,'uploads');
+                        $pos = strstr($url, 'uploads');
 
-                        if ($pos != false)   {
+                        if ($pos != false) {
 
-                            $newUrl1 = preg_replace('/(\/+)/','/',$row_gallary['image_url']); 
+                            $newUrl1 = preg_replace('/(\/+)/', '/', $row_gallary['image_url']);
 
-                            $newUrl = BASE_URL.str_replace('../', '', $newUrl1);
+                            $newUrl = BASE_URL . str_replace('../', '', $newUrl1);
+                        } else {
 
+                            $newUrl =  $row_gallary['image_url'];
                         }
 
-                        else{
-
-                            $newUrl =  $row_gallary['image_url']; 
-
-                        }
-
-                        ?>
+                    ?>
 
                         <div class="item">
 
@@ -210,11 +201,10 @@ style="background-image: url(../images/title-background.jpg); -->
 
                         </div>
 
-                        <?php
+                    <?php
 
                         $img_count++;
-
-                        } ?>
+                    } ?>
 
                 </div>
 
@@ -264,89 +254,91 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                 <?php
 
-                                $count=1;
+                                $count = 1;
 
-                                while($row_program = mysqli_fetch_assoc($sq_tour_program)){
+                                while ($row_program = mysqli_fetch_assoc($sq_tour_program)) {
 
-                                    if($count == '1'){
+                                    if ($count == '1') {
 
-                                        $show_class="show";
-
-                                    }else{ $show_class=""; }
+                                        $show_class = "show";
+                                    } else {
+                                        $show_class = "";
+                                    }
 
                                 ?>
 
-                                <div class="card">
+                                    <div class="card">
 
-                                    <div class="card-header" id="OverviewheadingOne<?=$count?>">
+                                        <div class="card-header" id="OverviewheadingOne<?= $count ?>">
 
-                                    <h5 class="mb-0">
+                                            <h5 class="mb-0">
 
-                                        <button class="btn btn-link" data-toggle="collapse" data-target="#OverviewcollapseOne<?=$count?>" aria-expanded="true" aria-controls="OverviewcollapseOne<?=$count?>">
+                                                <button class="btn btn-link" data-toggle="collapse" data-target="#OverviewcollapseOne<?= $count ?>" aria-expanded="true" aria-controls="OverviewcollapseOne<?= $count ?>">
 
-                                            <span class="ts-accordian-icon"></span><span> Day-<?=$count.'  '?><?= $row_program['attraction'] ?></span>
+                                                    <span class="ts-accordian-icon"></span><span> Day-<?= $count . '  ' ?><?= $row_program['attraction'] ?></span>
 
-                                        </button>
+                                                </button>
 
-                                    </h5>
+                                            </h5>
 
-                                </div>
+                                        </div>
 
 
 
-                                <div id="OverviewcollapseOne<?=$count?>" class="collapse <?= $show_class ?>" aria-labelledby="OverviewheadingOne<?=$count?>" data-parent="#OverviewAccordion">
+                                        <div id="OverviewcollapseOne<?= $count ?>" class="collapse <?= $show_class ?>" aria-labelledby="OverviewheadingOne<?= $count ?>" data-parent="#OverviewAccordion">
 
-                                    <div class="card-body">
+                                            <div class="card-body">
 
-                                        <?= $row_program['day_wise_program'] ?>
+                                                <?= $row_program['day_wise_program'] ?>
 
-                                        <ul  class="ts-tours-night-list">
+                                                <ul class="ts-tours-night-list">
 
-                                            <li class="ts-tours-night-item">
+                                                    <li class="ts-tours-night-item">
 
-                                                <span>Overnight Stay</span>
+                                                        <span>Overnight Stay</span>
 
-                                            </li>
+                                                    </li>
 
-                                            <li class="ts-tours-night-item ts-tours-night-name-item">
+                                                    <li class="ts-tours-night-item ts-tours-night-name-item">
 
-                                                <span><?= $row_program['stay'] ?></span>
+                                                        <span><?= $row_program['stay'] ?></span>
 
-                                            </li>
+                                                    </li>
 
-                                        </ul>
+                                                </ul>
 
-                                        <?php
+                                                <?php
 
-                                        if($row_program['meal_plan']!=''){ ?>
+                                                if ($row_program['meal_plan'] != '') { ?>
 
-                                        <ul  class="ts-tours-night-list">
+                                                    <ul class="ts-tours-night-list">
 
-                                            <li class="ts-tours-night-item">
+                                                        <li class="ts-tours-night-item">
 
-                                                <span>Meals</span>
+                                                            <span>Meals</span>
 
-                                            </li>
+                                                        </li>
 
-                                            <li class="ts-tours-night-item ts-tours-night-name-item">
+                                                        <li class="ts-tours-night-item ts-tours-night-name-item">
 
-                                                <span><i class="fa fa-spoon" aria-hidden="true"></i> <?= $row_program['meal_plan'] ?></span>
+                                                            <span><i class="fa fa-spoon" aria-hidden="true"></i> <?= $row_program['meal_plan'] ?></span>
 
-                                            </li>
+                                                        </li>
 
-                                        </ul>
+                                                    </ul>
 
-                                        <?php } ?>
+                                                <?php } ?>
+
+                                            </div>
+
+                                        </div>
 
                                     </div>
-
-                                    </div>
-
-                                </div>
 
                                 <?php
 
-                                $count++;} ?>
+                                    $count++;
+                                } ?>
 
                             </div>
 
@@ -364,9 +356,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
                             $sq_h_count = mysqli_num_rows(mysqlQuery("select * from group_tour_hotel_entries where tour_id = '$tour_id'"));
 
-                            if($sq_h_count > 0){
+                            if ($sq_h_count > 0) {
 
-                                ?>
+                            ?>
 
                                 <legend>Hotel Information</legend>
 
@@ -392,13 +384,13 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                             $sq_hotel = mysqlQuery("select * from group_tour_hotel_entries where tour_id = '$tour_id'");
 
-                                            while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
+                                            while ($row_hotel = mysqli_fetch_assoc($sq_hotel)) {
 
                                                 $sq_hcity = mysqli_fetch_assoc(mysqlQuery("select city_name,city_id from city_master where city_id = '$row_hotel[city_id]'"));
 
                                                 $sq_hhotel = mysqli_fetch_assoc(mysqlQuery("select hotel_name,hotel_id from hotel_master where hotel_id = '$row_hotel[hotel_id]'"));
 
-                                                ?>
+                                            ?>
 
                                                 <tr>
 
@@ -412,7 +404,7 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                                 </tr>
 
-                                                <?php
+                                            <?php
 
                                             }
 
@@ -432,9 +424,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
                             $sq_h_count = mysqli_num_rows(mysqlQuery("select * from group_train_entries where tour_id = '$tour_id'"));
 
-                            if($sq_h_count > 0){
+                            if ($sq_h_count > 0) {
 
-                                ?>
+                            ?>
 
                                 <legend>Train Information</legend>
 
@@ -458,13 +450,13 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                             $sq_hotel = mysqlQuery("select * from group_train_entries where tour_id = '$tour_id'");
 
-                                            while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
+                                            while ($row_hotel = mysqli_fetch_assoc($sq_hotel)) {
 
-                                                ?>
+                                            ?>
 
                                                 <tr>
 
-                                                    <td><?= $row_hotel['from_location'].$similar_text ?></td>
+                                                    <td><?= $row_hotel['from_location'] . $similar_text ?></td>
 
                                                     <td><?= $row_hotel['to_location'] ?></td>
 
@@ -472,7 +464,7 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                                 </tr>
 
-                                                <?php
+                                            <?php
 
                                             }
 
@@ -492,9 +484,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
                             $sq_h_count = mysqli_num_rows(mysqlQuery("select * from group_tour_plane_entries where tour_id = '$tour_id'"));
 
-                            if($sq_h_count > 0){
+                            if ($sq_h_count > 0) {
 
-                                ?>
+                            ?>
 
                                 <legend>Flight Information</legend>
 
@@ -518,33 +510,33 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                             <?php
 
-                                                $count = 0;
+                                            $count = 0;
 
-                                                $sq_hotel = mysqlQuery("select * from group_tour_plane_entries where tour_id='$tour_id'");
+                                            $sq_hotel = mysqlQuery("select * from group_tour_plane_entries where tour_id='$tour_id'");
 
-                                                while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
+                                            while ($row_hotel = mysqli_fetch_assoc($sq_hotel)) {
 
-                                                    $sq_airline = mysqli_fetch_assoc(mysqlQuery("select * from airline_master where airline_id='$row_hotel[airline_name]'"));
+                                                $sq_airline = mysqli_fetch_assoc(mysqlQuery("select * from airline_master where airline_id='$row_hotel[airline_name]'"));
 
-                                                    $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_hotel[from_city]'"));
+                                                $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_hotel[from_city]'"));
 
-                                                    $sq_city1 = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_hotel[to_city]'"));
+                                                $sq_city1 = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_hotel[to_city]'"));
 
-                                                ?>
+                                            ?>
 
                                                 <tr>
 
-                                                    <td><?= $sq_city['city_name'].' ('.$row_hotel['from_location'].')' ?></td>
+                                                    <td><?= $sq_city['city_name'] . ' (' . $row_hotel['from_location'] . ')' ?></td>
 
-                                                    <td><?= $sq_city1['city_name'].' ('.$row_hotel['to_location'].')' ?></td>
+                                                    <td><?= $sq_city1['city_name'] . ' (' . $row_hotel['to_location'] . ')' ?></td>
 
-                                                    <td><?= $sq_airline['airline_name'].' ('.$sq_airline['airline_code'].')' ?></td>
+                                                    <td><?= $sq_airline['airline_name'] . ' (' . $sq_airline['airline_code'] . ')' ?></td>
 
                                                     <td><?= $row_hotel['class'] ?></td>
 
                                                 </tr>
 
-                                                <?php
+                                            <?php
 
                                             }
 
@@ -564,9 +556,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
                             $sq_h_count = mysqli_num_rows(mysqlQuery("select * from group_cruise_entries where tour_id = '$tour_id'"));
 
-                            if($sq_h_count > 0){
+                            if ($sq_h_count > 0) {
 
-                                ?>
+                            ?>
 
                                 <legend>Cruise Information</legend>
 
@@ -586,13 +578,13 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                             <?php
 
-                                                $count = 0;
+                                            $count = 0;
 
-                                                $sq_hotel = mysqlQuery("select * from group_cruise_entries where tour_id='$tour_id'");
+                                            $sq_hotel = mysqlQuery("select * from group_cruise_entries where tour_id='$tour_id'");
 
-                                                while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
+                                            while ($row_hotel = mysqli_fetch_assoc($sq_hotel)) {
 
-                                                ?>
+                                            ?>
 
                                                 <tr>
 
@@ -602,7 +594,7 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                                 </tr>
 
-                                                <?php
+                                            <?php
 
                                             }
 
@@ -662,8 +654,6 @@ style="background-image: url(../images/title-background.jpg); -->
 
                     </div>
 
-                    </div>
-
                 </div>
 
             </div>
@@ -672,56 +662,56 @@ style="background-image: url(../images/title-background.jpg); -->
 
                 <div class="ts-best-place-enquiry-content">
 
-                <div class="ts-contact-form">
+                    <div class="ts-contact-form">
 
-                    <h3 class="ts-contact-form-title">Get In Touch</h3>
+                        <h3 class="ts-contact-form-title">Get In Touch</h3>
 
-                    <form id="getInTouch_form" class="needs-validation" novalidate>
+                        <form id="getInTouch_form" class="needs-validation" novalidate>
 
-                        <input type="hidden" id="package_name" value="<?=$sq_tour['tour_name']?>"/>
+                            <input type="hidden" id="package_name" value="<?= $sq_tour['tour_name'] ?>" />
 
-                        <!-- <input type="hidden" id="travel_date" value="<?= $tom_date ?>"/> -->
+                            <!-- <input type="hidden" id="travel_date" value="<?= $tom_date ?>"/> -->
 
-                        <div class="form-row">
+                            <div class="form-row">
 
-                            <div class="form-group col-md-12">
+                                <div class="form-group col-md-12">
 
-                                <input type="text" class="form-control" id="inputNamep" name="inputNamep" placeholder="*Name" onkeypress="return blockSpecialChar(event)" required>
+                                    <input type="text" class="form-control" id="inputNamep" name="inputNamep" placeholder="*Name" onkeypress="return blockSpecialChar(event)" required>
+
+                                </div>
+
+                                <div class="form-group col-md-12">
+
+                                    <input type="email" class="form-control" id="inputEmailp" name="inputEmailp" placeholder="*Email" required>
+
+                                </div>
+
+                                <div class="form-group col-md-12">
+
+                                    <input type="number" class="form-control" id="inputPhonep" name="inputPhonep" placeholder="*Phone" required>
+
+                                </div>
 
                             </div>
 
-                            <div class="form-group col-md-12">
+                            <div class="form-group">
 
-                                <input type="email" class="form-control" id="inputEmailp" name="inputEmailp" placeholder="*Email" required>
-
-                            </div>
-
-                            <div class="form-group col-md-12">
-
-                                <input type="number" class="form-control" id="inputPhonep" name="inputPhonep" placeholder="*Phone" required>
+                                <textarea id="inputMessagep" name="inputMessagep" rows="8" class="form-control" placeholder="*Your Enquiry" required></textarea>
 
                             </div>
 
+                            <button type="submit" id="getInTouch_btn" class="btn btn-primary">Send Message</button>
+
+                        </form>
+                        <div class="ts-video-content mt-5">
+                            <h2 class="ts-video-title">Destination video guide..</h2>
+                            <?php
+                            $sq_dest1 = mysqli_fetch_assoc(mysqlQuery("select link from video_itinerary_master where dest_id = '$sq_tour[dest_id]'"));
+                            ?>
+                            <iframe width="100%" src="<?= $sq_dest1['link'] ?>" title="Destination video guide" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
 
-                        <div class="form-group">
-
-                            <textarea id="inputMessagep" name="inputMessagep" rows="8" class="form-control" placeholder="*Your Enquiry" required></textarea>
-
-                        </div>
-
-                        <button type="submit" id="getInTouch_btn" class="btn btn-primary">Send Message</button>
-
-                    </form>
-                    <div class="ts-video-content mt-5">
-                        <h2 class="ts-video-title">Destination video guide..</h2>
-                        <?php
-                        $sq_dest1 = mysqli_fetch_assoc(mysqlQuery("select link from video_itinerary_master where dest_id = '$sq_tour[dest_id]'"));
-                        ?>
-                        <iframe width="100%" src="<?=$sq_dest1['link']?>" title="Destination video guide" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
-
-                </div>
 
                 </div>
 
@@ -729,7 +719,7 @@ style="background-image: url(../images/title-background.jpg); -->
 
         </div>
 
-        
+
 
         <div class="row">
 
@@ -741,9 +731,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
                 $sq_h_count = mysqli_num_rows(mysqlQuery("Select * from tour_groups where tour_id = '$tour_id'"));
 
-                if($sq_h_count > 0){
+                if ($sq_h_count > 0) {
 
-                    ?>
+                ?>
 
                     <legend>Tour Dates</legend>
 
@@ -773,40 +763,38 @@ style="background-image: url(../images/title-background.jpg); -->
 
                                 $sq_hotel = mysqlQuery("Select * from tour_groups where tour_id = '$tour_id'");
 
-                                while($sq_tourgrp = mysqli_fetch_assoc($sq_hotel)){
+                                while ($sq_tourgrp = mysqli_fetch_assoc($sq_hotel)) {
 
                                     $date1_ts = strtotime($sq_tourgrp['from_date']);
 
-                                    if($today_date < $date1_ts){
+                                    if ($today_date < $date1_ts) {
 
-                                        
 
-                                        if($count == 1){
 
-                                            $travel_date = date('d-m-Y',strtotime($sq_tourgrp['from_date'])).' to '.date('d-m-Y',strtotime($sq_tourgrp['to_date']));
+                                        if ($count == 1) {
+
+                                            $travel_date = date('d-m-Y', strtotime($sq_tourgrp['from_date'])) . ' to ' . date('d-m-Y', strtotime($sq_tourgrp['to_date']));
 
                                             $group_id = $sq_tourgrp['group_id'];
-
                                         }
 
-                                    ?>
+                                ?>
 
-                                    <tr>
+                                        <tr>
 
-                                        <td><?= $count++ ?></td>
+                                            <td><?= $count++ ?></td>
 
-                                        <td><?= date('d-m-Y', strtotime($sq_tourgrp['from_date'])) ?></td>
+                                            <td><?= date('d-m-Y', strtotime($sq_tourgrp['from_date'])) ?></td>
 
-                                        <td><?= date('d-m-Y', strtotime($sq_tourgrp['to_date'])) ?></td>
+                                            <td><?= date('d-m-Y', strtotime($sq_tourgrp['to_date'])) ?></td>
 
-                                        <td><input type="radio" id="chk_tour-<?= $sq_tourgrp['group_id'] ?>" name="chk_date" value="<?= date('d-m-Y',strtotime($sq_tourgrp['from_date'])).' to '.date('d-m-Y',strtotime($sq_tourgrp['to_date'])) ?>"></td>
+                                            <td><input type="radio" id="chk_tour-<?= $sq_tourgrp['group_id'] ?>" name="chk_date" value="<?= date('d-m-Y', strtotime($sq_tourgrp['from_date'])) . ' to ' . date('d-m-Y', strtotime($sq_tourgrp['to_date'])) ?>"></td>
 
-                                    </tr>
+                                        </tr>
 
-                                    <?php
+                                <?php
 
                                     }
-
                                 }
 
                                 ?>
@@ -831,9 +819,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
 
 
-                    <button class="c-button md" id='<?=$tours_result_array[$i]['tour_id']?>' onclick="redirect_to_action_page('<?= $tour_id ?>','2','','1','','','','','','0');"><i class="fa fa-phone-square" aria-hidden="true"></i>  Enquiry</button>
+                    <button class="c-button md" id='<?= $tours_result_array[$i]['tour_id'] ?>' onclick="redirect_to_action_page('<?= $tour_id ?>','2','','1','','','','','','0');"><i class="fa fa-phone-square" aria-hidden="true"></i> Enquiry</button>
 
-                    <button class="c-button g-button md" id='<?=$tours_result_array[$i]['tour_id']?>' onclick="redirect_to_action_page('<?= $tour_id ?>','2','','1','','','','','','0');"><i class="fa fa-address-book" aria-hidden="true"></i>  Book</button>
+                    <button class="c-button g-button md" id='<?= $tours_result_array[$i]['tour_id'] ?>' onclick="redirect_to_action_page('<?= $tour_id ?>','2','','1','','','','','','0');"><i class="fa fa-address-book" aria-hidden="true"></i> Book</button>
 
                 </div>
 
@@ -853,9 +841,9 @@ style="background-image: url(../images/title-background.jpg); -->
 
 $sq_count = mysqli_num_rows(mysqlQuery("select * from tour_master where dest_id = '$sq_tour[dest_id]' and tour_id!='$sq_tour[tour_id]'"));
 
-if($sq_count>0){
+if ($sq_count > 0) {
 
-    ?>
+?>
 
     <!-- Destinations Section Start -->
 
@@ -867,13 +855,13 @@ if($sq_count>0){
 
                 <h2 class="ts-section-subtitle">PACK AND GO</h2>
 
-                <span class="ts-section-subtitle-icon"><img src="<?=BASE_URL_B2C?>images/traveler.png" alt="traveler" classimg-fluid></span>
+                <span class="ts-section-subtitle-icon"><img src="<?= BASE_URL_B2C ?>images/traveler.png" alt="traveler" classimg-fluid></span>
 
             </div>
 
             <h2 class="ts-section-title">Related Packages</h2>
 
-    
+
 
             <div class="ts-blog-content">
 
@@ -883,12 +871,11 @@ if($sq_count>0){
 
                     $sq_dest = mysqlQuery("select * from tour_master where dest_id = '$sq_tour[dest_id]' and tour_id!='$sq_tour[tour_id]'");
 
-                    while($row_tour = mysqli_fetch_assoc($sq_dest)){
+                    while ($row_tour = mysqli_fetch_assoc($sq_dest)) {
 
-                        if ($i>5) {
+                        if ($i > 5) {
 
                             break;
-
                         }
 
                         $tour_id = $row_tour['tour_id'];
@@ -897,7 +884,7 @@ if($sq_count>0){
 
                         $package_fname = str_replace(' ', '_', $row_tour['tour_name']);
 
-                        $file_name = BASE_URL_B2C.'group_tours/'.$package_fname.'-'.$tour_id.'.php';
+                        $file_name = BASE_URL_B2C . 'group_tours/' . $package_fname . '-' . $tour_id . '.php';
 
                         // Package Image
 
@@ -905,25 +892,21 @@ if($sq_count>0){
 
                         $url = $sq_image['image_url'];
 
-                        $pos = strstr($url,'uploads');
+                        $pos = strstr($url, 'uploads');
 
-                        if ($pos != false)   {
+                        if ($pos != false) {
 
-                            $newUrl = preg_replace('/(\/+)/','/',$url); 
+                            $newUrl = preg_replace('/(\/+)/', '/', $url);
 
-                            $newUrl1 = BASE_URL.str_replace('../', '', $newUrl);
+                            $newUrl1 = BASE_URL . str_replace('../', '', $newUrl);
+                        } else {
 
+                            $newUrl1 =  $url;
                         }
 
-                        else{
+                        $package_name1 = substr($row_tour['tour_name'], 0, 22) . '..';
 
-                            $newUrl1 =  $url; 
 
-                        }
-
-                        $package_name1 = substr($row_tour['tour_name'], 0, 22).'..';
-
-                        
 
                         $today_date = strtotime(date('Y-m-d'));
 
@@ -933,15 +916,15 @@ if($sq_count>0){
 
                         $sq_hotel = mysqlQuery("Select * from tour_groups where tour_id = '$tour_id'");
 
-                        while($sq_tourgrp = mysqli_fetch_assoc($sq_hotel)){
+                        while ($sq_tourgrp = mysqli_fetch_assoc($sq_hotel)) {
 
                             $date1_ts = strtotime($sq_tourgrp['from_date']);
 
-                            if($today_date < $date1_ts){
+                            if ($today_date < $date1_ts) {
 
-                                
 
-                                if($valid_count == 0){
+
+                                if ($valid_count == 0) {
 
                                     $date1_ts = strtotime($sq_tourgrp['from_date']);
 
@@ -950,26 +933,22 @@ if($sq_count>0){
                                     $diff = $date2_ts - $date1_ts;
 
                                     $days = round($diff / 86400);
-
                                 }
 
 
 
-                                if($valid_count < 3){
+                                if ($valid_count < 3) {
 
-                                    array_push($valid_dates_array,array('from_date'=>date('d-m-Y',strtotime($sq_tourgrp['from_date'])),'to_date'=>date('d-m-Y',strtotime($sq_tourgrp['to_date']))));
+                                    array_push($valid_dates_array, array('from_date' => date('d-m-Y', strtotime($sq_tourgrp['from_date'])), 'to_date' => date('d-m-Y', strtotime($sq_tourgrp['to_date']))));
 
                                     $valid_count++;
-
-                                }else break;
-
+                                } else break;
                             }
-
                         }
 
 
 
-                        ?>
+                    ?>
 
                         <div class="col col-12 col-md-6 col-lg-4">
 
@@ -979,7 +958,9 @@ if($sq_count>0){
 
                                     <a href="#" class="ts-blog-card-img-link">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7c-12.23-91.55-87.28-166-178.9-177.6c-136.2-17.24-250.7 97.28-233.4 233.4c11.6 91.64 86.07 166.7 177.6 178.9c53.81 7.191 104.3-6.235 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 .0003C515.9 484.7 515.9 459.3 500.3 443.7zM288 232H231.1V288c0 13.26-10.74 24-23.1 24C194.7 312 184 301.3 184 288V232H127.1C114.7 232 104 221.3 104 208s10.74-24 23.1-24H184V128c0-13.26 10.74-24 23.1-24S231.1 114.7 231.1 128v56h56C301.3 184 312 194.7 312 208S301.3 232 288 232z" fill="#ffffff"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path d="M500.3 443.7l-119.7-119.7c27.22-40.41 40.65-90.9 33.46-144.7c-12.23-91.55-87.28-166-178.9-177.6c-136.2-17.24-250.7 97.28-233.4 233.4c11.6 91.64 86.07 166.7 177.6 178.9c53.81 7.191 104.3-6.235 144.7-33.46l119.7 119.7c15.62 15.62 40.95 15.62 56.57 .0003C515.9 484.7 515.9 459.3 500.3 443.7zM288 232H231.1V288c0 13.26-10.74 24-23.1 24C194.7 312 184 301.3 184 288V232H127.1C114.7 232 104 221.3 104 208s10.74-24 23.1-24H184V128c0-13.26 10.74-24 23.1-24S231.1 114.7 231.1 128v56h56C301.3 184 312 194.7 312 208S301.3 232 288 232z" fill="#ffffff" />
+                                        </svg>
 
                                     </a>
 
@@ -993,23 +974,24 @@ if($sq_count>0){
 
                                     <p class="ts-blog-time">
 
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z" fill="#f68c34"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                            <path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm61.8-104.4l-84.9-61.7c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v141.7l66.8 48.6c5.4 3.9 6.5 11.4 2.6 16.8L334.6 349c-3.9 5.3-11.4 6.5-16.8 2.6z" fill="#f68c34" />
+                                        </svg>
 
-                                        <span><?= $days ?> Nights, <?= $days+1 ?> Days</span>
+                                        <span><?= $days ?> Nights, <?= $days + 1 ?> Days</span>
 
-                                        <p class="ts-blog-card-description">
+                                    <p class="ts-blog-card-description">
 
                                         <?php
 
-                                            for($v=0;$v < sizeof($valid_dates_array); $v++){
+                                        for ($v = 0; $v < sizeof($valid_dates_array); $v++) {
 
-                                                echo '<i class="fa fa-calendar" aria-hidden="true"></i>  '.$valid_dates_array[$v]['from_date'].' To '.$valid_dates_array[$v]['to_date'].'<br/>';
-
-                                            }
+                                            echo '<i class="fa fa-calendar" aria-hidden="true"></i>  ' . $valid_dates_array[$v]['from_date'] . ' To ' . $valid_dates_array[$v]['to_date'] . '<br/>';
+                                        }
 
                                         ?>
 
-                                        </p>
+                                    </p>
 
                                     </p>
 
@@ -1044,123 +1026,120 @@ if($sq_count>0){
 
 
 <script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
 
-// Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function() {
 
-(function() {
+        'use strict';
 
-    'use strict';
+        window.addEventListener('load', function() {
 
-    window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
 
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
 
-        var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
 
-        // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
 
-        var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
 
-        form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
 
-            if (form.checkValidity() === false) {
+                        event.preventDefault();
 
-            event.preventDefault();
+                        event.stopPropagation();
 
-            event.stopPropagation();
+                    }
 
-            }
+                    form.classList.add('was-validated');
 
-            form.classList.add('was-validated');
+                }, false);
+
+            });
 
         }, false);
 
-        });
-
-    }, false);
-
-})();
-
+    })();
 </script>
 
-<?php include 'layouts/footer.php';?>
+<?php include 'layouts/footer.php'; ?>
 
 <script type="text/javascript" src="<?= BASE_URL_B2C ?>js/scripts.js"></script>
 
 <script>
+    $(document).ready(function() {
 
-    $( document ).ready(function() {
 
-    
 
         var service = '<?php echo $service; ?>';
 
-        if(service && (service !== '' || service !== undefined)){
+        if (service && (service !== '' || service !== undefined)) {
 
             var checkLink = $('.c-searchContainer .c-search-tabs li');
 
             var checkTab = $('.c-searchContainer .search-tab-content .tab-pane');
 
-            checkLink.each(function(){
+            checkLink.each(function() {
 
-            var child = $(this).children('.nav-link');
+                var child = $(this).children('.nav-link');
 
-            if(child.data('service') === service){
+                if (child.data('service') === service) {
 
-                $(this).siblings().children('.nav-link').removeClass('active');
+                    $(this).siblings().children('.nav-link').removeClass('active');
 
-                child.addClass('active');
+                    child.addClass('active');
 
-            }
+                }
 
             });
 
-            checkTab.each(function(){
+            checkTab.each(function() {
 
-            if($(this).data('service') === service){
+                if ($(this).data('service') === service) {
 
-                $(this).addClass('active show').siblings().removeClass('active show');
+                    $(this).addClass('active show').siblings().removeClass('active show');
 
-            }
+                }
 
             })
 
         }
 
-        
 
-        
+
+
 
         var amount_list1 = document.querySelectorAll(".best-currency-price");
 
         var amount_id1 = document.querySelectorAll(".best-currency-id");
 
-        
+
 
         //Tours Best Cost
 
         var amount_arr1 = [];
 
-        for(var i=0;i<amount_list1.length;i++){
+        for (var i = 0; i < amount_list1.length; i++) {
 
             amount_arr1.push({
 
-                'amount':amount_list1[i].innerHTML,
+                'amount': amount_list1[i].innerHTML,
 
-                'id':amount_id1[i].innerHTML});
+                'id': amount_id1[i].innerHTML
+            });
 
         }
 
-        sessionStorage.setItem('tours_best_amount_list',JSON.stringify(amount_arr1));
+        sessionStorage.setItem('tours_best_amount_list', JSON.stringify(amount_arr1));
 
-        
+
 
         setTimeout(() => {
 
             group_tours_page_currencies();
 
-        },500);
+        }, 500);
 
-        });
-
+    });
 </script>
