@@ -2803,6 +2803,10 @@ text-decoration: none;
 border-radius: 20px;
 }
 
+.header-offer-btn:hover{
+background:#444444 !important;
+}
+
 .header-btn-cta {
 display: block;
 background: -webkit-gradient(
