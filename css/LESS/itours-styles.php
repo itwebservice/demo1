@@ -1441,7 +1441,7 @@ transition: all ease-in-out 0.3s;
 .ts-blog-card-link
 {
 background-color: var(--main-bg-color);
-color: #ffffff;
+color: #ffffff !important;
 text-decoration: none;
 }
 .ts-blog-card-link:hover{
@@ -1835,7 +1835,7 @@ text-transform: capitalize;
 
 .landing-form-tabs label {
 color: #201a1a;
-font-size: 10px;
+font-size: 14px;
 line-height: 10px;
 }
 
