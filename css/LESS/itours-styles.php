@@ -1441,7 +1441,7 @@ transition: all ease-in-out 0.3s;
 .ts-blog-card-link
 {
 background-color: var(--main-bg-color);
-color: #ffffff;
+color: #ffffff !important;
 text-decoration: none;
 }
 .ts-blog-card-link:hover{
