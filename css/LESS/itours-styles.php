@@ -1835,7 +1835,7 @@ text-transform: capitalize;
 
 .landing-form-tabs label {
 color: #201a1a;
-font-size: 10px;
+font-size: 14px;
 line-height: 10px;
 }
 
