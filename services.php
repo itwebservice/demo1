@@ -103,7 +103,7 @@ $_SESSION['page_type'] = 'services';
 
         </div>
 
-        <h2 class="ts-section-title">Our top travel services</h2>
+        <h2 class="ts-section-title">OUR TOP TRAVEL SERVICES</h2>
 
         <div class="row">
 

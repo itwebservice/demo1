@@ -706,7 +706,7 @@ if($cached_array[0]->cms_data[0]->popular_activities != ''){ ?>
 
                                 <div class="ts-blog-card-footer">
 
-                                    <a onclick="get_act_listing_page('<?= $activity->activity_id ?>')" target="_blank" class="ts-blog-card-link"> READ MORE</a>
+                                    <a onclick="get_act_listing_page('<?= $activity->activity_id ?>')" style="cursor:pointer !important;" target="_blank" class="ts-blog-card-link"> READ MORE</a>
 
                                 </div>
 

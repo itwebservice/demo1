@@ -68,7 +68,7 @@ $costing_desc = strip_tags($costing_desc);
                 <input type="hidden" id="coupon_codes" value='<?= ($coupon_codes) ?>' />
                 <div class="form-row">
                     <div class="form-group col-md-4" style="border-right:2px solid gray;">
-                        <label> Package Name: <?= $package_name.'('.$package_typef.')' ?> </label>
+                        <label> Tour Name: <?= $package_name.'('.$package_typef.')' ?> </label>
                     </div>
                     <div class="form-group col-md-4" style="border-right:2px solid gray;">
                         <label> Travel Date: <?= $travel_from.' To '.$travel_to ?> </label>
