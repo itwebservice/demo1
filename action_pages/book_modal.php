@@ -462,22 +462,29 @@ function get_service_tax(result,cust_state) {
                 });
         });
     ////////////////////////////////////////
-    var applied_taxes = '';
-    var ledger_posting = '';
-    applied_rules && applied_rules.map((rule) => {
-        
-        var tax_data = taxes_result.find((entry_id_tax) => entry_id_tax['entry_id'] === rule['entry_id']);
-
-        var { rate_in, rate } = tax_data;
-        var { ledger_id, name } = rule;
-        if (applied_taxes != '') {
-            applied_taxes = applied_taxes + '+' + name + ':' + rate + ':' + rate_in;
-            ledger_posting = ledger_posting + '+' + ledger_id;
-        } else {
-            applied_taxes += name + ':' + rate + ':' + rate_in;
-            ledger_posting += ledger_id;
-        }
-    });
+		var applied_taxes = '';
+		var ledger_posting = '';
+		applied_rules && applied_rules.map((rule) => {
+			var tax_data = taxes_result.find((entry_id_tax) => entry_id_tax['entry_id'] === rule['entry_id']);
+			var {  ledger1,ledger2, name1,name2,amount1,amount2 } = tax_data;
+			var { name } = rule;
+			if (applied_taxes == '') {
+				applied_taxes = name1 + ':' + amount1 + ':' + 'Percentage';
+				ledger_posting = ledger1;
+				if (name2 != '') {
+					applied_taxes += '+' + name2 + ':' + amount2 + ':' + 'Percentage';
+					ledger_posting += '+' + ledger2;
+				}
+			}
+			else {
+				applied_taxes += name1 + ':' + amount1 + ':' + 'Percentage';
+				ledger_posting = ledger_posting + '+' + ledger1;
+				if (name2 != '') {
+					applied_taxes += '+' + name2 + ':' + amount2 + ':' + 'Percentage';
+					ledger_posting += '+' + ledger2;
+				}
+			}
+		});
     return applied_taxes + ',' + ledger_posting;
 }
 function costing_calc(){
