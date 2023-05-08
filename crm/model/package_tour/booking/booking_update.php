@@ -239,7 +239,7 @@ function package_tour_booking_master_update()
       }
 
       //Get Particular
-      $particular = $this->get_particular($customer_id,$tour_name,$tour_from_date,($total_tour_days-1));
+      $particular = $this->get_particular($customer_id,$tour_name,$tour_from_date,($total_tour_days-1),$booking_id);
        //**=============**Finance Entries update start**============**//
       $booking_update_transaction = new booking_update_transaction;
       $booking_update_transaction->finance_update($booking_id, $row_spec,$particular);
@@ -260,12 +260,20 @@ function package_tour_booking_master_update()
     }    
 } 
 
-function get_particular($customer_id,$tour_name,$tour_from_date,$total_tour_days){
+function get_particular($customer_id,$tour_name,$tour_from_date,$total_tour_days,$booking_id){
+
+  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id'"));
+  $date = $sq_booking['booking_date'];
+  $yr = explode("-", $date);
+  $year = $yr[0];
+
+	$pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$booking_id' and status!='Cancel'"));
+	$sq_pass= mysqli_fetch_assoc(mysqlQuery("select * from package_travelers_details where booking_id='$booking_id' and status!='Cancel'"));
 
   $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
   $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
 
-  return $tour_name.' for '.$cust_name.' for '.$total_tour_days.' Nights starting from '.get_date_user($tour_from_date);
+  return get_package_booking_id($booking_id,$year).' and '.$tour_name.' for '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') *'.$pass_count.' for '.$total_tour_days.' Night(s) starting from '.get_date_user($tour_from_date);
 }
 //////////////////////////////////**Package Tour Booking Master Update End *********/////////////////////////////////////////////////////////////
 

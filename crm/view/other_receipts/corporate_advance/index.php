@@ -89,9 +89,13 @@ list_reflect();
 
 function update_income_modal(advance_id)
 {
+	$('#edit-'+advance_id).button('loading');
+	$('#edit-'+advance_id).prop('disabled',true);
 	var branch_status1 = $('#branch_status1').val();
 	$.post('corporate_advance/update_modal.php',{ advance_id : advance_id , branch_status : branch_status1}, function(data){
 		$('#div_crud_content').html(data);
+		$('#edit-'+advance_id).button('reset');
+		$('#edit-'+advance_id).prop('disabled',false);
 	});
 }
 

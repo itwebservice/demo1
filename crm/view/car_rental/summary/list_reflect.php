@@ -137,9 +137,15 @@ while ($row_car = mysqli_fetch_assoc($sq_car)) {
 		$p_due_date = 'NA';
 	}
 	$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]' and delete_status='0'");
-	while ($row_purchase = mysqli_fetch_assoc($sq_purchase)) {
-		$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
-		$total_purchase = $total_purchase + $purchase_amt;
+	while ($row_purchase = mysqli_fetch_assoc($sq_purchase)) {	
+		if($row_purchase['purchase_return'] == 0){
+			$total_purchase += $row_purchase['net_total'];
+		}
+		else if($row_purchase['purchase_return'] == 2){
+			$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+			$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total));
+			$total_purchase += $p_purchase;
+		}
 	}
 	$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and estimate_type_id='$row_car[booking_id]' and delete_status='0'"));
 	$vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
@@ -213,7 +219,7 @@ while ($row_car = mysqli_fetch_assoc($sq_car)) {
 		$row_car['total_pax'],
 		$row_car['travel_type'],
 		get_date_user($row_car['created_at']),
-		'<button class="btn btn-info btn-sm" onclick="car_view_modal(' . $row_car['booking_id'] . ')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" id="packagev_btn-'. $row_car['booking_id'] .'" onclick="car_view_modal(' . $row_car['booking_id'] . ')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		number_format($row_car['basic_amount'], 2),
 		number_format($row_car['service_charge'] + $row_car['markup_cost'], 2),
 		number_format($service_tax_amount + $markupservice_tax_amount, 2),
@@ -223,11 +229,11 @@ while ($row_car = mysqli_fetch_assoc($sq_car)) {
 		number_format($cancel_amount, 2),
 		number_format($total_bal, 2),
 		number_format($paid_amount, 2),
-		'<button class="btn btn-info btn-sm" onclick="payment_view_modal(' . $row_car['booking_id'] . ')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" id="paymentv_btn-'. $row_car['booking_id'] .'" onclick="payment_view_modal(' . $row_car['booking_id'] . ')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		number_format($bal, 2),
 		$due_date,
 		number_format($total_purchase, 2),
-		'<button class="btn btn-info btn-sm" onclick="supplier_view_modal(' . $row_car['booking_id'] . ')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" id="supplierv_btn-'. $row_car['booking_id'] .'" onclick="supplier_view_modal(' . $row_car['booking_id'] . ')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		$branch_name,
 		$emp_name,
 		($row_car['quotation_id'] == 0) ? 'NA' : get_quotation_id($row_car['quotation_id'], $year),

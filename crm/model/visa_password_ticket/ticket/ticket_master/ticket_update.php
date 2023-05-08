@@ -262,7 +262,7 @@ public function ticket_master_update()
 
 	//Get Particular
 	$pax = $adults + $childrens;
-	$particular = $this->get_particular($customer_id,$pax,$sector,$ticket_no_arr[0],$airlin_pnr_arr[0]);
+	$particular = $this->get_particular($customer_id,$pax,$sector,$ticket_no_arr[0],$gds_pnr_arr[0],$ticket_id);
 	//Finance update
 
 	$this->finance_update($sq_ticket_info, $row_spec,$particular);
@@ -289,10 +289,17 @@ public function ticket_master_update()
 
 }
 
-function get_particular($customer_id,$pax,$sector,$ticket_no,$pnr){
+function get_particular($customer_id,$pax,$sector,$ticket_no,$pnr,$ticket_id){
+	
+	$row_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+	$booking_date = $row_ticket['created_at'];
+	$yr = explode("-", $booking_date);
+	$year = $yr[0];
+	$sq_pass = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where ticket_id='$ticket_id' and status!='Cancel'"));
+	
 	$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
-	$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-	return $cust_name.' * '.$pax.' travelling for '.$sector.' against ticket no '.$ticket_no.'/PNR No '.$pnr;
+	$cust_name = ($sq_ct['type'] == 'Corporate' || $sq_ct['type'] == 'B2B') ? $sq_ct['company_name'] : $sq_ct['first_name'].' '.$sq_ct['last_name'];
+	return get_ticket_booking_id($ticket_id,$year). ' for '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') * '.$pax.' travelling for '.$sector.' against ticket no '.strtoupper($ticket_no).'/Airline PNR '.strtoupper($pnr);
 }
 
 public function finance_update($sq_ticket_info, $row_spec,$particular){

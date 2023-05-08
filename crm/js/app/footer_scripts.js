@@ -318,10 +318,15 @@ function calculate_age_generic(from, to) {
 //**Generic Customer save start**//
 
 function customer_save_modal(client_modal_type = 'other') {
+	
+	$('#customer_save_modal_add_btn-').prop('disabled',true);
 	var base_url = $('#base_url').val();
 
+	$('#customer_save_modal_add_btn').button('loading');
 	$.post(base_url + 'view/customer_master/save_modal.php', { client_modal_type: client_modal_type }, function (data) {
 		$('#div_customer_save_modal').html(data);
+		$('#customer_save_modal_add_btn').button('reset');
+		$('#customer_save_modal_add_btn-').prop('disabled',false);
 	});
 }
 
@@ -1131,3 +1136,21 @@ function customer_whatsapp_send(first_name, contact_no, email_id,company_name,cu
 		window.open(data);
 	});
 }
+
+function btnDisable(btnId)
+{
+	$('#'+btnId).attr('disabled',"disabled");
+}
+function btnEnable(btnId)
+{
+	
+	$('#'+btnId).removeAttr('disabled');
+}
+function btnDisableEnable(id)
+{
+	
+	btnDisable(id);
+	setTimeout(function () {btnEnable(id)}, 1500);
+	
+}
+

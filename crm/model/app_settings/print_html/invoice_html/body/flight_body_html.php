@@ -26,6 +26,7 @@ $canc_amount = $_GET['canc_amount'];
 $cancel_type = $_GET['cancel_type'];
 
 $charge = ($credit_card_charges!='') ? $credit_card_charges : 0;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 
 $sq_passenger_count = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from ticket_master_entries where ticket_id = '$ticket_id'"));
 $sq_fields = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id = '$ticket_id' and delete_status='0'"));

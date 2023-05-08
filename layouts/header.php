@@ -7,14 +7,14 @@ include "get_cache_currencies.php";
 include "array_column.php";
 
 // LIVE Cache file reading
-$file_get_c = get_content('https://' . $_SERVER['SERVER_NAME'] . '/crm/view/b2c_cache.php');
-$cached_array = json_decode($file_get_c);
+// $file_get_c = get_content('https://' . $_SERVER['SERVER_NAME'] . '/crm/view/b2c_cache.php');
+// $cached_array = json_decode($file_get_c);
 
 //local
 // 
-/*$file_get_c = get_content('http://localhost/itours_git/demo1/crm/view/b2c_cache.php');
+$file_get_c = get_content('http://localhost/tours/demo1/crm/view/b2c_cache.php');
 $cached_array = json_decode($file_get_c);
-*/
+
 
 function get_content($URL){
     $ch = curl_init();
@@ -421,7 +421,7 @@ foreach ($int_dest_id_arr as $int_id) {
 
                         </div>
 
-                        <nav class="col-sm-9 col-5 text-right pad-top">
+                        <nav class="col-sm-9 col-5 text-right pad-top" id="test-head">
 
                             <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="javascript:void(0);"><span>Menu mobile</span></a>
 

@@ -42,12 +42,8 @@ $role_id = $_SESSION['role_id'];
                                 <input type="hidden" id="hotel_tarrif_upload1" name="hotel_tarrif_upload1">
                             </div>
                         </div>
-                        <button type="button" class="btn btn-info btn-sm ico_left"
-                            onClick="addRow('tbl_package_tariff','2')"><i
-                                class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-                        <button type="button" class="btn btn-danger btn-sm ico_left"
-                            onClick="deleteRow('tbl_package_tariff','2')"><i
-                                class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+                        <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_package_tariff','2')"><i class="fa fa-plus"></i></button>
+                        <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('tbl_package_tariff','2')"><i class="fa fa-trash"></i></button>
                     </div>
                 </div>
                 <div class="row">
@@ -70,10 +66,10 @@ $role_id = $_SESSION['role_id'];
                                     <td><input type="number" id="max_pax" class="form-control" placeholder="*Max Pax"
                                             title="Max Pax" style="width:110px;" /></td>
                                     <td><input type="text" id="from_date" class="form-control" placeholder="*From Date"
-                                            title="Valid From Date" style="width:110px;"
+                                            title="Valid From Date" style="width:110px;" value="<?= date('d-m-Y') ?>"
                                             onchange="get_to_date(this.id,'to_date');" /></td>
                                     <td><input type="text" id="to_date" class="form-control" placeholder="*To Date"
-                                            title="Valid To Date" style="width:100px;"
+                                            title="Valid To Date" style="width:110px;" value="<?= date('d-m-Y') ?>"
                                             onchange="validate_validDate('from_date','to_date');" /></td>
                                     <td><input type="number" id="badult_cost" class="form-control"
                                             placeholder="Adult PP" title="Adult PP Cost"

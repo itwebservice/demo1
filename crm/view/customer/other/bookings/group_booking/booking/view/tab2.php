@@ -119,6 +119,51 @@ if($sq_air_count!='0'){
 		</div>
 	</div>
 <?php } ?>	
+<?php 
+$sq_air_count = mysqli_num_rows(mysqlQuery("select * from group_tour_hotel_entries where tour_id='$tour_id'")); 
+if($sq_air_count!='0'){ 
+?>
+<div class="row mg_bt_20">
+	<div class="col-md-12">
+		<div class="profile_box main_block">
+        	 	<h3 class="editor_title">Hotel Details</h3>
+				<div class="table-responsive">
+                    <table class="table table-bordered no-marg">
+	                    <thead>
+	                       	<tr class="table-heading-row">
+								<th>S_No.</th>
+								<th>City_name</th>
+								<th>Hotel_name</th>
+								<th>Hotel Category</th>
+								<th>Total Night(s)</th>
+	                       </tr>
+	                    </thead>
+	                    <tbody>
+	                       <?php 
+	                       		$count = 0;
+									$sq_entry = mysqlQuery("select * from group_tour_hotel_entries where tour_id='$tour_id'");
+									while($row_entry = mysqli_fetch_assoc($sq_entry)){
+										$count++;
+										$sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_entry[city_id]'")); 
+										$sq_hotel = mysqli_fetch_assoc(mysqlQuery("select hotel_name from hotel_master where hotel_id='$row_entry[hotel_id]'"));
+								?>
+							<tr class="<?php echo $bg; ?>">
+							    <td><?php echo $count; ?></td>
+							    <td><?php echo $sq_city['city_name']; ?></td>
+								<td><?php echo $sq_hotel['hotel_name']; ?></td>
+								<td><?php echo $row_entry['hotel_type']; ?></td>
+								<td><?php echo $row_entry['total_nights']; ?></td>
+							</tr>     
+	               			<?php
+	               				}
+	               			?>
+	                    </tbody>
+                	</table>
+            	</div>
+	    	</div> 
+		</div>
+	</div>
+<?php } ?>
 <?php
 $sq_cruise_count = mysqli_num_rows(mysqlQuery("select * from group_cruise_master where booking_id='$id'"));
 if($sq_cruise_count!='0'){ 

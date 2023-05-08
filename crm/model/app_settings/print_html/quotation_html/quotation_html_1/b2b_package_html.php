@@ -11,8 +11,9 @@ $sq_dest = mysqli_fetch_assoc(mysqlQuery("select * from destination_master where
 
 <section class="headerPanel main_block">
   <div class="headerImage">
-    <img src="<?= $app_quot_img?>" class="img-responsive" style="height:180px !important;">
+    <img src="<?= $app_quot_img?>" class="img-responsive"  >
     <div class="headerImageOverLay"></div>
+    <!-- style="height:180px !important;" -->
   </div>
 
   <!-- header -->

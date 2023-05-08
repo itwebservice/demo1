@@ -14,7 +14,7 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
   <div class="col-sm-12 text-right text_left_sm_xs">
       <button class="btn btn-excel btn-sm mg_bt_10" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
       <?php if($role_id=="1" || $role_id=="5"){ ?>
-      <button class="btn btn-info btn-sm ico_left" onclick="credit_save_modal()"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;leave credit</button>
+      <button class="btn btn-info btn-sm ico_left" id="lcredit_btn" onclick="credit_save_modal()"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;leave credit</button>
       <?php } ?>
   </div>
 </div>
@@ -73,22 +73,27 @@ function list_reflect()
 function credit_save_modal()
 
 {
- 
-  $('#btn_save_modal').button('loading');
+  $('#lcredit_btn').prop('disabled',true);
+  $('#lcredit_btn').button('loading');
 
   $.post('leave_credit/save_modal.php', {}, function(data){
 
-    $('#btn_save_modal').button('reset');
+    $('#lcredit_btn').button('reset');
+    $('#lcredit_btn').prop('disabled',false);
 
     $('#div_modal').html(data);
 
   });
 
 } 
-function update_modal(emp_id)
+function update_modal(emp_id,count)
 {
+  $('#edit'+count).prop('disabled',true);
+  $('#edit'+count).button('loading');
   $.post('leave_credit/update_modal.php', { emp_id : emp_id }, function(data){
     $('#div_modal').html(data);
+    $('#edit'+count).prop('disabled',false);
+    $('#edit'+count).button('reset');
   })
 }
 

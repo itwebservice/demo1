@@ -96,29 +96,60 @@ function get_auto_values(
 		/////////////////Markup End///////////////////////
 	}
 	/////////////////Tax Start///////////////////////
-	var taxes_result =
-		rules &&
-		rules.filter((rule) => {
-			var { entry_id, rule_id } = rule;
-			return entry_id !== '' && !rule_id;
-		});
-	var tax_service_charge = $('#' + service_charge).val();
-	var tax_markup = $('#' + markup).val();
-	get_tax_rules(
-		rules,
-		taxes_result,
-		basic_amount,
-		sub_total,
-		tax_markup,
-		markup,
-		tax_service_charge,
-		service_charge,
-		payment_mode,
-		type,
-		amount_type,
-		discount_amount,
-		charges_flag
-	);
+	if (type === 'save') {
+		var service_tax_subtotal = 'service_tax_subtotal';
+		var tax_apply_on1 = 'tax_apply_on';
+		var tax_value1 = 'tax_value';
+	}
+	else {
+		var service_tax_subtotal = 'service_tax_subtotal';
+		var tax_apply_on1 = 'atax_apply_on';
+		var tax_value1 = 'tax_value1';
+	}
+	var tax_on_amount = 0;
+	var service_tax = 0;
+	var service_tax_amount = 0;
+	var applied_taxes = '';
+	var ledger_posting = '';
+	var tax_apply_on = $('#'+tax_apply_on1).val();
+	var tax_value = $('#'+tax_value1).val();
+	var service_charge = $('#'+service_charge).val();
+	if(tax_apply_on == 1){
+		tax_on_amount = (basic_amount=='') ? 0 : basic_amount;
+	}
+	else if(tax_apply_on == 2){
+		tax_on_amount = (service_charge=='') ? 0 : service_charge;
+	}
+	else if(tax_apply_on == 3){
+		tax_on_amount = parseFloat(basic_amount) + parseFloat(service_charge);
+	}
+	if(tax_apply_on!="" && tax_value!=""){
+		var service_tax_subtotal1 = tax_value.split("+");
+		for(var i=0;i<service_tax_subtotal1.length;i++){
+			var service_tax_string = service_tax_subtotal1[i].split(':');
+			if(parseInt(service_tax_string.length) > 0){
+				var service_tax_string1 = service_tax_string[1] && service_tax_string[1].split('%');
+				service_tax_string1[0] = service_tax_string1[0] && service_tax_string1[0].replace('(','');
+				service_tax = service_tax_string1[0];
+			}
+
+			service_tax_string[2] = service_tax_string[2].replace('(','');
+			service_tax_string[2] = service_tax_string[2].replace(')','');
+			service_tax_amount = (( parseFloat(tax_on_amount) * parseFloat(service_tax) ) / 100).toFixed(2);
+			if(applied_taxes==''){
+				applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting = service_tax_string[2];
+			}else{
+				applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting += ', ' + service_tax_string[2];
+			}
+		}
+		$('#'+service_tax_subtotal).val(applied_taxes);
+		$('#hotel_taxes').val(ledger_posting);
+	}else{
+		$('#'+service_tax_subtotal).val('');
+		$('#hotel_taxes').val('');
+	}
 	/////////////////Tax End///////////////////////
 
 	if (type === 'save') calculate_total_amount();

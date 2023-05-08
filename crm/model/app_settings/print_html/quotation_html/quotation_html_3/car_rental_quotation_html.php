@@ -34,13 +34,14 @@ $service_charge = $sq_quotation['service_charge'];
 $bsmValues = json_decode($sq_quotation['bsm_values']);
 //////////////////Service Charge Rules
 $service_tax_amount = 0;
-if($sq_quotation['service_tax_subtotal'] !== 0.00 && ($sq_quotation['service_tax_subtotal']) !== ''){
-  $service_tax_subtotal1 = explode(',',$sq_quotation['service_tax_subtotal']);
-  for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
-    $service_tax = explode(':',$service_tax_subtotal1[$i]);
-    $service_tax_amount +=  $service_tax[2];
-    $percent = $service_tax[1];
-  }
+$percent = '';
+if ($sq_quotation['service_tax_subtotal'] !== 0.00 && ($sq_quotation['service_tax_subtotal']) !== '') {
+    $service_tax_subtotal1 = explode(',', $sq_quotation['service_tax_subtotal']);
+    for ($i = 0; $i < sizeof($service_tax_subtotal1); $i++) {
+        $service_tax = explode(':', $service_tax_subtotal1[$i]);
+        $service_tax_amount +=  $service_tax[2];
+        $percent .= $service_tax[0]  . $service_tax[1] .', ';
+    }
 }
 ////////////////////Markup Rules
 $markupservice_tax_amount = 0;
@@ -52,22 +53,24 @@ if($sq_quotation['markup_cost_subtotal'] !== 0.00 && $sq_quotation['markup_cost_
   }
 }
 
-if(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != ''){
-  $tax_show = '';
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $markupservice_tax_amount + $service_charge + $service_tax_amount;
-}
-elseif(($bsmValues[0]->service == '' || $bsmValues[0]->basic == '')  && $bsmValues[0]->markup == ''){
-  $tax_show = $percent.' '. ($markupservice_tax_amount + $service_tax_amount);
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge;
-}
-elseif(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '') && $bsmValues[0]->markup == ''){
-  $tax_show = $percent.' '. ($markupservice_tax_amount);
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $service_tax_amount;
-}
-else{
-  $tax_show = $percent.' '. ($service_tax_amount);
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $markupservice_tax_amount;
-}
+// if(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != ''){
+//   $tax_show = '';
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $markupservice_tax_amount + $service_charge + $service_tax_amount;
+// }
+// elseif(($bsmValues[0]->service == '' || $bsmValues[0]->basic == '')  && $bsmValues[0]->markup == ''){
+//   $tax_show = $percent.' '. ($markupservice_tax_amount + $service_tax_amount);
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge;
+// }
+// elseif(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '') && $bsmValues[0]->markup == ''){
+//   $tax_show = $percent.' '. ($markupservice_tax_amount);
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $service_tax_amount;
+// }
+// else{
+//   $tax_show = $percent.' '. ($service_tax_amount);
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $markupservice_tax_amount;
+// }
+$total_tax = currency_conversion($currency, $currency, ($markupservice_tax_amount + $service_tax_amount));
+$tax_show = $percent . ' ' .$total_tax;
 $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['total_tour_cost']);
 ?>
 
@@ -267,7 +270,7 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['total_t
           <h3 class="costBankTitle text-right">COSTING Details</h3>
           <div class="col-md-12 text-right mg_bt_20">
             <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/subtotal.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= number_format($newBasic,2) ?></h4>
+            <h4 class="no-marg"><?= currency_conversion($currency, $currency, $newBasic) ?></h4>
             <p>TOTAL FARE</p>
           </div>
           <div class="col-md-12 text-right mg_bt_20">
@@ -278,23 +281,23 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['total_t
           <?php if($sq_quotation['travel_type']=="Outstation"){ ?>
           <div class="col-md-12 text-right mg_bt_20">
             <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/permit.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= number_format($sq_quotation['permit'],2) ?></h4>
+            <h4 class="no-marg"><?= currency_conversion($currency, $currency, $sq_quotation['permit']) ?></h4>
             <p>PERMIT</p>
           </div>
           <div class="col-md-12 text-right mg_bt_20">
             <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/toll_parking.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= number_format($sq_quotation['toll_parking'],2) ?></h4>
+            <h4 class="no-marg"><?= currency_conversion($currency, $currency, $sq_quotation['toll_parking']) ?></h4>
             <p>TOLL/PARKING</p>
           </div>
           <div class="col-md-12 text-right mg_bt_20">
             <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/driver_allowance.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= number_format($sq_quotation['driver_allowance'],2) ?></h4>
+            <h4 class="no-marg"><?= currency_conversion($currency, $currency, $sq_quotation['driver_allowance']) ?></h4>
             <p>DRIVER ALLOWANCE</p>
           </div>
           <?php } ?>
           <div class="col-md-12 text-right">
             <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/quotationCost.png" class="img-responsive"></div>
-            <h4 class="no-marg"><?= number_format($sq_quotation['total_tour_cost'],2) ?></h4>
+            <h4 class="no-marg"><?= currency_conversion($currency, $currency, $sq_quotation['total_tour_cost']) ?></h4>
             <p>QUOTATION COST</p>
           </div>
          

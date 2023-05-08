@@ -65,7 +65,7 @@ $sq_color = mysqli_fetch_assoc(mysqlQuery("select $col_name from b2c_color_schem
                 success: function(message){
                 $('#btn_color_save').button('reset');
                     var data = message.split('--');
-                    success_msg_alert('Color scheme saved successfully!');
+                    success_msg_alert('B2C CMS settings updated.');
                     update_b2c_cache();
                     $('#color_scheme_modal').modal('hide');
                 }

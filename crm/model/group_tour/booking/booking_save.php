@@ -270,7 +270,7 @@ public function complete_booking_information_save(){
 
   //**=============**Finance Entries save start**============**//
   //Get Particular
-  $particular = $this->get_particular($customer_id,$tour_id,$tour_group_id);
+  $particular = $this->get_particular($customer_id,$tour_id,$tour_group_id,$tourwise_traveler_id);
 
   $booking_save_transaction = new booking_save_transaction;
   $booking_save_transaction->finance_save($tourwise_traveler_id, $row_spec, $branch_admin_id,$particular);
@@ -334,7 +334,15 @@ public function complete_booking_information_save(){
 }
 ///////////***** Saving Traveleres Members Information ///
 
-function get_particular($customer_id,$tour_id,$tour_group_id){
+function get_particular($customer_id,$tour_id,$tour_group_id,$id){
+
+  $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$id'"));
+  $date = $sq_booking['form_date'];
+  $yr = explode("-", $date);
+  $year = $yr[0];
+
+	$pass_count= mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_booking[traveler_group_id]' and status!='Cancel'"));
+	$sq_pass= mysqli_fetch_assoc(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_booking[traveler_group_id]' and status!='Cancel'"));
 
   $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
   $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
@@ -345,7 +353,7 @@ function get_particular($customer_id,$tour_id,$tour_group_id){
   $to_date = new DateTime($sq_tourgroup['to_date']);
   $numberOfNights= $from_date->diff($to_date)->format("%a");
 
-  return $tour_name.' for '.$cust_name.' for '.$numberOfNights.' Nights starting from '.get_date_user($sq_tourgroup['from_date']);
+  return get_group_booking_id($id,$year).' and '.$tour_name.' for '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') *'.$pass_count.' for '.$numberOfNights.' Nights starting from '.get_date_user($sq_tourgroup['from_date']);
 }
 
 

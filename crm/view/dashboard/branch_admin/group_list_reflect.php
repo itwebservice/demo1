@@ -84,7 +84,7 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
                 $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
                 if($row_entry['tour_group_status'] == 'Cancel'){
                   if($cancel_amount > $paid_amt){
-                    $balance_amt = $cancel_amount - $paid_amt;
+                    $balance_amt = $cancel_amount - $paid_amt + $query['sumc'];
                   }
                   else{
                     $balance_amt = 0;
@@ -92,7 +92,7 @@ $row_entry = mysqli_fetch_assoc($sq_entry);
                 }else{
                   if($cancel_esti_count1 >= '1'){
                     if($cancel_amount > $paid_amt){
-                      $balance_amt = $cancel_amount - $paid_amt;
+                      $balance_amt = $cancel_amount - $paid_amt + $query['sumc'];
                     }
                     else{
                       $balance_amt = 0;

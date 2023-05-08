@@ -29,6 +29,11 @@ class exc_master
 		$adult_cost_arr = $_POST['adult_cost_arr'];
 		$child_cost_arr = $_POST['child_cost_arr'];
 		$total_amt_arr = $_POST['total_amt_arr'];
+		$total_infant_arr = $_POST['total_infant_arr'];
+		$infant_cost_arr = $_POST['infant_cost_arr'];
+		$total_vehicle_arr = $_POST['total_vehicle_arr'];
+		$transfer_cost_arr = $_POST['transfer_cost_arr'];
+
 		$roundoff = $_POST['roundoff'];
 		$total_amt_arr = $_POST['total_amt_arr'];
 		$credit_charges = $_POST['credit_charges'];
@@ -104,13 +109,13 @@ class exc_master
 
 			for ($i = 0; $i < sizeof($exc_date_arr); $i++) {
 				$total_adults = intval($total_adults) + intval($total_adult_arr[$i]);
-				$total_childs = intval($total_childs) + intval($total_child_arr[$i]);
+				$total_childs = intval($total_childs) + intval($total_child_arr[$i]) + intval($total_infant_arr[$i]);
 				$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from excursion_master_entries"));
 				$entry_id = $sq_max['max'] + 1;
 
 				$exc_date_arr[$i] = get_datetime_db($exc_date_arr[$i]);
 
-				$sq_entry = mysqlQuery("insert into excursion_master_entries(entry_id, exc_id, exc_date, city_id, exc_name,transfer_option, total_adult, total_child, adult_cost, child_cost, total_cost, status) values('$entry_id', '$exc_id', '$exc_date_arr[$i]','$city_id_arr[$i]', '$exc_name_arr[$i]','$transfer_arr[$i]', '$total_adult_arr[$i]', '$total_child_arr[$i]', '$adult_cost_arr[$i]', '$child_cost_arr[$i]', '$total_amt_arr[$i]', '')");
+				$sq_entry = mysqlQuery("insert into excursion_master_entries(entry_id, exc_id, exc_date, city_id, exc_name,transfer_option, total_adult, total_child, adult_cost, child_cost, total_cost, status, `total_infant`, `infant_cost`, `total_vehicles`, `transfer_cost`) values('$entry_id', '$exc_id', '$exc_date_arr[$i]','$city_id_arr[$i]', '$exc_name_arr[$i]','$transfer_arr[$i]', '$total_adult_arr[$i]', '$total_child_arr[$i]', '$adult_cost_arr[$i]', '$child_cost_arr[$i]', '$total_amt_arr[$i]', '','$total_infant_arr[$i]','$infant_cost_arr[$i]','$total_vehicle_arr[$i]','$transfer_cost_arr[$i]')");
 
 				if (!$sq_entry) {
 					$GLOBALS['flag'] = false;
@@ -145,7 +150,7 @@ class exc_master
 			}
 		}
 			//Get Particular
-			$particular = $this->get_particular($customer_id, $exc_name_arr[0], $total_adults, $total_childs, $exc_date_arr[0]);
+			$particular = $this->get_particular($customer_id, $exc_name_arr[0], $total_adults, $total_childs, $exc_date_arr[0],$exc_id);
 			
 				//Finance save
 				$this->finance_save($exc_id, $payment_id, $row_spec, $branch_admin_id, $particular);
@@ -207,7 +212,7 @@ class exc_master
 		$total_child = $row_exc['total_child'];
 		$e_exc_id = $row_exc['exc_name'];
 		$exc_date = get_date_user($row_exc['exc_date']);
-		$particular = $this->get_particular($customer_id, $e_exc_id, $total_adult, $total_child, $exc_date);
+		$particular = $this->get_particular($customer_id, $e_exc_id, $total_adult, $total_child, $exc_date,$exc_id);
 
 		$delete_master->delete_master_entries('Invoice','Activity',$exc_id,get_exc_booking_id($exc_id,$year),$cust_name,$row_misc['exc_total_cost']);
 
@@ -577,7 +582,7 @@ class exc_master
 				$transaction_id = $transaction_id1;
 				$payment_amount = $payment_amount1;
 				$payment_date = $payment_date1;
-				$payment_particular = $particular;
+				$payment_particular = get_sales_paid_particular(get_exc_booking_id($exc_id, $yr1), $payment_date1, $payment_amount1, $customer_id, $payment_mode, get_exc_booking_id($exc_id, $yr1), $bank_id1, $transaction_id1);
 				$ledger_particular = get_ledger_particular('By', 'Cash/Bank');
 				$gl_id = $pay_gl;
 				$payment_side = "Debit";
@@ -646,14 +651,21 @@ class exc_master
 		$bank_cash_book_master->bank_cash_book_master_save($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type, $branch_admin_id);
 	}
 
-	function get_particular($customer_id, $exc_name, $total_adults, $total_childs, $exc_date)
+	function get_particular($customer_id, $exc_name, $total_adults, $total_childs, $exc_date,$exc_id)
 	{
+		$sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id'"));
+
 		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
 		$cust_name = $sq_ct['first_name'] . ' ' . $sq_ct['last_name'];
-		$sq_t = mysqli_fetch_assoc(mysqlQuery("select excursion_name from excursion_master_tariff where entry_id='$exc_name'"));
+		$sq_t = mysqli_fetch_assoc(mysqlQuery("select excursion_name,city_id from excursion_master_tariff where entry_id='$exc_name'"));
+		$sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$sq_t[city_id]'"));
 		$service_name = $sq_t['excursion_name'];
+		$city_name = $sq_city['city_name'];
+		
+		$yr = explode("-", $sq_exc['created_at']);
+		$year = $yr[0];
 
-		return 'Towards the ' . $service_name . ' for ' . $cust_name . ' * ' . (intval($total_adults) + intval($total_childs)) . ' on Dt.' . get_date_user($exc_date);
+		return get_exc_booking_id($exc_id, $year).' and towards the ' . $service_name.'('.$city_name . ') for ' . $cust_name . ' * ' . (intval($total_adults) + intval($total_childs)) . ' on Dt.' . get_date_user($exc_date);
 	}
 
 	public function exc_master_update()
@@ -678,6 +690,10 @@ class exc_master
 		$total_amt_arr = $_POST['total_amt_arr'];
 		$entry_id_arr = $_POST['entry_id_arr'];
 		$transfer_option_arr = $_POST['transfer_option_arr'];
+		$total_infant_arr = $_POST['total_infant_arr'];
+		$infant_cost_arr = $_POST['infant_cost_arr'];
+		$total_vehicle_arr = $_POST['total_vehicle_arr'];
+		$transfer_cost_arr = $_POST['transfer_cost_arr'];
 		$markup = $_POST['markup'];
 		$service_tax_markup = $_POST['service_tax_markup'];
 		$roundoff = $_POST['roundoff'];
@@ -732,11 +748,13 @@ class exc_master
 					}
 				} else {
 					$exc_date_arr[$i] = get_datetime_db($exc_date_arr[$i]);
+					$total_adults = intval($total_adults) + intval($total_adult_arr[$i]);
+					$total_childs = intval($total_childs) + intval($total_child_arr[$i]);
 					if ($entry_id_arr[$i] == "") {
 						$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from excursion_master_entries"));
 						$entry_id = $sq_max['max'] + 1;
 
-						$sq_entry = mysqlQuery("insert into excursion_master_entries(entry_id, exc_id, exc_date, city_id, exc_name,transfer_option, total_adult, total_child, adult_cost, child_cost, total_cost, status) values('$entry_id', '$exc_id','$exc_date_arr[$i]','$city_id_arr[$i]', '$exc_name_arr[$i]', '$transfer_option_arr[$i]','$total_adult_arr[$i]', '$total_child_arr[$i]', '$adult_cost_arr[$i]', '$child_cost_arr[$i]', '$total_amt_arr[$i]', '')");
+						$sq_entry = mysqlQuery("insert into excursion_master_entries(entry_id, exc_id, exc_date, city_id, exc_name,transfer_option, total_adult, total_child, adult_cost, child_cost, total_cost, status, `total_infant`, `infant_cost`, `total_vehicles`, `transfer_cost`) values('$entry_id', '$exc_id','$exc_date_arr[$i]','$city_id_arr[$i]', '$exc_name_arr[$i]', '$transfer_option_arr[$i]','$total_adult_arr[$i]', '$total_child_arr[$i]', '$adult_cost_arr[$i]', '$child_cost_arr[$i]', '$total_amt_arr[$i]', '','$total_infant_arr[$i]','$infant_cost_arr[$i]','$total_vehicle_arr[$i]','$transfer_cost_arr[$i]')");
 						if (!$sq_entry) {
 
 							$GLOBALS['flag'] = false;
@@ -744,7 +762,7 @@ class exc_master
 							//exit;
 						}
 					} else {
-						$sq_entry = mysqlQuery("update excursion_master_entries set exc_date='$exc_date_arr[$i]', city_id='$city_id_arr[$i]', exc_name='$exc_name_arr[$i]', transfer_option='$transfer_option_arr[$i]',total_adult='$total_adult_arr[$i]', total_child='$total_child_arr[$i]', adult_cost='$adult_cost_arr[$i]', child_cost='$child_cost_arr[$i]', total_cost='$total_amt_arr[$i]' where entry_id='$entry_id_arr[$i]'");
+						$sq_entry = mysqlQuery("update excursion_master_entries set exc_date='$exc_date_arr[$i]', city_id='$city_id_arr[$i]', exc_name='$exc_name_arr[$i]', transfer_option='$transfer_option_arr[$i]',total_adult='$total_adult_arr[$i]', total_child='$total_child_arr[$i]', adult_cost='$adult_cost_arr[$i]', child_cost='$child_cost_arr[$i]', total_cost='$total_amt_arr[$i]',total_infant='$total_infant_arr[$i]',infant_cost='$infant_cost_arr[$i]',total_vehicles='$total_vehicle_arr[$i]',transfer_cost='$transfer_cost_arr[$i]' where entry_id='$entry_id_arr[$i]'");
 
 						if (!$sq_entry) {
 							$GLOBALS['flag'] = false;
@@ -756,7 +774,7 @@ class exc_master
 			}
 
 			//Get Particular
-			$particular = $this->get_particular($customer_id, $exc_name_arr[0], $total_adults, $total_childs, $exc_date_arr[0]);
+			$particular = $this->get_particular($customer_id, $exc_name_arr[0], $total_adults, $total_childs, $exc_date_arr[0],$exc_id);
 
 			//Finance update
 			$this->finance_update($sq_exc_info, $row_spec, $particular);

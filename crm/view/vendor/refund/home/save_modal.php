@@ -17,15 +17,18 @@ include_once('../../inc/vendor_generic_functions.php');
 				<select id="estimate_id" name="estimate_id" style="width:100%" title="Supplier Costing" onchange="estimate_id_reflect()">
 			        <option value="">*Supplier Costing</option>
 			        <?php 
-			        $sq_estimate = mysqlQuery("select * from vendor_estimate where status='Cancel' and delete_status='0' order by estimate_id desc");
+			        $sq_estimate = mysqlQuery("select * from vendor_estimate where delete_status='0' order by estimate_id desc");
 			        while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
-                $date = $row_estimate['purchase_date'];
-                $yr = explode("-", $date);
-                $year =$yr[0];
-			          $vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
-			          ?>
-			          <option value="<?= $row_estimate['estimate_id'] ?>"><?= get_vendor_estimate_id($row_estimate['estimate_id'],$year)." : ".$vendor_type_val."(".$row_estimate['vendor_type'].")" ?></option>
-			          <?php
+
+                if($row_estimate['purchase_return'] == 1 || $row_estimate['purchase_return'] == 2){
+                  $date = $row_estimate['purchase_date'];
+                  $yr = explode("-", $date);
+                  $year =$yr[0];
+                  $vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
+                  ?>
+                  <option value="<?= $row_estimate['estimate_id'] ?>"><?= get_vendor_estimate_id($row_estimate['estimate_id'],$year)." : ".$vendor_type_val."(".$row_estimate['vendor_type'].")" ?></option>
+                  <?php
+                }
 			        }
 			        ?>
 			    </select>
@@ -62,7 +65,7 @@ include_once('../../inc/vendor_generic_functions.php');
               <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
             </div>
             <div class="col-md-4">
-              <input type="text" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+              <input type="number" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
             </div>
             <div class="col-md-4">
               <select name="bank_id" id="bank_id" title="Creditor Bank" class="form-control" disabled>
@@ -97,14 +100,13 @@ $(function(){
 				payment_amount : { required: true, number:true },
         payment_date : { required: true },
         payment_mode : { required : true },
-        bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-        transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
         bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },   
 		},
 		submitHandler:function(form){
         
         $('#btn_update').prop('disabled',true);
 				var estimate_id = $('#estimate_id').val();     
+				var estimate_type = $('#estimate_type').val();     
         var estimate_type_id = $('#estimate_type_id').val();     
         var vendor_type = $('#vendor_type').val();  
         var vendor_type_id = $('#vendor_type_id').val();     
@@ -126,7 +128,7 @@ $(function(){
 	            $.ajax({
 	              type:'post',
 	              url: base_url+'controller/vendor/refund/refund_save.php',
-	              data:{ estimate_id : estimate_id,estimate_type_id : estimate_type_id,vendor_type : vendor_type,vendor_type_id : vendor_type_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id },
+	              data:{ estimate_id : estimate_id,estimate_type_id : estimate_type_id,estimate_type:estimate_type,vendor_type : vendor_type,vendor_type_id : vendor_type_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id },
 	              success:function(result){
                   $('#btn_update').button('reset');
                   $('#btn_update').prop('disabled',false);

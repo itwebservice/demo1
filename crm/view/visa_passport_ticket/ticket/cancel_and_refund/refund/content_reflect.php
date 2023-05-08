@@ -81,7 +81,7 @@ $remaining_show = ($remaining < 0) ? 0 : $remaining;
 				    <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled/>
 				</div>      			    
 				<div class="col-sm-6 col-xs-12 mg_bt_10">
-			    	<input type="text" id="transaction_id" onchange="validate_balance(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No / ID" title="Cheque No / ID" disabled/>
+			    	<input type="number" id="transaction_id" onchange="validate_balance(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No / ID" title="Cheque No / ID" disabled/>
 			  	</div>
 			  	<div class="col-sm-6 col-xs-12 mg_bt_10">
 			  		<select name="bank_id" id="bank_id" title="Bank" disabled>
@@ -257,9 +257,7 @@ $(function(){
 			ticket_id : { required: true },
 			refund_amount : { required: true, number:true },
 			refund_date : { required: true },
-			refund_mode : { required : true },
-			bank_name : { required : function(){  if($('#refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-			transaction_id : { required : function(){  if($('#refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  }, 
+			refund_mode : { required : true }, 
 			bank_id : { required : function(){  if($('#refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  }, 
 			entry_id: { required : true },    
 	},

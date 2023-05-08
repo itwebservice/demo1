@@ -6,10 +6,6 @@ $('#frm_tour_master_save').validate({
 
 		txt_child_with_cost : { required: true, number:true },
 
-        txt_infant_cost : { required: true, number:true },
-
-        with_bed_cost : { required: true,  number:true   },
-
         inclusions : { required : true},
 
 		exclusions : { required : true},
@@ -430,33 +426,42 @@ $('#frm_tour_master_save').validate({
 	}
 	var daywise_url = $('#daywise_url').val();
     $('#btn_save').button('loading');
-    $.ajax({
-		type:'post',
-		url:  base_url+'controller/group_tour/tours/tour_master_save.php',              
-		data:   { tour_type : tour_type, tour_name : tour_name, adult_cost : adult_cost, child_with_cost : child_with_cost, child_without_cost : child_without_cost, infant_cost : infant_cost, with_bed_cost : with_bed_cost, 'from_date[]' : from_date, 'to_date[]' : to_date, 'capacity[]' : capacity,visa_country_name : visa_country_name,company_name : company_name ,active_flag : active_flag,day_program_arr : day_program_arr, special_attaraction_arr : special_attaraction_arr,overnight_stay_arr : overnight_stay_arr,meal_plan_arr : meal_plan_arr,train_from_location_arr : train_from_location_arr, train_to_location_arr : train_to_location_arr, train_class_arr : train_class_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr, plane_from_location_arr : plane_from_location_arr, plane_to_location_arr : plane_to_location_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr,route_arr : route_arr,cabin_arr : cabin_arr, city_name_arr : city_name_arr ,hotel_name_arr : hotel_name_arr,hotel_type_arr : hotel_type_arr,total_days_arr : total_days_arr,inclusions : inclusions, exclusions : exclusions,pdf_url : pdf_url ,daywise_url:daywise_url,dest_name:dest_name,dest_image:dest_image},
-		success: function(data){
+	$("#vi_confirm_box").vi_confirm_box({
+		callback: function(result){
+			if(result=="yes"){
+				$.ajax({
+					type:'post',
+					url:  base_url+'controller/group_tour/tours/tour_master_save.php',              
+					data:   { tour_type : tour_type, tour_name : tour_name, adult_cost : adult_cost, child_with_cost : child_with_cost, child_without_cost : child_without_cost, infant_cost : infant_cost, with_bed_cost : with_bed_cost, 'from_date[]' : from_date, 'to_date[]' : to_date, 'capacity[]' : capacity,visa_country_name : visa_country_name,company_name : company_name ,active_flag : active_flag,day_program_arr : day_program_arr, special_attaraction_arr : special_attaraction_arr,overnight_stay_arr : overnight_stay_arr,meal_plan_arr : meal_plan_arr,train_from_location_arr : train_from_location_arr, train_to_location_arr : train_to_location_arr, train_class_arr : train_class_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr, plane_from_location_arr : plane_from_location_arr, plane_to_location_arr : plane_to_location_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr,route_arr : route_arr,cabin_arr : cabin_arr, city_name_arr : city_name_arr ,hotel_name_arr : hotel_name_arr,hotel_type_arr : hotel_type_arr,total_days_arr : total_days_arr,inclusions : inclusions, exclusions : exclusions,pdf_url : pdf_url ,daywise_url:daywise_url,dest_name:dest_name,dest_image:dest_image},
+					success: function(data){
 
-			var msg = data.split('--');
-			if(msg[0]=="error"){
-				$('#btn_save').prop('disabled',true);
-				$('#btn_save').button('reset');
-				error_msg_alert(msg[1]);
-				return false;
-			}
-			else{
-				$('#btn_save').prop('disabled',true);
-				$('#btn_save').button('reset');
-				$('#vi_confirm_box').vi_confirm_box({
-					false_btn: false,
-					message: data,
-					true_btn_text:'Ok',
-					callback: function(data1){
-						if(data1=="yes"){
-							update_b2c_cache();
-							window.location.href =  '../index.php';
+						var msg = data.split('--');
+						if(msg[0]=="error"){
+							$('#btn_save').prop('disabled',false);
+							$('#btn_save').button('reset');
+							error_msg_alert(msg[1]);
+							return false;
+						}
+						else{
+							$('#btn_save').prop('disabled',true);
+							$('#btn_save').button('reset');
+							$('#vi_confirm_box').vi_confirm_box({
+								false_btn: false,
+								message: data,
+								true_btn_text:'Ok',
+								callback: function(data1){
+									if(data1=="yes"){
+										update_b2c_cache();
+										window.location.href =  '../index.php';
+									}
+								}
+							});
 						}
 					}
 				});
+			}else{
+				$('#btn_save').prop('disabled',false);
+				$('#btn_save').button('reset');
 			}
 		}
 	});

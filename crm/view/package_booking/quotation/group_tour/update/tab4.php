@@ -18,15 +18,29 @@
 			}
         }
         foreach($bsmValues[0] as $key => $value){
-        switch($key){
-        case 'basic' : $tour_cost = ($value != "") ? $tour_cost + $service_tax_amount : $tour_cost;$inclusive_b = $value;break;
-        case 'service' : $service_charge = ($value != "") ? $service_charge + $service_tax_amount : $service_charge;$inclusive_s = $value;break;
-        
-        }
+			switch($key){
+			case 'basic' : $tour_cost = ($value != "") ? $tour_cost + $service_tax_amount : $tour_cost;$inclusive_b = $value;break;
+			case 'service' : $service_charge = ($value != "") ? $service_charge + $service_tax_amount : $service_charge;$inclusive_s = $value;break;
+			
+			}
         }
         $readonly = ($inclusive_d != '') ? 'readonly' : '';
+		if($bsmValues[0]->tax_apply_on == '1') { 
+			$tax_apply_on = 'Tour Cost';
+		}
+		else if($bsmValues[0]->tax_apply_on == '2') { 
+			$tax_apply_on = 'Service Charge';
+		}
+		else if($bsmValues[0]->tax_apply_on == '3') { 
+			$tax_apply_on = 'Total';
+		}else{
+			$tax_apply_on = '';
+		}
         ?>
 <form id="frm_tab4_u">
+	<input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+	<input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $bsmValues[0]->tax_apply_on ?>">
+	<input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $bsmValues[0]->tax_value ?>">
 	<div class="row mg_bt_10">
 		<div class="col-md-2">
             <small>&nbsp;</small>
@@ -56,14 +70,13 @@
             <small id="basic_show" style="color:#000000"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_b ?></span></small>
 			<input type="text" id="tour_cost2" name="tour_cost2" placeholder="Total Tour Cost" title="Total Tour Cost" onchange="get_auto_values('quotation_date1','tour_cost2','payment_mode','service_charge','markup','update','true','basic','basic');validate_balance(this.id)"  value="<?php echo $sq_quotation['tour_cost']; ?>" readonly>
 		</div>
-	</div>
-	<div class="row mg_bt_10">
 		<div class="col-md-2">
             <small id="service_show" style="color:#000000"><?= ($inclusive_s == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_s ?></span></small>	  
 			<input type="text" id="service_charge" name="service_charge" onchange="group_quotation_cost_calculate1(); validate_balance(this.id)"  placeholder="Service Charge" title="Service Charge"  value="<?php echo $sq_quotation['service_charge']; ?>">
 		</div>
-		
-		<div class="col-md-2">
+	</div>
+	<div class="row mg_bt_10">
+		<div class="col-md-4">
             <small>&nbsp;</small>
 			<input type="text" id="service_tax_subtotal" name="service_tax_subtotal" readonly placeholder="Tax Amount" title="Tax Amount"  value="<?php echo $sq_quotation['service_tax_subtotal']; ?>" onchange="validate_balance(this.id)">
 		</div>
@@ -71,7 +84,7 @@
 		<small>&nbsp;</small>
 			<input type="text" id="total_tour_cost" class="amount_feild_highlight text-right" name="total_tour_cost" placeholder="Quotation Cost" title="Quotation Cost"  value="<?php echo $sq_quotation['quotation_cost']; ?>"  readonly>
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-2">
 			<small>&nbsp;</small>
 			<select name="currency_code" id="gcurrency_code1" title="Currency" style="width:100%" data-toggle="tooltip" required>
 				<?php
@@ -211,6 +224,7 @@ $('#frm_tab4_u').validate({
 		var total_days = $('#total_days1').val();
 		var customer_name = $('#customer_name1').val();
 		var mobile_number = $('#mobile_no1').val(); 
+		var country_code = $('#country_code1').val(); 
 		var email_id = $('#email_id1').val();
 		var total_adult = $('#total_adult1').val();
 		var total_children = parseFloat($('#children_with_bed1').val())+parseFloat($('#children_without_bed1').val());
@@ -386,12 +400,16 @@ $('#frm_tab4_u').validate({
 			   c_entry_id_arr.push(c_entry_id);
 		    }      
 		  }
-		  var bsmValues = [];
+		var tax_apply_on = $('#atax_apply_on').val();
+		var tax_value = $('#tax_value1').val();
+		var bsmValues = [];
             bsmValues.push({
             "basic" : $('#basic_show').find('span').text(),
             "service" : $('#service_show').find('span').text(),
             "markup" : $('#markup_show').find('span').text(),
-            "discount" : $('#discount_show1').find('span').text()
+            "discount" : $('#discount_show1').find('span').text(),
+			'tax_apply_on':tax_apply_on,
+			'tax_value':tax_value,
             });
 		var base_url = $('#base_url').val();
 		$('#btn_quotation_update').button('loading');
@@ -399,7 +417,7 @@ $('#frm_tab4_u').validate({
 		$.ajax({
 			type:'post',
 			url: base_url+'controller/package_tour/quotation/group_tour/quotation_update.php',
-			data:{ quotation_id : quotation_id,tour_name : tour_name, from_date : from_date, to_date : to_date, total_days : total_days, customer_name : customer_name, mobile_number : mobile_number,email_id : email_id, total_adult : total_adult, total_children : total_children, total_infant : total_infant, total_passangers : total_passangers, children_without_bed : children_without_bed, children_with_bed : children_with_bed, quotation_date : quotation_date, booking_type : booking_type,adult_cost : adult_cost,children_cost : children_cost, infant_cost : infant_cost,with_bed_cost : with_bed_cost,tour_cost : tour_cost,markup_cost: markup_cost,service_charge : service_charge,taxation_id : taxation_id,service_tax : service_tax,service_tax_subtotal : service_tax_subtotal,total_tour_cost : total_tour_cost, train_from_location_arr : train_from_location_arr, train_to_location_arr : train_to_location_arr, train_class_arr : train_class_arr, train_arrival_date_arr : train_arrival_date_arr, train_departure_date_arr : train_departure_date_arr, train_id_arr : train_id_arr, plane_from_location_arr : plane_from_location_arr, plane_to_location_arr : plane_to_location_arr, plane_id_arr : plane_id_arr, plane_class_arr : plane_class_arr,airline_name_arr : airline_name_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr,dept_datetime_arr : dept_datetime_arr,arrival_datetime_arr : arrival_datetime_arr,route_arr : route_arr,cabin_arr : cabin_arr,sharing_arr : sharing_arr,c_entry_id_arr : c_entry_id_arr, enquiry_id : enquiry_id,incl:incl,excl : excl,terms :terms, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr,bsmValues:bsmValues,currency_code:currency_code,active_flag:active_flag},
+			data:{ quotation_id : quotation_id,tour_name : tour_name, from_date : from_date, to_date : to_date, total_days : total_days, customer_name : customer_name, mobile_number : mobile_number,country_code:country_code,email_id : email_id, total_adult : total_adult, total_children : total_children, total_infant : total_infant, total_passangers : total_passangers, children_without_bed : children_without_bed, children_with_bed : children_with_bed, quotation_date : quotation_date, booking_type : booking_type,adult_cost : adult_cost,children_cost : children_cost, infant_cost : infant_cost,with_bed_cost : with_bed_cost,tour_cost : tour_cost,markup_cost: markup_cost,service_charge : service_charge,taxation_id : taxation_id,service_tax : service_tax,service_tax_subtotal : service_tax_subtotal,total_tour_cost : total_tour_cost, train_from_location_arr : train_from_location_arr, train_to_location_arr : train_to_location_arr, train_class_arr : train_class_arr, train_arrival_date_arr : train_arrival_date_arr, train_departure_date_arr : train_departure_date_arr, train_id_arr : train_id_arr, plane_from_location_arr : plane_from_location_arr, plane_to_location_arr : plane_to_location_arr, plane_id_arr : plane_id_arr, plane_class_arr : plane_class_arr,airline_name_arr : airline_name_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr,dept_datetime_arr : dept_datetime_arr,arrival_datetime_arr : arrival_datetime_arr,route_arr : route_arr,cabin_arr : cabin_arr,sharing_arr : sharing_arr,c_entry_id_arr : c_entry_id_arr, enquiry_id : enquiry_id,incl:incl,excl : excl,terms :terms, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr,bsmValues:bsmValues,currency_code:currency_code,active_flag:active_flag},
 			success: function(message){			
                 	$('#btn_quotation_update').button('reset');
                 	var msg = message.split('--');

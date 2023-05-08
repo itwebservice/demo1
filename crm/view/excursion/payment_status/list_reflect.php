@@ -136,8 +136,14 @@ if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
 $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Excursion Booking' and estimate_type_id='$row_exc[exc_id]' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
 	$p_due_date = get_date_user($row_purchase['due_date']);			
-	$purchase_amt = $row_purchase['net_total'] - $row_purchase['cancel_amount'];
-	$total_purchase = $total_purchase + $purchase_amt;
+	if($row_purchase['purchase_return'] == 0){
+		$total_purchase += $row_purchase['net_total'];
+	}
+	else if($row_purchase['purchase_return'] == 2){
+		$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+		$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total));
+		$total_purchase += $p_purchase;
+	}
 }	
 $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Excursion Booking' and estimate_type_id='$row_exc[exc_id]' and delete_status='0'"));		
 $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
@@ -204,7 +210,7 @@ $temp_arr = array( "data" => array(
 	$email_id,
 	$sq_total_member,
 	get_date_user($row_exc['created_at']),
-	'<button class="btn btn-info btn-sm" onclick="exc_view_modal('. $row_exc['exc_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" id="packagev_btn-'. $row_exc['exc_id'] .'" onclick="exc_view_modal('. $row_exc['exc_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($row_exc['exc_issue_amount'],2),
 	number_format($row_exc['service_charge']+$row_exc['markup'],2),
 	number_format($service_tax_amount + $markupservice_tax_amount,2),
@@ -213,11 +219,11 @@ $temp_arr = array( "data" => array(
 	number_format($cancel_amount, 2),
 	number_format($total_bal, 2),
 	number_format($paid_amount, 2),
-	'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_exc['exc_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" id="paymentv_btn-'. $row_exc['exc_id'] .'" onclick="payment_view_modal('.$row_exc['exc_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($bal, 2),
 	$due_date,
 	number_format($total_purchase,2),
-	'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_exc['exc_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" id="supplierv_btn-'. $row_exc['exc_id'] .'" onclick="supplier_view_modal('. $row_exc['exc_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	$branch_name,
 	$emp_name,
 	number_format($sq_incentive['incentive_amount'],2)

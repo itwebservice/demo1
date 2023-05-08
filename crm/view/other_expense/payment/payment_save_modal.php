@@ -12,7 +12,7 @@ $role = $_SESSION['role'];
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Payment Save</h4>
+        <h4 class="modal-title" id="myModalLabel">Save Payment</h4>
       </div>
       <div class="modal-body">
 
@@ -56,10 +56,10 @@ $role = $_SESSION['role'];
               </div>
               <div class="row mg_bt_10">
                 <div class="col-md-4">
-                  <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="*Bank Name" title="Bank Name" disabled>
+                  <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
                 </div>
                 <div class="col-md-4">
-                  <input type="text" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id);" class="form-control" placeholder="*Cheque No/ID" title="Cheque No/ID" disabled>
+                  <input type="number" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id);" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
                 </div>
                 <div class="col-md-4">
                   <select name="bank_id" id="bank_id" title="Debitor Bank" disabled>
@@ -164,8 +164,6 @@ $(function(){
               payment_amount : { required: true, number:true },
               payment_date : { required: true },
               payment_mode : { required : true },
-              bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
               bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){

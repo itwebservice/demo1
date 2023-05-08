@@ -23,9 +23,9 @@ $yr = explode("-", $quotation_date);
 $year = $yr[0];
 
 if ($sq_emp_info['first_name'] == '') {
-  $emp_name = 'Admin';
+    $emp_name = 'Admin';
 } else {
-  $emp_name = $sq_emp_info['first_name'] . ' ' . $sq_emp_info['last_name'];
+    $emp_name = $sq_emp_info['first_name'] . ' ' . $sq_emp_info['last_name'];
 }
 $tax_show = '';
 $newBasic = $basic_cost1 = $sq_quotation['subtotal'] + $sq_quotation['other_charge'] + $sq_quotation['state_entry'];
@@ -33,37 +33,40 @@ $service_charge = $sq_quotation['service_charge'];
 $bsmValues = json_decode($sq_quotation['bsm_values']);
 //////////////////Service Charge Rules
 $service_tax_amount = 0;
+$percent = '';
 if ($sq_quotation['service_tax_subtotal'] !== 0.00 && ($sq_quotation['service_tax_subtotal']) !== '') {
-  $service_tax_subtotal1 = explode(',', $sq_quotation['service_tax_subtotal']);
-  for ($i = 0; $i < sizeof($service_tax_subtotal1); $i++) {
-    $service_tax = explode(':', $service_tax_subtotal1[$i]);
-    $service_tax_amount +=  $service_tax[2];
-    $percent = $service_tax[1];
-  }
+    $service_tax_subtotal1 = explode(',', $sq_quotation['service_tax_subtotal']);
+    for ($i = 0; $i < sizeof($service_tax_subtotal1); $i++) {
+        $service_tax = explode(':', $service_tax_subtotal1[$i]);
+        $service_tax_amount +=  $service_tax[2];
+        $percent .= $service_tax[0]  . $service_tax[1] .', ';
+    }
 }
 ////////////////////Markup Rules
 $markupservice_tax_amount = 0;
 if ($sq_quotation['markup_cost_subtotal'] !== 0.00 && $sq_quotation['markup_cost_subtotal'] !== "") {
-  $service_tax_markup1 = explode(',', $sq_quotation['markup_cost_subtotal']);
-  for ($i = 0; $i < sizeof($service_tax_markup1); $i++) {
-    $service_tax = explode(':', $service_tax_markup1[$i]);
-    $markupservice_tax_amount += $service_tax[2];
-  }
+    $service_tax_markup1 = explode(',', $sq_quotation['markup_cost_subtotal']);
+    for ($i = 0; $i < sizeof($service_tax_markup1); $i++) {
+        $service_tax = explode(':', $service_tax_markup1[$i]);
+        $markupservice_tax_amount += $service_tax[2];
+    }
 }
 
-if (($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != '') {
-  $tax_show = '';
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $markupservice_tax_amount + $service_charge + $service_tax_amount;
-} elseif (($bsmValues[0]->service == '' || $bsmValues[0]->basic == '')  && $bsmValues[0]->markup == '') {
-  $tax_show = $percent . ' ' . ($markupservice_tax_amount + $service_tax_amount);
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge;
-} elseif (($bsmValues[0]->service != '' || $bsmValues[0]->basic != '') && $bsmValues[0]->markup == '') {
-  $tax_show = $percent . ' ' . ($markupservice_tax_amount);
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $service_tax_amount;
-} else {
-  $tax_show = $percent . ' ' . ($service_tax_amount);
-  $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $markupservice_tax_amount;
-}
+// if (($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != '') {
+//   $tax_show = '';
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $markupservice_tax_amount + $service_charge + $service_tax_amount;
+// } elseif (($bsmValues[0]->service == '' || $bsmValues[0]->basic == '')  && $bsmValues[0]->markup == '') {
+//   $tax_show = $percent . ' ' . ($markupservice_tax_amount + $service_tax_amount);
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge;
+// } elseif (($bsmValues[0]->service != '' || $bsmValues[0]->basic != '') && $bsmValues[0]->markup == '') {
+//   $tax_show = $percent . ' ' . ($markupservice_tax_amount);
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $service_tax_amount;
+// } else {
+//   $tax_show = $percent . ' ' . ($service_tax_amount);
+//   $newBasic = $basic_cost1 + $sq_quotation['markup_cost'] + $service_charge + $markupservice_tax_amount;
+// }
+$total_tax = currency_conversion($currency, $currency, ($markupservice_tax_amount + $service_tax_amount));
+$tax_show = $percent . ' ' .$total_tax;
 $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['total_tour_cost']);
 ?>
 
@@ -170,13 +173,9 @@ $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['total
                         </span><?= get_date_user($sq_quotation['from_date']) ?></li>
                     <li class="col-md-6 mg_tp_10 mg_bt_10"><span>TO DATE :
                         </span><?= get_date_user($sq_quotation['to_date']) ?></li>
-                    <!-- <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TRAVELLING DATE :
-                        </span><?= get_datetime_user($sq_quotation['traveling_date']) ?></li> -->
                     <?php } ?>
                     <?php $no_of_car = ceil($sq_quotation['total_pax'] / $sq_quotation['capacity']); ?>
                     <ul class="main_block">
-                        <!-- <li class="col-md-6 mg_tp_10 mg_bt_10"><span>VEHICLE TYPE: </span> <?= $sq_quotation['vehicle_type'] ?></li>
-              <li class="col-md-6 mg_tp_10 mg_bt_10"><span>TRIP TYPE : </span><?= $sq_quotation['trip_type'] ?></li> -->
                     </ul>
                 </div>
             </div>
@@ -198,10 +197,8 @@ $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['total
                         <li class="col-md-4 mg_tp_10 mg_bt_10"><span>VEHICLE NAME :
                             </span><?= $sq_quotation['vehicle_name'] ?></li>
                         <li class="col-md-6 mg_tp_10 mg_bt_10"><span>NO OF VEHICLE : </span><?= $no_of_car ?></li>
-                        <!-- <li class="col-md-8 mg_tp_10 mg_bt_10"><span>PLACES TO VISIT : </span><?= $sq_quotation['places_to_visit'] ?></li> -->
                     </ul>
                     <ul class="main_block no-pad">
-                        <!-- <li class="col-md-4 mg_tp_10 mg_bt_10"><span>DAILY KM : </span><?= $sq_quotation['daily_km'] ?></li> -->
                         <li class="col-md-4 mg_tp_10 mg_bt_10"><span>EXTRA KM COST :
                             </span><?= $sq_quotation['extra_km_cost'] ?></li>
                         <li class="col-md-4 mg_tp_10 mg_bt_10"><span>EXTRA HR COST :
@@ -225,23 +222,20 @@ $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['total
                 <div class="print_info_block">
                     <ul class="main_block">
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TOTAL FARE :
-                            </span><?= number_format($newBasic, 2) ?></li>
-                        <!-- <li class="col-md-12 mg_tp_10 mg_bt_10"><span>SERVICE CHARGE : </span><?= number_format($newSC, 2) ?></li> -->
+                            </span><?= currency_conversion($currency, $currency, $newBasic) ?></li>
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TAX : </span><?= $tax_show ?></li>
                         <?php if ($sq_quotation['travel_type'] == "Outstation") { ?>
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>PERMIT :
-                            </span><?= number_format($sq_quotation['permit'], 2) ?></li>
+                            </span><?= currency_conversion($currency, $currency, $sq_quotation['permit']) ?></li>
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>TOLL/PARKING :
-                            </span><?= number_format($sq_quotation['toll_parking'], 2) ?></li>
+                            </span><?= currency_conversion($currency, $currency, $sq_quotation['toll_parking']) ?></li>
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>DRIVER ALLOWANCE :
-                            </span><?= number_format($sq_quotation['driver_allowance'], 2) ?></li>
-                        <!-- <li class="col-md-12 mg_tp_10 mg_bt_10"><span>STATE ENTRY : </span><?= number_format($sq_quotation['state_entry'], 2) ?></li> -->
-                        <!-- <li class="col-md-12 mg_tp_10 mg_bt_10"><span>OTHER CHARGES : </span><?= number_format($sq_quotation['other_charge'], 2) ?></li> -->
+                            </span><?= currency_conversion($currency, $currency, $sq_quotation['driver_allowance']) ?></li>
                         <?php } ?>
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>ROUND OFF :
-                            </span><?= number_format($sq_quotation['roundoff'], 2) ?></li>
+                            </span><?= currency_conversion($currency, $currency, $sq_quotation['roundoff']) ?></li>
                         <li class="col-md-12 mg_tp_10 mg_bt_10"><span>QUOTATION COST :
-                                <?= number_format($sq_quotation['total_tour_cost'], 2) ?></span></li>
+                                <?= currency_conversion($currency, $currency, $sq_quotation['total_tour_cost']) ?></span></li>
                     </ul>
                 </div>
             </div>

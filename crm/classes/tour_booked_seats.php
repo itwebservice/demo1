@@ -1,17 +1,17 @@
 <?php
 $bk_seats = new total_booked_seats();
-class total_booked_seats 
-{
+class total_booked_seats{
+
 	public function booked_seats($tour_id, $tour_group_id)
 	{
 		// CRM Group Tour sale
 	    $traveler_group=array();
-        $sq_1 = mysqlQuery("select traveler_group_id from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id = '$tour_group_id'");
+        $sq_1 = mysqlQuery("select * from tourwise_traveler_details where tour_id='$tour_id' and tour_group_id = '$tour_group_id' and delete_status='0'");
         while($row_1 = mysqli_fetch_assoc($sq_1))
         {
             $status = '';
-            $pass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_1[id]'"));
-            $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from  travelers_details where traveler_group_id='$row_1[id]' and status='Cancel'"));
+            $pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_1[traveler_group_id]'"));
+            $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_1[traveler_group_id]' and status='Cancel'"));
             if($row_1['tour_group_status']=="Cancel"){
                 $status = "cancel";
             }
@@ -31,13 +31,13 @@ class total_booked_seats
                 $query = $query." or traveler_group_id= '$traveler_group[$i]'";
             }
             else{    
-                $query = $query." and (traveler_group_id= '$traveler_group[$i]'";
+                $query = $query." and (traveler_group_id= '$traveler_group[$i]')";
             }
         }
-        $query = $query." ) ";
+        // $query = $query." ) ";
         $query .= " and status='Active'";
         $booked_seats = (sizeof($traveler_group) > 0) ? mysqli_num_rows(mysqlQuery($query)) : 0;  
-	
+        
 		// B2C Group Tour sale
         $sq_group = mysqli_fetch_assoc(mysqlQuery("select from_date,to_date from tour_groups where group_id='$tour_group_id'"));
         $from_date = $sq_group['from_date'];

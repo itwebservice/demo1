@@ -31,20 +31,35 @@
 			}
 		}
 		$readonly = ($inclusive_d != '') ? 'readonly' : '';
+		if($bsmValues[0]->tax_apply_on == '1') { 
+			$tax_apply_on = 'Basic Amount';
+		}
+		else if($bsmValues[0]->tax_apply_on == '2') { 
+			$tax_apply_on = 'Service Charge';
+		}
+		else if($bsmValues[0]->tax_apply_on == '3') { 
+			$tax_apply_on = 'Total';
+		}else{
+			$tax_apply_on = '';
+		}
     ?>
+	<input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+	<input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $bsmValues[0]->tax_apply_on ?>">
+	<input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $bsmValues[0]->tax_value ?>">
+	<input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $bsmValues[0]->markup_tax_value ?>">
 	<div class="col-md-2">
 		<small id="basic_show1"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_b ?></span></small>
 		<small>Basic Amount</small>
-	    <input type="text" id="subtotal1" name="subtotal1" placeholder="Basic amount" title="Basic amount"  onchange="flight_quotation_cost_calculate('1');validate_balance(this.id);get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','service_charge', true);" value="<?= $basic_cost ?>">
+	    <input type="text" id="subtotal1" name="subtotal1" placeholder="Basic amount" title="Basic amount"  onchange="flight_quotation_cost_calculate('1');validate_balance(this.id);get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','service_charge');" value="<?= $basic_cost ?>">
 
 	</div>
 	<div class="col-md-2">
 		<small id="service_show1"><?= ($inclusive_s == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_s ?></span></small>
 		<small>Service Charge</small>
-	    <input type="text" id="service_charge1" name="service_charge1" placeholder="Service Charge" title="Service Charge"  onchange="validate_balance(this.id);get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','false','service_charge', true);" value="<?= $service_charge ?>">
+	    <input type="text" id="service_charge1" name="service_charge1" placeholder="Service Charge" title="Service Charge"  onchange="validate_balance(this.id);get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','false','service_charge');" value="<?= $service_charge ?>">
 
 	</div>
-	<div class="col-md-2">
+	<div class="col-md-3">
 		<small>&nbsp;</small>
 		<small>Tax Amount</small>
 	    <input type="text" id="service_tax1" name="service_tax1" placeholder="Tax Amount" title="Tax Amount"  onchange="flight_quotation_cost_calculate('1');validate_balance(this.id);" value="<?= $sq_quotation['service_tax'] ?>" readonly>
@@ -52,31 +67,28 @@
 	</div>
 	<div class="col-md-2">
 		<small id="markup_show1"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_m ?></span></small>
-		<small>Markup Cost</small>
-	    <input type="text" id="markup_cost1" name="markup_cost1" placeholder="Markup Cost" title="Markup Cost"  onchange="validate_balance(this.id);get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','false','service_charge', true);" value="<?= $markup ?>">
+		<small>Markup Amount</small>
+	    <input type="text" id="markup_cost1" name="markup_cost1" placeholder="Markup Amount" title="Markup Amount"  onchange="validate_balance(this.id);get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','false','service_charge');" value="<?= $markup ?>">
 
 	</div>
-	<div class="col-md-2">
+	<div class="col-md-3">
 		<small>&nbsp;</small>
 		<small>Tax On Markup</small>
   		<input type="text" id="markup_cost_subtotal1" name="markup_cost_subtotal1" placeholder="Tax on Markup" title="Tax on Markup" onchange="flight_quotation_cost_calculate('1');" value="<?= $sq_quotation['markup_cost_subtotal'] ?>" readonly>  
   	</div>
-	  <div class="col-md-2">
+	  <div class="col-md-2 mg_tp_10">
 		<small>&nbsp;</small>
 		<small>Round Off</small>
   		<input type="text" id="roundoff1" name="roundoff1" placeholder="Round Off" title="Round Off" onchange="flight_quotation_cost_calculate('1');" value="<?= $sq_quotation['roundoff'] ?>" readonly>  
   	</div>
+	<div class="col-md-2 mg_tp_10">
+
+	<small>Quotation Cost</small>
+	<input type="text" id="total_tour_cost1" class="amount_feild_highlight text-right" name="total_tour_cost1" placeholder="Quotation Cost" title="Quotation Cost" value="<?= $sq_quotation['quotation_cost'] ?>"readonly>
+
+	</div>
 
  </div>
-<div class="row mg_tp_20">
-
-<div class="col-md-2">
-
-<small>Quotation Cost</small>
-<input type="text" id="total_tour_cost1" class="amount_feild_highlight text-right" name="total_tour_cost1" placeholder="Quotation Cost" title="Quotation Cost" value="<?= $sq_quotation['quotation_cost'] ?>"readonly>
-
-</div>
-</div>
 	<div class="row mg_tp_20 text-center">
 
 		<div class="col-md-12">
@@ -108,6 +120,7 @@ $('#frm_tab31').validate({
 		var customer_name = $("#customer_name1").val();
 		var email_id = $('#email_id1').val();
 		var mobile_no = $('#mobile_no1').val();
+		var country_code = $('#country_code1').val();
 		var quotation_date = $('#quotation_date1').val();
 		var subtotal = $('#subtotal1').val();
 		var markup_cost = $('#markup_cost1').val();
@@ -115,11 +128,17 @@ $('#frm_tab31').validate({
 		var service_charge = $('#service_charge1').val();
 		var service_tax = $('#service_tax1').val();
 		var active_flag = $('#active_flag1').val();
+		var tax_apply_on = $('#atax_apply_on').val();
+		var tax_value = $('#tax_value1').val();
+		var markup_tax_value = $('#markup_tax_value1').val();
 		var bsmValues = [];
 		bsmValues.push({
 			"basic" : $('#basic_show1').find('span').text(),
 			"service" : $('#service_show1').find('span').text(),
-			"markup" : $('#markup_show1').find('span').text()
+			"markup" : $('#markup_show1').find('span').text(),
+			'tax_apply_on':tax_apply_on,
+			'tax_value':tax_value,
+			'markup_tax_value':markup_tax_value
 		});
 		var roundoff = $('#roundoff1').val();
 		var total_tour_cost = $('#total_tour_cost1').val();
@@ -188,7 +207,7 @@ $('#frm_tab31').validate({
 		$.ajax({
 			type:'post',
 			url: base_url+'controller/package_tour/quotation/flight/quotation_update.php',
-			data:{ quotation_id : quotation_id, enquiry_id : enquiry_id , customer_name : customer_name, email_id : email_id, mobile_no : mobile_no , quotation_date : quotation_date, subtotal : subtotal,markup_cost:markup_cost,markup_cost_subtotal : markup_cost_subtotal , service_tax : service_tax , service_charge : service_charge, total_tour_cost : total_tour_cost, from_sector_arr : from_sector_arr, to_sector_arr : to_sector_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr,plane_id_arr :plane_id_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr,total_adult_arr : total_adult_arr, total_child_arr : total_child_arr, total_infant_arr : total_infant_arr, bsmValues : bsmValues, roundoff : roundoff,active_flag:active_flag},
+			data:{ quotation_id : quotation_id, enquiry_id : enquiry_id , customer_name : customer_name, email_id : email_id, mobile_no : mobile_no , country_code : country_code ,quotation_date : quotation_date, subtotal : subtotal,markup_cost:markup_cost,markup_cost_subtotal : markup_cost_subtotal , service_tax : service_tax , service_charge : service_charge, total_tour_cost : total_tour_cost, from_sector_arr : from_sector_arr, to_sector_arr : to_sector_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr,plane_id_arr :plane_id_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr,total_adult_arr : total_adult_arr, total_child_arr : total_child_arr, total_infant_arr : total_infant_arr, bsmValues : bsmValues, roundoff : roundoff,active_flag:active_flag},
 			success: function(message){			
                 	$('#btn_quotation_update').button('reset');
                 	var msg = message.split('--');

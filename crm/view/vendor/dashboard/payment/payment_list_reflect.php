@@ -72,7 +72,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$evidence = '';
 	}
 	if($row_payment['payment_mode']!='Debit Note'){
-		$update_btn = '<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'].')"  title="Edit"><i class="fa fa-pencil-square-o"></i></button>';
+		$update_btn = '<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'].')"  title="Update Details" id="updatep2_btn-'. $row_payment['payment_id'] .'"><i class="fa fa-pencil-square-o"></i></button>';
 	}else{
 		$update_btn = '';
 	}
@@ -99,7 +99,7 @@ $footer_data = array("footer_data" => array(
 	'col0' => 3,
 	'class0' => "text-right info",
 	
-	'foot1' => "Total Pending : ".number_format($sq_pending_amount, 2),
+	'foot1' => "Pending Clearance : ".number_format($sq_pending_amount, 2),
 	'col1' => 3,
 	'class1' => "text-right warning",
 

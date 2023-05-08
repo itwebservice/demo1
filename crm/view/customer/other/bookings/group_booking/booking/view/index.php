@@ -1,5 +1,4 @@
 <?php
-
 include "../../../../../../../model/model.php";
 
 
@@ -7,12 +6,13 @@ include "../../../../../../../model/model.php";
 $id = $_POST['id'];
 
 $query = mysqlQuery("select * from tourwise_traveler_details where id='$id' and delete_status='0'");
-
 $sq_group_info = mysqli_fetch_assoc($query);
 
+$tour_id = $sq_group_info['tour_id'];
 $date = $sq_group_info['form_date'];
 $yr = explode("-", $date);
-$year =$yr[0];
+$year = $yr[0];
+
 $sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(amount) as sum,sum(`credit_charges`) as sumc from payment_master where tourwise_traveler_id='$sq_group_info[id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 $total_paid = $sq_paid_amount['sum'];  
 $credit_card_charges = $sq_paid_amount['sumc'];
@@ -20,13 +20,12 @@ $credit_card_charges = $sq_paid_amount['sumc'];
 
 <div class="modal fade profile_box_modal" id="group_display_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
 
-  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-dialog modal-lg" role="document">
 
     <div class="modal-content">
 
       <div class="modal-body profile_box_padding">
 
-      	
 
       	<div>
 

@@ -70,6 +70,9 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$date = $sq_booking['booking_date'];
 		$yr = explode("-", $date);
 		$year = $yr[0];
+		$date1 = $row_payment['date'];
+		$yr1 = explode("-", $date1);
+		$year1 = $yr1[0];
 
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
 		if($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B'){
@@ -97,7 +100,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$total = $total + $row_payment['amount']+$row_payment['credit_charges'];
 
 		$payment_id_name = "Package Payment ID";
-		$payment_id = get_package_booking_payment_id($row_payment['payment_id'],$year);
+		$payment_id = get_package_booking_payment_id($row_payment['payment_id'],$year1);
 		$receipt_date = date('d-m-Y');
 		$booking_id = get_package_booking_id($row_payment['booking_id'],$year);
 		$customer_id = $sq_booking['customer_id'];
@@ -139,6 +142,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$temp_arr = array( "data" => array(
 			(int)(++$count),
 			$checshow,
+			$payment_id,
 			get_package_booking_id($row_payment['booking_id'],$year),
 			$customer_name,
 			$payment_mode1,

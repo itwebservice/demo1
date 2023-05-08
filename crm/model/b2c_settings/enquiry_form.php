@@ -1,5 +1,37 @@
 <?php
-class enquiry_master{
+class enquiry_master1{
+
+    public function homepage_enq(){
+        
+        global $app_name,$app_email_id,$model;
+        $name = $_POST['name'];
+        $phone_no = $_POST['phone_no'];
+        $email = $_POST['email'];
+        $city = $_POST['city'];
+        $from_date = $_POST['from_date'];
+        $to_date = $_POST['to_date'];
+        $service_name = $_POST['service_name'];
+        $service_name = ($service_name!='') ? $service_name : 'NA';
+        
+        $content = '
+            <tr>
+            <table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
+            <tr><td style="text-align:left;border: 1px solid #888888;">Name</td>   <td style="text-align:left;border: 1px solid #888888;">'.$name.'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;"> Email ID</td>   <td style="text-align:left;border: 1px solid #888888;">'.$email.'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;"> City/Destination/Hotel</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$city.'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;"> Phone</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$phone_no.'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;"> Travel Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($from_date).' To '.get_date_user($to_date).'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;">Service Name</td>   <td style="text-align:left;border: 1px solid #888888;">'.$service_name.'</td></tr>
+            </table>
+            </tr>';
+
+        $subject = 'Enquiry Acknowledgment!';
+        $model->app_email_send('4',$name,$email, $content,$subject,'1');
+
+        $subject = 'Enquiry Assignment : ( Customer Name : '.$name. ' )';
+        $model->app_email_send('5',$app_name,'sonam.itweb@gmail.com', $content,$subject,'1');
+        echo 'Mail sent successfully!';
+    }
 
 	public function actions_enq(){
 
@@ -74,7 +106,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;"> Extra Bed(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$extra_bed.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;"> Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;"> Package Type</td>   <td style="text-align:left;border: 1px solid #888888;">'.$package_typef.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;"> Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;"> Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -105,7 +137,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child With Bed(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$chwb.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Extra Bed(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$extra_bed.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -133,7 +165,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$adults.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child(ren)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->child.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -162,7 +194,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Dropoff Location</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->drop.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Return Date&Time</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->return_date.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Total Passengers</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->pass.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -189,7 +221,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$adults.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child(ren)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->child.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -218,7 +250,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$adults.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child(ren)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->child.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -245,7 +277,11 @@ class enquiry_master{
             $enquiry_specification = addslashes($specification);
             $pax = intval($adults) + intval($chwb) + intval($chwob) + intval($extra_bed) + intval($infant);
             //Tour name
-            $sq_package = mysqli_fetch_assoc(mysqlQuery("select dest_id from custom_package_master where package_id='$package_id'"));
+            if($type == '1'){
+                $sq_package = mysqli_fetch_assoc(mysqlQuery("select dest_id from custom_package_master where package_id='$package_id'"));
+            }else if($type == '2'){
+                $sq_package = mysqli_fetch_assoc(mysqlQuery("select dest_id from tour_master where tour_id='$package_id'"));
+            }
             $sq_dest = mysqli_fetch_assoc(mysqlQuery("select dest_name from destination_master where dest_id='$sq_package[dest_id]'"));
             $dest_name = $sq_dest['dest_name'];
             //Financial year
@@ -260,7 +296,7 @@ class enquiry_master{
             else if($type == '3'){
                 $hotel_requirements = 'Check In Date: '.$enq_data_arr[0]->check_in.'<br/>'.'Check Out Date: '.$enq_data_arr[0]->check_out.'<br/>'.'Total Rooms: '.$enq_data_arr[0]->total_rooms.'<br/>'.'Room Category: '.$enq_data_arr[0]->room_cat;
 
-                array_push($enquiry_content,array("name"=>"hotel_requirements","value"=>$hotel_requirements),array("name"=>"budget","value"=>""),array("name"=>"total_adult","value"=>($adults+$extra_bed)),array("name"=>"total_cwb","value"=>$chwb),array("name"=>"total_cwob","value"=>$chwob),array("name"=>"total_infant","value"=>$infant),array("name"=>"total_members","value"=>$pax),array("name"=>"budget","value"=>""));
+                array_push($enquiry_content,array("name"=>"hotel_requirements","value"=>$hotel_requirements),array("name"=>"budget","value"=>""),array("name"=>"total_adult","value"=>($adults+$extra_bed)),array("name"=>"total_cwb","value"=>$chwb),array("name"=>"total_cwob","value"=>$chwob),array("name"=>"total_infant","value"=>$infant),array("name"=>"total_members","value"=>$pax));
             }
             else if($type == '6'){
                 $child = $enq_data_arr[0]->child;
@@ -287,7 +323,6 @@ class enquiry_master{
 
         //Enquiry Ack mail to customer
         global $theme_color;
-        $subject = 'Enquiry Acknowledgment';
         if($type == '1' || $type == '2'){
             $content = '
             <tr>
@@ -310,7 +345,7 @@ class enquiry_master{
             <tr><td style="text-align:left;border: 1px solid #888888;"> Extra Bed(s)</td> <td style="text-align:left;border: 1px solid #888888;">'.$extra_bed.'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;"> Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;"> Package Type</td>   <td style="text-align:left;border: 1px solid #888888;">'.$package_typef.'</td></tr>
-            <tr><td style="text-align:left;border: 1px solid #888888;"> Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;"> Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
             </table>
             </tr>';
         }
@@ -338,7 +373,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child With Bed(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$chwb.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Extra Bed(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$extra_bed.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -363,7 +398,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$adults.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child(ren)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->child.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -389,7 +424,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Dropoff Location</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->drop.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Return Date&Time</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->return_date.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Total Passengers</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->pass.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -413,7 +448,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$adults.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child(ren)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->child.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -439,7 +474,7 @@ class enquiry_master{
                 <tr><td style="text-align:left;border: 1px solid #888888;">Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$adults.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Child(ren)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$enq_data_arr[0]->child.'</td></tr>
                 <tr><td style="text-align:left;border: 1px solid #888888;">Infant(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$infant.'</td></tr>
-                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.addslashes($specification).'</td></tr>
+                <tr><td style="text-align:left;border: 1px solid #888888;">Other Specification</td>   <td style="text-align:left;border: 1px solid #888888;">'.$specification.'</td></tr>
                 </table>
                 </tr>';
         }
@@ -480,9 +515,14 @@ class enquiry_master{
                     </tr>';
             }
         }
+        $date = $enquiry_date;
+        $yr = explode("-", $date);
+        $year =$yr[0];
+        $enquiry_id_f = get_enquiry_id($enquiry_id,$year);
         if($type == '1' || $type == '2' || $type == '3' || $type == '6'){
-            $subject = 'Enquiry Acknowledgment (Enquiry ID : '.$enquiry_id.' ).';
+            $subject = 'Enquiry Acknowledgment (Enquiry ID : '.$enquiry_id_f.' ).';
         }
         $model->app_email_send('4',$name,$email_id, $content,$subject,'1');
 	}
+
 }

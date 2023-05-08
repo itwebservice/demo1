@@ -22,6 +22,8 @@ public function vendor_estimate_save(){
     $invoice_id_arr = $_POST['invoice_id_arr'];
     $payment_due_date_arr = $_POST['payment_due_date_arr'];
     $purchase_date_arr = $_POST['purchase_date_arr'];
+    $reflection_arr = $_POST['reflection_arr'];
+
     $branch_admin_id = $_SESSION['branch_admin_id'];
     $emp_id = $_POST['emp_id'];
     $reflections = json_decode(json_encode($_POST['reflections']));
@@ -33,18 +35,19 @@ public function vendor_estimate_save(){
 
     for($i=0; $i<sizeof($basic_cost_arr); $i++){
 
-        $sq_purchase_count = mysqli_num_rows(mysqlQuery("SELECT * FROM `vendor_estimate` WHERE `estimate_type`= '$estimate_type' and `estimate_type_id`='$estimate_type_id' and `vendor_type`='$vendor_type_arr[$i]' and `vendor_type_id`='$vendor_type_id_arr[$i]' and status!='Cancel' and delete_status='0' "));
-        if($sq_purchase_count == 0){
+        // $sq_purchase_count = mysqli_num_rows(mysqlQuery("SELECT * FROM `vendor_estimate` WHERE `estimate_type`= '$estimate_type' and `estimate_type_id`='$estimate_type_id' and `vendor_type`='$vendor_type_arr[$i]' and `vendor_type_id`='$vendor_type_id_arr[$i]' and status!='Cancel' and delete_status='0' "));
+        // if($sq_purchase_count == 0){
 
             $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(estimate_id) as max from vendor_estimate"));
             $estimate_id = $sq_max['max'] + 1;
 
             $payment_due_date_arr1[$i] = get_date_db($payment_due_date_arr[$i]);
             $purchase_date_arr1[$i] = get_date_db($purchase_date_arr[$i]);
+            $reflection_arr[$i] = json_encode(json_decode(json_encode($reflection_arr[$i])));
 
             $remark_arr1 = addslashes($remark_arr[$i]);
             
-            $sq_est = mysqlQuery("insert into vendor_estimate(estimate_id, estimate_type, estimate_type_id, branch_admin_id,financial_year_id, emp_id, vendor_type, vendor_type_id, basic_cost, non_recoverable_taxes, service_charge, other_charges, service_tax_subtotal, discount, our_commission, tds, net_total, roundoff,remark, created_at, invoice_proof_url, invoice_id, due_date, purchase_date, reflections) values('$estimate_id', '$estimate_type', '$estimate_type_id', '$branch_admin_id','$financial_year_id', '$emp_id', '$vendor_type_arr[$i]', '$vendor_type_id_arr[$i]', '$basic_cost_arr[$i]', '$non_recoverable_taxes_arr[$i]', '$service_charge_arr[$i]', '$other_charges_arr[$i]', '$service_tax_subtotal_arr[$i]', '$discount_arr[$i]', '$our_commission_arr[$i]', '$tds_arr[$i]', '$net_total_arr[$i]', '$roundoff_arr[$i]','$remark_arr1', '$created_at','$invoice_url_arr[$i]','$invoice_id_arr[$i]','$payment_due_date_arr1[$i]','$purchase_date_arr1[$i]','$reflections1')");
+            $sq_est = mysqlQuery("insert into vendor_estimate(estimate_id, estimate_type, estimate_type_id, branch_admin_id,financial_year_id, emp_id, vendor_type, vendor_type_id, basic_cost, non_recoverable_taxes, service_charge, other_charges, service_tax_subtotal, discount, our_commission, tds, net_total, roundoff,remark, created_at, invoice_proof_url, invoice_id, due_date, purchase_date, reflections,tax_refl) values('$estimate_id', '$estimate_type', '$estimate_type_id', '$branch_admin_id','$financial_year_id', '$emp_id', '$vendor_type_arr[$i]', '$vendor_type_id_arr[$i]', '$basic_cost_arr[$i]', '$non_recoverable_taxes_arr[$i]', '$service_charge_arr[$i]', '$other_charges_arr[$i]', '$service_tax_subtotal_arr[$i]', '$discount_arr[$i]', '$our_commission_arr[$i]', '$tds_arr[$i]', '$net_total_arr[$i]', '$roundoff_arr[$i]','$remark_arr1', '$created_at','$invoice_url_arr[$i]','$invoice_id_arr[$i]','$payment_due_date_arr1[$i]','$purchase_date_arr1[$i]','$reflections1','$reflection_arr[$i]')");
             if(!$sq_est){
                 $GLOBALS['flag'] = false;
                 echo "error--Supplier Cost not saved!";     
@@ -61,12 +64,13 @@ public function vendor_estimate_save(){
                 $this->purchase_mail_send($estimate_id1,$booking_id,$supplier_name,$supplier_email,$estimate_type,$estimate_type_id,$net_total_arr[$i]);
 
                 //Finance Save
-                $this->finance_save($estimate_id, $vendor_type_arr[$i], $vendor_type_id_arr[$i], $basic_cost_arr[$i], $non_recoverable_taxes_arr[$i], $service_charge_arr[$i], $other_charges_arr[$i], $service_tax_subtotal_arr[$i], $discount_arr[$i], $our_commission_arr[$i], $tds_arr[$i], $net_total_arr[$i], $roundoff_arr[$i],$row_spec,$branch_admin_id,$purchase_date_arr1[$i], $reflections);
+                $this->finance_save($estimate_id, $vendor_type_arr[$i], $vendor_type_id_arr[$i], $basic_cost_arr[$i], $non_recoverable_taxes_arr[$i], $service_charge_arr[$i], $other_charges_arr[$i], $service_tax_subtotal_arr[$i], $discount_arr[$i], $our_commission_arr[$i], $tds_arr[$i], $net_total_arr[$i], $roundoff_arr[$i],$row_spec,$branch_admin_id,$purchase_date_arr1[$i], $reflections,$estimate_type,$estimate_type_id);
             }
-        }else{
-            $GLOBALS['flag'] = false;
-            echo "error--Purchase already done from this supplier for this booking!";     
-        }
+        // }
+        // else{
+        //     $GLOBALS['flag'] = false;
+        //     echo "error--Purchase already done from this supplier for this booking!";     
+        // }
     }
     if($GLOBALS['flag']){
         commit_t();
@@ -88,6 +92,7 @@ public function vendor_estimate_delete(){
     
 	$sq_estimate_info = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id' and delete_status='0'"));
     $estimate_type = $sq_estimate_info['estimate_type'];
+    $estimate_type_id = $sq_estimate_info['estimate_type_id'];
     $vendor_type = $sq_estimate_info['vendor_type'];
     $vendor_type_id = $sq_estimate_info['vendor_type_id'];
     $purchase_date = $sq_estimate_info['purchase_date'];
@@ -114,7 +119,7 @@ public function vendor_estimate_delete(){
     $transaction_id = "";
     $payment_amount = 0;
     $payment_date = $deleted_date;
-    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $deleted_date, 0, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $deleted_date, 0, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
     $old_gl_id = $gl_id = $purchase_gl;
     $payment_side = "Debit";
@@ -138,7 +143,7 @@ public function vendor_estimate_delete(){
         $transaction_id = "";
         $payment_amount = 0;
         $payment_date = $deleted_date;
-        $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$deleted_date, 0, $vendor_type, $vendor_type_id);
+        $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$deleted_date, 0, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
         $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
         $old_gl_id = $gl_id = $ledger;
         $payment_side = "Debit";
@@ -152,7 +157,7 @@ public function vendor_estimate_delete(){
 	$transaction_id = "";
 	$payment_amount = 0;
 	$payment_date = $deleted_date;
-	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$deleted_date, 0, $vendor_type, $vendor_type_id);
+	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$deleted_date, 0, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
 	$old_gl_id = $gl_id = 117;
 	$payment_side = "Debit";
@@ -165,7 +170,7 @@ public function vendor_estimate_delete(){
 	$transaction_id = "";
 	$payment_amount = 0;
 	$payment_date = $deleted_date;
-	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$deleted_date, 0, $vendor_type, $vendor_type_id);
+	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$deleted_date, 0, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
 	$old_gl_id = $gl_id = 230;
 	$payment_side = "Debit";
@@ -178,7 +183,7 @@ public function vendor_estimate_delete(){
     $transaction_id ='';
     $payment_amount = 0;
     $payment_date = $deleted_date;
-    $payment_particular = get_purchase_partucular(get_vendor_payment_id($estimate_id,$yr1), $deleted_date, 0, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_payment_id($estimate_id,$yr1), $deleted_date, 0, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $old_gl_id = $gl_id = $supplier_gl;
     $payment_side = "Credit";
@@ -237,7 +242,7 @@ public function purchase_mail_send($estimate_id,$booking_id,$supplier_name,$supp
     $model->app_email_send('25',$supplier_name,$supplier_email,$content, $subject);
 }
 
-public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic_cost, $non_recoverable_taxes, $service_charge, $other_charges, $service_tax_subtotal, $discount, $our_commission, $tds, $net_total,$roundoff,$row_spec,$branch_admin_id,$purchase_date_arr1,$reflections){
+public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic_cost, $non_recoverable_taxes, $service_charge, $other_charges, $service_tax_subtotal, $discount, $our_commission, $tds, $net_total,$roundoff,$row_spec,$branch_admin_id,$purchase_date_arr1,$reflections,$estimate_type,$estimate_type_id){
     
     global $transaction_master;
 
@@ -258,7 +263,7 @@ public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic
     $transaction_id = "";
     $payment_amount = $purchase_amount;
     $payment_date = $created_at;
-    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $purchase_amount, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $purchase_amount, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
     $gl_id = $purchase_gl;
     $payment_side = "Debit";
@@ -271,7 +276,7 @@ public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic
     $transaction_id = "";
     $payment_amount = $service_charge;
     $payment_date = $created_at;
-    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $service_charge, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $service_charge, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
     $gl_id = 117;
     $payment_side = "Debit";
@@ -295,7 +300,7 @@ public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic
         $transaction_id = "";
         $payment_amount = $tax_amount;
         $payment_date = $created_at;
-        $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$created_at, $tax_amount, $vendor_type, $vendor_type_id);
+        $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$created_at, $tax_amount, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
         $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
         $gl_id = $ledger;
         $payment_side = "Debit";
@@ -309,7 +314,7 @@ public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic
     $transaction_id = "";
     $payment_amount = $roundoff;
     $payment_date = $created_at;
-    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $roundoff, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $roundoff, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
     $gl_id = 230;
     $payment_side = "Debit";
@@ -322,7 +327,7 @@ public function finance_save($estimate_id, $vendor_type, $vendor_type_id, $basic
     $transaction_id = '';
     $payment_amount = $net_total;
     $payment_date = $created_at;
-    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $net_total, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $created_at, $net_total, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $gl_id = $supplier_gl;
     $payment_side = "Credit";
@@ -353,6 +358,7 @@ public function vendor_estimate_update(){
     $invoice_id = $_POST['invoice_id'];
     $payment_due_date = $_POST['payment_due_date'];
     $purchase_date = $_POST['purchase_date'];
+    $reflection_arr = json_decode(json_encode($_POST['reflection_arr']));
     $reflections = json_decode(json_encode($_POST['reflections']));
     $reflections1 = json_encode($reflections);
 
@@ -363,7 +369,9 @@ public function vendor_estimate_update(){
 
     begin_t();
     $remark1 = addslashes($remark);
-    $sq_est = mysqlQuery("update vendor_estimate set estimate_type='$estimate_type', estimate_type_id='$estimate_type_id', vendor_type='$vendor_type', vendor_type_id='$vendor_type_id', basic_cost='$basic_cost', non_recoverable_taxes='$non_recoverable_taxes', service_charge='$service_charge', other_charges='$other_charges', service_tax_subtotal='$service_tax_subtotal', discount='$discount', our_commission='$our_commission', tds='$tds', net_total='$net_total', roundoff='$roundoff',remark='$remark1',invoice_proof_url = '$invoice_url',invoice_id='$invoice_id', due_date='$payment_due_date',purchase_date ='$purchase_date',reflections='$reflections1' where estimate_id='$estimate_id'");
+    $reflection_arr = json_encode($reflection_arr);
+
+    $sq_est = mysqlQuery("update vendor_estimate set estimate_type='$estimate_type', estimate_type_id='$estimate_type_id', vendor_type='$vendor_type', vendor_type_id='$vendor_type_id', basic_cost='$basic_cost', non_recoverable_taxes='$non_recoverable_taxes', service_charge='$service_charge', other_charges='$other_charges', service_tax_subtotal='$service_tax_subtotal', discount='$discount', our_commission='$our_commission', tds='$tds', net_total='$net_total', roundoff='$roundoff',remark='$remark1',invoice_proof_url = '$invoice_url',invoice_id='$invoice_id', due_date='$payment_due_date',purchase_date ='$purchase_date',reflections='$reflections1',tax_refl='$reflection_arr' where estimate_id='$estimate_id'");
     if($sq_est){
 
         //Finance Update
@@ -385,6 +393,8 @@ public function vendor_estimate_update(){
 
 public function finance_update($sq_estimate_info,$estimate_id, $vendor_type, $vendor_type_id, $basic_cost, $non_recoverable_taxes, $service_charge, $other_charges, $service_tax_subtotal, $discount, $our_commission, $tds, $net_total,$roundoff,$row_spec,$purchase_date,$reflections)
 {
+    $estimate_type_id = $sq_estimate_info['estimate_type_id'];
+    $estimate_type = $sq_estimate_info['estimate_type'];
     $old_purchase_gl = get_vendor_purchase_gl_id($sq_estimate_info['vendor_type'], $sq_estimate_info['vendor_type_id']);    
     $purchase_gl = get_vendor_purchase_gl_id($vendor_type, $vendor_type_id);  
 	$year1 = explode("-", $purchase_date);
@@ -403,7 +413,7 @@ public function finance_update($sq_estimate_info,$estimate_id, $vendor_type, $ve
     $transaction_id = "";
     $payment_amount = $purchase_amount;
     $payment_date = $purchase_date;
-    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $purchase_date, $purchase_amount, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1), $purchase_date, $purchase_amount, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
     $old_gl_id = $gl_id = $purchase_gl;
     $payment_side = "Debit";
@@ -427,7 +437,7 @@ public function finance_update($sq_estimate_info,$estimate_id, $vendor_type, $ve
         $transaction_id = "";
         $payment_amount = $tax_amount;
         $payment_date = $purchase_date;
-        $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$purchase_date, $tax_amount, $vendor_type, $vendor_type_id);
+        $payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$purchase_date, $tax_amount, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
         $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
         $old_gl_id = $gl_id = $ledger;
         $payment_side = "Debit";
@@ -441,7 +451,7 @@ public function finance_update($sq_estimate_info,$estimate_id, $vendor_type, $ve
 	$transaction_id = "";
 	$payment_amount = $service_charge;
 	$payment_date = $purchase_date;
-	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$purchase_date, $service_charge, $vendor_type, $vendor_type_id);
+	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$purchase_date, $service_charge, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
 	$old_gl_id = $gl_id = 117;
 	$payment_side = "Debit";
@@ -454,7 +464,7 @@ public function finance_update($sq_estimate_info,$estimate_id, $vendor_type, $ve
 	$transaction_id = "";
 	$payment_amount = $roundoff;
 	$payment_date = $purchase_date;
-	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$purchase_date, $roundoff, $vendor_type, $vendor_type_id);
+	$payment_particular = get_purchase_partucular(get_vendor_estimate_id($estimate_id,$yr1),$purchase_date, $roundoff, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('For',$vendor_type.' Purchase');
 	$old_gl_id = $gl_id = 230;
 	$payment_side = "Debit";
@@ -467,7 +477,7 @@ public function finance_update($sq_estimate_info,$estimate_id, $vendor_type, $ve
     $transaction_id ='';
     $payment_amount = floatval($net_total);
     $payment_date = $purchase_date;
-    $payment_particular = get_purchase_partucular(get_vendor_payment_id($estimate_id,$yr1), $purchase_date, $net_total, $vendor_type, $vendor_type_id);
+    $payment_particular = get_purchase_partucular(get_vendor_payment_id($estimate_id,$yr1), $purchase_date, $net_total, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id);
     $ledger_particular = get_ledger_particular('By','Cash/Bank');
     $old_gl_id = $gl_id = $supplier_gl;
     $payment_side = "Credit";

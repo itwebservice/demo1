@@ -7,16 +7,31 @@ $branch_admin_id = $_SESSION['branch_admin_id'];
 $branch_status = $_POST['branch_status'];
 $sq_enq_info = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
 $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_quotation_master where quotation_id='$sq_enq_info[quotation_id]'"));
-$reflections = json_decode($sq_visa_info['reflections']);
+$reflections = json_decode($sq_enq_info['reflections']);
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
-<input type="hidden" id="car_sc" name="car_sc" value="<?php echo $reflections[0]->car_sc ?>">
-<input type="hidden" id="car_markup" name="car_markup" value="<?php echo $reflections[0]->car_markup ?>">
-<input type="hidden" id="car_taxes" name="car_taxes" value="<?php echo $reflections[0]->car_taxes ?>">
-<input type="hidden" id="car_markup_taxes" name="car_markup_taxes"
-    value="<?php echo $reflections[0]->car_markup_taxes ?>">
 
 <form id="frm_booking_update">
     <input type="hidden" id="booking_id" name="booking_id" value="<?= $booking_id ?>">
+    <input type="hidden" id="car_sc" name="car_sc" value="<?php echo $reflections[0]->car_sc ?>">
+    <input type="hidden" id="car_markup" name="car_markup" value="<?php echo $reflections[0]->car_markup ?>">
+    <input type="hidden" id="car_taxes" name="car_taxes" value="<?php echo $reflections[0]->car_taxes ?>">
+    <input type="hidden" id="car_markup_taxes" name="car_markup_taxes"
+        value="<?php echo $reflections[0]->car_markup_taxes ?>">
+    <input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+    <input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+    <input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+    <input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $reflections[0]->markup_tax_value ?>">
 
     <div class="modal fade" id="booking_update_modal" role="dialog" aria-labelledby="myModalLabel"
         data-backdrop="static" data-keyboard="false">
@@ -37,9 +52,9 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                 <select name="customer_id1" id="customer_id1" style="width: 100%"
                                     onchange="customer_info_load('1')" disabled>
                                     <?php
-                  $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_enq_info[customer_id]'"));
-                  if ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') {
-                  ?>
+                                    $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_enq_info[customer_id]'"));
+                                    if ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') {
+                                    ?>
                                     <option value="<?= $sq_customer['customer_id'] ?>">
                                         <?= $sq_customer['company_name'] ?></option>
                                     <?php } else { ?>
@@ -50,12 +65,12 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-                                <input type="text" id="email_id1" name="email_id1" title="Email Id"
-                                    placeholder="Email ID" title="Email ID" readonly>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <input type="text" id="mobile_no1" name="mobile_no1" title="Mobile Number"
                                     placeholder="Mobile No" title="Mobile No" readonly>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <input type="text" id="email_id1" name="email_id1" title="Email Id"
+                                    placeholder="Email ID" title="Email ID" readonly>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <input type="text" id="company_name1" class="hidden" name="company_name1"
@@ -93,9 +108,9 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         <?= $sq_enq_info['vehicle_name'] ?></option>
                                     <option value="">*Select Vehicle</option>
                                     <?php
-                  $sql = mysqlQuery("select * from b2b_transfer_master where status!='Inactive'");
-                  while ($row = mysqli_fetch_assoc($sql)) {
-                  ?>
+                                    $sql = mysqlQuery("select * from b2b_transfer_master where status!='Inactive'");
+                                    while ($row = mysqli_fetch_assoc($sql)) {
+                                    ?>
                                     <option value="<?= $row['vehicle_name'] ?>"><?= $row['vehicle_name'] ?></option>
                                     <?php }  ?>
                                 </select>
@@ -132,9 +147,9 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         <?= $sq_enq_info['places_to_visit'] ?></option>
                                     <option value="">*Select Route</option>
                                     <?php
-                  $sql = mysqlQuery("select * from car_rental_tariff_entries where tour_type='Outstation'");
-                  while ($row = mysqli_fetch_assoc($sql)) {
-                  ?>
+                                    $sql = mysqlQuery("select * from car_rental_tariff_entries where tour_type='Outstation'");
+                                    while ($row = mysqli_fetch_assoc($sql)) {
+                                    ?>
                                     <option value="<?= $row['route'] ?>"><?= $row['route'] ?></option>
                                     <?php }  ?>
                                 </select>
@@ -173,7 +188,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                                 <input type="text" id="rate1" name="rate1" class="text-right form-control"
-                                    placeholder="Rate" title="Rate" onchange="calculate_total_fees(this.id, '1');"
+                                    placeholder="Daily Rate" title="Daily Rate" onchange="calculate_total_fees(this.id,'1');get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','true','service_charge');"
                                     class="form-control" value="<?= $sq_enq_info['rate'] ?>">
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
@@ -196,15 +211,15 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                     value="<?= $sq_enq_info['total_km'] ?>">
                             </div>
                             <?php
-              if ($sq_enq_info['travel_type'] == 'Outstation') {
-              ?>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                                <input type="text" id="traveling_date1" name="traveling_date1"
-                                    placeholder="Travelling Date" title="Travelling Date"
-                                    value="<?= date('d-m-Y', strtotime($sq_enq_info['traveling_date'])) ?>">
-                            </div>
-                            <?php
-              } else { ?>
+                            if($sq_enq_info['travel_type'] == 'Outstation'){
+                                ?>
+                                <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                                    <input type="text" id="traveling_date1" name="traveling_date1"
+                                        placeholder="Travelling Date" title="Travelling Date"
+                                        value="<?= (($sq_enq_info['traveling_date'])!='1970-01-01') ? date('d-m-Y', strtotime($sq_enq_info['traveling_date'])) : ''  ?>">
+                                </div>
+                                <?php
+                            }else{ ?>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                                 <input type="text" id="traveling_date1" name="traveling_date1"
                                     placeholder="Travelling Date" title="Travelling Date">
@@ -301,8 +316,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         <input type="text" id="basic_amount1" name="basic_amount1"
                                             class="text-right form-control" placeholder="*Basic Amount"
                                             title="Basic Amount"
-                                            onchange="calculate_total_fees(this.id, '1');validate_balance(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','true','service_charge',true);"
-                                            value="<?= $basic_cost ?>">
+                                            onchange="calculate_total_fees(this.id, '1');validate_balance(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','true','service_charge');" value="<?= $basic_cost ?>">
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                         <small
@@ -310,8 +324,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         <input type="text" id="service_charge1" name="service_charge1"
                                             class="text-right form-control" placeholder="Service Charge"
                                             title="Service Charge"
-                                            onchange="validate_balance(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','true','service_charge');"
-                                            value="<?= $service_charge ?>">
+                                            onchange="validate_balance(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','true','service_charge');" value="<?= $service_charge ?>">
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                         <small>&nbsp;</small>
@@ -324,7 +337,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         <small
                                             id="markup_show1"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_m ?></span></small>
                                         <input type="text" id="markup_cost1" name="markup_cost1"
-                                            placeholder="Markup Cost" title="Markup Cost"
+                                            placeholder="Markup Amount" title="Markup Amount"
                                             class="text-right form-control"
                                             onchange="validate_balance(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','false','markup');"
                                             value="<?= $markup ?>">
@@ -358,7 +371,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         <input type="text" name="booking_date1" id="booking_date1"
                                             value="<?= get_date_user($sq_enq_info['created_at']) ?>"
                                             placeholder="Booking Date" title="Booking Date"
-                                            onchange="check_valid_date(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','false','markup',true);">
+                                            onchange="check_valid_date(this.id);get_auto_values('booking_date1','basic_amount1','payment_mode','service_charge1','markup_cost1','update','false','markup');">
                                     </div>
                                 </div>
 
@@ -463,12 +476,18 @@ $(function() {
             var car_markup = $('#car_markup').val();
             var car_taxes = $('#car_taxes').val();
             var car_markup_taxes = $('#car_markup_taxes').val();
+            var tax_apply_on = $('#atax_apply_on').val();
+            var tax_value = $('#tax_value1').val();
+            var markup_tax_value = $('#markup_tax_value1').val();
             var reflections = [];
             reflections.push({
                 'car_sc': car_sc,
                 'car_markup': car_markup,
                 'car_taxes': car_taxes,
-                'car_markup_taxes': car_markup_taxes
+                'car_markup_taxes': car_markup_taxes,
+                'tax_apply_on':tax_apply_on,
+                'tax_value':tax_value,
+                'markup_tax_value':markup_tax_value
             });
             var roundoff = $('#roundoff1').val();
             var bsmValues = [];

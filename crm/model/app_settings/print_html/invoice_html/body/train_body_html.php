@@ -25,6 +25,7 @@ $bg = $_GET['bg'];
 $canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 $total_paid += $charge;
 $sq_passenger = mysqlQuery("select * from  train_ticket_master_entries where train_ticket_id = '$train_ticket_id'");
 $sq_passenger_count = mysqli_fetch_assoc(mysqlQuery("select count(*) as cnt from  train_ticket_master_entries where train_ticket_id = '$train_ticket_id'"));

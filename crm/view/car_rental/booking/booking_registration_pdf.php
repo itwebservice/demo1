@@ -15,7 +15,7 @@ $branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where br
 
 $booking_id = $_GET['booking_id'];
 $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
-$no_of_car = ceil($sq_booking['total_pax'] / $sq_booking['capacity']);
+$no_of_car = ceil(intval($sq_booking['total_pax']) / intval($sq_booking['capacity']));
 $booking_date = $sq_booking['created_at'];
 $yr = explode("-", $booking_date);
 $year = $yr[0];
@@ -28,7 +28,7 @@ if ($sq_booking['travel_type'] == 'Local') {
   $rout = 'Route';
   $place_to_visit = $sq_booking['local_places_to_visit'];
 } else {
-  $rout = 'Places To Visit';
+  $rout = 'Route';
   $place_to_visit = $sq_booking['places_to_visit'];
 }
 

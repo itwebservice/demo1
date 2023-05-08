@@ -58,32 +58,13 @@ $customer_id = $_SESSION['customer_id'];
 			$paid_amount = $sq_paid_amount['sum'] + $sq_paid_amount['sumc'];
 			$paid_amount = ($paid_amount == '')?'0':$paid_amount;
 			
-			// if($pass_count == $cancel_count){
-			// 	if($paid_amount > 0){
-			// 		if($cancel_amount >0){
-			// 			if($paid_amount > $cancel_amount){
-			// 				$balance_amount = 0;
-			// 			}else{
-			// 				$balance_amount = $cancel_amount - $paid_amount;
-			// 			}
-			// 		}else{
-			// 			$balance_amount = 0;
-			// 		}
-			// 	}
-			// 	else{
-			// 		$balance_amount = $cancel_amount;
-			// 	}
-			// }
-			// else{
-			// 	$balance_amount = $sale_total_amount - $paid_amount;
-			// }
 			if($row_ticket['cancel_type'] == '1'){
 				if($paid_amount > 0){
 					if($cancel_amount >0){
 						if($paid_amount > $cancel_amount){
 							$balance_amount = 0;
 						}else{
-							$balance_amount = $cancel_amount - $paid_amount;
+							$balance_amount = $cancel_amount - $paid_amount + $sq_paid_amount['sumc'];
 						}
 					}else{
 						$balance_amount = 0;
@@ -99,6 +80,7 @@ $customer_id = $_SESSION['customer_id'];
 			else{
 				$balance_amount = $sale_total_amount - $paid_amount;
 			}
+			$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 			//Total
 			$total_amount += $sale_total_amount;
 			$total_paid += $paid_amount;

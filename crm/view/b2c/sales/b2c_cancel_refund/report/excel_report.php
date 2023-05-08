@@ -144,7 +144,7 @@ $row_count++;
         $sq_b2c_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_refund_entry[entry_id]'"));
         $b2c_name .=  ($sq_b2c_info['type'] == 'Corporate' || $sq_b2c_info['type'] == 'B2B') ? $sq_b2c_info['company_name'] : $sq_b2c_info['first_name'].' '.$sq_b2c_info['last_name'];
       }
-      $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select created_at from b2c_sale where booking_id='$row_refund[booking_id]'"));
+      $sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select created_at,name from b2c_sale where booking_id='$row_refund[booking_id]'"));
       $date = $sq_entry_date['created_at'];
       $yr = explode("-", $date);
       $year =$yr[0];
@@ -185,7 +185,7 @@ $row_count++;
             ->setCellValue('D'.$row_count, "")
             ->setCellValue('E'.$row_count, "")
             ->setCellValue('F'.$row_count, 'Refund : '.number_format($total_refund,2))
-            ->setCellValue('G'.$row_count, 'Pending : '.number_format($sq_pending_amount,2))
+            ->setCellValue('G'.$row_count, 'Pending clearence : '.number_format($sq_pending_amount,2))
             ->setCellValue('H'.$row_count, 'Cancelled : '.number_format($sq_cancel_amount,2))
             ->setCellValue('I'.$row_count, 'Total : '.number_format(($total_refund - $sq_pending_amount - $sq_cancel_amount),2));
 

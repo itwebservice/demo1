@@ -34,7 +34,7 @@
 
 			&nbsp;&nbsp;
 
-			<button class="btn btn-info btn-sm ico_right" onclick="get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','service_charge', true);">Next&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+			<button class="btn btn-info btn-sm ico_right" onclick="get_auto_values('quotation_date1','subtotal1','payment_mode','service_charge1','markup_cost1','update','true','service_charge');">Next&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
 
 		</div>
 

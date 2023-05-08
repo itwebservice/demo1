@@ -74,7 +74,6 @@ function select_all_mobile(ele){
          }
      } else {
          for (var i = 0; i < checkboxes.length; i++) {
-             console.log(i)
              if (checkboxes[i].type == 'checkbox') {
                  checkboxes[i].checked = false;
              }

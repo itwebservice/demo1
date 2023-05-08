@@ -137,7 +137,7 @@ background-color: #e5ffe773;
 }
 .table td, .modal table.dataTable td {
 border: 0 !important;
-font-size: 13px;
+font-size: 12px;
 font-weight: 400;
 color: #22262E;
 padding: 15px 8px 10px 25px !important;
@@ -494,6 +494,13 @@ top: 2px;
 height: 100%;
 padding: 9px;
 }
+.btn-info.ico_left .i-download{
+position: absolute;
+left: 7px;
+top: 0px;
+height: 100%;
+padding: 9px;
+}
 .btn-info.ico_left i:after {
 position: absolute;
 content: '';
@@ -591,6 +598,10 @@ border-radius: 0.3
 57rem;
 box-shadow: none;
 transition: all ease-in-out 0.3s;
+height:40px;
+}
+
+textarea.form-control{
 height:40px;
 }
 
@@ -1498,7 +1509,8 @@ transition: all 0.5s;
 button.btn-excel i:hover{
 background: <?= $theme_color ?>;
 color: #ffffff;
-margin-top: -8px;
+margin-top: -5px;
+margin-bottom: 5px;
 transition: all 0.5s;
 }
 
@@ -1599,6 +1611,9 @@ position: absolute;
 top: 1px;
 right: 2px;
 z-index: 5;
+transform: scale(1.5);
+width: 20px;
+height: 10px;
 }
 .table-image-btns {
 position: absolute;
@@ -1923,6 +1938,11 @@ width: 100%;
 display: inline-block;
 margin: 5px 0;
 }
+span.img-check-btn{
+transform: scale(1.5);
+width: 20px;
+height: 10px;
+}
 }
 
 
@@ -2197,6 +2217,7 @@ font-weight: 500;
 padding-left: 40px;
 padding: 17px 10px 17px 40px;
 color: #212529 ;
+cursor:pointer;
 }
 .div_left.type-02 .nav-pills>li>a:hover{
 color: #6c5ffc;

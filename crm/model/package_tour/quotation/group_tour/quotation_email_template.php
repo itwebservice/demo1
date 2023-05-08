@@ -286,10 +286,8 @@ if ($bsmValues[0]->basic != '') { //inclusive markup
             $bank_account_name1 = ($bank_account_name != '') ? $bank_account_name : 'NA';
 
             ?>
-            <<<<<<< HEAD <div class="sec_heding">
-                =======
+            <div class="sec_heding">
                 <div class="sec_heding mg_tp_30">
-                    >>>>>>> 76a3a9da8f3485f8133bd8dea244e00821434198
 
                     <h2>Bank Details</h2>
 
@@ -345,76 +343,6 @@ if ($bsmValues[0]->basic != '') { //inclusive markup
         </div>
 
     </section>
-
-
-
-    <!-- Transport -->
-
-    <?php
-
-    $sq_trans_count = mysqli_num_rows(mysqlQuery("select * from package_tour_quotation_transport_entries2 where quotation_id='$quotation_id'"));
-    if ($sq_trans_count > 0) {
-
-    ?>
-
-    <!-- <section id="2" class="main_block link_page_section">
-
-    <div class="container">
-
-      <div class="sec_heding">
-
-        <h2>Transport</h2>
-
-      </div>
-
-      <div class="row">
-
-        <div class="col-md-12">
-
-         <div class="table-responsive">
-
-          <table class="table table-bordered no-marg" id="tbl_emp_list">
-
-            <thead>
-              <tr class="table-heading-row">
-                <th>VEHICLE</th>
-                <th>FROM DATE</th>
-                <th>TO DATE</th>
-              </tr>
-            </thead>
-            <tbody>   
-
-            <?php
-            // $count = 0;
-            // $sq_hotel = mysqlQuery("select * from package_tour_quotation_transport_entries2 where quotation_id='$quotation_id'");
-            // while($row_hotel = mysqli_fetch_assoc($sq_hotel)){
-            //   $transport_name = mysqli_fetch_assoc(mysqlQuery("select * from transport_agency_bus_master where bus_id='$row_hotel[vehicle_name]'")); 
-            ?>
-              <tr>
-                <td><?= $transport_name['bus_name'] . $similar_text ?></td>
-                <td><?= get_date_user($row_hotel['start_date']) ?></td>
-                <td><?= get_date_user($row_hotel['end_date']) ?></td>
-              </tr>
-              <?php // } 
-                ?>
-
-            </tbody>
-
-          </table>
-
-         </div>
-
-       </div>
-
-      </div>
-
-    </div>
-
-  </section> -->
-
-    <?php } ?>
-
-
 
     <!-- Tour Itinenary -->
 

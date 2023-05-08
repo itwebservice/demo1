@@ -62,7 +62,6 @@ function get_auto_values(booking_date,sub_total,payment_mode,service_charge,mark
 
         /////////////////Markup Start///////////////////////
         var markup_amount_rules_array = get_charges_on_conditions(markup_amount_result,basic_amount,payment_mode,type);
-        // console.log({markup_amount_rules_array});
         if(parseInt(markup_amount_rules_array.length) === 0){
             if($('#'+markup).val() == '')
                 $('#'+markup).val(parseInt(0).toFixed(2));      
@@ -94,13 +93,94 @@ function get_auto_values(booking_date,sub_total,payment_mode,service_charge,mark
         /////////////////Markup End///////////////////////
     }
     /////////////////Tax Start///////////////////////
-    var taxes_result = rules && rules.filter((rule)=>{
-        var {entry_id,rule_id} = rule;
-        return entry_id !== '' && !rule_id 
-    });
-    var tax_service_charge = $('#'+service_charge).val();
-    var tax_markup = $('#'+markup).val(); //show markup here
-    get_tax_rules(rules,taxes_result,basic_amount,sub_total,tax_markup,markup,tax_service_charge,service_charge,payment_mode,type,amount_type,charges_flag);
+	if (type === 'save') {
+		var service_tax_subtotal = 'service_tax_subtotal';
+		var service_tax_markup = 'service_tax_markup';
+		var tax_apply_on1 = 'tax_apply_on';
+		var tax_value1 = 'tax_value';
+		var markup_tax_value1 = 'markup_tax_value';
+	}
+	else {
+		var service_tax_subtotal = 'service_tax_subtotal1';
+		var service_tax_markup = 'service_tax_markup1';
+		var tax_apply_on1 = 'atax_apply_on';
+		var tax_value1 = 'tax_value1';
+		var markup_tax_value1 = 'markup_tax_value1';
+	}
+	var tax_on_amount = 0;
+	var service_tax = 0;
+	var service_tax_amount = 0;
+	var applied_taxes = '';
+	var ledger_posting = '';
+	var tax_apply_on = $('#'+tax_apply_on1).val();
+	var tax_value = $('#'+tax_value1).val();
+	var service_charge = $('#'+service_charge).val();
+	if(tax_apply_on == 1){
+		tax_on_amount = (basic_amount=='') ? 0 : basic_amount;
+	}
+	else if(tax_apply_on == 2){
+		tax_on_amount = (service_charge=='') ? 0 : service_charge;
+	}
+	else if(tax_apply_on == 3){
+		tax_on_amount = parseFloat(basic_amount) + parseFloat(service_charge);
+	}
+	if(tax_apply_on!="" && tax_value!=""){
+		var service_tax_subtotal1 = tax_value.split("+");
+		for(var i=0;i<service_tax_subtotal1.length;i++){
+			var service_tax_string = service_tax_subtotal1[i].split(':');
+			if(parseInt(service_tax_string.length) > 0){
+				var service_tax_string1 = service_tax_string[1] && service_tax_string[1].split('%');
+				service_tax_string1[0] = service_tax_string1[0] && service_tax_string1[0].replace('(','');
+				service_tax = service_tax_string1[0];
+			}
+
+			service_tax_string[2] = service_tax_string[2].replace('(','');
+			service_tax_string[2] = service_tax_string[2].replace(')','');
+			service_tax_amount = (( parseFloat(tax_on_amount) * parseFloat(service_tax) ) / 100).toFixed(2);
+			if(applied_taxes==''){
+				applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting = service_tax_string[2];
+			}else{
+				applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting += ', ' + service_tax_string[2];
+			}
+		}
+		$('#'+service_tax_subtotal).val(applied_taxes);
+		$('#car_taxes').val(ledger_posting);
+	}else{
+		$('#'+service_tax_subtotal).val('');
+		$('#car_taxes').val('');
+	}
+
+	// Markup Tax
+	var applied_taxes = '';
+	var ledger_posting = '';
+	var markup_tax_value = $('#'+markup_tax_value1).val();
+	var service_tax_subtotal1 = markup_tax_value.split("+");
+	if(markup_tax_value!=''){
+		for(var i=0;i<service_tax_subtotal1.length;i++){
+			var service_tax_string = service_tax_subtotal1[i].split(':');
+			var service_tax_string1 = service_tax_string[1].split('%');
+			service_tax_string1[0] = service_tax_string1[0].replace('(','');
+			var service_tax = service_tax_string1[0];
+
+			service_tax_string[2] = service_tax_string[2].replace('(','');
+			service_tax_string[2] = service_tax_string[2].replace(')','');
+			service_tax_amount = (( parseFloat(markup_amount) * parseFloat(service_tax) ) / 100).toFixed(2);
+			if(applied_taxes==''){
+				applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting = service_tax_string[2];
+			}else{
+				applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting += ', ' + service_tax_string[2];
+			}
+		}
+		$('#'+service_tax_markup).val(applied_taxes);
+		$('#car_markup_taxes').val(ledger_posting);
+	}else{
+		$('#'+service_tax_markup).val('');
+		$('#car_markup_taxes').val('');
+	}
     /////////////////Tax End///////////////////////
 
     if(type === 'save') quotation_cost_calculate();
@@ -122,7 +202,6 @@ function get_tax_rules(rules,taxes_result,basic_amount,basic_amountid,markup,mar
     
     var new_taxes_rules = get_tax_rules_on_conditions(final_taxes_rules,basic_amount,payment_mode,type);
     var tax_for = '';
-    // console.log(new_taxes_rules);
     //service_charge////////////////////////////////////
     var other_charge_results = new_taxes_rules.filter((rule)=>{
         return rule['target_amount'] !== "Markup";
@@ -374,7 +453,6 @@ function get_tax_rules_on_conditions(final_taxes_rules,basic_amount,payment_mode
                 }
                 conditions_flag_array.push(flag);
             });
-            // console.log(rule['rule_id']+'-'+conditions_flag_array);
             if(!conditions_flag_array.includes(false))
                 applied_rules.push(rule)
         });
@@ -385,9 +463,7 @@ function get_tax_rules_on_conditions(final_taxes_rules,basic_amount,payment_mode
 
 function get_charges_on_conditions(service_charge_result,basic_amount,payment_mode,type){
 
-    //console.log(service_charge_result);
     let rules_array = service_charge_result && service_charge_result.filter((rule)=>{
-        console.log(rule['conditions']);
         var cond = rule['conditions'] && JSON.parse(rule['conditions']);
         var conditions_flag_array = [];
         var flag = false;
@@ -472,7 +548,6 @@ function get_charges_on_conditions(service_charge_result,basic_amount,payment_mo
             }
             conditions_flag_array.push(flag);
         });
-        // console.log(rule.rule_id+'-'+conditions_flag_array);
         if(conditions_flag_array.includes(false))
             return null;
         else{
@@ -516,7 +591,6 @@ function calculate_charges(rules_array,type,basic_amount,markup_amount1,service_
 
     if(rules_array.length){
         var apply_on = rules_array[0].apply_on;
-        // console.log(rules_array[0] + "asdsdsdsdsd");
         if(rules_array[0].target_amount != '') {
             if(rules_array[0].target_amount ===  'Basic')
                 var target_amount =  basic_amount;

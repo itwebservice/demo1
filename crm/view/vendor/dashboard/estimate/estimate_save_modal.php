@@ -41,7 +41,7 @@ $financial_to_date = $sq_finance['to_date'];
 							<select name="estimate_type" id="estimate_type" title="Purchase Type" onchange="get_purchase_flag('0',this.id);payment_for_data_load(this.value, 'div_payment_for_content');brule_for_all();">
 								<option value="">*Purchase Type</option>
 								<?php 
-								$sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
+								$sq_estimate_type = mysqlQuery("select * from estimate_type_master order by id");
 								while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
 									?>
 									<option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
@@ -225,16 +225,17 @@ $(document).ready(function(e){
 				else if(type=="Package Tour"){
 					var purchase_id = 'booking_id';
 				}
-				else if(type=="Group Tour"){
+				// else if(type=="Group Tour"){
+				// 	console.log($('#tour_id').val(searchParams.get('tour_id')));
+				// 	$('#tour_id').val(searchParams.get('tour_id'));
+				// 	setTimeout(() => {
 
-					$('#tour_id').val(searchParams.get('tour_id'));
-					setTimeout(() => {
-
-						document.getElementById('tour_id').selectedIndex = "1";
-						$('#tour_id').trigger('change');
-						$('#tour_group_id').val(searchParams.get('group_id'));
-					}, 1000);
-				}else{
+				// 		document.getElementById('tour_id').selectedIndex = "1";
+				// 		$('#tour_id').trigger('change');
+				// 		$('#tour_group_id').val(searchParams.get('group_id'));
+				// 	}, 1000);
+				// }
+				else{
 
 				}
 
@@ -294,6 +295,8 @@ $(function(){
 			var payment_due_date_arr = new Array();
 			var invoice_url_arr = new Array();
 			var purchase_date_arr = new Array();
+			var reflection_arr = [];
+
 			var branch_admin_id = $('#branch_admin_id1').val();
 			var emp_id = $('#emp_id').val();
 			var purchase_sc = $('#purchase_sc').val();
@@ -314,7 +317,7 @@ $(function(){
 				var id = $(this).attr('id');
 				var offset = id.substring(11);
 				var offset1 = id.substring(14);
-
+				var t_offset = id.split('-')[1];
 				var vendor_type = $('#vendor_type'+offset).val();
 				
 				var vendor_type_id = get_vendor_type_id(id, offset);
@@ -333,11 +336,16 @@ $(function(){
 				var payment_due_date = $('#payment_due_date'+offset).val();
 				var invoice_url = $('#id_upload_url'+offset1).val();
 				var purchase_date = $('#purchase_date'+offset).val();
+				
+				var tax_apply_on = $('#tax_apply_on-'+t_offset).val();
+				var tax_value = $('#tax_value-'+t_offset).val();
 				if(vendor_type==""){ msg +=">Supplier type is required in vendor estimate-"+counter+"<br>"; }
 				if(vendor_type_id==""){ msg +=">"+vendor_type+" is required in vendor estimate-"+counter+"<br>"; }
 				if(estimate_type_id==""){ msg += ">"+estimate_type+" is required"+"<br>"; }
-				if(basic_cost==""){ msg +=">Basic cost is required in vendor estimate-"+counter+"<br>"; }
+				if(basic_cost==""){ msg +=">Basic Amount is required in vendor estimate-"+counter+"<br>"; }
 				if(net_total==""){ msg +=">Net total is required in vendor estimate-"+counter+"<br>"; }
+				if(tax_apply_on==""){ msg +=">Tax apply on is required in vendor estimate-"+counter+"<br>"; }
+				if(tax_value==""){ msg +=">Tax is required in vendor estimate-"+counter+"<br>"; }
 				
 				//Purchase date validation
 				var dateFrom = financial_from_date;
@@ -368,8 +376,10 @@ $(function(){
 				invoice_id_arr.push(invoice_id);
 				payment_due_date_arr.push(payment_due_date);
 				invoice_url_arr.push(invoice_url);
+				reflection_arr.push([{'tax_apply_on':tax_apply_on,
+					'tax_value':tax_value}]);
 
-				if(check > from && check < to){
+				if(check >= from && check <= to){
 					purchase_date_arr.push(purchase_date);
 				}
 				else{
@@ -414,7 +424,7 @@ $(function(){
 			$.ajax({
 				type:'post',
 				url: base_url+'controller/vendor/dashboard/estimate/vendor_estimate_save.php',
-				data:{ estimate_type : estimate_type, estimate_type_id : estimate_type_id, vendor_type_arr : vendor_type_arr, vendor_type_id_arr : vendor_type_id_arr, basic_cost_arr : basic_cost_arr, non_recoverable_taxes_arr : non_recoverable_taxes_arr, service_charge_arr : service_charge_arr, other_charges_arr : other_charges_arr, service_tax_subtotal_arr : service_tax_subtotal_arr, discount_arr : discount_arr, our_commission_arr : our_commission_arr, tds_arr : tds_arr, net_total_arr : net_total_arr, roundoff_arr : roundoff_arr,remark_arr : remark_arr, invoice_id_arr : invoice_id_arr, payment_due_date_arr : payment_due_date_arr , invoice_url_arr : invoice_url_arr,purchase_date_arr : purchase_date_arr, branch_admin_id : branch_admin_id , emp_id : emp_id, reflections : reflections},
+				data:{ estimate_type : estimate_type, estimate_type_id : estimate_type_id, vendor_type_arr : vendor_type_arr, vendor_type_id_arr : vendor_type_id_arr, basic_cost_arr : basic_cost_arr, non_recoverable_taxes_arr : non_recoverable_taxes_arr, service_charge_arr : service_charge_arr, other_charges_arr : other_charges_arr, service_tax_subtotal_arr : service_tax_subtotal_arr, discount_arr : discount_arr, our_commission_arr : our_commission_arr, tds_arr : tds_arr, net_total_arr : net_total_arr, roundoff_arr : roundoff_arr,remark_arr : remark_arr, invoice_id_arr : invoice_id_arr, payment_due_date_arr : payment_due_date_arr , invoice_url_arr : invoice_url_arr,purchase_date_arr : purchase_date_arr,reflection_arr:reflection_arr, branch_admin_id : branch_admin_id , emp_id : emp_id, reflections : reflections},
 				success:function(result){
 					$('#btn_save_estimate').prop('disabled',false);
 					$('#btn_save_estimate').button('reset');

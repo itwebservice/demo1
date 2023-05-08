@@ -50,7 +50,7 @@
 	                </span>
 		        	<span class="main_block">
 		        	  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-		        	  <?php echo "<label>Markup <em>:</em></label> ".$sq_exc_info['markup']; ?>
+		        	  <?php echo "<label>Markup Amount<em>:</em></label> ".$sq_exc_info['markup']; ?>
 		        	</span>
 					<span class="main_block">
 		        	  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -102,8 +102,12 @@
                        	<th>Transfer_Option</th>
                        	<th>Total_adult</th>
                        	<th>total_child</th>
-                       	<th>adult_cost</th>
-                       	<th>child_cost</th>
+                       	<th>total_infant</th>
+                       	<th>adult_Amount</th>
+                       	<th>child_Amount</th>
+                       	<th>infant_Amount</th>
+                       	<th>total_vehicle</th>
+                       	<th>transfer_Amount</th>
                        	<th>Activity_Amount</th>
                        </tr>
                        </thead>
@@ -136,8 +140,12 @@
 									<td><?php echo $row_entry['transfer_option']; ?></td>
 								    <td><?php echo $row_entry['total_adult']; ?></td>
 								    <td><?php echo $row_entry['total_child']; ?></td>
+								    <td><?php echo $row_entry['total_infant']; ?></td>
 								    <td><?php echo $row_entry['adult_cost']; ?> </td>
 								    <td><?php echo $row_entry['child_cost']; ?> </td>
+								    <td><?php echo $row_entry['infant_cost']; ?> </td>
+								    <td><?php echo $row_entry['total_vehicles']; ?> </td>
+								    <td><?php echo $row_entry['transfer_cost']; ?> </td>
 								    <td><?php echo $row_entry['total_cost']; ?> </td>
 								</tr>        
                        			<?php

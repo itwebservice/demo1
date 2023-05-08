@@ -202,14 +202,15 @@ $sq_exc_payment = mysqlQuery($query);
 
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Booking ID")
-        ->setCellValue('D'.$row_count, "Customer Name")
-        ->setCellValue('E'.$row_count, "Receipt Date")
-        ->setCellValue('F'.$row_count, "Mode")
-        ->setCellValue('G'.$row_count, "Amount");
+        ->setCellValue('C'.$row_count, "Receipt ID")
+        ->setCellValue('D'.$row_count, "Booking ID")
+        ->setCellValue('E'.$row_count, "Customer Name")
+        ->setCellValue('F'.$row_count, "Receipt Date")
+        ->setCellValue('G'.$row_count, "Mode")
+        ->setCellValue('H'.$row_count, "Amount");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
@@ -245,29 +246,34 @@ while($row_exc_payment = mysqli_fetch_assoc($sq_exc_payment)){
     }else{
         $currency_amount = '';
     }
+	$date1 = $row_exc_payment['payment_date'];
+	$yr1 = explode("-", $date1);
+	$year1 = $yr1[0];
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $count)
-        ->setCellValue('C'.$row_count, get_exc_booking_id($row_exc_payment['exc_id'],$year))
-        ->setCellValue('D'.$row_count, $customer_name)
-        ->setCellValue('E'.$row_count, date('d-m-Y', strtotime($row_exc_payment['payment_date'])))
-        ->setCellValue('F'.$row_count, $row_exc_payment['payment_mode'])
-        ->setCellValue('G'.$row_count, number_format($row_exc_payment['payment_amount'] + $row_exc_payment['credit_charges'],2).$currency_amount);
+        ->setCellValue('C'.$row_count, get_exc_booking_payment_id($row_exc_payment['payment_id'],$year1))
+        ->setCellValue('D'.$row_count, get_exc_booking_id($row_exc_payment['exc_id'],$year))
+        ->setCellValue('E'.$row_count, $customer_name)
+        ->setCellValue('F'.$row_count, date('d-m-Y', strtotime($row_exc_payment['payment_date'])))
+        ->setCellValue('G'.$row_count, $row_exc_payment['payment_mode'])
+        ->setCellValue('H'.$row_count, number_format($row_exc_payment['payment_amount'] + $row_exc_payment['credit_charges'],2).$currency_amount);
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
     
     $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('B'.$row_count, "")
     ->setCellValue('C'.$row_count, "")
-    ->setCellValue('D'.$row_count, 'Paid Amount : '.number_format($sq_paid_amount,2))
-    ->setCellValue('E'.$row_count, 'Pending Clearance : '.number_format($sq_pending_amount,2))
-    ->setCellValue('F'.$row_count, 'Cancelled Amount : '.number_format($sq_cancel_amount,2))
-    ->setCellValue('G'.$row_count, 'Payment Amount :'.number_format(($sq_paid_amount - $sq_pending_amount - $sq_cancel_amount),2));
+    ->setCellValue('D'.$row_count, "")
+    ->setCellValue('E'.$row_count, 'Paid Amount : '.number_format($sq_paid_amount,2))
+    ->setCellValue('F'.$row_count, 'Pending Clearance : '.number_format($sq_pending_amount,2))
+    ->setCellValue('G'.$row_count, 'Cancelled Amount : '.number_format($sq_cancel_amount,2))
+    ->setCellValue('H'.$row_count, 'Payment Amount :'.number_format(($sq_paid_amount - $sq_pending_amount - $sq_cancel_amount),2));
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);
 
 }
 }

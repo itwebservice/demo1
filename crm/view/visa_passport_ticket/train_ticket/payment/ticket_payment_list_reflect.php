@@ -75,7 +75,10 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 
 	$date = $sq_train_ticket_info['created_at'];
 	$yr = explode("-", $date);
-	$year =$yr[0];
+	$year = $yr[0];
+	$date1 = $row_train_ticket_payment['payment_date'];
+	$yr1 = explode("-", $date1);
+	$year1 = $yr1[0];
 
 	$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_train_ticket_info[customer_id]'"));
 	if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type'] == 'B2B'){
@@ -105,7 +108,7 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 	$sq_paid_amount = $sq_paid_amount + $row_train_ticket_payment['payment_amount'] + $row_train_ticket_payment['credit_charges'];
 	
 	$payment_id_name = "Train Ticket Payment ID";
-	$payment_id = get_train_ticket_booking_payment_id($row_train_ticket_payment['payment_id'],$year);
+	$payment_id = get_train_ticket_booking_payment_id($row_train_ticket_payment['payment_id'],$year1);
 	$receipt_date = date('d-m-Y');
 	$booking_id = get_train_ticket_booking_id($row_train_ticket_payment['train_ticket_id'],$year);
 	$customer_id = $sq_train_ticket_info['customer_id'];
@@ -119,7 +122,7 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 	$receipt_type ="Train Ticket Receipt";
 	
 	$url1 = BASE_URL."model/app_settings/print_html/receipt_html/receipt_body_html.php?payment_id_name=$payment_id_name&payment_id=$payment_id&receipt_date=$receipt_date&booking_id=$booking_id&customer_id=$customer_id&booking_name=$booking_name&travel_date=$travel_date&payment_amount=$payment_amount&transaction_id=$transaction_id&payment_date=$payment_date&bank_name=$bank_name&confirm_by=$confirm_by&receipt_type=$receipt_type&payment_mode=$payment_mode1&branch_status=$branch_status&outstanding=$outstanding&table_name=train_ticket_payment_master&customer_field=train_ticket_id&in_customer_id=$row_train_ticket_payment[train_ticket_id]&status=$row_train_ticket_payment[status]";
-	$checkshow = "";
+	$checshow = "";
 	if($row_train_ticket_payment['payment_mode']=="Cash" || $row_train_ticket_payment['payment_mode']=="Cheque"){
 		$checshow = "<input type=\"checkbox\" id=\"chk_train_ticket_payment".$count."\" name=\"chk_train_ticket_payment\" value=". $row_train_ticket_payment['payment_id'].">";
 	}
@@ -131,7 +134,7 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 		$edit_btn = '';
 		$delete_btn = '';
 	}else{
-		$edit_btn = '<button class="btn btn-info btn-sm" data-toggle="tooltip"  onclick="train_ticket_payment_update_modal('.$row_train_ticket_payment['payment_id'].')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$edit_btn = '<button class="btn btn-info btn-sm" data-toggle="tooltip"  onclick="train_ticket_payment_update_modal('.$row_train_ticket_payment['payment_id'].')" id="updater_btn-'. $row_train_ticket_payment['payment_id'] .'" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
 		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_train_ticket_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 
@@ -139,6 +142,7 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 	$temp_arr = array( "data" => array(
 		(int)($count),
 		$checshow,
+		$payment_id,
 		$booking_id,
 		$customer_name,
 		date('d/m/Y', strtotime($row_train_ticket_payment['payment_date'])),

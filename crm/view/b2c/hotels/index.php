@@ -6,8 +6,8 @@ $popular_hotels = ($query['popular_hotels'] != '' && $query['popular_hotels'] !=
 <form id="section_hotels">
     <legend>Define Top Tour Hotels</legend>
     <div class="row">
-        <div class="col-md-8"> <label class="alert-danger">For saving hotel keep checkbox selected!</label> </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-excel btn-sm" title="Note : For saving hotels keep checkbox selected!"><i class="fa fa-question-circle"></i></button>
             <button type="button" class="btn btn-excel btn-sm" onclick="addRow('tbl_hotels')" title="Add Row"><i
                     class="fa fa-plus"></i></button>
             <button type="button" class="btn btn-pdf btn-sm" onclick="deleteRow('tbl_hotels');" title="Delete Row"><i
@@ -16,20 +16,18 @@ $popular_hotels = ($query['popular_hotels'] != '' && $query['popular_hotels'] !=
     </div>
 
     <div class="row mg_bt_20">
-        <div class="col-md-10">
-            <div class="table-responsive">
-                <table id="tbl_hotels" name="tbl_hotels" class="table border_0 table-hover no-marg"
-                    style="width:1000px;">
+        <div class="col-md-12">
+                <table id="tbl_hotels" name="tbl_hotels" class="table border_0 table-hover no-marg">
                     <?php
                     if (sizeof($popular_hotels) == 0) { ?>
                     <tr>
                         <td><input id="chk_city1" type="checkbox" checked></td>
                         <td><input maxlength="15" value="1" type="text" name="no" placeholder="Sr. No."
                                 class="form-control" disabled /></td>
-                        <td><select name="city_name-1" id="city_name-1" title="Select City" class="city_name"
-                                onchange="hotel_names_load(this.id)" style="width:100%" class="form-control">
+                        <td><select name="city_name-1" id="city_name-1" title="Select City" class="form-control city_name"
+                                onchange="hotel_names_load(this.id)" style="width:100%">
                             </select></td>
-                        <td><select id='hotel_name-1' name='hotel_name-1' class="form-control" title="Select Hotel">
+                        <td><select id='hotel_name-1' name='hotel_name-1' class="form-control" title="Select Hotel" style="width:100%">
                                 <option value="">Hotel Name</option>
                             </select></td>
                     </tr>
@@ -41,30 +39,29 @@ $popular_hotels = ($query['popular_hotels'] != '' && $query['popular_hotels'] !=
                             $hotel_id = $popular_hotels[$i]->hotel_id;
                             $sq_hotel = mysqli_fetch_assoc(mysqlQuery("select hotel_id,hotel_name from hotel_master where hotel_id='$hotel_id'"));
                         ?>
-                    <tr>
-                        <td><input id="chk_city1<?= $i ?>_u" type="checkbox" checked></td>
-                        <td><input maxlength="15" value="<?= ($i + 1) ?>" type="text" name="no" placeholder="Sr. No."
-                                class="form-control" disabled /></td>
-                        <td><select name="city_name-1<?= $i ?>_u" id="city_name-1<?= $i ?>_u" class="city_name"
-                                onchange="hotel_names_load(this.id)" style="width:100%" title="Select City">
-                                <?php if ($city_id != '') { ?>
-                                <option value="<?= $sq_city['city_id'] ?>" selected="selected">
-                                    <?= $sq_city['city_name'] ?></option>
-                                <?php } ?>
-                            </select>
-                        </td>
-                        <td><select id='hotel_name-1<?= $i ?>_u' name='hotel_name-1<?= $i ?>_u' class="form-control"
-                                title="Select Hotel">
-                                <?php if ($hotel_id != '') { ?>
-                                <option value="<?= $sq_hotel['hotel_id'] ?>"><?= $sq_hotel['hotel_name'] ?></option>
-                                <?php } ?>
-                                <option value="">Hotel Name</option>
-                            </select></td>
-                    </tr>
+                        <tr>
+                            <td><input id="chk_city1<?= $i ?>_u" type="checkbox" checked></td>
+                            <td><input maxlength="15" value="<?= ($i + 1) ?>" type="text" name="no" placeholder="Sr. No."
+                                    class="form-control" disabled /></td>
+                            <td><select name="city_name-1<?= $i ?>_u" id="city_name-1<?= $i ?>_u" class="city_name"
+                                    onchange="hotel_names_load(this.id)" style="width:100%" title="Select City">
+                                    <?php if ($city_id != '') { ?>
+                                    <option value="<?= $sq_city['city_id'] ?>" selected="selected">
+                                        <?= $sq_city['city_name'] ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                            <td><select id='hotel_name-1<?= $i ?>_u' name='hotel_name-1<?= $i ?>_u' class="form-control"
+                                    title="Select Hotel" style="width:100%">
+                                    <?php if ($hotel_id != '') { ?>
+                                    <option value="<?= $sq_hotel['hotel_id'] ?>"><?= $sq_hotel['hotel_name'] ?></option>
+                                    <?php } ?>
+                                    <option value="">Hotel Name</option>
+                                </select></td>
+                        </tr>
                     <?php }
                     } ?>
                 </table>
-            </div>
             <script>
             city_lzloading('.city_name');
             </script>

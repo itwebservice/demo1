@@ -1,6 +1,8 @@
 <?php
 include "../../../../model/model.php";
 $emp_id = $_SESSION['emp_id'];
+$branch_admin_id = $_SESSION['branch_admin_id'];
+$financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 $role = $_POST['role'];
 $role_id = $_POST['role_id'];
@@ -39,6 +41,7 @@ $role_id = $_POST['role_id'];
 				$query = "select * from visa_master where 1 and delete_status='0'";
 				include "../../../../model/app_settings/branchwise_filteration.php";
 				$query .= " order by visa_id desc";
+                
 				$sq_visa = mysqlQuery($query);
 				while ($row_visa = mysqli_fetch_assoc($sq_visa)) {
 
@@ -70,6 +73,16 @@ $role_id = $_POST['role_id'];
                 onchange="validate_validDate('from_date','to_date');" placeholder="To Date" placeholder="To Date"
                 title="To Date">
         </div>
+        <div class="col-md-3 col-sm-6">
+            <select name="financial_year_id_filter" id="financial_year_id_filter" title="Select Financial Year">
+                <?php
+                $sq_fina = mysqli_fetch_assoc(mysqlQuery("select * from financial_year where financial_year_id='$financial_year_id'"));
+                $financial_year = get_date_user($sq_fina['from_date']).'&nbsp;&nbsp;&nbsp;To&nbsp;&nbsp;&nbsp;'.get_date_user($sq_fina['to_date']);
+                ?>
+                <option value="<?= $sq_fina['financial_year_id'] ?>"><?= $financial_year  ?></option>
+                <?php echo get_financial_year_dropdown_filter($financial_year_id); ?>
+            </select>
+        </div>
         <div class="col-md-3 col-sm-6 col-xs-12 form-group">
             <button class="btn btn-sm btn-info ico_right" onclick="visa_customer_list_reflect()">Proceed&nbsp;&nbsp;<i
                     class="fa fa-arrow-right"></i></button>
@@ -94,6 +107,80 @@ $('#from_date, #to_date').datetimepicker({
     format: 'd-m-Y'
 });
 dynamic_customer_load('', '');
+
+var columns = [{
+        title: "Invoice_No"
+    },
+    {
+        title: "Booking_ID"
+    },
+    {
+        title: "Customer_Name"
+    },
+    {
+        title: "Mobile"
+    },
+    {
+        title: "Total_PAX"
+    },
+    {
+        title: "Amount",
+        className: "info"
+    },
+    {
+        title: "Cncl_Amount",
+        className: "danger"
+    },
+    {
+        title: "Total",
+        className: "success"
+    },
+    {
+        title: "Created_by"
+    },
+    {
+        title: "Booking_date"
+    },
+    {
+        title: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
+        className: "text-center action_width"
+    }
+];
+$(document).ready(function() {
+    $("[data-toggle='tooltip']").tooltip({
+        placement: 'bottom'
+    });
+    $("[data-toggle='tooltip']").click(function() {
+        $('.tooltip').remove()
+    })
+});
+
+function visa_customer_list_reflect() {
+    $('#div_visa_customer_list_reflect').append('<div class="loader"></div>');
+    var customer_id = $('#customer_id_filter').val()
+    var visa_id = $('#visa_id_filter').val()
+    var from_date = $('#from_date').val();
+    var to_date = $('#to_date').val();
+    var cust_type = $('#cust_type_filter').val();
+    var company_name = $('#company_filter').val();
+    var branch_status = $('#branch_status').val();
+    var financial_year_id_filter = $('#financial_year_id_filter').val();
+
+    $.post('home/visa_list_reflect.php', {
+        customer_id: customer_id,
+        visa_id: visa_id,
+        from_date: from_date,
+        to_date: to_date,
+        cust_type: cust_type,
+        company_name: company_name,
+        branch_status: branch_status,financial_year_id:financial_year_id_filter
+    }, function(data) {
+        // $('#div_visa_customer_list_reflect').html(data);
+        pagination_load(data, columns, true, true, 10, 'visa_book', true);
+        $('.loader').remove();
+    });
+}
+visa_customer_list_reflect();
 
 function business_rule_load() {
     get_auto_values('booking_date', 'visa_issue_amount', 'payment_mode', 'service_charge', 'markup', 'save', 'true',
@@ -132,75 +219,6 @@ function adolescence_reflect(id) {
     $('#adolescence' + count).val(adl);
 
 }
-var columns = [{
-        title: "Invoice_No"
-    },
-    {
-        title: "Booking_ID"
-    },
-    {
-        title: "Customer_Name"
-    },
-    {
-        title: "Mobile"
-    },
-    {
-        title: "Total_PAX"
-    },
-    {
-        title: "Amount",
-        className: "info"
-    },
-    {
-        title: "Cncl_Amount",
-        className: "danger"
-    },
-    {
-        title: "Total",
-        className: "success"
-    },
-    {
-        title: "Created_by"
-    },
-    {
-        title: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
-        className: "text-center action_width"
-    }
-];
-$(document).ready(function() {
-    $("[data-toggle='tooltip']").tooltip({
-        placement: 'bottom'
-    });
-    $("[data-toggle='tooltip']").click(function() {
-        $('.tooltip').remove()
-    })
-});
-
-function visa_customer_list_reflect() {
-    $('#div_visa_customer_list_reflect').append('<div class="loader"></div>');
-    var customer_id = $('#customer_id_filter').val()
-    var visa_id = $('#visa_id_filter').val()
-    var from_date = $('#from_date').val();
-    var to_date = $('#to_date').val();
-    var cust_type = $('#cust_type_filter').val();
-    var company_name = $('#company_filter').val();
-    var branch_status = $('#branch_status').val();
-
-    $.post('home/visa_list_reflect.php', {
-        customer_id: customer_id,
-        visa_id: visa_id,
-        from_date: from_date,
-        to_date: to_date,
-        cust_type: cust_type,
-        company_name: company_name,
-        branch_status: branch_status
-    }, function(data) {
-        // $('#div_visa_customer_list_reflect').html(data);
-        pagination_load(data, columns, true, true, 10, 'visa_book', true);
-        $('.loader').remove();
-    });
-}
-visa_customer_list_reflect();
 
 function save_modal() {
 
@@ -284,22 +302,18 @@ function copy_details() {
 }
 
 function visa_update_modal(visa_id) {
+    $('#visae_btn-'+visa_id).prop('disabled',true);
+    $('#visae_btn-'+visa_id).button('loading');
     var branch_status = $('#branch_status').val();
     $.post('home/update_modal.php', {
         visa_id: visa_id,
         branch_status: branch_status
     }, function(data) {
         $('#div_visa_update_content').html(data);
+        $('#visae_btn-'+visa_id).prop('disabled',false);
+        $('#visae_btn-'+visa_id).button('reset');
     });
 }
-
-function visa_update_modal(visa_id)
-{
-	var branch_status = $('#branch_status').val();
-	$.post('home/update_modal.php', { visa_id : visa_id, branch_status : branch_status }, function(data){
-		$('#div_visa_update_content').html(data);
-	});
-}	
 
 function calculate_total_amount(offset=''){
 
@@ -320,20 +334,19 @@ function calculate_total_amount(offset=''){
 	var service_tax_amount = 0;
     if(parseFloat(service_tax_subtotal) !== 0.00 && (service_tax_subtotal) !== ''){
 
-      var service_tax_subtotal1 = service_tax_subtotal.split(",");
-      for(var i=0;i<service_tax_subtotal1.length;i++){
-        var service_tax = service_tax_subtotal1[i].split(':');
-        service_tax_amount = parseFloat(service_tax_amount) + parseFloat(service_tax[2]);
-      }
+        var service_tax_subtotal1 = service_tax_subtotal.split(",");
+        for(var i=0;i<service_tax_subtotal1.length;i++){
+            var service_tax = service_tax_subtotal1[i].split(':');
+            service_tax_amount = parseFloat(service_tax_amount) + parseFloat(service_tax[2]);
+        }
 	}
-	
 	var markupservice_tax_amount = 0;
     if(parseFloat(service_tax_markup) !== 0.00 && (service_tax_markup) !== ""){
-      var service_tax_markup1 = service_tax_markup.split(",");
-      for(var i=0;i<service_tax_markup1.length;i++){
-        var service_tax = service_tax_markup1[i].split(':');
-        markupservice_tax_amount = parseFloat(markupservice_tax_amount) + parseFloat(service_tax[2]);
-      }
+        var service_tax_markup1 = service_tax_markup.split(",");
+        for(var i=0;i<service_tax_markup1.length;i++){
+            var service_tax = service_tax_markup1[i].split(':');
+            markupservice_tax_amount = parseFloat(markupservice_tax_amount) + parseFloat(service_tax[2]);
+        }
 	}
 	
 
@@ -341,9 +354,8 @@ function calculate_total_amount(offset=''){
 	
 	total_amount = total_amount.toFixed(2);
 	var roundoff = Math.round(total_amount)-total_amount;
-  $('#roundoff'+offset).val(roundoff.toFixed(2));
-  $('#visa_total_cost'+offset).val(parseFloat(total_amount)+parseFloat(roundoff));
-
+    $('#roundoff'+offset).val(roundoff.toFixed(2));
+    $('#visa_total_cost'+offset).val(parseFloat(total_amount)+parseFloat(roundoff));
 }
 
 function customer_info_load(offset = '') {
@@ -420,11 +432,15 @@ function company_name_reflect() {
 // company_name_reflect();
 
 function visa_display_modal(visa_id, yr) {
+    $('#visav_btn-'+visa_id).prop('disabled',true);
+    $('#visav_btn-'+visa_id).button('loading');
     $.post('home/view/index.php', {
         visa_id: visa_id,
         yr: yr
     }, function(data) {
         $('#div_visa_content_display').html(data);
+        $('#visav_btn-'+visa_id).prop('disabled',false);
+        $('#visav_btn-'+visa_id).button('reset');
     });
 }
 

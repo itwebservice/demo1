@@ -206,14 +206,15 @@ $row_count = 11;
 $count = 0;
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Booking ID")
-        ->setCellValue('D'.$row_count, "Customer Name")
-        ->setCellValue('E'.$row_count, "Receipt Date")
-        ->setCellValue('F'.$row_count, "Amount")
-        ->setCellValue('G'.$row_count, "Mode");
+        ->setCellValue('C'.$row_count, "Receipt ID")
+        ->setCellValue('D'.$row_count, "Booking ID")
+        ->setCellValue('E'.$row_count, "Customer Name")
+        ->setCellValue('F'.$row_count, "Receipt Date")
+        ->setCellValue('G'.$row_count, "Amount")
+        ->setCellValue('H'.$row_count, "Mode");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 $sq_train_ticket_payment = mysqlQuery($query);
@@ -223,6 +224,9 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
     $date = $sq_train_ticket_info['created_at'];
     $yr = explode("-", $date);
     $year = $yr[0];
+	$date1 = $row_train_ticket_payment['payment_date'];
+	$yr1 = explode("-", $date1);
+	$year1 = $yr1[0];
 
     $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_train_ticket_info[customer_id]'"));
     if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type'] == 'B2B'){
@@ -242,27 +246,29 @@ while($row_train_ticket_payment = mysqli_fetch_assoc($sq_train_ticket_payment)){
 
     $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('B'.$row_count, ++$count)
-    ->setCellValue('C'.$row_count, get_train_ticket_booking_id($row_train_ticket_payment['train_ticket_id'],$year))
-    ->setCellValue('D'.$row_count, $customer_name)
-    ->setCellValue('E'.$row_count, date('d-m-Y', strtotime($row_train_ticket_payment['payment_date'])))
-    ->setCellValue('F'.$row_count, number_format($row_train_ticket_payment['payment_amount']+ + $row_train_ticket_payment['credit_charges'],2))
-    ->setCellValue('G'.$row_count, $row_train_ticket_payment['payment_mode']);
+    ->setCellValue('C'.$row_count, get_train_ticket_booking_payment_id($row_train_ticket_payment['payment_id'],$year1))
+    ->setCellValue('D'.$row_count, get_train_ticket_booking_id($row_train_ticket_payment['train_ticket_id'],$year))
+    ->setCellValue('E'.$row_count, $customer_name)
+    ->setCellValue('F'.$row_count, date('d-m-Y', strtotime($row_train_ticket_payment['payment_date'])))
+    ->setCellValue('G'.$row_count, number_format($row_train_ticket_payment['payment_amount']+ + $row_train_ticket_payment['credit_charges'],2))
+    ->setCellValue('H'.$row_count, $row_train_ticket_payment['payment_mode']);
             
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
 
     $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('B'.$row_count, "")
     ->setCellValue('C'.$row_count, "")
-    ->setCellValue('D'.$row_count, 'Paid Amount : '.number_format($sq_paid_amount,2))
-    ->setCellValue('E'.$row_count, 'Pending Clearance Amount : '.number_format($sq_pending_amount,2))
-    ->setCellValue('F'.$row_count, 'Cancelled Amount : '.number_format($sq_cancel_amount,2))
-    ->setCellValue('G'.$row_count, 'Payment Amount :'.number_format(($sq_paid_amount - $sq_pending_amount - $sq_cancel_amount),2));
+    ->setCellValue('D'.$row_count, "")
+    ->setCellValue('E'.$row_count, 'Paid Amount : '.number_format($sq_paid_amount,2))
+    ->setCellValue('F'.$row_count, 'Pending Clearance Amount : '.number_format($sq_pending_amount,2))
+    ->setCellValue('G'.$row_count, 'Cancelled Amount : '.number_format($sq_cancel_amount,2))
+    ->setCellValue('H'.$row_count, 'Payment Amount :'.number_format(($sq_paid_amount - $sq_pending_amount - $sq_cancel_amount),2));
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);
 }
 //////////////////////////****************Content End**************////////////////////////////////
 	

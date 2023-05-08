@@ -108,6 +108,7 @@ $(function(){
         $('#btn_save').button('reset');
         reset_form('frm_air_send');
         msg_alert(result);
+        load_visa_report('flight_id_filter1','flight_booking','flight_status_div')
       }
     });
    }

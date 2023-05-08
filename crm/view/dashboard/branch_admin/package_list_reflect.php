@@ -60,7 +60,7 @@ $sq_payment = mysqlQuery($query_payment);
                     $balance_amount = 0;
                   }
                   else{
-                    $balance_amount =  $cancel_amount - $paid_amount;
+                    $balance_amount =  $cancel_amount - $paid_amount + $queryp['sumc'];
                   }
                 }
                 else{

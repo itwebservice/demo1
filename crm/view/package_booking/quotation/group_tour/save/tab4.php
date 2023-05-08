@@ -38,18 +38,34 @@
 			<input type="text" id="tour_cost" name="tour_cost" placeholder="Total Tour Cost" title="Total Tour Cost" value="0" onchange="get_auto_values('quotation_date','tour_cost','payment_mode','service_charge','markup','save','true','basic','basic');group_quotation_cost_calculate(this.id);validate_balance(this.id);" readonly>
 
 		</div>
-	</div>
-
-	<div class="row mg_bt_10">
 		<div class="col-md-2">
 			<small id="service_show" style="color:#000000">&nbsp;</small> 
 			<input type="text" id="service_charge" name="service_charge" onchange="group_quotation_cost_calculate(this.id); validate_balance(this.id)"  placeholder="Service charge " title="Service charge ">
 
 		</div>
+	</div>
+
+	<div class="row mg_bt_10">
+		<div class="col-md-2 col-sm-4 col-xs-12">
+			<small>&nbsp;</small>
+			<select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('quotation_date','tour_cost','payment_mode','service_charge','markup','save','true','basic','basic');">
+				<option value="">*Tax Apply On</option>
+				<option value="1">Tour Cost</option>
+				<option value="2">Service Charge</option>
+				<option value="3">Total</option>
+			</select>
+		</div>
+		<div class="col-md-3 col-sm-4 col-xs-12">
+			<small>&nbsp;</small>
+			<select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('quotation_date','tour_cost','payment_mode','service_charge','markup','save','true','basic','basic');">
+				<option value="">*Select Tax</option>
+				<?php get_tax_dropdown('Income') ?>
+			</select>
+		</div>
 
 		<input type="hidden" id="service_tax" name="service_tax" value="0">
 
-		<div class="col-md-2">
+		<div class="col-md-3">
 		<small>&nbsp;</small>
 			<input type="text" id="service_tax_subtotal" name="service_tax_subtotal" readonly placeholder="Tax Amount" title="Tax Amount" onchange="validate_balance(this.id)">
 
@@ -60,7 +76,7 @@
 			<input type="text" id="total_tour_cost" class="amount_feild_highlight text-right" name="total_tour_cost" placeholder="Quotation Cost" title="Quotation Cost" value="0"  readonly>
 
 		</div>
-		<div class="col-md-4">
+		<div class="col-md-2">
 			<small>&nbsp;</small>
 			<select name="currency_code" id="gcurrency_code" title="Currency" style="width:100%" data-toggle="tooltip" required>
 				<?php
@@ -85,7 +101,7 @@
 
 		<div class="col-sm-6 col-xs-12 mg_bt_10">
 		<h3 class="editor_title">Inclusions</h3>
-		 	<TEXTAREA class="feature_editor"  id="incl" name="incl" placeholder="Inclusions" rows="3"></TEXTAREA> 
+			<TEXTAREA class="feature_editor"  id="incl" name="incl" placeholder="Inclusions" rows="3"></TEXTAREA> 
 		</div>
 
 		<div class="col-sm-6 mg_bt_10">
@@ -131,6 +147,8 @@ function switch_to_tab3(){ $('a[href="#tab3"]').tab('show'); }
 $('#frm_tab4').validate({
 
 	rules:{
+		tax_apply_on : { required:true},
+		tax_value : { required:true}
 
 	},
 
@@ -157,6 +175,7 @@ $('#frm_tab4').validate({
 		var customer_name = $('#customer_name').val();
 
 		var mobile_number = $('#mobile_no').val();
+		var country_code = $('#country_code').val();
 
 		var email_id = $('#email_id').val();
 
@@ -482,12 +501,16 @@ $('#frm_tab4').validate({
 		var base_url = $('#base_url').val();
 		var country_code = $('#country_code').val();
 		var mobile_no = $('#mobile_no').val();
+		var tax_apply_on = $('#tax_apply_on').val();
+		var tax_value = $('#tax_value').val();
 		var bsmValues = [];
         bsmValues.push({
 			"basic" : $('#basic_show').find('span').text(),
 			"service" : $('#service_show').find('span').text(),
 			"markup" : $('#markup_show').find('span').text(),
-			"discount" : $('#discount_show').find('span').text()
+			"discount" : $('#discount_show').find('span').text(),
+			"tax_apply_on":tax_apply_on,
+			"tax_value":tax_value
 			});
 		$('#btn_quotation_save').button('loading');
 
@@ -497,7 +520,7 @@ $('#frm_tab4').validate({
 
 			url: base_url+'controller/package_tour/quotation/group_tour/quotation_save.php',
 
-			data:{ tour_group_id : tour_group_id, tour_name : tour_name, from_date : from_date, to_date : to_date, total_days : total_days, customer_name : customer_name, mobile_number : mobile_number,email_id : email_id, total_adult : total_adult, total_children : total_children, total_infant : total_infant, total_passangers : total_passangers, children_without_bed : children_without_bed, children_with_bed : children_with_bed, quotation_date : quotation_date, booking_type : booking_type,adult_cost : adult_cost,children_cost : children_cost, infant_cost : infant_cost,with_bed_cost : with_bed_cost,tour_cost : tour_cost,markup_cost: markup_cost,service_charge : service_charge,taxation_id : taxation_id,service_tax : service_tax,service_tax_subtotal : service_tax_subtotal,total_tour_cost : total_tour_cost, train_from_location_arr : train_from_location_arr, train_to_location_arr : train_to_location_arr, train_class_arr : train_class_arr, train_arrival_date_arr : train_arrival_date_arr, train_departure_date_arr : train_departure_date_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr,plane_from_location_arr : plane_from_location_arr, plane_to_location_arr : plane_to_location_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr,dept_datetime_arr : dept_datetime_arr,arrival_datetime_arr : arrival_datetime_arr,route_arr : route_arr,cabin_arr : cabin_arr,sharing_arr : sharing_arr, login_id : login_id , enquiry_id : enquiry_id, tour_group : tour_group,emp_id : emp_id,incl:incl,excl : excl,terms :terms, branch_admin_id : branch_admin_id,financial_year_id : financial_year_id , country_code:country_code, mobile_no:mobile_no,bsmValues:bsmValues,currency_code:currency_code},
+			data:{ tour_group_id : tour_group_id, tour_name : tour_name, from_date : from_date, to_date : to_date, total_days : total_days, customer_name : customer_name, mobile_number : mobile_number,country_code:country_code,email_id : email_id, total_adult : total_adult, total_children : total_children, total_infant : total_infant, total_passangers : total_passangers, children_without_bed : children_without_bed, children_with_bed : children_with_bed, quotation_date : quotation_date, booking_type : booking_type,adult_cost : adult_cost,children_cost : children_cost, infant_cost : infant_cost,with_bed_cost : with_bed_cost,tour_cost : tour_cost,markup_cost: markup_cost,service_charge : service_charge,taxation_id : taxation_id,service_tax : service_tax,service_tax_subtotal : service_tax_subtotal,total_tour_cost : total_tour_cost, train_from_location_arr : train_from_location_arr, train_to_location_arr : train_to_location_arr, train_class_arr : train_class_arr, train_arrival_date_arr : train_arrival_date_arr, train_departure_date_arr : train_departure_date_arr, from_city_id_arr : from_city_id_arr, to_city_id_arr : to_city_id_arr,plane_from_location_arr : plane_from_location_arr, plane_to_location_arr : plane_to_location_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr,dept_datetime_arr : dept_datetime_arr,arrival_datetime_arr : arrival_datetime_arr,route_arr : route_arr,cabin_arr : cabin_arr,sharing_arr : sharing_arr, login_id : login_id , enquiry_id : enquiry_id, tour_group : tour_group,emp_id : emp_id,incl:incl,excl : excl,terms :terms, branch_admin_id : branch_admin_id,financial_year_id : financial_year_id , country_code:country_code, mobile_no:mobile_no,bsmValues:bsmValues,currency_code:currency_code},
 
 			success: function(message){
 

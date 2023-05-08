@@ -11,14 +11,14 @@
 			&nbsp;&nbsp;&nbsp;
 		</div>
 		<div class="col-md-4 col-sm-12 col-xs-12 text-right">
-			<button type="button" class="btn btn-info btn-sm ico_left" onclick="addDyn('div_dynamic_ticket_info')"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Section</button>
+			<button type="button" class="btn btn-info btn-sm ico_left" onclick="addDyn('div_dynamic_ticket_info');copy_values()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Section</button>
 		</div>
 	</div>
 
 	<?php $sq_entry_count = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id='$train_ticket_id'")); ?>
 	<div class="dynform-wrap" id="div_dynamic_ticket_info" data-counter="<?= $sq_entry_count ?>">
 
-		<?php 
+		<?php
 		$count = 0;
 		$sq_entry = mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id='$train_ticket_id'");
 		while($row_entry = mysqli_fetch_assoc($sq_entry)){
@@ -97,6 +97,18 @@
 
 <script>
 $('#arriving_datetime-1, #departure_datetime-1, #travel_datetime-1, .travel_datetime, .arriving_datetime').datetimepicker({ format:'d-m-Y H:i' });
+function copy_values(){
+	var count = $('#div_dynamic_ticket_info').attr('data-counter');
+	var currentdate = new Date(); 
+	var datetime = currentdate.getDate() + "-"
+                + (currentdate.getMonth()+1)  + "-" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes();
+	$('#travel_datetime-'+count).val(datetime);
+	$('#arriving_datetime-'+count).val(datetime);
+}
+
 $('#frm_tab2').validate({
 	rules:{
 	},

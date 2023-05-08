@@ -44,7 +44,7 @@ if($from_date!='' && $to_date!=''){
 				$sq_b2c_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_refund_entry[entry_id]'"));
 				$b2c_name .=  ($sq_b2c_info['type'] == 'Corporate'||$sq_b2c_info['type'] == 'B2B') ? $sq_b2c_info['company_name'] : $sq_b2c_info['first_name'].' '.$sq_b2c_info['last_name'];
 			}
-			$sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select created_at from b2c_sale where booking_id='$row_refund[booking_id]'"));
+			$sq_entry_date = mysqli_fetch_assoc(mysqlQuery("select created_at,name from b2c_sale where booking_id='$row_refund[booking_id]'"));
 			$date = $sq_entry_date['created_at'];
 			$yr = explode("-", $date);
 			$year =$yr[0];
@@ -82,7 +82,7 @@ if($from_date!='' && $to_date!=''){
 	<tfoot>
 		<tr class="active">
 			<th class="text-right info" colspan="2">Refund : <?= number_format((($total_refund=="") ? 0 : $total_refund), 2); ?></th>
-			<th class="text-right warning" colspan="2">Pending : <?= number_format((($sq_pending_amount=="") ? 0 : $sq_pending_amount), 2); ?></th>
+			<th class="text-right warning" colspan="2">Pending clearence : <?= number_format((($sq_pending_amount=="") ? 0 : $sq_pending_amount), 2); ?></th>
 			<th class="text-right danger" colspan="2">Cancelled : <?= number_format((($sq_cancel_amount=="") ? 0 : $sq_cancel_amount), 2); ?></th>
 			<th class="text-right success" colspan="2">Total Refund : <?= number_format(($total_refund - $sq_pending_amount - $sq_cancel_amount), 2); ?></th>
 		</tr>

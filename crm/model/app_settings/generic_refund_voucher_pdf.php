@@ -21,6 +21,7 @@ $service_name = $_GET['v_service_name'];
 $refund_amount = $_GET['v_refund_amount'];
 $payment_mode = $_GET['v_payment_mode'];
 $currency_code1 = $_GET['currency_code'];
+$cust_name = $_GET['cust_name'];
 
 $refund_date = get_date_user($refund_date);
 $service_name = ($service_name == 'Activity Booking') ? "Excursion Booking" : $service_name;
@@ -28,8 +29,10 @@ $service_name = ($service_name == 'Flight Booking') ? "Air Ticket Booking" : $se
 $sq_credit_note = mysqli_fetch_assoc(mysqlQuery("select * from credit_note_master where module_name='$service_name' and customer_id='$customer_id' and refund_id='$refund_id'"));
 $credit_note_id = get_credit_note_id($sq_credit_note['id']);
 
-$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
-$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
+if($cust_name==''){
+	$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+	$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
+}
 
 if($payment_mode == 'Credit Note') { $refund_mode = 'Credit Note ('.$credit_note_id.')'; }
 else{ $refund_mode = $payment_mode; }
@@ -46,6 +49,7 @@ $pdf->addPage();
 $pdf->SetFont('Arial','',10);
 
 $count = 1;
+
 $offset = ($count=="1") ? 0 : 135;
 $pdf->SetFillColor(235);
 $pdf->rect(0, 0+$offset, 210, 25, 'F');
@@ -143,7 +147,7 @@ $pdf->SetXY(125, 165+$offset);
 
 $pdf->MultiCell(70, 7, 'For '.$app_name, 0, 'C');
 
-$pdf->rect(140, 145+$offset, 40, 20);
+// $pdf->rect(140, 145+$offset, 40, 20);
 if(check_sign())
 {
 $pdf->Image(get_signature(true), 140, 145+$offset, 40, 20);

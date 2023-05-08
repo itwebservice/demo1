@@ -25,6 +25,7 @@ $bg = $_GET['bg'];
 $canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 $total_paid += $charge;
 
 $basic_cost = number_format($basic_cost1,2);

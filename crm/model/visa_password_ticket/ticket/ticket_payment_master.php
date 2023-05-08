@@ -227,7 +227,7 @@ public function ticket_payment_master_delete(){
 
 	$bank_cash_book_master->bank_cash_book_master_update($module_name, $payment_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 	
-	$sq_delete = mysqlQuery("update ticket_payment_master set payment_amount = '0', delete_status='1' where payment_id='$payment_id'");
+	$sq_delete = mysqlQuery("update ticket_payment_master set payment_amount = '0', delete_status='1',credit_charges='0' where payment_id='$payment_id'");
 	if($sq_delete){
 		echo 'Entry deleted successfully!';
 		exit;
@@ -438,7 +438,7 @@ public function ticket_payment_master_update()
 
 	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from ticket_payment_master where payment_id='$payment_id'"));
 
-	$clearance_status = ($sq_payment_info['payment_mode']=='Cash' && $payment_mode!="Cash") ? "Pending" : $sq_payment_info['clearance_status'];
+	$clearance_status = $sq_payment_info['clearance_status'];
 	if($payment_mode=="Cash"){ $clearance_status = ""; }
 
 	begin_t();
@@ -699,7 +699,7 @@ public function payment_email_notification_send($ticket_id, $payment_amount, $pa
 				if($total_pay_amt > $canc_amount){
 					$outstanding = 0;
 				}else{
-					$outstanding = $canc_amount - $total_pay_amt;
+					$outstanding = $canc_amount - $total_pay_amt + $credit_card_amount;
 				}
 			}else{
 				$outstanding = 0;
@@ -796,7 +796,7 @@ public function whatsapp_send(){
 				if($total_pay_amt > $canc_amount){
 					$outstanding = 0;
 				}else{
-					$outstanding = $canc_amount - $total_pay_amt;
+					$outstanding = $canc_amount - $total_pay_amt + $credit_card_amount;
 				}
 			}else{
 				$outstanding = 0;

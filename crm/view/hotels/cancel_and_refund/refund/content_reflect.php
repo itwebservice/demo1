@@ -89,7 +89,7 @@ $remaining_show = ($remaining_pay < 0) ? 0 : $remaining_pay;
                             placeholder="Bank Name" title="Bank Name" disabled />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="transaction_id" onchange="validate_balance(this.id);"
+                        <input type="number" id="transaction_id" onchange="validate_balance(this.id);"
                             name="transaction_id" class="form-control" placeholder="Cheque No / ID"
                             title="Cheque No / ID" disabled />
                     </div>
@@ -181,13 +181,6 @@ $remaining_show = ($remaining_pay < 0) ? 0 : $remaining_pay;
 							$bg = "";
 						}
 
-						if ($row_hotel_refund['clearance_status'] == "Pending") {
-							$bg = "warning";
-						} else if ($row_hotel_refund['clearance_status'] == "Cancelled") {
-							$bg = "danger";
-						} else {
-							$bg = "";
-						}
 						$date = $row_hotel_refund['refund_date'];
 						$yr = explode("-", $date);
 						$year1 = $yr[0];
@@ -259,24 +252,6 @@ $(function() {
             },
             refund_mode: {
                 required: true
-            },
-            bank_name: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            transaction_id: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
             },
             bank_id: {
                 required: function() {

@@ -11,6 +11,9 @@ public function visa_master_save()
   $time_taken=mysqlREString($_POST['time_taken']);
   $photo_upload_url = $_POST['photo_upload_url'];
   $photo_upload_url2 = $_POST['photo_upload_url2'];
+  $photo_upload_url3 = $_POST['photo_upload_url3'];
+  $photo_upload_url4 = $_POST['photo_upload_url4'];
+  $photo_upload_url5 = $_POST['photo_upload_url5'];
   $doc_list=mysqlREString($_POST['doc_list']);
 
   //Transaction start
@@ -27,7 +30,7 @@ public function visa_master_save()
   $value=mysqli_fetch_assoc($row);
   $max=$value['max']+1;
 
-  $sq = mysqlQuery("insert into visa_crm_master (entry_id, country_id, visa_type, fees, markup, time_taken, upload_url,upload_url2, list_of_documents,status) values ('$max', '$visa_country_name', '$visa_type', '$fees', '$markup', '$time_taken', '$photo_upload_url', '$photo_upload_url2','$doc_list','1')");
+  $sq = mysqlQuery("insert into visa_crm_master (entry_id, country_id, visa_type, fees, markup, time_taken, upload_url,upload_url2,upload_url3,upload_url4,upload_url5, list_of_documents,status) values ('$max', '$visa_country_name', '$visa_type', '$fees', '$markup', '$time_taken', '$photo_upload_url', '$photo_upload_url2', '$photo_upload_url3', '$photo_upload_url4', '$photo_upload_url5','$doc_list','1')");
 
   if($sq){
     echo "Visa information has been successfully saved.";
@@ -62,6 +65,9 @@ public function visa_master_save()
 
    $photo_upload_url = $_POST['photo_upload_url'];
    $photo_upload_url2 = $_POST['photo_upload_url2'];
+   $photo_upload_url3 = $_POST['photo_upload_url3'];
+   $photo_upload_url4 = $_POST['photo_upload_url4'];
+   $photo_upload_url5 = $_POST['photo_upload_url5'];
 
    $doc_list=mysqlREString($_POST['doc_list']);
    $active_flag = $_POST['active_flag'];
@@ -78,7 +84,7 @@ public function visa_master_save()
     exit;
   }
 
-  $sq = mysqlQuery("update visa_crm_master set country_id='$visa_country_name',visa_type='$visa_type',fees='$fees',markup='$markup',time_taken='$time_taken',upload_url='$photo_upload_url',upload_url2='$photo_upload_url2',list_of_documents='$doc_list',status='$active_flag' where entry_id='$entry_id'");
+  $sq = mysqlQuery("update visa_crm_master set country_id='$visa_country_name',visa_type='$visa_type',fees='$fees',markup='$markup',time_taken='$time_taken',upload_url='$photo_upload_url',upload_url2='$photo_upload_url2',upload_url3='$photo_upload_url3',upload_url4='$photo_upload_url4',upload_url5='$photo_upload_url5',list_of_documents='$doc_list',status='$active_flag' where entry_id='$entry_id'");
 
   if($sq){
 
@@ -160,7 +166,23 @@ public function visa_master_send()
     $getMain= explode('..',$fileCover);
     $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
     $CoverURL=substr($getSub, 1);
-    array_push($arrayAttachment, $UploadURL,$CoverURL);
+
+    $fileCover = $sq_visa['upload_url3'];
+    $getMain= explode('..',$fileCover);
+    $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
+    $CoverURL3=substr($getSub, 1);
+
+    $fileCover = $sq_visa['upload_url4'];
+    $getMain= explode('..',$fileCover);
+    $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
+    $CoverURL4=substr($getSub, 1);
+
+    $fileCover = $sq_visa['upload_url5'];
+    $getMain= explode('..',$fileCover);
+    $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
+    $CoverURL5=substr($getSub, 1);
+
+    array_push($arrayAttachment, $UploadURL,$CoverURL,$CoverURL3,$CoverURL4,$CoverURL5);
     
     ///////////////////////////////////////////Send Mail as attachment End////////////////////////////////////////////////////////////////
 
@@ -202,15 +224,31 @@ function visa_whatsapp(){
   $getMain= explode('..',$fileCover);
   $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
   $CoverURL=substr($getSub, 1);
-  array_push($arrayAttachment, $UploadURL,$CoverURL);
+  
+  $fileCover = $sq_visa['upload_url3'];
+  $getMain= explode('..',$fileCover);
+  $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
+  $CoverURL3=substr($getSub, 1);
+
+  $fileCover = $sq_visa['upload_url4'];
+  $getMain= explode('..',$fileCover);
+  $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
+  $CoverURL4=substr($getSub, 1);
+
+  $fileCover = $sq_visa['upload_url5'];
+  $getMain= explode('..',$fileCover);
+  $getSub= preg_replace('/(\/+)/','/',$getMain[2]);
+  $CoverURL5=substr($getSub, 1);
+
   
   $whatsapp_msg = rawurlencode('Dear '.',
 Hope you are doing great. Thank you for enquiry with us. Following is the visa information & required visa documents.
 *Country Name* : ' . $sq_visa['country_id'] . '
 *Visa Type* : ' . $sq_visa['visa_type'] . '
 *Total Amount* : ' . number_format($sq_visa['fees']+$sq_visa['markup'],2) . '
-*Time Taken* : ' . $sq_visa['time_taken'] . '
-*List Of Documents* : ' . strip_tags($sq_visa['list_of_documents']));
+*Time Taken* : ' . $sq_visa['time_taken']);
+
+$whatsapp_msg .= '%0a*List Of Documents* : '.BASE_URL.'/model/visa_master/whats_app_data_print.php?entry_id='.base64_encode($entry_id) ;
 
 if($UploadURL != ''){
   $download_url = preg_replace('/(\/+)/','/',$sq_visa['upload_url']);
@@ -225,6 +263,27 @@ if($CoverURL != ''){
   $whatsapp_msg .= rawurlencode('
 
 *Form2* : ' .$CoverURL);
+}
+if($CoverURL3 != ''){
+  $download_url = preg_replace('/(\/+)/','/',$sq_visa['upload_url3']);
+  $CoverURL3 = BASE_URL.str_replace('../', '', $download_url);
+  $whatsapp_msg .= rawurlencode('
+
+*Form3* : ' .$CoverURL3);
+}
+if($CoverURL4 != ''){
+  $download_url = preg_replace('/(\/+)/','/',$sq_visa['upload_url4']);
+  $CoverURL4 = BASE_URL.str_replace('../', '', $download_url);
+  $whatsapp_msg .= rawurlencode('
+
+*Form4* : ' .$CoverURL4);
+}
+if($CoverURL5 != ''){
+  $download_url = preg_replace('/(\/+)/','/',$sq_visa['upload_url5']);
+  $CoverURL5 = BASE_URL.str_replace('../', '', $download_url);
+  $whatsapp_msg .= rawurlencode('
+
+*Form5* : ' .$CoverURL5);
 }
 
 $whatsapp_msg .= rawurlencode('

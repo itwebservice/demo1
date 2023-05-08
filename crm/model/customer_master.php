@@ -328,7 +328,7 @@ public function whatsapp_send(){
 
   $contact = $app_contact_no;
   $link = BASE_URL.'view/customer';
-  $whatsapp_msg = 'Dear%20'.rawurlencode($customer_name).',%0aHope%20you%20are%20doing%20great.%0aYour%20Login%20Details%20!.%0a*Username*%20:%20'.rawurlencode($username).'%0a*Password*%20:%20'.rawurlencode($password).'%0a*Link*%20:%20'.$link.
+  $whatsapp_msg = 'Dear%20'.rawurlencode($customer_name).',%0aHope%20you%20are%20doing%20great.%0aYour%20Login%20Details%20!%0a*Username*%20:%20'.rawurlencode($username).'%0a*Password*%20:%20'.rawurlencode($password).'%0a*Link*%20:%20'.$link.
   
 
 '%0aWe%20look%20forward%20to%20having%20you%20onboard%20with%20us.%0aPlease%20contact%20for%20more%20details%20:%20'.$contact.'%0aThank%20you.%0a';

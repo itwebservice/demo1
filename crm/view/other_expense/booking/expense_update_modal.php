@@ -44,11 +44,15 @@ $q_expense = mysqli_fetch_assoc(mysqlQuery("select * from other_expense_master w
               <input type="text" id="sub_total1" name="sub_total1" value="<?= $q_expense['amount'] ?>" placeholder="*Amount" title="Amount" class="form-control" onchange="validate_balance(this.id);total_fun_update();">
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="service_tax_subtotal1" name="service_tax_subtotal1" placeholder="Tax Amount" title="Tax Amount" onchange="validate_balance(this.id);total_fun_update();" value="<?= $q_expense['service_tax_subtotal'] ?>">
+                <input type="text" id="service_tax_subtotals1" name="service_tax_subtotals1" placeholder="Tax" title="Tax" onchange="validate_balance(this.id);total_fun_update();" value="<?= $q_expense['tax_refl'] ?>" readonly>
+            </div>
+            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10 hidden">
+                <input type="text" id="service_tax_subtotal1" name="service_tax_subtotal1" placeholder="Tax Amount" title="Tax Amount" onchange="validate_balance(this.id);total_fun_update();" value="<?= $q_expense['service_tax_subtotal'] ?>" readonly>
                 <input type="hidden" id="old_tax" name="old_tax" value="<?= $q_expense['service_tax_subtotal'] ?>">
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <select name="ledger_ids[]" id="ledger_ids1" title="Select Ledger for posting" size="3" class="form-control" style="width:100%" disabled multiple>
+            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10 hidden">
+              <input type="hidden" id="ledger_ids1" name="ledger_ids1" value="<?= $q_expense['ledgers'] ?>">
+              <!-- <select name="ledger_ids[]" id="ledger_ids1" title="Select Ledger for posting" size="3" class="form-control" style="width:100%" disabled multiple>
                 <option value="">*Select Ledger</option>
                 <?php
                 $sq = mysqlQuery("select * from ledger_master where group_sub_id in('99','106') order by ledger_name");
@@ -57,24 +61,24 @@ $q_expense = mysqli_fetch_assoc(mysqlQuery("select * from other_expense_master w
                     ?>
                     <option value="<?= $row['ledger_id'] ?>" selected><?= $row['ledger_name'] ?></option>
                 <?php } } ?>
-              </select>
+              </select> -->
             </div>
-          </div>
-          <div class="row mg_bt_10">
             <div class="col-md-4 col-sm-6 col-xs-12">
               <input type="text" id="tds1" name="tds1" placeholder="TDS" title="TDS" value="<?= $q_expense['tds'] ?>" class="form-control" onchange="validate_balance(this.id);total_fun_update();">
-            </div>            
+            </div> 
+          </div>
+          <div class="row mg_bt_10">           
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <input type="text" name="total_fee1" id="total_fee1" class="amount_feild_highlight text-right form-control" placeholder="*Net Total" title="Net Total" value="<?= $q_expense['total_fee'] ?>" readonly>
              </div>                        
             <div class="col-md-4 col-sm-6 col-xs-12">
               <input type="text" name="due_date1" id="due_date1" placeholder="Due Date" title="Due Date" value="<?= get_date_user($q_expense['due_date']) ?>" class="form-control">
-            </div>        
-          </div>
-          <div class="row mg_bt_10">               
+            </div>              
             <div class="col-md-4 col-sm-6 col-xs-12">
               <input type="text" name="booking_date1" id="booking_date1" placeholder="Booking Date" value="<?= get_date_user($q_expense['expense_date']) ?>" class="form-control" title="Booking Date" onchange="check_valid_date(this.id)">
-            </div>       
+            </div>             
+          </div>
+          <div class="row mg_bt_10">   
             <div class="col-md-4 col-sm-6 col-xs-12">
                 <input type="text" name="invoice_no1" id="invoice_no1" placeholder="Invoice No" value="<?= $q_expense['invoice_no'] ?>" class="form-control" title="Invoice No">
             </div>  
@@ -100,22 +104,66 @@ $q_expense = mysqli_fetch_assoc(mysqlQuery("select * from other_expense_master w
 
 <script>
 $('#expense_update_modal').modal('show');
-$('#expense_type2,#supplier_type2,#ledger_ids1').select2();
+$('#expense_type2,#supplier_type2').select2();
 $('#payment_date1,#due_date1,#booking_date1').datetimepicker({ timepicker:false, format:'d-m-Y' });
 
 
 function total_fun_update()
 { 
-    var service_tax = $('#service_tax1').val();
-    var service_tax_subtotal = $('#service_tax_subtotal1').val();   
     var sub_total = $('#sub_total1').val();   
     var tds = $('#tds1').val();
 
     if(sub_total==""){ sub_total = 0; }
-    if(service_tax_subtotal==""){ service_tax_subtotal = 0; }
     if(tds==""){ tds = 0; }
 
-    var total_amount = (parseFloat(sub_total) + parseFloat(service_tax_subtotal)) - parseFloat(tds);
+    var service_tax = 0;
+    var service_tax_amount = 0;
+    var applied_taxes = '';
+    var ledger_posting = '';
+    var tax_value = $('#service_tax_subtotals1').val();
+
+    if(tax_value!=""){
+      var service_tax_subtotal1 = tax_value.split(",");
+      for(var i=0;i<service_tax_subtotal1.length;i++){
+        var service_tax_string = service_tax_subtotal1[i].split(':');
+        if(parseInt(service_tax_string.length) > 0){
+          var service_tax_string1 = service_tax_string[1] && service_tax_string[1].split('%');
+          service_tax_string1[0] = service_tax_string1[0] && service_tax_string1[0].replace('(','');
+          service_tax = service_tax_string1[0];
+        }
+
+        service_tax_string[2] = service_tax_string[2].replace('(','');
+        service_tax_string[2] = service_tax_string[2].replace(')','');
+        service_tax_amount = (( parseFloat(sub_total) * parseFloat(service_tax) ) / 100).toFixed(2);
+        if(applied_taxes==''){
+          applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+          ledger_posting = service_tax_string[2];
+        }else{
+          applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+          ledger_posting += ', ' + service_tax_string[2];
+        }
+      }
+      $('#service_tax_subtotals1').val(applied_taxes);
+      $('#ledger_ids').val(ledger_posting);
+    }else{
+      $('#service_tax_subtotals1').val('');
+      $('#ledger_ids1').val('');
+    }
+    console.log(applied_taxes);
+    var service_tax_subtotal = $('#service_tax_subtotals1').val();   
+    if(service_tax_subtotal==""){ service_tax_subtotal = 0; }
+		var service_tax_amount = 0;
+		if (parseFloat(service_tax_subtotal) !== 0.00 && (service_tax_subtotal) !== '') {
+
+			var service_tax_subtotal1 = service_tax_subtotal.split(",");
+			for (var i = 0; i < service_tax_subtotal1.length; i++) {
+				var service_tax = service_tax_subtotal1[i].split(':');
+				service_tax_amount = parseFloat(service_tax_amount) + parseFloat(service_tax[2]);
+			}
+		}
+    $('#service_tax_subtotal1').val(service_tax_amount);
+
+    var total_amount = parseFloat(sub_total) + parseFloat(service_tax_amount) - parseFloat(tds);
     var total=total_amount.toFixed(2);
     $('#total_fee1').val(total);
 }
@@ -163,6 +211,7 @@ $(function(){
         var supplier_type = $('#supplier_type2').val();
         var sub_total = $('#sub_total1').val();
         var service_tax_subtotal = $('#service_tax_subtotal1').val();
+        var service_tax_subtotals = $('#service_tax_subtotals1').val();
         var old_tax = $('#old_tax').val();
         var ledger_ids = $('#ledger_ids1').val();
         if(parseInt(old_tax) === 0 && (parseFloat(service_tax_subtotal) !== 0)){
@@ -191,7 +240,7 @@ $(function(){
 	            $.ajax({
 	              type:'post',
 	              url: base_url+'controller/other_expense/expense_booking_update.php',
-	              data:{ expense_id : expense_id,expense_type : expense_type, supplier_type : supplier_type, sub_total : sub_total,ledger_ids : ledger_ids, service_tax_subtotal : service_tax_subtotal, tds : tds, net_total : net_total, due_date : due_date, booking_date : booking_date, invoice_no : invoice_no, id_upload_url : id_upload_url },
+	              data:{ expense_id : expense_id,expense_type : expense_type, supplier_type : supplier_type, sub_total : sub_total,ledger_ids : ledger_ids, service_tax_subtotal : service_tax_subtotal,service_tax_subtotals:service_tax_subtotals, tds : tds, net_total : net_total, due_date : due_date, booking_date : booking_date, invoice_no : invoice_no, id_upload_url : id_upload_url },
 	              success:function(result){
 	              	$('#btn_update_expense').button('reset');
 	                msg_alert(result);	                

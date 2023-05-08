@@ -3,10 +3,10 @@ include_once "../../../../../../model/model.php";
 $tour_id = $_POST['tour_id'];
 $tour_group_id = $_POST['tour_group_id'];
 
-$sq_pount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'"));
+$sq_pount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'"));
 $sq_count = mysqli_num_rows(mysqlQuery("select * from group_tour_estimate_expense where tour_id='$tour_id' and tour_group_id ='$tour_group_id'"));
 ?>
- 
+
 <div class="modal fade" id="group_tour_expense_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   	<div class="modal-dialog modal-lg" role="document">
     	<div class="modal-content">
@@ -35,6 +35,7 @@ $sq_count = mysqli_num_rows(mysqlQuery("select * from group_tour_estimate_expens
                         while($row_query = mysqli_fetch_assoc($sq_query)){	
                             if($row_query['net_total'] != '0'){
                                 $vendor_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
+                                $total_purchase = 0;
                                 //Service Tax 
                                 $service_tax_amount = 0;
                                 if($row_query['service_tax_subtotal'] !== 0.00 && ($row_query['service_tax_subtotal']) !== ''){
@@ -44,13 +45,21 @@ $sq_count = mysqli_num_rows(mysqlQuery("select * from group_tour_estimate_expens
                                   $service_tax_amount +=  $service_tax[2];
                                   }
                                 }
+                                if($row_query['purchase_return'] == 0){
+                                    $total_purchase += $row_query['net_total'];
+                                }
+                                else if($row_query['purchase_return'] == 2){
+                                    $cancel_estimate = json_decode($row_query['cancel_estimate']);
+                                    $p_purchase = ($row_query['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+                                    $total_purchase += $p_purchase;
+                                }
                             ?>
                                 <tr>
                                     <td><?= $count++ ?></td>
                                     <td><?= get_date_user($row_query['purchase_date']) ?></td>
                                     <td><?= $row_query['vendor_type'] ?></td>
                                     <td><?= $vendor_name ?></td>
-                                    <td><?= number_format($row_query['net_total']-$service_tax_amount,2) ?></td>
+                                    <td><?= number_format($total_purchase-$service_tax_amount,2) ?></td>
                                 </tr>
                             <?php }
                         } ?>
@@ -58,7 +67,10 @@ $sq_count = mysqli_num_rows(mysqlQuery("select * from group_tour_estimate_expens
                     </table>
 
                 </div></div></div>
-            <?php } if($sq_count!=0){ ?>
+            <?php }else{
+                echo '<h4>No purchase taken for this booking</h4>';
+            }
+            if($sq_count!=0){ ?>
             <div class="row mg_tp_20">
             <div class="col-md-12">
             <h3 class="editor_title">Other Expense</h3>

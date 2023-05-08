@@ -3,7 +3,6 @@ include "../../model/model.php";
 /*======******Header******=======*/
 require_once('../layouts/admin_header.php');
 ?>
-
 <?= begin_panel('Visa Information',16) ?>
     <div class="header_bottom mg_bt_10">
         <div class="row">
@@ -90,14 +89,22 @@ function save_modal()
 }
 function update_modal(entry_id)
 {
+    $('#updatet_btn-'+entry_id).button('loading');
+	$('#updatet_btn-'+entry_id).prop('disabled',true);
     $.post('update_modal.php', {entry_id : entry_id}, function(data){
         $('#div_employee_modal').html(data);
+		$('#updatet_btn-'+entry_id).button('reset');
+		$('#updatet_btn-'+entry_id).prop('disabled',false);
     });
 }
 function display_modal(entry_id)
 {
+    $('#viewt_btn-'+entry_id).button('loading');
+	$('#viewt_btn-'+entry_id).prop('disabled',true);
     $.post('view/index.php', {entry_id : entry_id}, function(data){
         $('#div_employee_modal').html(data);
+        $('#viewt_btn-'+entry_id).button('reset');
+        $('#viewt_btn-'+entry_id).prop('disabled',false);
     });
 }
 function send(entry_id)

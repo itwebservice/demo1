@@ -9,7 +9,7 @@
 
 
 
-				<div class="col-md-6 col-sm-12 col-xs-12 mg_bt_10_xs">
+				<div class="col-md-12 col-sm-12 col-xs-12 mg_bt_10_xs">
 
 					<div class="panel panel-default panel-body app_panel_style feildset-panel">
 						<legend>Basic Amount</legend> 
@@ -27,28 +27,26 @@
 								<span data-original-title="" title="">Child(ren)</span>
 								<input type="text" id="childrens" name="childrens" placeholder="*Child" onchange="get_auto_values('booking_date','basic_amount','payment_mode','service_charge','markup','save','true','service_charge','discount');" title="Childrens" readonly>
 
-							</div>
+							</div>	
 
 							<div class="col-sm-4 col-xs-12 mg_bt_10">
 								<span data-original-title="" title="">Infant(s)</span>
 								<input type="text" id="infant" name="infant" placeholder="*Infants" title="Infant" readonly>
 
-							</div>			
-
+							</div>	
 							<div class="col-sm-4 col-xs-12 mg_bt_10">
-							<small>&nbsp;</small>
+								<span data-original-title="" title="">Adult Amount</span>
 								<input type="text" id="adult_fair" name="adult_fair" placeholder="*Adult Fare" title="Adult Fare" onchange="calculate_total_amount(this.id);validate_balance(this.id)">
 
-							</div>		
-
+							</div>	
 							<div class="col-sm-4 col-xs-12 mg_bt_10">
-							<small>&nbsp;</small>
+								<span data-original-title="" title="">Child Amount</span>
 								<input type="text" id="children_fair" name="children_fair" placeholder="*Children Fare" title="Children Fare" onchange="calculate_total_amount(this.id);validate_balance(this.id)">
 
-							</div>		
+							</div>				
 
 							<div class="col-sm-4 col-xs-12">
-							<small>&nbsp;</small>
+								<span data-original-title="" title="">Infant Amount</span>
 								<input type="text" id="infant_fair" name="infant_fair" placeholder="*Infant Fare" title="Infant Fare" onchange="calculate_total_amount(this.id);validate_balance(this.id)">
 
 							</div>
@@ -63,7 +61,7 @@
 
 
 
-				<div class="col-md-6 col-sm-12 col-xs-12 mg_bt_10_xs">
+				<div class="col-md-12 col-sm-12 col-xs-12 mg_bt_10_xs">
 
 					<div class="panel panel-default panel-body app_panel_style feildset-panel">
 						<legend>Other Calculations</legend> 
@@ -71,50 +69,95 @@
 
 						<div class="row">
 
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small id="basic_show">&nbsp;</small>
 								<input type="text" id="basic_cost" name="basic_cost" placeholder="*Basic Amount" title="Basic Amount" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','basic','discount');" readonly>
 
 							</div>
 							
 
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small>&nbsp;</small>
 								<input type="text" id="yq_tax" name="yq_tax" placeholder="YQ Tax" title="YQ Tax" onchange="calculate_total_amount(this.id);validate_balance(this.id)">
 
 							</div>
 
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 							<small>&nbsp;</small>
 								<input type="text" id="other_taxes" name="other_taxes" placeholder="Other Taxes" title="Other Taxes" onchange="calculate_total_amount(this.id);validate_balance(this.id)">
 
 							</div>
 
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small id="discount_show">&nbsp;</small>
 								<input type="text" id="discount" name="discount" placeholder="Discount" title="Discount" onchange="calculate_total_amount(this.id);validate_balance(this.id);get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','false','discount','discount');">
 
 							</div>
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small id="service_show">&nbsp;</small>
 								<input type="text" id="service_charge" name="service_charge" placeholder="Service Charge" title="Service Charge" onchange="validate_balance(this.id);get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount')">
 
 							</div>
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','false','discount','discount');">
+									<option value="">*Tax Apply On</option>
+									<option value="1">Basic Amount</option>
+									<option value="2">Service Charge</option>
+									<option value="3">Total</option>
+								</select>
+							</div>
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','false','discount','discount');">
+									<option value="">*Select Tax</option>
+									<?php get_tax_dropdown('Income') ?>
+								</select>
+							</div>
 
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small>&nbsp;</small>
 								<input type="text" id="service_tax_subtotal" name="service_tax_subtotal" placeholder="Service Tax" title="Service Tax" onchange="validate_balance(this.id)" readonly>
 
-							</div>			
-							<div class="col-sm-4 col-xs-12 mg_bt_10">
+							</div>		
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small id="markup_show">&nbsp;</small>
-								<input type="text" id="markup" name="markup" placeholder="Markup" title="Markup" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','markup','discount');validate_balance(this.id);">
+								<input type="text" id="markup" name="markup" placeholder="Markup Amount" title="Markup Amount" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','markup','discount');validate_balance(this.id);">
 							</div>
-
-							<div class="col-sm-4 col-xs-12">
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Select Markup Tax" id="markup_tax_value" name="markup_tax_value" class="form-control" onchange="get_auto_values('booking_date','visa_issue_amount','payment_mode','service_charge','markup','save','false','service_charge','basic');">
+									<option value="">*Select Markup Tax</option>
+									<?php get_tax_dropdown('Income') ?>
+								</select>
+							</div>
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
 								<small>&nbsp;</small>
 								<input type="text" id="service_tax_markup" name="service_tax_markup" placeholder="Tax on Markup" title="Tax on Markup" onchange="validate_balance(this.id)" readonly>
 
+							</div>
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+							<small>&nbsp;</small>
+								<input type="text" id="tds" name="tds" placeholder="TDS" title="TDS" onchange="validate_balance(this.id);calculate_total_amount(this.id)">
+
+							</div>			 
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+							<small>&nbsp;</small>
+								<input type="text" name="roundoff" id="roundoff" class="text-right" placeholder="Round Off" title="RoundOff" readonly>
+							</div> 
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+							<small>&nbsp;</small>
+								<input type="text" name="ticket_total_cost" id="ticket_total_cost" placeholder="Net Total" onchange="validate_balance(this.id);" title="Net Amount" class="amount_feild_highlight text-right" readonly>
+
+							</div>
+
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+							<small>&nbsp;</small>
+								<input type="text" name="due_date" id="due_date" placeholder="Due Date" title="Due Date" value="<?= date('d-m-Y') ?>" >
+							</div>
+							<div class="col-sm-3 col-xs-12 mg_bt_10">
+							<small>&nbsp;</small>
+								<input type="text" name="booking_date" id="booking_date" placeholder="Booking Date" value="<?= date('d-m-Y') ?>" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',true);">
 							</div>
 
 						</div>
@@ -129,36 +172,6 @@
 
 			</div>
 
-
-
-			<div class="panel panel-default panel-body">
-
-						
-
-				<div class="row">
-
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-						<input type="text" id="tds" name="tds" placeholder="TDS" title="TDS" onchange="validate_balance(this.id);calculate_total_amount(this.id)">
-
-					</div>			 
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" name="roundoff" id="roundoff" class="text-right" placeholder="Round Off" title="RoundOff" readonly>
-					</div> 
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-						<input type="text" name="ticket_total_cost" id="ticket_total_cost" placeholder="Net Total" onchange="validate_balance(this.id);" title="Net Amount" class="amount_feild_highlight text-right" readonly>
-
-					</div>
-
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" name="due_date" id="due_date" placeholder="Due Date" title="Due Date" value="<?= date('d-m-Y') ?>" >
-					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" name="booking_date" id="booking_date" placeholder="Booking Date" value="<?= date('d-m-Y') ?>" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',true);">
-					</div>
-				</div>
-			</div>
 			<div class="row">
 				<div class="col-md-12 col-sm-4 col-xs-12 mg_bt_10">
 					<h3 class="editor_title">Cancellation Policy</h3>
@@ -197,7 +210,10 @@ $(function(){
 				basic_cost_markup: {number : true },
 				markup : { required : true },
 				ticket_total_cost: { required : true, number : true },
-				booking_date : { required : true}
+				booking_date : { required : true},
+				tax_apply_on : { required:true},
+				tax_value : { required:true},
+				markup_tax_value : { required:true}
 		},
 
 		submitHandler:function(form){

@@ -4,6 +4,13 @@ $payment_id = $_POST['payment_id'];
 $sq_payment = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where payment_id='$payment_id'"));
 
 $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="Credit Card" || $sq_payment['payment_mode']=="Debit Note" || $sq_payment['payment_mode']=="Advance") ? "disabled" : "";
+$row_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id = '$sq_payment[estimate_id]'"));
+$vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
+$estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
+$date = $row_estimate['purchase_date'];
+$yr = explode("-", $date);
+$year = $yr[0];
+$estimate_id = get_vendor_estimate_id($row_estimate['estimate_id'],$year)." : ".$vendor_type_val."(".$row_estimate['vendor_type'].") : ".$estimate_type_val;
 ?>
 <div class="modal fade" id="payment_update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog" role="document" style="width:80%; margin-top:20px">
@@ -23,6 +30,11 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
           <div class="panel panel-default panel-body app_panel_style mg_tp_20 feildset-panel">
           <legend>Select Sale</legend>
 
+            <div class="row">
+              <div class="col-md-4 col-md-offset-4">
+                <input type="text" value="<?= $estimate_id ?>" readonly/>
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-3">
                 <select name="vendor_type1" id="vendor_type1" title="Supplier Type" onchange="vendor_type_data_load(this.value, 'div_vendor_type_content1', '1')">
@@ -46,7 +58,7 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
                     <option value="<?= $sq_payment['estimate_type'] ?>"><?= $sq_payment['estimate_type'] ?></option>
                     <option value="">Purchase Type</option>
                     <?php 
-                    $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
+                    $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by id");
                     while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
                       ?>
                       <option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
@@ -96,7 +108,7 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
                 <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment['bank_name'] ?>" <?= $enable ?>>
               </div>
               <div class="col-md-4">
-                <input type="text" id="transaction_id1" name="transaction_id1" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
+                <input type="number" id="transaction_id1" name="transaction_id1" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
               </div>
                <div class="col-md-4">
                 <select name="bank_id1" id="bank_id1" title="Debitor Bank" <?= $enable ?>>
@@ -184,8 +196,6 @@ $(function(){
               payment_amount1 : { required: true, number:true },
               payment_date1 : { required: true },
               payment_mode1 : { required : true },
-              bank_name1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },     
               bank_id1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){

@@ -16,12 +16,13 @@ if($from_date!='' && $to_date!=""){
 $query .=" order by entry_id desc ";
 
 $count = 0;
-$quotation_cost = 0;
 $row_quotation1 = mysqlQuery($query);
 $array_s = array();
 $temp_arr = array();
 while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 
+	$quotation_cost = 0;
+	$total_cost1 = 0;
     $entry_id = $row_quotation['entry_id'];
     $quotation_date = $row_quotation['created_at'];
 	$yr = explode("-", $quotation_date);
@@ -38,7 +39,7 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 			
 			$total_cost1 = ($row_quotation['adults']*floatval($row_tariff['cadult'])) + ($row_quotation['chwob']*floatval($row_tariff['ccwob'])) + ($row_quotation['chwb']*floatval($row_tariff['ccwb'])) + ($row_quotation['infant']*floatval($row_tariff['cinfant'])) + ($row_quotation['extra_bed']*floatval($row_tariff['cextra']));
 		}
-		if($total_cost1 == '0'){
+		if($total_cost1 == 0){
 			$quotation_cost = 'Price On Request';
 		}else{
 			
@@ -58,7 +59,7 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		$currency_id = $currency;
 		$total_cost1 = floatval($adult_cost_total) + floatval($child_without_cost_total) + floatval($child_with_cost_total) + floatval($infant_cost_total) + floatval($with_bed_cost_total);
 		
-		if($total_cost1 == '0'){
+		if($total_cost1 == 0){
 			$quotation_cost = 'Price On Request';
 		}
 		else{

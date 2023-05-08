@@ -150,8 +150,6 @@ class b2b_request{
             $email_id1 = $encrypt_decrypt->fnDecrypt($sq_hotel['alternative_email_1'], $secret_key);
             $email_id2 = $encrypt_decrypt->fnDecrypt($sq_hotel['alternative_email_2'], $secret_key);
 
-            
-
             if($city_id != ''){
                 $sq_city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$city_id'"));
             }else{

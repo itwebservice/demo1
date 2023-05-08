@@ -223,10 +223,11 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('P'.$row_count, "Paid Amount")
         ->setCellValue('Q'.$row_count, "Balance Amount")
         ->setCellValue('R'.$row_count, "Due Date")
-        ->setCellValue('S'.$row_count, "Created By");
+        ->setCellValue('S'.$row_count, "Created By")
+        ->setCellValue('T'.$row_count, "Booking Date");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':T'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':T'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
@@ -275,7 +276,7 @@ $row_count++;
     $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
     if($row_booking['tour_group_status'] == 'Cancel'){
       if($cancel_amount > $paid_amount){
-        $balance_amount = $cancel_amount - $paid_amount;
+        $balance_amount = $cancel_amount - $paid_amount + $sq_paid['sumc'];
       }
       else{
         $balance_amount = 0;
@@ -283,7 +284,7 @@ $row_count++;
     }else{
       if($pass_count == $cancelpass_count){
         if($cancel_amount > $paid_amount){
-          $balance_amount = $cancel_amount - $paid_amount;
+          $balance_amount = $cancel_amount - $paid_amount + $sq_paid['sumc'];
         }
         else{
           $balance_amount = 0;
@@ -319,10 +320,11 @@ $row_count++;
       ->setCellValue('P'.$row_count, number_format($sq_paid['paid_amount']+$sq_paid['sumc'], 2))
       ->setCellValue('Q'.$row_count, number_format($balance_amount, 2))
       ->setCellValue('R'.$row_count, ($row_booking['balance_due_date']=='1970-01-01') ? 'NA' : date('d-m-Y',strtotime($row_booking['balance_due_date'])))
-      ->setCellValue('S'.$row_count,$emp_name);
+      ->setCellValue('S'.$row_count,$emp_name)
+      ->setCellValue('T'.$row_count,get_date_user($date));
 
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':S'.$row_count)->applyFromArray($borderArray);    
+  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':T'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':T'.$row_count)->applyFromArray($borderArray);    
 
   $total_sale += floatval($total_tour_amount)-floatval($cancel_amount);
   $total_cancel += $cancel_amount;

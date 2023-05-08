@@ -13,7 +13,7 @@ $sq_task = mysqli_fetch_assoc(mysqlQuery("select * from tasks_master where task_
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Task</h4>
       </div>
       <div class="modal-body">
 
@@ -29,21 +29,16 @@ $sq_task = mysqli_fetch_assoc(mysqlQuery("select * from tasks_master where task_
       
         <div class="row">
           <div class="col-sm-6 mg_bt_10">
-            <input type="text" id="due_date1" name="due_date1" placeholder="Due Date" title="Due Date" value="<?= date('d-m-Y H:i', strtotime($sq_task['due_date'])) ?>">
+            <input type="text" id="due_date1" name="due_date1" placeholder="Due Date & Time" title="Due Date & Time" value="<?= date('d-m-Y H:i', strtotime($sq_task['due_date'])) ?>">
           </div>
           <div class="col-sm-6 mg_bt_10">
             <select name="assign_to1" id="assign_to1" style="width: 100%" class="app-select2" title="Assign To">
               <?php 
-              $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$sq_task[emp_id]' "));
+              $sq_emp = mysqli_fetch_assoc(mysqlQuery("select emp_id,first_name,last_name from emp_master where emp_id='$sq_task[emp_id]' "));
               ?>
               <option value="<?= $sq_emp['emp_id'] ?>"><?= $sq_emp['first_name'].' '.$sq_emp['last_name'] ?></option>
               <?php
-             $query = "select * from emp_master where emp_id!='0' and active_flag='Active'";
-              if($role!='Admin' && $branch_status=='yes')
-              {
-                $query .=" and branch_id='$branch_admin_id'";
-              }
-              $sq_employee = mysqlQuery($query);
+              $sq_employee = mysqlQuery("select emp_id,first_name,last_name from emp_master where emp_id!='0' and active_flag='Active'");
               while($row_employee = mysqli_fetch_assoc($sq_employee)){
                 ?>
                 <option value="<?= $row_employee['emp_id'] ?>"><?= $row_employee['first_name'].' '.$row_employee['last_name'] ?></option>

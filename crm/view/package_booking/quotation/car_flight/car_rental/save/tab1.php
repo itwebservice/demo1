@@ -45,13 +45,21 @@
 		</div>	
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 	    	<input type="text" id="customer_name" name="customer_name" onchange="fname_validate(this.id)" placeholder="*Customer Name" title="Customer Name">
+            <input type="hidden" id="cust_data" name="cust_data" value='<?= get_customer_hint() ?>'>
 	    </div>
+        <div class="col-md-3 col-sm-6 mg_bt_10">
+            <div class="col-md-3" style="padding-left:0px;">
+                <select name="country_code" id="country_code" title="Country code">
+                    <?= get_country_code(); ?>
+                </select>
+            </div>
+            <div class="col-md-9" style="padding-left:60px;padding-right:0px;">
+                <input type="text" class="form-control" id="mobile_no" onchange="mobile_validate(this.id);" name="mobile_no" placeholder="*WhatsApp No" title="WhatsApp No">
+            </div>
+        </div>
 	    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<input type="text" id="email_id" name="email_id" placeholder="Email ID" title="Email ID">
 		</div>	
-		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-			<input type="text" id="mobile_no" name="mobile_no" onchange="mobile_validate(this.id)" placeholder="*Whatsapp no with country code" title="*Whatsapp no with country code">
-		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
@@ -101,7 +109,7 @@
 	    	<input type="text" class="form-control" id="extra_hr_cost" name="extra_hr_cost" placeholder="Extra Hr Cost" title="Extra Hr Cost" onchange=";validate_balance(this.id)"> 
 	    </div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	    	<input type="text" id="rate" name="rate"  placeholder="*Rate" title="Rate" onchange="validate_balance(this.id)">
+	    	<input type="text" id="rate" name="rate"  placeholder="*Daily Rate" title="Daily Rate" onchange="validate_balance(this.id)">
 	    </div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			<input type="text" id="from_date" name="from_date" placeholder="Travel From Date" title="Travel From Date" value="<?= date('d-m-Y')?>" onchange="get_to_date(this.id,'to_date');total_days_reflect()">
@@ -126,7 +134,7 @@
 	    	<input type="text" id="total_max_km" name="total_max_km" placeholder="Total Max Km" title="Total Max Km" onchange=";validate_balance(this.id)">
 	    </div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	    	<input type="text" id="traveling_date" name="traveling_date" placeholder="Travelling Date" title="Travelling Date" class="form-control">
+	    	<input type="text" id="traveling_date" name="traveling_date" placeholder="Travelling Date" title="Travelling Date" class="form-control" value="<?= date('d-m-Y H:i') ?>">
 	    </div>
 	</div>
 	<div class="row">
@@ -142,6 +150,26 @@
 	</div>
 </form>
 <script>
+$('#country_code').select2();
+$("#customer_name").autocomplete({
+    source: JSON.parse($('#cust_data').val()),
+    select: function(event, ui) {
+        $("#customer_name").val(ui.item.label);
+        $('#mobile_no').val(ui.item.contact_no);
+        $('#country_code').val(ui.item.country_id);
+		$('#country_code').trigger('change');
+        $('#email_id').val(ui.item.email_id);
+    },
+    open: function(event, ui) {
+        $(this).autocomplete("widget").css({
+            "width": document.getElementById("customer_name").offsetWidth
+        });
+    }
+}).data("ui-autocomplete")._renderItem = function(ul, item) {
+    return $("<li disabled>")
+        .append("<a>" + item.label + "</a>")
+        .appendTo(ul);
+};
 $('#from_date,#to_date').datetimepicker({ timepicker:false,format:'d-m-Y' });
 $('#traveling_date').datetimepicker({ format:'d-m-Y H:i' });
 
@@ -169,6 +197,7 @@ $('#frm_tab1').validate({
 		places_to_visit : { required : function(){  if($('#travel_type').val()=="Outstation"){ return true; }else{ return false; }  }  },
 		traveling_date : { required : function(){  if($('#travel_type').val()=="Outstation"){ return true; }else{ return false; }  }  },
 		mobile_no : { required : true },
+		country_code : { required : true }
 	},
 	messages:{
 		extra_km_cost	:	"Only Numbers Allowed",

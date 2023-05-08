@@ -19,7 +19,7 @@ $branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where br
 $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditions where type='Package Sale' and active_flag ='Active'"));
 $sq_quotation = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_quotation_master where quotation_id='$quotation_id'"));
 
-$package_booking_info = mysqli_fetch_assoc(mysqlQuery("select *  from package_tour_booking_master where booking_id='$booking_id' "));
+$package_booking_info = mysqli_fetch_assoc(mysqlQuery("select * from package_tour_booking_master where booking_id='$booking_id' "));
 $inclusions = ($package_booking_info['quotation_id'] == 0) ? $package_booking_info['inclusions'] : $sq_quotation['inclusions'];
 $exclusions = ($package_booking_info['quotation_id'] == 0) ? $package_booking_info['exclusions'] : $sq_quotation['exclusions'];
 
@@ -47,8 +47,11 @@ if ($package_booking_info['emp_id'] == '0') {
 } else {
     $booker_name = $booker_name1;
 }
-
-$sq_total_members = mysqli_num_rows(mysqlQuery("select traveler_id from package_travelers_details where booking_id='$booking_id'"));
+if($package_booking_info['quotation_id'] == 0){
+    $sq_total_members = mysqli_num_rows(mysqlQuery("select traveler_id from package_travelers_details where booking_id='$booking_id'"));
+}else{
+    $sq_total_members = $sq_quotation['total_passangers'];
+}
 
 $visa_name = ($package_booking_info['visa_country_name'] != "") ? $package_booking_info['visa_country_name'] : 'NA';
 $insuarance_name = ($package_booking_info['insuarance_company_name'] != "") ? $package_booking_info['insuarance_company_name'] : 'NA';
@@ -100,11 +103,10 @@ if ($bsmValues[0]->service != '') {   //inclusive service charge
 ////////////Basic Amount Rules
 if ($bsmValues[0]->basic != '') { //inclusive basic
 
-    // $newBasic = $basic_cost1 + $service_tax_amount;
     $tax_show = '';
 } else {
 }
-$net_amount1 = currency_conversion($currency, $package_booking_info['currency_code'], $net_amount + $charge);
+$net_amount1 = currency_conversion($currency, $package_booking_info['currency_code'], $net_amount);
 ?>
 
 <!-- header -->

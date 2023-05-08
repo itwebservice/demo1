@@ -54,19 +54,24 @@ $query .= " and customer_id='$customer_id'";
 			$paid_amount =$sq_payment_info['sum'] + $sq_payment_info['sumc'];
 			$paid_amount = ($paid_amount == '')?'0':$paid_amount;
 			
-			if($paid_amount > 0){
-				if($pass_count==$cancel_count){
-					$balance_amount = 0;
-				}else{
-					$balance_amount = $sale_total_amount - $paid_amount;
-				}
-			}else{
-				if($pass_count!=$cancel_count){
-					$balance_amount = $sale_total_amount - $paid_amount;
+			if($pass_count == $cancel_count){
+				if($paid_amount > 0){
+					if($cancel_amount >0){
+						if($paid_amount > $cancel_amount){
+							$balance_amount = 0;
+						}else{
+							$balance_amount = $cancel_amount - $paid_amount + $sq_payment_info['sumc'];
+						}
+					}else{
+						$balance_amount = 0;
+					}
 				}
 				else{
 					$balance_amount = $cancel_amount;
 				}
+			}
+			else{
+				$balance_amount = $sale_total_amount - $paid_amount;
 			}
 
 			$sq_entry = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_entries where booking_id='$row_booking[booking_id]'"));

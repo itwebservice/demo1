@@ -18,7 +18,7 @@ $disabled = ($sq_income_info['payment_mode']=="Cash") ? "disabled" : "";
       </div>
       <div class="modal-body">
 
-            
+            <input type="hidden" id="old_payment_amount" value="<?= $sq_income_info['payment_amount'] ?>">
             <div class="row">
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                 <select name="income_type_id" title="Income Type" id="income_type_id">
@@ -118,12 +118,17 @@ $('#frm_update').validate({
     var transaction_id = $('#transaction_id').val();
     var bank_id = $('#bank_id').val();
     var particular = $('#particular').val();
+    var payment_old_value = $('#old_payment_amount').val();
 
+    if(!check_updated_amount(payment_old_value,payment_amount)){
+      error_msg_alert("You can update amount to 0 only!");
+      return false;
+    }
     $('#btn_update').button('loading');
     $.ajax({
       type:'post',
       url:base_url+'controller/tour_estimate/other_income/income_update.php',
-      data: { income_id : income_id, income_type_id : income_type_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, particular : particular },
+      data: { income_id : income_id, income_type_id : income_type_id, payment_amount : payment_amount, payment_old_value : payment_old_value, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, particular : particular },
       success:function(result){        
         msg_alert(result);
         var msg = result.split('--');

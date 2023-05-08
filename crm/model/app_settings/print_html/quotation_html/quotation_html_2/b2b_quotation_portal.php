@@ -124,7 +124,7 @@ $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master wher
                 </div>
                 <div class="detailBlockContent">
                 <h3 class="contentValue"><?= $sq_qcurr['default_currency'].' '.number_format($quotation_cost,2) ?></h3>
-                <span class="contentLabel">PRICE</span>
+                <span class="contentLabel">AMOUNT</span>
                 </div>
             </div>
         </div>
@@ -279,6 +279,7 @@ $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master wher
                         <th>Pickup_Point</th>
                         <th>Total_Pax</th>
                         <th>Timing_Slot</th>
+                        <th>Total_vehicle</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -296,6 +297,7 @@ $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master wher
                           <td><?= $activity_list_arr[$i]->service->service_arr[0]->pick_point ?></td>
                           <td><?= $activity_list_arr[$i]->service->service_arr[0]->total_pax ?></td>
                           <td><?= ($pdf_data_array[0]->timing_slots[$i] != '')?$pdf_data_array[0]->timing_slots[$i]:'NA' ?></td>
+                          <td><?= ($activity_list_arr[$i]->service->service_arr[0]->vehicles!='')?$activity_list_arr[$i]->service->service_arr[0]->vehicles : 'NA' ?></td>
                         </tr>
                       <?php }	?>
                     </tbody>
@@ -485,7 +487,7 @@ $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master wher
                           <div class="col-md-1 no-pad"></div>
                           <div class="itneraryContent col-md-11 no-pad text-left mg_tp_20 mg_bt_20">
                             <div class="itneraryImg col-md-4 no-pad">
-                              <img src="<?= $daywise_image ?>" class="img-responsive">
+                              <img src="http://itourscloud.com/quotation_format_images/dummy-image.jpg" class="img-responsive">
                             </div>
                             <div class="itneraryText col-md-8 no-pad">
                               <h5 class="specialAttraction no-marg"><?= $row_itinarary['attraction'] ?></h5>
@@ -651,7 +653,7 @@ $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master wher
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/tourCost.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= number_format($grand_total,2) ?></h4>
-                  <p>TOTAL COST</p>
+                  <p>TOTAL AMOUNT</p>
                 </div>
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/tax.png" class="img-responsive"></div>
@@ -661,7 +663,7 @@ $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master wher
                 <div class="col-md-4 text-center">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/travelCost.png" class="img-responsive"></div>
                   <h4 class="no-marg"><?= number_format($quotation_cost,2) ?></h4>
-                  <p>Net COST</p>
+                  <p>Net AMOUNT</p>
                 </div>
               </div>
             </div>

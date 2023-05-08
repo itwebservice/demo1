@@ -150,6 +150,9 @@ if($row_payment['amount'] != '0.00'){
 		$date = $sq_booking['form_date'];
 		$yr = explode("-", $date);
 		$year =$yr[0];
+		$date1 = $row_payment['date'];
+		$yr1 = explode("-", $date1);
+		$year1 = $yr1[0];
 		$sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tour_master where tour_id='$sq_booking[tour_id]'"));
 
 		$sq_group = mysqli_fetch_assoc(mysqlQuery("select * from tour_groups where group_id='$sq_booking[tour_group_id]'"));
@@ -173,6 +176,9 @@ if($row_payment['amount'] != '0.00'){
 			$bg = "danger";
 			$total_cancelled = $total_cancelled + $row_payment['amount'] + $row_payment['credit_charges'];
 		}
+		else if($row_payment['clearance_status']=="Cleared"){
+			$bg = "success";
+		}
 		else{
 			$bg = '';
 		}
@@ -181,7 +187,7 @@ if($row_payment['amount'] != '0.00'){
 
 		$payment_id_name = "Group Payment ID";
 
-		$payment_id = get_group_booking_payment_id($row_payment['payment_id'],$year);
+		$payment_id = get_group_booking_payment_id($row_payment['payment_id'],$year1);
 
 		$receipt_date = date('d-m-Y');
 
@@ -225,7 +231,7 @@ if($row_payment['amount'] != '0.00'){
 			$edit_btn = '';
 			$delete_btn = '';
 		}else{
-			$edit_btn = '<button class="btn btn-info btn-sm" data-toggle="tooltip" onclick="update_modal('.$row_payment['payment_id'].')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+			$edit_btn = '<button class="btn btn-info btn-sm" data-toggle="tooltip" onclick="update_modal('.$row_payment['payment_id'].')" title="Update Details" id="updater-'.$row_payment['payment_id'].'"><i class="fa fa-pencil-square-o"></i></button>';
 			$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 		}
 
@@ -239,6 +245,7 @@ if($row_payment['amount'] != '0.00'){
 		$temp_arr = array( "data" => array(
 			(int)(++$count),
 			$checshow,
+			$payment_id,
 			get_group_booking_id($row_payment['tourwise_traveler_id'],$year),
 			$customer_name,
 			$tour,

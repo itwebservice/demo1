@@ -163,6 +163,7 @@ function quotation_cost_calculate(id) {
 
 	var total_amt = parseFloat(sub_total) + parseFloat(service_tax_amount) + parseFloat(service_charge);
 	$('#total_tour_cost-' + offset[1]).val(Math.round(total_amt).toFixed(2));
+	console.log($('#total_tour_cost-' + offset[1]).val());
 }
 
 function get_enquiry_details(offset = '') {
@@ -178,7 +179,10 @@ function get_enquiry_details(offset = '') {
 			$('#total_days' + offset).val(result.total_days);
 			$('#customer_name' + offset).val(result.name);
 			$('#email_id' + offset).val(result.email_id);
-			$('#mobile_no' + offset).val(result.country_code+result.landline_no);
+			$('#mobile_no' + offset).val(result.landline_no);
+			$('#country_code' + offset).val(result.country_code);
+			$('#country_code').trigger('change');
+
 			$('#total_adult' + offset).val(result.total_adult);
 			$('#total_infant' + offset).val(result.total_infant);
 

@@ -93,7 +93,7 @@ $remaining = $refund_amount - $sq_refund_amount1['sum'];
                             placeholder="Bank Name" title="Bank Name" disabled />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="transaction_id" onchange="validate_balance(this.id);"
+                        <input type="number" id="transaction_id" onchange="validate_balance(this.id);"
                             name="transaction_id" class="form-control" placeholder="Cheque No / ID"
                             title="Cheque No / ID" disabled />
                     </div>
@@ -139,7 +139,7 @@ $remaining = $refund_amount - $sq_refund_amount1['sum'];
                     <tr class="table-heading-row">
                         <th>S_No.</th>
                         <th>Passenger_name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-                        <th>Date</th>
+                        <th>Refund_Date</th>
                         <th>Amount</th>
                         <th>Mode</th>
                         <th>Bank_Name</th>
@@ -257,24 +257,6 @@ $(function() {
             },
             refund_mode: {
                 required: true
-            },
-            bank_name: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            transaction_id: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
             },
             bank_id: {
                 required: function() {

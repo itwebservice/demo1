@@ -38,9 +38,53 @@ function get_cancel_sales_particular($invoice_id, $customer_id){
   return $particular;
 }
 
-function get_cancel_purchase_particular($invoice_id){
+function get_cancel_purchase_particular($invoice_id,$vendor_type,$vendor_type_id,$estimate_type,$estimate_type_id,$cancel_type){
 
-  $particular = "Being purchase against Inv. No ".$invoice_id." cancelled";
+  $particular = '';
+  $vendor_name = get_vendor_name($vendor_type, $vendor_type_id);
+
+  if($estimate_type == 'Ticket Booking'){
+    $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select tour_type from ticket_master where ticket_id='$estimate_type_id'"));
+    $sale_gl = ($sq_ticket['tour_type'] == 'Domestic') ? 50 : 174;
+    $estimate_type = 'Air Ticket Booking';
+  }
+  else if($estimate_type == 'Visa Booking'){
+    $sale_gl = 140;
+  }
+  else if($estimate_type == 'Miscellaneous Booking'){
+    $sale_gl = 169;
+  }
+  else if($estimate_type == 'Train Ticket Booking'){
+    $sale_gl = 133;
+  }
+  else if($estimate_type == 'Group Tour'){
+    $sale_gl = 59;
+    $estimate_type = "Group Booking";
+  }
+  else if($estimate_type == 'Package Tour'){
+    $sale_gl = 91;
+    $estimate_type = "Package Booking";
+  }
+  else if($estimate_type == 'Hotel Booking'){
+    $sale_gl = 63;
+  }
+  else if($estimate_type == 'Car Rental'){
+    $sale_gl = 18;
+    $estimate_type = "Car Rental Booking";
+  }
+  else if($estimate_type == 'Bus Booking'){
+    $sale_gl = 10;
+  }
+  else if($estimate_type == 'Excursion Booking'){
+    $sale_gl = 44;
+  }
+  else if($estimate_type == 'B2B Booking'){
+    $sale_gl = 176;
+  }
+  $sq_finance = mysqli_fetch_assoc(mysqlQuery("select payment_particular from finance_transaction_master where module_name='$estimate_type' and module_entry_id='$estimate_type_id' and gl_id='$sale_gl'"));
+  $particular = $sq_finance['payment_particular'].'. ';
+
+  $particular .= "Being Purchases made against purchase id ".$invoice_id." from ".$vendor_name." has been cancelled(".$cancel_type.")";
   return $particular;
 }
 
@@ -59,10 +103,54 @@ function get_sales_particular($invoice_id, $date, $amount, $customer_id){
   return $particular;
 }
 
-function get_purchase_partucular($invoice_id, $date, $amount, $vendor_type, $vendor_type_id){
+function get_purchase_partucular($invoice_id, $date, $amount, $vendor_type, $vendor_type_id,$estimate_type,$estimate_type_id){
+
+  $particular = '';
   $date = get_date_user($date);
   $vendor_name = get_vendor_name($vendor_type, $vendor_type_id);
-  $particular = "Being Purchases made against purchase id ".$invoice_id." from ".$vendor_name;
+
+  if($estimate_type == 'Ticket Booking'){
+    $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select tour_type from ticket_master where ticket_id='$estimate_type_id'"));
+    $sale_gl = ($sq_ticket['tour_type'] == 'Domestic') ? 50 : 174;
+    $estimate_type = 'Air Ticket Booking';
+  }
+  else if($estimate_type == 'Visa Booking'){
+    $sale_gl = 140;
+  }
+  else if($estimate_type == 'Miscellaneous Booking'){
+    $sale_gl = 169;
+  }
+  else if($estimate_type == 'Train Ticket Booking'){
+    $sale_gl = 133;
+  }
+  else if($estimate_type == 'Group Tour'){
+    $sale_gl = 59;
+    $estimate_type = "Group Booking";
+  }
+  else if($estimate_type == 'Package Tour'){
+    $sale_gl = 91;
+    $estimate_type = "Package Booking";
+  }
+  else if($estimate_type == 'Hotel Booking'){
+    $sale_gl = 63;
+  }
+  else if($estimate_type == 'Car Rental'){
+    $sale_gl = 18;
+    $estimate_type = "Car Rental Booking";
+  }
+  else if($estimate_type == 'Bus Booking'){
+    $sale_gl = 10;
+  }
+  else if($estimate_type == 'Excursion Booking'){
+    $sale_gl = 44;
+  }
+  else if($estimate_type == 'B2B Booking'){
+    $sale_gl = 176;
+  }
+  $sq_finance = mysqli_fetch_assoc(mysqlQuery("select payment_particular from finance_transaction_master where module_name='$estimate_type' and module_entry_id='$estimate_type_id' and gl_id='$sale_gl'"));
+  $particular = $sq_finance['payment_particular'].'. ';
+
+  $particular .= "Being Purchases made against purchase id ".$invoice_id." from ".$vendor_name;
 
   return $particular;
 }
@@ -94,7 +182,7 @@ function get_sales_paid_particular($payment_id, $date, $amount, $customer_id, $p
 
 
 
-function get_purchase_paid_partucular($invoice_id, $date, $amount, $vendor_type, $vendor_type_id, $payment_mode,$bank_id,$cheque_no1)
+function get_purchase_paid_partucular($invoice_id, $date, $amount, $vendor_type, $vendor_type_id, $payment_mode,$bank_id,$cheque_no1,$estimate_id_full='',$canc_status)
 
 {
   $date = get_date_user($date);
@@ -103,12 +191,17 @@ function get_purchase_paid_partucular($invoice_id, $date, $amount, $vendor_type,
   if($payment_mode == 'Cash'||$payment_mode=='Credit Card'){
     $cheque_no = ''; 
   }else{
-    $cheque_no = '('.$cheque_no1.')'; 
+    $cheque_no = $cheque_no1; 
   }
   $sq_bank = mysqli_fetch_assoc(mysqlQuery("select bank_name from bank_master where bank_id='$bank_id'"));
   $bank_name = $sq_bank['bank_name'];
 
-  $particular = 'Paid to '.$vendor_name.' payment id '.$invoice_id.' through '.$payment_mode.' on Dt '.$date;
+  $particular = ($canc_status == 'cancel') ? 'Cancellation Charges p' : 'P';
+
+  $particular .= 'aid to '.$vendor_name.' payment id '.$invoice_id;
+  $particular .= ($estimate_id_full!= '') ? ' against '.$estimate_id_full : '';
+  $particular .= ' through '.$payment_mode.' on Dt '.$date;
+
   if($payment_mode != 'Cash' && $payment_mode != 'Credit Card' && $payment_mode != '' && $payment_mode != 'Credit Note'){
     $particular .= ' from '.$bank_name.' Cheque no / ID . '.$cheque_no;
   }
@@ -285,7 +378,7 @@ function get_refund_paid_particular($invoice_id, $date, $amount, $payment_mode, 
 
 
 
-function get_refund_charges_particular($invoice_id, $refund_id,$vendor_type, $vendor_type_id,$date, $payment_mode='')
+function get_refund_charges_particular($invoice_id, $refund_id,$vendor_type, $vendor_type_id,$date, $payment_mode='',$estimate_id_full)
 
 {
 
@@ -294,7 +387,9 @@ function get_refund_charges_particular($invoice_id, $refund_id,$vendor_type, $ve
   $vendor_name = get_vendor_name($vendor_type, $vendor_type_id);
   $date = get_date_user($date);
 
-  $particular = 'Payment received through '.$payment_mode.' for '.$vendor_type.' Services from '.$vendor_name.' on '.$date;
+  $particular = 'Payment received through '.$payment_mode;
+  $particular .= ($estimate_id_full!= '') ? ' against '.$estimate_id_full : '';
+  $particular .= ' for '.$vendor_type.' Services from '.$vendor_name.' on '.$date;
 
   return $particular;
 

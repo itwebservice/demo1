@@ -37,33 +37,26 @@ $balance_total = 0;
 $net_total = 0;
 $sq_customer = mysqlQuery($query);
 while($row_customer = mysqli_fetch_assoc($sq_customer)){
+	
 	$hotel_total = 0;
 	$transfer_total = 0;
 	$activity_total = 0;
 	$tours_total = 0;
 	$ferry_total = 0;
 	$servie_total = 0;
-
-    $yr = explode("-", get_datetime_db($row_customer['created_at']));
+	$yr = explode("-", get_datetime_db($row_customer['created_at']));
 	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_customer[customer_id]'"));
-	$cart_checkout_data = json_decode($row_customer['cart_checkout_data']);
-
-	$sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$row_customer[emp_id]'"));
-	if($sq_emp['first_name'] == '') { $emp_name='Admin';}
-	else{ $emp_name = $sq_emp['first_name'].' '.$sq_emp['last_name']; }
-
-	$sq_branch = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$sq_emp[branch_id]'"));
-	$branch_name = $sq_branch['branch_name']==''?'NA':$sq_branch['branch_name'];
+	$cart_checkout_data = ($row_customer['cart_checkout_data'] != '' && $row_customer['cart_checkout_data'] != 'null') ? json_decode($row_customer['cart_checkout_data']) : [];
 	
 	for($i=0;$i<sizeof($cart_checkout_data);$i++){
 		if($cart_checkout_data[$i]->service->name == 'Hotel'){
 			$hotel_flag = 1;
 			$tax_arr = explode(',',$cart_checkout_data[$i]->service->hotel_arr->tax);
-			$tax_amount = 0;
 			for($j=0;$j<sizeof($cart_checkout_data[$i]->service->item_arr);$j++){
 				$room_types = explode('-',$cart_checkout_data[$i]->service->item_arr[$j]);
 				$room_cost = $room_types[2];
 				$h_currency_id = $room_types[3];
+				$tax_amount = 0;
 				
 				$tax_arr1 = explode('+',$tax_arr[0]);
 				for($t=0;$t<sizeof($tax_arr1);$t++){
@@ -81,7 +74,7 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 				//Convert into default currency
 				$sq_from = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$h_currency_id'"));
 				$from_currency_rate = $sq_from['currency_rate'];
-				$total_amount = ($from_currency_rate / $to_currency_rate * $total_amount);
+				$total_amount = ($to_currency_rate!='') ? ($from_currency_rate / $to_currency_rate * $total_amount) : 0;
 			
 				$hotel_total += $total_amount;
 			}
@@ -112,7 +105,7 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 				//Convert into default currency
 				$sq_from = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$h_currency_id'"));
 				$from_currency_rate = $sq_from['currency_rate'];
-				$total_amount = ($from_currency_rate / $to_currency_rate * $total_amount);
+				$total_amount = ($to_currency_rate!='') ? ($from_currency_rate / $to_currency_rate * $total_amount) : 0;
 			
 				$transfer_total += $total_amount;
 			}
@@ -144,7 +137,7 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 				//Convert into default currency
 				$sq_from = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$h_currency_id'"));
 				$from_currency_rate = $sq_from['currency_rate'];
-				$total_amount = ($from_currency_rate / $to_currency_rate * $total_amount);
+				$total_amount = ($to_currency_rate!='') ? ($from_currency_rate / $to_currency_rate * $total_amount) : 0;
 			
 				$activity_total += $total_amount;
 			}
@@ -175,7 +168,7 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 				//Convert into default currency
 				$sq_from = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$h_currency_id'"));
 				$from_currency_rate = $sq_from['currency_rate'];
-				$total_amount = ($from_currency_rate / $to_currency_rate * $total_amount);
+				$total_amount = ($to_currency_rate!='') ? ($from_currency_rate / $to_currency_rate * $total_amount) : 0;
 			
 				$tours_total += $total_amount;
 			}
@@ -206,7 +199,7 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 				//Convert into default currency
 				$sq_from = mysqli_fetch_assoc(mysqlQuery("select * from roe_master where currency_id='$h_currency_id'"));
 				$from_currency_rate = $sq_from['currency_rate'];
-				$total_amount = ($from_currency_rate / $to_currency_rate * $total_amount);
+				$total_amount = ($to_currency_rate!='') ? ($from_currency_rate / $to_currency_rate * $total_amount) : 0;
 			
 				$ferry_total += $total_amount;
 			}
@@ -298,15 +291,16 @@ while($row_customer = mysqli_fetch_assoc($sq_customer)){
 		$row_customer['contact_no'],
 		$row_customer['email_id'],
 		get_date_user($row_customer['created_at']),
+		'<button class="btn btn-info btn-sm" onclick="group_view_modal('.$row_customer['booking_id'] .')" id="packagev_btn-'. $row_customer['booking_id'] .'" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		number_format($servie_total,2),
 		number_format($row_customer['cancel_amount'],2),
 		number_format($servie_total-$row_customer['cancel_amount'],2),
 		number_format($payment_amount,2),
-		'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_customer['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" id="paymentv_btn-'. $row_customer['booking_id'] .'" onclick="payment_view_modal('.$row_customer['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		number_format($balance_amount, 2),
 		number_format($total_purchase,2),
 		$vendor_name1,
-		'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_customer['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+		'<button class="btn btn-info btn-sm" id="supplierv_btn-'. $row_customer['booking_id'] .'" onclick="supplier_view_modal('. $row_customer['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 		$emp_name,
 		), "bg" =>$bg);
 	array_push($array_s,$temp_arr);
@@ -319,7 +313,7 @@ $footer_data = array("footer_data" => array(
 	'class0' =>"",
 
 	'foot1' => "TOTAL CANCEL : ".number_format($cancel_total,2),
-	'col1' => 2,
+	'col1' => 3,
 	'class1' =>"danger text-right",
 	
 	'foot2' => "TOTAL SALE : ".number_format($net_total,2),

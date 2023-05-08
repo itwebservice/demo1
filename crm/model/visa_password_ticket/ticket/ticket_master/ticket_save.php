@@ -237,7 +237,7 @@ public function ticket_master_save(){
 	}
 	//Get Particular
 	$pax = $adults + $childrens;
-	$particular = $this->get_particular($customer_id,$pax,$sector,$ticket_no_arr[0],$airlin_pnr_arr[0]);
+	$particular = $this->get_particular($customer_id,$pax,$sector,$ticket_no_arr[0],$gds_pnr_arr[0],$ticket_id);
 	//Finance save
 	$this->finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_id,$particular);
 	//Bank and Cash Book Save
@@ -317,7 +317,7 @@ public function ticket_master_delete(){
 	}
 	$sq_trip1 = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id='$ticket_id' and status!='Cancel'"));
 
-	$particular = $this->get_particular($customer_id,$pax,$sector,$sq_master['ticket_no'],$sq_trip1['airlin_pnr']);
+	$particular = $this->get_particular($customer_id,$pax,$sector,$sq_master['ticket_no'],$sq_trip1['airlin_pnr'],$ticket_id);
 	$delete_master->delete_master_entries('Invoice','Flight Ticket',$ticket_id,get_ticket_booking_id($ticket_id,$year),$cust_name,$row_ticket['ticket_total_cost']);
 
 	//Getting customer Ledger
@@ -468,10 +468,17 @@ public function ticket_master_delete(){
 	}
 }
 
-function get_particular($customer_id,$pax,$sector,$ticket_no,$pnr){
+function get_particular($customer_id,$pax,$sector,$ticket_no,$pnr,$ticket_id){
+	
+	$row_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id'"));
+	$booking_date = $row_ticket['created_at'];
+	$yr = explode("-", $booking_date);
+	$year = $yr[0];
+	$sq_pass = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where ticket_id='$ticket_id' and status!='Cancel'"));
+	
 	$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
-	$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-	return $cust_name.' * '.$pax.' travelling for '.$sector.' against ticket no '.$ticket_no.'/PNR No '.$pnr;
+	$cust_name = ($sq_ct['type'] == 'Corporate' || $sq_ct['type'] == 'B2B') ? $sq_ct['company_name'] : $sq_ct['first_name'].' '.$sq_ct['last_name'];
+	return get_ticket_booking_id($ticket_id,$year). ' for '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') * '.$pax.' travelling for '.$sector.' against ticket no '.strtoupper($ticket_no).'/Airline PNR '.strtoupper($pnr);
 }
 
 public function finance_save($ticket_id, $payment_id, $row_spec, $branch_admin_id,$particular)

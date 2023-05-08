@@ -105,7 +105,7 @@
 
 					<div class="col-sm-4 col-xs-12 mg_bt_10">
 						<small id="basic_show"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_b ?></span></small>
-						<input type="text" id="basic_cost" name="basic_cost" placeholder="Basic Amount" title="Basic Amount" readonly value="<?= $basic_cost ?>" onchange="get_auto_values('booking_date1','basic_cost','payment_mode','service_charge','markup','update','true','basic','discount',true);">
+						<input type="text" id="basic_cost" name="basic_cost" placeholder="Basic Amount" title="Basic Amount" readonly value="<?= $basic_cost ?>" onchange="get_auto_values('booking_date1','basic_cost','payment_mode','service_charge','markup','update','true','basic','discount');">
 
 					</div>
 
@@ -141,7 +141,7 @@
 
 					<div class="col-sm-4 col-xs-12 mg_bt_10">
 						<small id="markup_show"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>'.$inclusive_m ?></span></small>
-						<input type="text" id="markup" name="markup" placeholder="Markup" title="Markup" onchange="validate_balance(this.id);get_auto_values('booking_date1','basic_cost','payment_mode','service_charge','markup','update','true','markup','discount');" value="<?= $markup ?>" >
+						<input type="text" id="markup" name="markup" placeholder="Markup Amount" title="Markup Amount" onchange="validate_balance(this.id);get_auto_values('booking_date1','basic_cost','payment_mode','service_charge','markup','update','true','markup','discount');" value="<?= $markup ?>" >
 					</div>
 					<div class="col-sm-4 col-xs-12">
 						<small>&nbsp;</small>
@@ -409,13 +409,19 @@ $(function(){
 				var flight_markup_taxes = $('#flight_markup_taxes').val();
 				var flight_tds = $('#flight_tds').val();
 				var guest_name = $('#guest_name').val();
+				var tax_apply_on = $('#atax_apply_on').val();
+				var tax_value = $('#tax_value1').val();
+				var markup_tax_value = $('#markup_tax_value1').val();
 				var reflections = [];
 				reflections.push({
-				'flight_sc':flight_sc,
-				'flight_markup':flight_markup,
-				'flight_taxes':flight_taxes,
-				'flight_markup_taxes':flight_markup_taxes,
-				'flight_tds':flight_tds
+					'flight_sc':flight_sc,
+					'flight_markup':flight_markup,
+					'flight_taxes':flight_taxes,
+					'flight_markup_taxes':flight_markup_taxes,
+					'flight_tds':flight_tds,
+					'tax_apply_on':tax_apply_on,
+					'tax_value':tax_value,
+					'markup_tax_value':markup_tax_value
 				});
 				var bsmValues = [];
 				bsmValues.push({

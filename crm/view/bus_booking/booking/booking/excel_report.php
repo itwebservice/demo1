@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -178,15 +178,15 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Invoice No")
         ->setCellValue('C'.$row_count, "Booking ID")
         ->setCellValue('D'.$row_count, "Customer")
-        ->setCellValue('E'.$row_count, "Booking Date")
-        ->setCellValue('F'.$row_count, "Total Bus")
-        ->setCellValue('G'.$row_count, "Bus Operator")
-        ->setCellValue('H'.$row_count, "Seat Type")
-        ->setCellValue('I'.$row_count, "Total Sale")
-        ->setCellValue('J'.$row_count, "Cancellation Charges")
-        ->setCellValue('K'.$row_count, "Total Amount")
-        ->setCellValue('L'.$row_count, "Paid Amount")
-        ->setCellValue('M'.$row_count, "Created By");
+        ->setCellValue('E'.$row_count, "Total Bus")
+        ->setCellValue('F'.$row_count, "Bus Operator")
+        ->setCellValue('G'.$row_count, "Seat Type")
+        ->setCellValue('H'.$row_count, "Total Sale")
+        ->setCellValue('I'.$row_count, "Cancellation Charges")
+        ->setCellValue('J'.$row_count, "Total Amount")
+        ->setCellValue('K'.$row_count, "Paid Amount")
+        ->setCellValue('L'.$row_count, "Created By")
+        ->setCellValue('M'.$row_count, "Booking Date");
         $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
         $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);
 
@@ -232,15 +232,15 @@ $paid_amount = ($paid_amount == '')?'0':$paid_amount;
         ->setCellValue('B'.$row_count, $row_booking['invoice_pr_id'])
         ->setCellValue('C'.$row_count, get_bus_booking_id($row_booking['booking_id'],$year))
         ->setCellValue('D'.$row_count, $customer_name)
-        ->setCellValue('E'.$row_count, date('d-m-Y', strtotime($row_booking['created_at'])))
-        ->setCellValue('F'.$row_count, $sq_total_seates)
-        ->setCellValue('G'.$row_count, $sq_bus['company_name'])
-        ->setCellValue('H'.$row_count, $sq_bus['seat_type'])
-        ->setCellValue('I'.$row_count, number_format($row_booking['net_total']+$credit_card_charges,2))
-        ->setCellValue('J'.$row_count, number_format($row_booking['cancel_amount'],2))
-        ->setCellValue('K'.$row_count, number_format($row_booking['net_total'] - $row_booking['cancel_amount']+$credit_card_charges,2))
-        ->setCellValue('L'.$row_count,$paid_amount)
-        ->setCellValue('M'.$row_count,$emp_name);
+        ->setCellValue('E'.$row_count, $sq_total_seates)
+        ->setCellValue('F'.$row_count, $sq_bus['company_name'])
+        ->setCellValue('G'.$row_count, $sq_bus['seat_type'])
+        ->setCellValue('H'.$row_count, number_format($row_booking['net_total']+$credit_card_charges,2))
+        ->setCellValue('I'.$row_count, number_format($row_booking['cancel_amount'],2))
+        ->setCellValue('J'.$row_count, number_format($row_booking['net_total'] - $row_booking['cancel_amount']+$credit_card_charges,2))
+        ->setCellValue('K'.$row_count,$paid_amount)
+        ->setCellValue('L'.$row_count,$emp_name)
+        ->setCellValue('M'.$row_count, date('d-m-Y', strtotime($row_booking['created_at'])));
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($content_style_Array);
 	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
 

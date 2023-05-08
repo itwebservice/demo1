@@ -38,11 +38,11 @@ $sq_state = mysqli_fetch_assoc(mysqlQuery("select state_name from state_master w
 						<div role="tabpanel" class="tab-pane active" id="basic_information">
 							
               <div class="row mg_bt_20">
-                <div class="col-md-6 col-sm-12 col-xs-12 mg_bt_20_xs">
+                <div class="col-md-12 col-sm-12 col-xs-12 mg_bt_20_xs">
                   <div class="profile_box main_block">
                     <h3>Tour Details</h3>
                     <div class="row">
-                      <div class="col-sm-6 col-xs-12 right_border_none_sm_xs" style="border-right: 1px solid #ddd">
+                      <div class="col-sm-12 col-xs-12 right_border_none_sm_xs">
                         <span class="main_block"> 
                           <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
                           <?php echo "<label>Booking ID <em>:</em></label>" .get_b2c_booking_id($booking_id,$year) ?>
@@ -57,12 +57,12 @@ $sq_state = mysqli_fetch_assoc(mysqlQuery("select state_name from state_master w
                         </span>
                         <span class="main_block">
                           <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-                          <?php echo "<label>Total Guest <em>:</em></label>" .$total_pax ?> 
+                          <?php echo "<label>Total Guest(s) <em>:</em></label>" .$total_pax ?> 
                         </span>
                       </div>
                       <?php
                       if($sq_package_info['service'] == 'Holiday'){ ?>
-                      <div class="col-sm-6 col-xs-12 right_border_none_sm_xs" style="border-right: 1px solid #ddd">
+                      <div class="col-sm-12 col-xs-12 right_border_none_sm_xs">
                         <span class="main_block"> 
                           <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
                           <?php echo "<label>Pickup Location <em>:</em></label>" .$enq_data[0]->pickup_from ?>
@@ -80,14 +80,14 @@ $sq_state = mysqli_fetch_assoc(mysqlQuery("select state_name from state_master w
                     </div>
                   </div>
                 </div>
-                <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="profile_box main_block">
 
                     <h3>Customer Details</h3>
 
                     <div class="row">
 
-                      <div class="col-sm-6 col-xs-12 right_border_none_sm_xs" style="border-right: 1px solid #ddd">
+                      <div class="col-sm-12 col-xs-12 right_border_none_sm_xs">
 
                         <span class="main_block"> 
 
@@ -115,7 +115,7 @@ $sq_state = mysqli_fetch_assoc(mysqlQuery("select state_name from state_master w
 
                       </div>
 
-                      <div class="col-sm-6 col-xs-12">
+                      <div class="col-sm-12 col-xs-12">
 
 
                             <span class="main_block">
@@ -140,7 +140,7 @@ $sq_state = mysqli_fetch_assoc(mysqlQuery("select state_name from state_master w
               </div>
 
               <div class="row mg_bt_20">
-                <div class="col-md-8 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="profile_box main_block">
                     <h3>Booking Details</h3>
                     <div class="row">
@@ -442,8 +442,8 @@ $sq_state = mysqli_fetch_assoc(mysqlQuery("select state_name from state_master w
                             <table class="table table-bordered no-marg">
                               <thead>
                                 <tr class="table-heading-row">
-                                  <th>From_Location</th>
-                                  <th>To_Location</th>
+                                  <th>From_Sector</th>
+                                  <th>To_Sector</th>
                                   <th>Airline</th>
                                   <th>Class</th>
                                 </tr>

@@ -85,14 +85,19 @@ $role_id = $_SESSION['role_id'];
 
             <input type="text" id="customer_name" name="customer_name" onchange="fname_validate(this.id)"
                 placeholder="*Customer Name" title="Customer Name" required>
+            <input type="hidden" id="cust_data" name="cust_data" value='<?= get_customer_hint() ?>'>
 
         </div>
 
-        <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-            <input type="text" id="mobile_no" name="mobile_no" onchange="mobile_validate(this.id)"
-                placeholder="*Mobile No with country code" title="*Mobile No with country code">
-
+        <div class="col-md-6 col-sm-6 mg_bt_10">
+            <div class="col-md-3" style="padding-left:0px;">
+                <select name="country_code" id="country_code" title="Country code">
+                    <?= get_country_code(); ?>
+                </select>
+            </div>
+            <div class="col-md-9" style="padding-left:12px;padding-right:0px;">
+                <input type="text" class="form-control" id="mobile_no" onchange="mobile_validate(this.id);" name="mobile_no" placeholder="*WhatsApp No" title="WhatsApp No">
+            </div>
         </div>
         <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
@@ -188,6 +193,7 @@ $role_id = $_SESSION['role_id'];
 
 
 <script>
+$('#country_code').select2();
 // New Customization ----start
 $(document).ready(function() {
     let searchParams = new URLSearchParams(window.location.search);
@@ -196,6 +202,25 @@ $(document).ready(function() {
         $('#enquiry_id').trigger('change');
     }
 });
+$("#customer_name").autocomplete({
+    source: JSON.parse($('#cust_data').val()),
+    select: function(event, ui) {
+        $("#customer_name").val(ui.item.label);
+        $('#mobile_no').val(ui.item.contact_no);
+        $('#country_code').val(ui.item.country_id);
+		$('#country_code').trigger('change');
+        $('#email_id').val(ui.item.email_id);
+    },
+    open: function(event, ui) {
+        $(this).autocomplete("widget").css({
+            "width": document.getElementById("customer_name").offsetWidth
+        });
+    }
+}).data("ui-autocomplete")._renderItem = function(ul, item) {
+    return $("<li disabled>")
+        .append("<a>" + item.label + "</a>")
+        .appendTo(ul);
+};
 // New Customization ----end
 function mobile_number() {
     if ($('#enquiry_id').val() == '0') {
@@ -230,16 +255,15 @@ $('#frm_tab1').validate({
         customer_name: {
             required: true
         },
+        country_code: {
+            required: true
+        },
         mobile_no: {
             required: true
         },
     },
-
     submitHandler: function(form) {
-
         $('a[href="#tab2"]').tab('show');
-
     }
-
 });
 </script>

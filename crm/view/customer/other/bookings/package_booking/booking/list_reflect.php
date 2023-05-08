@@ -53,21 +53,25 @@ if($booking_id!=""){
       $cancel_est=mysqli_fetch_assoc(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$row_booking[booking_id]'"));
       $cancel_amount=$cancel_est['cancel_amount'];
       //balance
-      if($paid_amount > 0){
-        if($pass_count==$cancle_count){
-          $balance_amount = 0;
-        }
-        else{
-          $balance_amount = $sale_total_amount - $paid_amount;
-        }
-      }else{
-        if($pass_count!=$cancle_count){
-          $balance_amount = $sale_total_amount;
-        }
-        else{
-          $balance_amount = $cancel_amount;
-        }
-      }
+			if($pass_count == $cancel_count){
+				if($paid_amount > 0){
+					if($cancel_amount >0){
+						if($paid_amount > $cancel_amount){
+							$balance_amount = 0;
+						}else{
+							$balance_amount = $cancel_amount - $paid_amount + $credit_card_charges;
+						}
+					}else{
+						$balance_amount = 0;
+					}
+				}
+				else{
+					$balance_amount = $cancel_amount;
+				}
+			}
+			else{
+				$balance_amount = $sale_total_amount - $paid_amount;
+			}
 
       $net_total1 = currency_conversion($currency,$row_booking['currency_code'],$row_booking['net_total']+$credit_card_charges);
       $paid_amount1 = currency_conversion($currency,$row_booking['currency_code'],$paid_amount);

@@ -22,7 +22,7 @@ $remaining_pay=$refund_amount-$toal_refund_sum;
 ?>
 <input type="hidden" id="refund_amount_tobe" name="refund_amount_tobe" value="<?php echo $refund_amount ?>">
 <div class="row mg_tp_20 mg_bt_10">
-	<div class="col-md-4 col-md-offset-4 col-sm-6 col-xs-12 mg_bt_10_xs">
+	<div class="col-md-12 col-sm-6 col-xs-12 mg_bt_10_xs">
 		<div class="widget_parent-bg-img bg-green">
 			<div class="widget_parent">
 				<div class="stat_content main_block">
@@ -75,7 +75,7 @@ $remaining_pay=$refund_amount-$toal_refund_sum;
 				    </select>  
 				</div>
 				<div class="col-sm-6 col-xs-12 mg_bt_10">
-				    <input class="form-control" type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled />
+				    <input class="form-control bank_suggest" type="text" id="bank_name" name="bank_name" placeholder="Bank Name" title="Bank Name" disabled />
 				</div>      
 			    <div class="col-sm-6 col-xs-12 mg_bt_10">
 			    	<input type="text" id="transaction_id" onchange="validate_balance(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No / ID" title="Cheque No / ID" disabled />
@@ -138,8 +138,8 @@ $remaining_pay=$refund_amount-$toal_refund_sum;
 						$count++;
 						$total_refund = $total_refund+$row_b2c_refund['refund_amount'];
 
-						$sq_b2c_info = mysqli_fetch_assoc(mysqlQuery("select customer_id,created_at from b2c_sale where booking_id='$row_b2c_refund[booking_id]'"));
-						$date = $sq_b2c_info['created_at'];
+						$sq_b2c_info1 = mysqli_fetch_assoc(mysqlQuery("select customer_id,created_at,name,service from b2c_sale where booking_id='$row_b2c_refund[booking_id]'"));
+						$date = $sq_b2c_info1['created_at'];
 						$yr = explode("-", $date);
 						$year =$yr[0];
 						$hotel_name = "";
@@ -159,12 +159,15 @@ $remaining_pay=$refund_amount-$toal_refund_sum;
 						$v_voucher_no = get_b2c_booking_refund_id($row_b2c_refund['refund_id'],$year1);
 						$v_refund_date = $row_b2c_refund['refund_date'];
 						$v_refund_to = $hotel_name;
-						$v_service_name = "B2C Booking";
+						$v_service_name = "B2C Booking".' ('.$sq_b2c_info1['service'].')';
 						$v_refund_amount = $row_b2c_refund['refund_amount'];
 						$v_payment_mode = $row_b2c_refund['refund_mode'];
 						$customer_id = $sq_b2c_info['customer_id'];
 						$refund_id = $row_b2c_refund['refund_id'];
-						$url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&refund_id=$refund_id&currency_code=";
+						$refund_name = $sq_b2c_info1['name'];
+						$booking_id1 = get_b2c_booking_id($booking_id,$year);
+
+						$url = BASE_URL."model/app_settings/generic_refund_voucher_pdf.php?v_voucher_no=$v_voucher_no&v_refund_date=$v_refund_date&v_refund_to=$v_refund_to&v_service_name=$v_service_name&v_refund_amount=$v_refund_amount&v_payment_mode=$v_payment_mode&customer_id=$customer_id&refund_id=$refund_id&refund_id=$refund_id&cust_name=$refund_name&booking_id=$booking_id1&currency_code=";
 						?>
 						<tr class="<?= $bg ?>">			
 							<td><?= $count ?></td>
@@ -185,7 +188,7 @@ $remaining_pay=$refund_amount-$toal_refund_sum;
 					?>
 					<tr class="active">
 						<th class="text-right info" colspan="2">Refund : <?= ($sq_pay['sum']=="") ? 0 : $sq_pay['sum'] ?></th>
-						<th class="text-right warning" colspan="2">Pending : <?= ($sq_ref_pen_total['sum']=="") ? 0 : $sq_ref_pen_total['sum'] ?></th>
+						<th class="text-right warning" colspan="2">Pending Clearance: <?= ($sq_ref_pen_total['sum']=="") ? 0 : $sq_ref_pen_total['sum'] ?></th>
 						<th class="text-right danger" colspan="2">Cancelled : <?= ($sq_ref_can_total['sum']=="") ? 0 : $sq_ref_can_total['sum'] ?></th>
 						<th class="text-right success" colspan="2">Total Refund : <?= $sq_pay['sum'] - $sq_ref_pen_total['sum'] - $sq_ref_can_total['sum'] ?></th>
 					</tr>

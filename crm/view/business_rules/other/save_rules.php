@@ -63,33 +63,29 @@ include_once("../../../model/model.php");
                   </select>
               </div>
               <div class="col-md-3">
-                  <select name="travel_type" id="travel_type" data-toggle="tooltip" class="form-control" title="Travel Type" style="width:100%" onchange="generate_app_on(this.id)" required>
+                  <select name="travel_type" id="travel_type" data-toggle="tooltip" class="form-control" title="Travel Type" style="width:100%" required>
                       <option value="">*Travel Type</option>
                       <option value="All">All</option>
-                      <option value="Group Tour">Group Tour</option>
                       <option value="Package Tour">Package Tour</option>
+                      <option value="Group Tour">Group Tour</option>
                       <option value="Hotel">Hotel</option>
                       <option value="Flight">Flight</option>
-                      <option value="Train">Train</option>
                       <option value="Visa">Visa</option>
-                      <option value="Bus">Bus</option>
                       <option value="Car Rental">Car Rental</option>
                       <option value="Activity">Activity</option>
+                      <option value="Train">Train</option>
+                      <option value="Bus">Bus</option>
                       <option value="Miscellaneous">Miscellaneous</option>
-                      <option value="Forex">Forex</option>
-                      <option value="Passport">Passport</option>
                   </select>
               </div>
               <div class="col-md-3">
                   <select name="apply_on" id="apply_on" data-toggle="tooltip" class="form-control" title="Applicable On" required>
+                      <option value="2">Per Invoice</option>
                       <option value="">*Applicable On</option>
                   </select>
               </div>
           </div>
           <div class="row mg_tp_10">
-              <div class="col-md-3">
-                  <input type="number" placeholder="*Amount" min="0" title="Amount" id="amounts" class="form-control" required />
-              </div>
               <div class="col-md-3">
                   <select name="amount_in" id="amount_in" data-toggle="tooltip" class="form-control" title="Amount In" onchange="check_amount(this.id);" required>
                       <option value="">*Amount In</option>
@@ -98,11 +94,14 @@ include_once("../../../model/model.php");
                   </select>
               </div>
               <div class="col-md-3">
+                  <input type="number" placeholder="*Amount" min="0" title="Amount" id="amounts" class="form-control" required />
+              </div>
+              <div class="col-md-3">
                   <select name="target_amount" id="target_amount" data-toggle="tooltip" class="form-control" title="Target Amount" required>
-                      <option value="">*Target Amount</option>
                       <option value="Basic">Basic</option>
-                      <option value="Total">Total</option>
-                      <option value="Commission">Commission</option>
+                      <option value="">*Target Amount</option>
+                      <!-- <option value="Total">Total</option>
+                      <option value="Commission">Commission</option> -->
                   </select>
               </div>
           </div>

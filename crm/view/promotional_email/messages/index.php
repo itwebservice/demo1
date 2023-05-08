@@ -36,7 +36,7 @@ $sq_email = mysqlQuery($query1);
 			</select>
 		</div>
 		<div class="col-md-3">
-			<input type="text" id="subject" name="subject" placeholder="Subject" title="Subject">
+			<input type="text" id="subject" name="subject" placeholder="*Subject" title="Subject">
 		</div>
 		<div class="col-md-3">
 			<button class="btn btn-success btn-sm" id="send" onclick="mail_send()"><i class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;Send</button>

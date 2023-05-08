@@ -94,7 +94,7 @@ if($tourwise_traveler_id!=""){
 
 			if($row1['tour_group_status'] == 'Cancel'){
 				if($cancel_amount > $paid_amount){
-					$balance_amount = $cancel_amount - $paid_amount;
+					$balance_amount = $cancel_amount - $paid_amount+$credit_card_charges;
 				}
 				else{
 					$balance_amount = 0;
@@ -102,7 +102,7 @@ if($tourwise_traveler_id!=""){
 			}else{
 				if($cancel_esti_count1 >= '1'){
 					if($cancel_amount > $paid_amount){
-						$balance_amount = $cancel_amount - $paid_amount;
+						$balance_amount = $cancel_amount - $paid_amount+$credit_card_charges;
 					}
 					else{
 						$balance_amount = 0;

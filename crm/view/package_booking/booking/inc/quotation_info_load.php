@@ -30,6 +30,20 @@ $quot_info_arr['to_date'] = get_date_user($sq_quotation['to_date']);
 $quot_info_arr['total_days'] = $sq_quotation['total_days'];
 
 $quot_info_arr['booking_type'] = $sq_quotation['booking_type'];
+$bsm_values = json_decode($sq_costing['bsmValues']);
+$quot_info_arr['tax_apply_on'] = $bsm_values[0]->tax_apply_on;
+
+if($bsm_values[0]->tax_value == 1){
+	$tax_app_value = 'Basic Amount';
+}
+else if($bsm_values[0]->tax_value == 2){
+	$tax_app_value = 'Service Charge';
+}
+else if($bsm_values[0]->tax_value == 3){
+	$tax_app_value = 'Total';
+}
+$quot_info_arr['tax_value'] = $bsm_values[0]->tax_value;
+$quot_info_arr['tax_app_value'] = $bsm_values[0]->tax_app_value;
 
 $quot_info_arr['tour_cost'] = $sq_costing['tour_cost'] + $sq_costing['transport_cost'] + $sq_costing['excursion_cost'] + $sq_quotation['guide_cost']+ $sq_quotation['misc_cost'] + $sq_quotation['visa_cost'];
 $quot_info_arr['markup_cost'] = $sq_costing['markup_subtotal'];

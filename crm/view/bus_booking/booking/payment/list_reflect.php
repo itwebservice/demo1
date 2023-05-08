@@ -103,6 +103,9 @@ else{
 $date = $sq_bus_info['created_at'];
 $yr = explode("-", $date);
 $year =$yr[0];
+$date1 = $row_payment['payment_date'];
+$yr1 = explode("-", $date1);
+$year1 = $yr1[0];
 
 $sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_bus_info[customer_id]'"));
 if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type'] == 'B2B'){
@@ -129,7 +132,7 @@ else{
 	$bg='';
 }
 $payment_id_name = "Bus Payment ID";
-$payment_id = get_bus_booking_payment_id($row_payment['payment_id'],$year);
+$payment_id = get_bus_booking_payment_id($row_payment['payment_id'],$year1);
 $receipt_date = date('d-m-Y');
 $booking_id = get_bus_booking_id($row_payment['booking_id'],$year);
 $customer_id = $sq_bus_info['customer_id'];
@@ -159,12 +162,13 @@ if($row_payment['payment_mode'] == 'Credit Note' || ($row_payment['payment_mode'
 	$edit_btn = '';
 	$delete_btn = '';
 }else{
-	$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='update_modal(".$row_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+	$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='update_modal(".$row_payment['payment_id'].")' title='Update Details' id='editp-".$row_payment['payment_id']."'><i class='fa fa-pencil-square-o'></i></button>";
 	$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 }
 $temp_arr = array( "data" => array(
 	(int)($count),
 	$checshow,
+	$payment_id,
 	get_bus_booking_id($row_payment['booking_id'],$year),
 	$customer_name,
 	date('d/m/Y', strtotime($row_payment['payment_date'])),

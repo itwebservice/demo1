@@ -5,7 +5,7 @@ $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 $customer_id = $_POST['customer_id'];
 $booking_id = $_POST['booking_id'];
@@ -52,32 +52,6 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 	$pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]'"));
 	$cancle_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]' and status='Cancel'"));
-	if($pass_count==$cancle_count){
-		$bg="danger";
-		$update_btn = '';
-		$delete_btn = '';
-		$conf_form = '';
-		$service_voucher = '';
-	}else{
-		$bg="";
-		$update_btn = '
-		<form style="display:inline-block" data-toggle="tooltip" action="booking_update/package_booking_master_update.php" id="frm_booking_'.$count .'" method="POST">
-			<input type="hidden" id="booking_id" name="booking_id" value="'. $row_booking['booking_id'] .'">
-			<input type="hidden" id="branch_status" name="branch_status" value="'. $branch_status .'">
-			<button class="btn btn-info btn-sm" data-toggle="tooltip" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
-		</form>';
-		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['booking_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
-		// Booking Form
-		$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/package_tour.php?booking_id=$row_booking[booking_id]&quotation_id=$quotation_id&branch_status=$branch_status&year=$year&credit_card_charges=$credit_card_charges";
-		$conf_form = '<a data-toggle="tooltip" style="display:inline-block" onclick="loadOtherPage(\''. $b_url .'\')" class="btn btn-info btn-sm" title="Download Confirmation Form" ><i class="fa fa-print"></i></a>';
-		$service_voucher = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_modal('.$row_booking['booking_id'].')" ><i class="fa fa-print" data-toggle="tooltip"></i></button>';
-	}
-	$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-	if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
-		$customer_name = $sq_customer['company_name'];
-	}else{
-		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
-	}
 
 	$date = $row_booking['booking_date'];
 	$yr = explode("-", $date);
@@ -103,13 +77,6 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 	if($sq_plane > 0){ $average++; }
 	if($sq_visa !=0 && $sq_visa!=""){ $average++; }
 	if($sq_insurance !=0 && $sq_insurance!=""){ $average++; }			
-
-	$invoice_no = get_package_booking_id($row_booking['booking_id'],$year);
-	$invoice_date = date('d-m-Y',strtotime($row_booking['booking_date']));
-	$customer_id = $row_booking['customer_id'];
-	$quotation_id = $row_booking['quotation_id'];
-	$service_name = "Package Invoice";
-	$tour_name = $row_booking['tour_name'];
 	
 	//**Service Tax
 	$taxation_type = $row_booking['taxation_type'];
@@ -159,6 +126,42 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 
 	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='Package Tour'"));   
 	$sac_code = $sq_sac['hsn_sac_code'];
+	
+	$invoice_no = get_package_booking_id($row_booking['booking_id'],$year);
+	$booking_id = $row_booking['booking_id'];
+	$invoice_date = date('d-m-Y',strtotime($row_booking['booking_date']));
+	$customer_id = $row_booking['customer_id'];
+	$quotation_id = $row_booking['quotation_id'];
+	$service_name = "Package Invoice";
+	$tour_name = $row_booking['tour_name'];
+
+	if($pass_count==$cancle_count){
+		$bg="danger";
+		$update_btn = '';
+		$delete_btn = '';
+		$conf_form = '';
+		$service_voucher = '';
+	}else{
+		$bg="";
+		$update_btn = '
+		<form style="display:inline-block" data-toggle="tooltip" action="booking_update/package_booking_master_update.php" id="frm_booking_'.$count .'" method="POST">
+			<input type="hidden" id="booking_id" name="booking_id" value="'. $row_booking['booking_id'] .'">
+			<input type="hidden" id="branch_status" name="branch_status" value="'. $branch_status .'">
+			<button class="btn btn-info btn-sm" data-toggle="tooltip" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>
+		</form>';
+		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['booking_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
+		// Booking Form
+		$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/package_tour.php?booking_id=$row_booking[booking_id]&quotation_id=$quotation_id&branch_status=$branch_status&year=$year&credit_card_charges=$credit_card_charges";
+		$conf_form = '<a data-toggle="tooltip" style="display:inline-block" onclick="loadOtherPage(\''. $b_url .'\')" class="btn btn-info btn-sm" title="Download Confirmation Form" ><i class="fa fa-print"></i></a>';
+		$service_voucher = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_modal('.$row_booking['booking_id'].')" id="servoucher_btn-'.$booking_id.'" ><i class="fa fa-print" data-toggle="tooltip"></i></button>';
+	}
+	$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+	if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
+		$customer_name = $sq_customer['company_name'];
+	}else{
+		$customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+	}
+
 	//Passengers
 	$adults = mysqli_num_rows(mysqlQuery("select traveler_id from package_travelers_details where booking_id='$row_booking[booking_id]' and status!='Cancel' and adolescence='Adult'"));
 	$child = mysqli_num_rows(mysqlQuery("select traveler_id from package_travelers_details where booking_id='$row_booking[booking_id]' and status!='Cancel' and adolescence='Children'"));
@@ -232,11 +235,12 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		number_format($cancel_amount,2),
 		number_format($balance_amount,2).'<br/>'.$currency_amount,
 		$emp_name,
+		get_date_user($row_booking['booking_date']),
 		$conf_form.'
 		<a data-toggle="tooltip" onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print" data-toggle="tooltip"></i></a>'
-		.$service_voucher.
-		'<button style="display:inline-block" class="btn btn-info btn-sm" onclick="package_view_modal('.$row_booking['booking_id'] .')" title="View Details" data-toggle="tooltip"><i class="fa fa-eye" aria-hidden="true"></i></button>
-		'.$update_btn.$delete_btn,
+		.$service_voucher.$update_btn.
+		'<button style="display:inline-block" class="btn btn-info btn-sm" onclick="package_view_modal('.$row_booking['booking_id'] .');btnDisableEnable(this.id)" id="package_view_modal_btn-'.$row_booking['booking_id'] .'" title="View Details" data-toggle="tooltip"><i class="fa fa-eye" aria-hidden="true"></i></button>
+		'.$delete_btn,
 
 		), "bg" =>$bg);
 		array_push($array_s,$temp_arr); 

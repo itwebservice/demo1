@@ -57,19 +57,24 @@
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
 	    	<input type="text" class="form-control" name="customer_name" id="customer_name" onchange="fname_validate(this.id);" name="customer_name"  placeholder="*Customer Name" title="Customer Name"> 
+            <input type="hidden" id="cust_data" name="cust_data" value='<?= get_customer_hint() ?>'>
 
 	    </div>	        		                			        		        	        		
+	
 
-
+        <div class="col-md-3 col-sm-6 mg_bt_10">
+            <div class="col-md-3" style="padding-left:0px;">
+                <select name="country_code" id="country_code" title="Country code">
+                    <?= get_country_code(); ?>
+                </select>
+            </div>
+            <div class="col-md-9" style="padding-left:40px;padding-right:0px;">
+                <input type="text" class="form-control" id="mobile_no" onchange="mobile_validate(this.id);" name="mobile_no" placeholder="*WhatsApp No" title="WhatsApp No">
+            </div>
+        </div>
 		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 
 			<input type="text" id="email_id" name="email_id" placeholder="Email ID" title="Email ID">
-
-		</div>	
-
-		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-
-			<input type="text" id="mobile_no" name="mobile_no" placeholder="*Whatsapp no with country code" onchange="mobile_validate(this.id);" title="*Whatsapp no with country code">
 
 		</div>
 
@@ -96,8 +101,28 @@
 
 
 <script>
+$('#country_code').select2();
 $('#travel_datetime').datetimepicker({format:'d-m-Y H:i' });
 $('#quotation_date').datetimepicker({timepicker:false, format:'d-m-Y' });
+$("#customer_name").autocomplete({
+    source: JSON.parse($('#cust_data').val()),
+    select: function(event, ui) {
+        $("#customer_name").val(ui.item.label);
+        $('#mobile_no').val(ui.item.contact_no);
+        $('#country_code').val(ui.item.country_id);
+		$('#country_code').trigger('change');
+        $('#email_id').val(ui.item.email_id);
+    },
+    open: function(event, ui) {
+        $(this).autocomplete("widget").css({
+            "width": document.getElementById("customer_name").offsetWidth
+        });
+    }
+}).data("ui-autocomplete")._renderItem = function(ul, item) {
+    return $("<li disabled>")
+        .append("<a>" + item.label + "</a>")
+        .appendTo(ul);
+};
 // New Customization ----start
 $(document).ready(function(){
 	let searchParams = new URLSearchParams(window.location.search);
@@ -113,6 +138,7 @@ $('#frm_tab1').validate({
 		enquiry_id : { required : true },
 		mobile_no : { required : true },
 		customer_name : { required : true },
+		country_code : { required : true }
 	},
 
 	submitHandler:function(form){

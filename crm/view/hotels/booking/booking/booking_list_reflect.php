@@ -11,7 +11,7 @@ $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
 $query = "select * from hotel_booking_master where financial_year_id='$financial_year_id' and delete_status='0' ";
@@ -63,7 +63,7 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		$bg="";
 		$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="booking_update_modal('.$row_booking['booking_id'] .')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
 		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['booking_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
-		$serv_voucher = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_display('.$row_booking['booking_id'] .')" title="Update Details"><i class="fa fa-print"></i></button>';
+		$serv_voucher = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_display('.$row_booking['booking_id'] .')" id="edith-'.$row_booking['booking_id'] .'" title="Update Details"><i class="fa fa-print"></i></button>';
 	}
 	$date = $row_booking['created_at'];
 	$yr = explode("-", $date);
@@ -133,25 +133,25 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		$row_booking['invoice_pr_id'],
 		get_hotel_booking_id($row_booking['booking_id'],$year),
 		$customer_name,
-		date('d-m-Y', strtotime($row_booking['created_at'])),
 		number_format($row_booking['total_fee']+$credit_card_charges,2),
 		$canc_amount,
 		number_format($total_amount1, 2).'<br/>'.$currency_amount,
 		$emp_name,
+		$invoice_date,
 		'<a onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></a>
 
 		'.$serv_voucher.'
 
 		'.$update_btn.'
 
-		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="booking_display_modal('. $row_booking['booking_id'] .')" title="View Details"><i class="fa fa-eye"></i></button>'.$delete_btn
+		<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="booking_display_modal('. $row_booking['booking_id'] .')" title="View Details" id="view-'.$row_booking['booking_id'] .'"><i class="fa fa-eye"></i></button>'.$delete_btn
 	), "bg" =>$bg);
 	array_push($array_s,$temp_arr); 
 }
 $footer_data = array("footer_data" => array(
 	'total_footers' => 5,
 	'foot0' => "Total",
-	'col0' => 4,
+	'col0' => 3,
 	'class0' => "text-right",
 	'foot1' => number_format($total_sale, 2),
 	'col1' => 0,

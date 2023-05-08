@@ -77,7 +77,7 @@
 	                </span>
 		        	<span class="main_block">
 		        	  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
-		        	  <?php echo "<label>Markup Cost<em>:</em></label> ".$sq_hotel_info['markup']; ?>
+		        	  <?php echo "<label>Markup Amount<em>:</em></label> ".$sq_hotel_info['markup']; ?>
 		        	</span>
 					<span class="main_block">
 		        	  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
@@ -135,6 +135,7 @@
                        <thead>
 	                       <tr class="table-heading-row">
 	                       		<th>S_No.</th>
+	                       		<th>Tour_Type</th>
 								<th>City</th>
 								<th>Hotel</th>
 								<th>Check_In</th>
@@ -166,6 +167,7 @@
                        			?>
 								 <tr class="<?= $bg ?>">
 								    <td><?php echo $count; ?></td>
+								    <td><?php echo $row_entry['tour_type']; ?></td>
 								    <td><?php echo $sq_city['city_name']; ?></td>
 									<td><?php echo $sq_hotel['hotel_name']; ?></td>
 								    <td><?php echo date('d/m/Y H:i', strtotime($row_entry['check_in'])); ?></td>

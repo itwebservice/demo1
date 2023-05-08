@@ -30,6 +30,8 @@ $booking_id = $_POST['booking_id'];
                         $bg = "warning";
                     } else if ($row_refund['clearance_status'] == "Cancelled") {
                         $bg = "danger";
+                    } else if ($row_refund['clearance_status'] == "Cleared") {
+                        $bg = "success";
                     } else {
                         $bg = "";
                     }

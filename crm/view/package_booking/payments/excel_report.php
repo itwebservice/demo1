@@ -218,14 +218,15 @@ $count = $total = $pending = $cancelled = 0;
    
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Booking ID")
-        ->setCellValue('D'.$row_count, "Customer Name")
-        ->setCellValue('E'.$row_count, "Mode")
-        ->setCellValue('F'.$row_count, "Receipt Date")
-        ->setCellValue('G'.$row_count, "Amount");
+        ->setCellValue('C'.$row_count, "Receipt ID")
+        ->setCellValue('D'.$row_count, "Booking ID")
+        ->setCellValue('E'.$row_count, "Customer Name")
+        ->setCellValue('F'.$row_count, "Mode")
+        ->setCellValue('G'.$row_count, "Receipt Date")
+        ->setCellValue('H'.$row_count, "Amount");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 $sq_payment = mysqlQuery($query);
@@ -243,44 +244,51 @@ $sq_payment = mysqlQuery($query);
         $customer_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
       }
 
-        if($row_payment['clearance_status']=="Pending"){
-          $pending = $pending + $row_payment['amount']+$row_payment['credit_charges'];
-        }
-        else if($row_payment['clearance_status']=="Cancelled"){
-          $cancelled = $cancelled + $row_payment['amount']+$row_payment['credit_charges'];
-        }
+      if($row_payment['clearance_status']=="Pending"){
+        $pending = $pending + $row_payment['amount']+$row_payment['credit_charges'];
+      }
+      else if($row_payment['clearance_status']=="Cancelled"){
+        $cancelled = $cancelled + $row_payment['amount']+$row_payment['credit_charges'];
+      }
 
-        $total = $total + $row_payment['amount'] + $row_payment['credit_charges'];
+      $total = $total + $row_payment['amount'] + $row_payment['credit_charges'];
 
-        $currency_amount1 = currency_conversion($currency,$sq_booking['currency_code'],$row_payment['amount']+$row_payment['credit_charges']);
-        if($sq_booking['currency_code'] !='0' && $currency != $sq_booking['currency_code']){
-          $currency_amount = ' ('.$currency_amount1.')';
-        }else{
-          $currency_amount = '';
-        }
+      $currency_amount1 = currency_conversion($currency,$sq_booking['currency_code'],$row_payment['amount']+$row_payment['credit_charges']);
+      if($sq_booking['currency_code'] !='0' && $currency != $sq_booking['currency_code']){
+        $currency_amount = ' ('.$currency_amount1.')';
+      }else{
+        $currency_amount = '';
+      }
+      $date1 = $row_payment['date'];
+      $yr1 = explode("-", $date1);
+      $year1 = $yr1[0];
+      $payment_id = get_package_booking_payment_id($row_payment['payment_id'],$year1);
+
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, ++$count)
-        ->setCellValue('C'.$row_count, get_package_booking_id($row_payment['booking_id'],$year))
-        ->setCellValue('D'.$row_count, $customer_name)
-        ->setCellValue('E'.$row_count, $row_payment['payment_mode'])
-        ->setCellValue('F'.$row_count, get_date_user($row_payment['date']))
-        ->setCellValue('G'.$row_count, number_format($row_payment['amount']+$row_payment['credit_charges'],2).$currency_amount);
+        ->setCellValue('C'.$row_count, $payment_id)
+        ->setCellValue('D'.$row_count, get_package_booking_id($row_payment['booking_id'],$year))
+        ->setCellValue('E'.$row_count, $customer_name)
+        ->setCellValue('F'.$row_count, $row_payment['payment_mode'])
+        ->setCellValue('G'.$row_count, get_date_user($row_payment['date']))
+        ->setCellValue('H'.$row_count, number_format($row_payment['amount']+$row_payment['credit_charges'],2).$currency_amount);
 
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
 		$row_count++;
 
     $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "")
         ->setCellValue('C'.$row_count, "")
-        ->setCellValue('D'.$row_count,  'Total : '.number_format($total, 2))
-        ->setCellValue('E'.$row_count, 'Pending Clearance : '.number_format($pending, 2))
-        ->setCellValue('F'.$row_count, 'cancelled amount : '.number_format($cancelled, 2))
-        ->setCellValue('G'.$row_count, 'Total Paid :'.number_format(($total-$pending-$cancelled),2));
+        ->setCellValue('D'.$row_count, "")
+        ->setCellValue('E'.$row_count,  'Total : '.number_format($total, 2))
+        ->setCellValue('F'.$row_count, 'Pending Clearance : '.number_format($pending, 2))
+        ->setCellValue('G'.$row_count, 'cancelled amount : '.number_format($cancelled, 2))
+        ->setCellValue('H'.$row_count, 'Total Paid :'.number_format(($total-$pending-$cancelled),2));
 
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);
+  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);
 
 }
 }

@@ -30,9 +30,6 @@ if ($visa_type != "") {
                         <th>Total_Amount</th>
                         <th>Time Taken</th>
                         <th class="text-center">Actions</th>
-                        <!-- <th>Edit</th>
-			<th>Send</th>
-			<th>Download_Form</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -54,20 +51,26 @@ if ($visa_type != "") {
                         <td><?= number_format($total_amt, 2) ?></td>
                         <td><?= $row_emp['time_taken'] ?></td>
                         <td class="text-center" style="display:flex;">
-                            <button class="btn btn-info btn-sm" onclick="display_modal(<?= $row_emp['entry_id'] ?>)"
-                                data-toggle="tooltip" title="View Visa"><i class="fa fa-eye"></i></button>
-                            <button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_emp['entry_id'] ?>)"
-                                data-toggle="tooltip" title="Edit Visa"><i class="fa fa-pencil-square-o"></i></button>
                             <?php
                                 if ($row_emp['status'] != '0') { ?><button class="btn btn-info btn-sm"
                                 id="send-<?= $row_emp['entry_id'] ?>" data-toggle="tooltip"
-                                onclick="send(<?= $row_emp['entry_id'] ?>)" title="Send via email and whatsapp"><i
-                                    class="fa fa-paper-plane-o"></i></button>
-                            <?php }
+                                onclick="send(<?= $row_emp['entry_id'] ?>)" title="Send via email and whatsapp"><i class="fa fa-paper-plane-o"></i></button>
+                            <?php } ?>
+                            <button class="btn btn-info btn-sm" onclick="update_modal(<?= $row_emp['entry_id'] ?>)"
+                                data-toggle="tooltip" id="updatet_btn-<?= $row_emp['entry_id'] ?>" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>
+                            <button class="btn btn-info btn-sm" onclick="display_modal(<?= $row_emp['entry_id'] ?>)" data-toggle="tooltip" id="viewt_btn-<?= $row_emp['entry_id'] ?>" title="View Details"><i class="fa fa-eye"></i></button>
+                                <?php
                                 $download_url = preg_replace('/(\/+)/', '/', $row_emp['upload_url']);
                                 $download_url2 = BASE_URL . str_replace('../', '', $download_url);
                                 $download_url1 = preg_replace('/(\/+)/', '/', $row_emp['upload_url2']);
                                 $download_url3 = BASE_URL . str_replace('../', '', $download_url1);
+
+                                $download_url_demo3 = preg_replace('/(\/+)/', '/', $row_emp['upload_url3']);
+                                $download_url_demo3 = BASE_URL . str_replace('../', '', $download_url_demo3);
+                                $download_url_demo4 = preg_replace('/(\/+)/', '/', $row_emp['upload_url4']);
+                                $download_url_demo4 = BASE_URL . str_replace('../', '', $download_url_demo4);
+                                $download_url_demo5 = preg_replace('/(\/+)/', '/', $row_emp['upload_url5']);
+                                $download_url_demo5 = BASE_URL . str_replace('../', '', $download_url_demo5);
                                 ?>
                             <?php if ($row_emp['upload_url'] != "") : ?>
                             <a href="<?= $download_url2 ?>" class="btn btn-info btn-sm ico_left" data-toggle="tooltip"
@@ -77,6 +80,21 @@ if ($visa_type != "") {
                             <?php if ($row_emp['upload_url2'] != "") : ?>
                             <a href="<?= $download_url3 ?>" class="btn btn-info btn-sm ico_left" data-toggle="tooltip"
                                 style="padding: 15px 15px; border-radius: 4px;" title="Download Form2" download><i
+                                    class="fa fa-download"></i></a>
+                            <?php endif; ?>
+                            <?php if ($row_emp['upload_url3'] != "") : ?>
+                            <a href="<?= $download_url_demo3 ?>" class="btn btn-info btn-sm ico_left" data-toggle="tooltip"
+                                style="padding: 15px 15px; border-radius: 4px;" title="Download Form3" download><i
+                                    class="fa fa-download"></i></a>
+                            <?php endif; ?>
+                            <?php if ($row_emp['upload_url4'] != "") : ?>
+                            <a href="<?= $download_url_demo4 ?>" class="btn btn-info btn-sm ico_left" data-toggle="tooltip"
+                                style="padding: 15px 15px; border-radius: 4px;" title="Download Form4" download><i
+                                    class="fa fa-download"></i></a>
+                            <?php endif; ?>
+                            <?php if ($row_emp['upload_url5'] != "") : ?>
+                            <a href="<?= $download_url_demo5 ?>" class="btn btn-info btn-sm ico_left" data-toggle="tooltip"
+                                style="padding: 15px 15px; border-radius: 4px;" title="Download Form5" download><i
                                     class="fa fa-download"></i></a>
                             <?php endif; ?>
                         </td>

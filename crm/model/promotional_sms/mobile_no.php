@@ -237,11 +237,11 @@ public function mobile_no_from_csv_save()
 				header("Content-Disposition: attachment; filename=file.csv");
 				header("Pragma: no-cache");
 				header("Expires: 0");
-				$output = fopen($save, "w");  
+				$output = fopen($save, "w");
 				fputcsv($output, array('Mobile_no'));  
 				
 				foreach($unprocessArray as $row){
-						fputcsv($output, $row);  
+					fputcsv($output, $row);  
 				}
 					
 				fclose($output); 

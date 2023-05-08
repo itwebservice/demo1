@@ -8,18 +8,20 @@ $booking_id = $_POST['booking_id'];
 
 $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from bus_booking_master where booking_id='$booking_id' and delete_status='0'"));
 $reflections = json_decode($sq_booking['reflections']);
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 
 <form id="frm_update">
-
-    <input type="hidden" id="booking_id" name="booking_id" value="<?= $booking_id ?>">
-    <input type="hidden" id="hotel_sc" name="hotel_sc" value="<?php echo $reflections[0]->hotel_sc ?>">
-    <input type="hidden" id="hotel_markup" name="hotel_markup" value="<?php echo $reflections[0]->hotel_markup ?>">
-    <input type="hidden" id="hotel_taxes" name="hotel_taxes" value="<?php echo $reflections[0]->hotel_taxes ?>">
-    <input type="hidden" id="hotel_markup_taxes" name="hotel_markup_taxes"
-        value="<?php echo $reflections[0]->hotel_markup_taxes ?>">
-    <input type="hidden" id="hotel_tds" name="hotel_tds" value="<?php echo $reflections[0]->hotel_tds ?>">
-
 
     <div class="modal fade" id="update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static"
         data-keyboard="false">
@@ -40,14 +42,14 @@ $reflections = json_decode($sq_booking['reflections']);
                 <div class="modal-body">
                     <input type="hidden" id="booking_id" name="booking_id" value="<?= $booking_id ?>">
                     <input type="hidden" id="hotel_sc" name="hotel_sc" value="<?php echo $reflections[0]->hotel_sc ?>">
-                    <input type="hidden" id="hotel_markup" name="hotel_markup"
-                        value="<?php echo $reflections[0]->hotel_markup ?>">
-                    <input type="hidden" id="hotel_taxes" name="hotel_taxes"
-                        value="<?php echo $reflections[0]->hotel_taxes ?>">
-                    <input type="hidden" id="hotel_markup_taxes" name="hotel_markup_taxes"
-                        value="<?php echo $reflections[0]->hotel_markup_taxes ?>">
-                    <input type="hidden" id="hotel_tds" name="hotel_tds"
-                        value="<?php echo $reflections[0]->hotel_tds ?>">
+                    <input type="hidden" id="hotel_markup" name="hotel_markup" value="<?php echo $reflections[0]->hotel_markup ?>">
+                    <input type="hidden" id="hotel_taxes" name="hotel_taxes" value="<?php echo $reflections[0]->hotel_taxes ?>">
+                    <input type="hidden" id="hotel_markup_taxes" name="hotel_markup_taxes" value="<?php echo $reflections[0]->hotel_markup_taxes ?>">
+                    <input type="hidden" id="hotel_tds" name="hotel_tds" value="<?php echo $reflections[0]->hotel_tds ?>">
+                    <input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+                    <input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+                    <input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+                    <input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $reflections[0]->markup_tax_value ?>">
 
                     <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_10">
 
@@ -123,9 +125,7 @@ $reflections = json_decode($sq_booking['reflections']);
 
                             <div class="col-xs-12 text-right">
 
-                                <button type="button" class="btn btn-info btn-sm ico_left"
-                                    onClick="addRow('tbl_dynamic_bus_booking')"><i
-                                        class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                            <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_bus_booking')"><i class="fa fa-plus"></i></button>
 
                             </div>
 
@@ -195,8 +195,6 @@ $reflections = json_decode($sq_booking['reflections']);
                         }
                     }
                     $readonly = ($inclusive_d != '') ? 'readonly' : '';
-                    // echo "<pre>";
-                    // var_dump($bsmValues)
                     ?>
 
                     <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_30">
@@ -206,8 +204,8 @@ $reflections = json_decode($sq_booking['reflections']);
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="basic_show"
                                     style="color:#000000"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_b ?></span></small>
-                                <input type="text" id="basic_cost" name="basic_cost" placeholder="Amount" title="Amount"
-                                    onchange="get_auto_values('balance_date1','basic_cost','payment_mode','service_charge','markup','update','true','basic','basic',true);calculate_total_amount();validate_balance(this.id)"
+                                <input type="text" id="basic_cost" name="basic_cost" placeholder="Basic Amount" title="Basic Amount"
+                                    onchange="get_auto_values('balance_date1','basic_cost','payment_mode','service_charge','markup','update','true','basic','basic',false);calculate_total_amount();validate_balance(this.id)"
                                     value="<?= $basic_cost ?>">
                             </div>
 
@@ -229,8 +227,8 @@ $reflections = json_decode($sq_booking['reflections']);
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="markup_show"
                                     style="color:#000000"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_m ?></span></small>
-                                <input type="text" id="markup" name="markup" placeholder="Markup " title="Markup"
-                                    onchange="get_auto_values('balance_date1','basic_cost','payment_mode','service_charge','markup','update','false','markup','discount1');calculate_total_amount('');validate_balance(this.id)"
+                                <input type="text" id="markup" name="markup" placeholder="Markup Amount" title="Markup Amount"
+                                    onchange="get_auto_values('balance_date1','basic_cost','payment_mode','service_charge','markup','update','true','markup','discount1');calculate_total_amount('');validate_balance(this.id)"
                                     value="<?= $markup ?>">
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
@@ -246,15 +244,17 @@ $reflections = json_decode($sq_booking['reflections']);
                                     readonly>
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="text" id="net_total" class="amount_feild_highlight text-right"
                                     name="net_total" placeholder="Net Total" title="Net Total" readonly
                                     value="<?= $sq_booking['net_total'] ?>">
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10_xs">
+                                <small>&nbsp;</small>
                                 <input type="text" name="balance_date1" id="balance_date1"
                                     value="<?= get_date_user($sq_booking['created_at']) ?>" placeholder="Booking Date"
                                     title="Booking Date"
-                                    onchange="check_valid_date(this.id);get_auto_values('balance_date1','basic_cost','payment_mode','service_charge','markup','update','true','service_charge','discount1',true);">
+                                    onchange="check_valid_date(this.id);get_auto_values('balance_date1','basic_cost','payment_mode','service_charge','markup','update','true','service_charge','discount1',false);">
                             </div>
 
                         </div>
@@ -399,13 +399,20 @@ $('#frm_update').validate({
         var hotel_markup_taxes = $('#hotel_markup_taxes').val();
         var hotel_tds = $('#hotel_tds').val();
         var roundoff = $('#roundoff').val();
+        var tax_apply_on = $('#atax_apply_on').val();
+        var tax_value = $('#tax_value1').val();
+        var markup_tax_value = $('#markup_tax_value1').val();
+
         var reflections = [];
         reflections.push({
             'hotel_sc': hotel_sc,
             'hotel_markup': hotel_markup,
             'hotel_taxes': hotel_taxes,
             'hotel_markup_taxes': hotel_markup_taxes,
-            'hotel_tds': hotel_tds
+            'hotel_tds': hotel_tds,
+            'tax_apply_on':tax_apply_on,
+            'tax_value':tax_value,
+            'markup_tax_value':markup_tax_value
         });
         var bsmValues = [];
         bsmValues.push({
@@ -430,14 +437,26 @@ $('#frm_update').validate({
         var reporting_time_arr = new Array();
         var boarding_point_access_arr = new Array();
         var entry_id_arr = new Array();
+        var e_checkbox_arr = [];
 
         var msg = "";
         var table = document.getElementById("tbl_dynamic_bus_booking");
         var rowCount = table.rows.length;
-
+        var checked_count = 0;
         for (var i = 0; i < rowCount; i++) {
             var row = table.rows[i];
             if (row.cells[0].childNodes[0].checked) {
+                checked_count++;
+            }
+        }
+        if (checked_count == 0) {
+            error_msg_alert("Atleast one bus details is required!");
+            $('#btn_update').prop('disabled', false);
+            return false;
+        }
+
+        for (var i = 0; i < rowCount; i++) {
+            var row = table.rows[i];
                 var company_name = row.cells[2].childNodes[0].value;
                 var bus_type = row.cells[3].childNodes[0].value;
                 var bus_type_new = row.cells[4].childNodes[0].value;
@@ -448,21 +467,23 @@ $('#frm_update').validate({
                 var reporting_time = row.cells[9].childNodes[0].value;
                 var boarding_point_access = row.cells[10].childNodes[0].value;
 
+                if (row.cells[0].childNodes[0].checked) {
 
-                if (company_name == '') {
-                    error_msg_alert("Enter Bus Operator name at row " + (i + 1));
-                    $('#btn_update').prop('disabled', false);
-                    return false;
-                }
-                if (origin == '') {
-                    error_msg_alert("Enter Source at row " + (i + 1));
-                    $('#btn_update').prop('disabled', false);
-                    return false;
-                }
-                if (destination == '') {
-                    error_msg_alert("Enter Destination at row " + (i + 1));
-                    $('#btn_update').prop('disabled', false);
-                    return false;
+                    if (company_name == '') {
+                        error_msg_alert("Enter Bus Operator name at row " + (i + 1));
+                        $('#btn_update').prop('disabled', false);
+                        return false;
+                    }
+                    if (origin == '') {
+                        error_msg_alert("Enter Source at row " + (i + 1));
+                        $('#btn_update').prop('disabled', false);
+                        return false;
+                    }
+                    if (destination == '') {
+                        error_msg_alert("Enter Destination at row " + (i + 1));
+                        $('#btn_update').prop('disabled', false);
+                        return false;
+                    }
                 }
 
                 if (row.cells[11]) {
@@ -494,8 +515,8 @@ $('#frm_update').validate({
                 boarding_point_access_arr.push(boarding_point_access);
 
                 entry_id_arr.push(entry_id);
+                e_checkbox_arr.push(row.cells[0].childNodes[0].checked);
 
-            }
         }
         if (msg != "") {
 
@@ -541,7 +562,7 @@ $('#frm_update').validate({
                         date_of_journey_arr: date_of_journey_arr,
                         reporting_time_arr: reporting_time_arr,
                         boarding_point_access_arr: boarding_point_access_arr,
-                        entry_id_arr: entry_id_arr,
+                        entry_id_arr: entry_id_arr,e_checkbox_arr:e_checkbox_arr,
                         balance_date1: balance_date1,
                         reflections: reflections,
                         service_tax_markup: service_tax_markup,

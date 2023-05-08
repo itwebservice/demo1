@@ -125,7 +125,7 @@ public function expense_payment_delete(){
     $clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
 	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec,$ledger_particular,$type);
 	
-	$module_name = "Other Expense Booking";
+	$module_name = "Other Expense Booking Payment";
 	$module_entry_id = $payment_id;
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount;
@@ -226,7 +226,7 @@ public function bank_cash_book_save($payment_id, $branch_admin_id)
 	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$supplier_type' and user_type='Other Vendor' and group_sub_id='105'"));
 	$supplier_gl = $sq_cust['ledger_id'];
 	
-	$module_name = "Other Expense Booking";
+	$module_name = "Other Expense Booking Payment";
 	$module_entry_id = $payment_id;
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount1;
@@ -440,7 +440,7 @@ public function bank_cash_book_update($clearance_status)
 	$supplier_gl = $sq_cust['ledger_id'];
 	global $bank_cash_book_master;
 	
-	$module_name = "Other Expense Booking";
+	$module_name = "Other Expense Booking Payment";
 	$module_entry_id = $payment_id;
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount;

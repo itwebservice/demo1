@@ -139,7 +139,7 @@ if($from_date_filter != ''){
 						<td><?= $count ?></td>
 						<td><?= get_date_user($row_ledger['payment_date']) ?></td>
 						<td><?= $row_ledger['type'] ?></td>
-						<td style="cursor:pointer;text-decoration: underline;" onclick="show_history('<?= $row_ledger['module_entry_id'] ?>','<?= $row_ledger['module_name'] ?>','<?= $row_ledger['finance_transaction_id'] ?>','<?= $particular ?>','<?= $sq_le_name['ledger_name'] ?>')"><?= $sq_le_name['ledger_name'].' ('.$row_ledger['module_entry_id'].'_'.$row_ledger['module_name'].')' ?></td>
+						<td style="cursor:pointer;text-decoration: underline;" onclick="show_history('<?= $row_ledger['module_entry_id'] ?>','<?= $row_ledger['module_name'] ?>','<?= $row_ledger['finance_transaction_id'] ?>','<?= $particular ?>','<?= addslashes($sq_le_name['ledger_name']) ?>','<?= $row_ledger['type'] ?>')"><?= $sq_le_name['ledger_name'].' ('.$row_ledger['module_entry_id'].'_'.$row_ledger['module_name'].')' ?></td>
 						<td><?= $debit_amount ?></td>
 						<td><?= $credit_amount ?></td>
 						<td><?= number_format($balance_column,2) ?></td>

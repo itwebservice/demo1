@@ -204,14 +204,15 @@ $objPHPExcel->getActiveSheet()->getStyle('B8:C8')->applyFromArray($borderArray);
 
         $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
-        ->setCellValue('C'.$row_count, "Booking ID")
-        ->setCellValue('D'.$row_count, "Customer Name")
-        ->setCellValue('E'.$row_count, "Receipt Date")
-        ->setCellValue('F'.$row_count, "Mode")
-        ->setCellValue('G'.$row_count, "Amount");
+        ->setCellValue('C'.$row_count, "Receipt ID")
+        ->setCellValue('D'.$row_count, "Booking ID")
+        ->setCellValue('E'.$row_count, "Customer Name")
+        ->setCellValue('F'.$row_count, "Receipt Date")
+        ->setCellValue('G'.$row_count, "Mode")
+        ->setCellValue('H'.$row_count, "Amount");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 
@@ -240,16 +241,20 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
     }       
     $sq_paid_amount = $sq_paid_amount + $row_visa_payment['payment_amount']+$row_visa_payment['credit_charges'];
 
+	$date1 = $row_visa_payment['payment_date'];
+	$yr1 = explode("-", $date1);
+	$year1 = $yr1[0];
 	$objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $count)
-        ->setCellValue('C'.$row_count, get_misc_booking_id($row_visa_payment['misc_id'],$year))
-        ->setCellValue('D'.$row_count, $customer_name)
-        ->setCellValue('E'.$row_count, date('d-m-Y', strtotime($row_visa_payment['payment_date'])))
-        ->setCellValue('F'.$row_count, $row_visa_payment['payment_mode'])
-        ->setCellValue('G'.$row_count, number_format($row_visa_payment['payment_amount']+$row_visa_payment['credit_charges'],2));
+        ->setCellValue('C'.$row_count, get_misc_booking_payment_id($row_visa_payment['payment_id'],$year1))
+        ->setCellValue('D'.$row_count, get_misc_booking_id($row_visa_payment['misc_id'],$year))
+        ->setCellValue('E'.$row_count, $customer_name)
+        ->setCellValue('F'.$row_count, date('d-m-Y', strtotime($row_visa_payment['payment_date'])))
+        ->setCellValue('G'.$row_count, $row_visa_payment['payment_mode'])
+        ->setCellValue('H'.$row_count, number_format($row_visa_payment['payment_amount']+$row_visa_payment['credit_charges'],2));
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':G'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':H'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
 

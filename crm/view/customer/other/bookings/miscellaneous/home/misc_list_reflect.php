@@ -62,7 +62,7 @@ $customer_id = $_SESSION['customer_id'];
 									if ($paid_amount > $cancel_amount) {
 										$balance_amount = 0;
 									} else {
-										$balance_amount = $cancel_amount - $paid_amount;
+										$balance_amount = $cancel_amount - $paid_amount + $query1['sumc'];
 									}
 								} else {
 									$balance_amount = 0;

@@ -7,7 +7,7 @@ $vendor_type_id = $_POST['vendor_type_id'];
 if($vendor_type=="Hotel Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="hotel_id" id="hotel_id" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="hotel_id" id="hotel_id" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -38,7 +38,7 @@ $('#hotel_id').select2();
 if($vendor_type=="Transport Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="transport_agency_id" id="transport_agency_id" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="transport_agency_id" id="transport_agency_id" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -69,7 +69,7 @@ $('#transport_agency_id').select2();
 if($vendor_type=="Car Rental Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -103,7 +103,7 @@ $('#vendor_id').select2();
 if($vendor_type=="DMC Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="dmc_id" id="dmc_id" title="Select DMC" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="dmc_id" id="dmc_id" title="Select DMC" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -137,7 +137,7 @@ $('#dmc_id').select2();
 if($vendor_type=="Visa Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -171,7 +171,7 @@ $('#vendor_id').select2();
 if($vendor_type=="Passport Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -205,7 +205,7 @@ $('#vendor_id').select2();
 if($vendor_type=="Ticket Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Ticket Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Ticket Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -239,7 +239,7 @@ $('#vendor_id').select2();
 if($vendor_type=="Train Ticket Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Ticket Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Ticket Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -273,7 +273,7 @@ $('#vendor_id').select2();
 if($vendor_type=="Excursion Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Activity Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Activity Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -307,7 +307,7 @@ $('#vendor_id').select2();
 if($vendor_type=="Insurance Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="vendor_id" id="vendor_id" title="Select Insurance Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Insurance Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -342,7 +342,7 @@ if($vendor_type=="Other Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 			 
-	<select name="vendor_id" id="vendor_id" title="Select Other Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="vendor_id" id="vendor_id" title="Select Other Supplier" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>
@@ -375,7 +375,7 @@ $('#vendor_id').select2();
 if($vendor_type=="Cruise Vendor"){
 ?>
 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-	<select name="cruise_id" id="cruise_id" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');">
+	<select name="cruise_id" id="cruise_id" style="width:100%" onchange="payment_for_single_purch(this.id,'<?= $vendor_type ?>','div_payment_for');get_payment_outstanding();">
 		<?php 
 		if($vendor_type_id==""){
 			?>

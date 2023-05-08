@@ -12,24 +12,44 @@ include_once("../../../model/model.php");
       <div class="modal-body">
         
         <div class="row mg_bt_10"> <div class="col-md-12 text-right">
-            <button type="button" class="btn btn-info btn-sm ico_left" onClick="addRow('tbl_taxes')"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-            <button type="button" class="btn btn-danger btn-sm ico_left" onClick="deleteRow('tbl_taxes')"><i class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+            <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_taxes')"><i class="fa fa-plus"></i></button>
+            <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('tbl_taxes')"><i class="fa fa-trash"></i></button>
         </div></div>
 
         <div class="row"> <div class="col-md-12"> <div class="table-responsive">
         
-          <table id="tbl_taxes" name="tbl_taxes" class="table border_0 table-hover no-marg"  cellspacing="0">
+          <table id="tbl_taxes" name="tbl_taxes" class="table border_0 table-hover no-marg pd_bt_51"  cellspacing="0">
               <tr>
                   <td><input id="chk_tax1" type="checkbox" checked></td>
                   <td><input maxlength="15" value="1" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
-                  <td><input type="text" placeholder="*Code" title="Code" id="code"  class="form-control" /></td>
-                  <td><input type="text" placeholder="*Name" title="Name" id="name"  class="form-control" /></td>
-                  <td><select name="rate_in" id="rate_in" data-toggle="tooltip" class="form-control"  title="*Rate In">
-                        <option value="Percentage">Percentage</option>
-                        <option value="Flat">Flat</option>
-                      </select>
+                  <td><select title="*Reflection" id="reflt1" class="form-control" style="width:150px!important;">
+                      <option value="">*Reflection</option>
+                      <option value="Income">Income</option>
+                      <option value="Expense">Expense</option>
+                    </select></td>
+                  <td><input type="text" placeholder="*Tax Name-1" title="Tax Name-1" id="namet1"  class="form-control" style="width:160px!important;" /></td>
+                  <td><input type="number" placeholder="*Tax Amount-1(%)" min="0" title="Tax Amount-1(%)" id="amountt1" class="form-control" onchange="toggle_rate_validation(this.id)" style="width:170px!important;" /></td>
+                  <td><select title="*Select Ledger-1" id="ledgert1"  class="form-control app_select2" style="width:200px!important;">
+                      <option value="">*Select Ledger-1</option>
+                      <?php
+                      $sq = mysqlQuery("select * from ledger_master where group_sub_id in('99','106') order by ledger_name");
+                      ?>
+                      <?php while($row = mysqli_fetch_assoc($sq)){ ?>
+                        <option value="<?= $row['ledger_id'] ?>"><?= $row['ledger_name'] ?></option>
+                      <?php } ?>
+                    </select>
                   </td>
-                  <td><input type="number" placeholder="*Rate" min="0" title="Rate" id="rate" class="form-control" onchange="toggle_rate_validation(this.id)" /></td>
+                  <td><input type="text" placeholder="Tax Name-2" title="Tax Name-2" id="namet2"  class="form-control" style="width:160px!important;" /></td>
+                  <td><input type="number" placeholder="Tax Amount-2(%)" min="0" title="Tax Amount-2(%)" id="amountt2" class="form-control" onchange="toggle_rate_validation(this.id)" style="width:170px!important;" /></td>
+                  <td><select title="Select Ledger-2" id="ledgert2" class="form-control app_select2" style="width:200px!important;">
+                      <option value="">Select Ledger-2</option>
+                      <?php
+                      $sq = mysqlQuery("select * from ledger_master where group_sub_id in('99','106') order by ledger_name");
+                      ?>
+                      <?php while($row = mysqli_fetch_assoc($sq)){ ?>
+                        <option value="<?= $row['ledger_id'] ?>"><?= $row['ledger_name'] ?></option>
+                      <?php } ?>
+                    </select></td>
               </tr>                                
           </table>  
 
@@ -49,14 +69,17 @@ include_once("../../../model/model.php");
 
 <script>
 $('#taxes_save_modal').modal('show');
-
+$('#ledgert1,#ledgert2').select2();
 function taxes_master_save()
 {
   var base_url = $('#base_url').val();
-  var code_array = new Array();
-  var name_array = new Array();
-  var rate_in_array = new Array();
-  var rate_array = new Array();
+  var reflection_array = new Array();
+  var tax_name1_array = new Array();
+  var tax_amount1_array = new Array();
+  var ledger1_array = new Array();
+  var tax_name2_array = new Array();
+  var tax_amount2_array = new Array();
+  var ledger2_array = new Array();
 
   var table = document.getElementById("tbl_taxes");
   var rowCount = table.rows.length;
@@ -65,43 +88,91 @@ function taxes_master_save()
     var row = table.rows[i];
     if(row.cells[0].childNodes[0].checked){
 
-      var code = row.cells[2].childNodes[0].value;
-      var name = row.cells[3].childNodes[0].value;
-      var rate_in = row.cells[4].childNodes[0].value;
-      var rate = row.cells[5].childNodes[0].value;
+      var reflection = row.cells[2].childNodes[0].value;
+      var tax_name1 = row.cells[3].childNodes[0].value;
+      var tax_amount1 = row.cells[4].childNodes[0].value;
+      var ledger1 = row.cells[5].childNodes[0].value;
+      var tax_name2 = row.cells[6].childNodes[0].value;
+      var tax_amount2 = row.cells[7].childNodes[0].value;
+      var ledger2 = row.cells[8].childNodes[0].value;
       
-      if(code==""){
-        error_msg_alert("Enter Code in row"+(i+1));
+      if(reflection ==""){
+        error_msg_alert("Select reflection in row"+(i+1));
         return false;
       }
-      if(name==""){
-        error_msg_alert("Enter Name in row"+(i+1));
+      // Tax-1
+      if(tax_name1==""){
+        error_msg_alert("Enter tax name-1 in row"+(i+1));
         return false;
       }
-      if(rate==""){
-        error_msg_alert("Enter Rate in row"+(i+1));
+      if(tax_amount1==""){
+        error_msg_alert("Enter tax amount-1 in row"+(i+1));
         return false;
       }
-      if(parseFloat(rate) < 0){
-        error_msg_alert("Rate should not be less than 0 in row"+(i+1));
+      if(ledger1==""){
+        error_msg_alert("Select ledger-1 in row"+(i+1));
         return false;
       }
-
-      for(var j=0; j<code_array.length; j++){
-        if(code_array[j]==code){
-
-          error_msg_alert(code+" is repeated in row"+(j+1)+" and row"+(i+1));
+      if(parseFloat(tax_amount1) < 0){
+        error_msg_alert("Tax amount-1 should not be less than 0 in row"+(i+1));
+        return false;
+      }
+      // Tax-2
+      if(tax_name2!=""){
+        if(tax_amount2==""){
+          error_msg_alert("Enter tax amount-2 in row"+(i+1));
           return false;
-        }  
+        }
+        if(ledger2==""){
+          error_msg_alert("Select ledger-2 in row"+(i+1));
+          return false;
+        }
+        if(parseFloat(tax_amount2) < 0){
+          error_msg_alert("Tax amount-1 should not be less than 0 in row"+(i+1));
+          return false;
+        }
       }
-      code_array.push(code);
-      name_array.push(name);
-      rate_in_array.push(rate_in);
-      rate_array.push(rate);
+      // Tax-2
+      if(tax_amount2!="" && tax_amount2!=0){
+        if(tax_name2==""){
+          error_msg_alert("Enter tax name-2 in row"+(i+1));
+          return false;
+        }
+        if(ledger2==""){
+          error_msg_alert("Select ledger-2 in row"+(i+1));
+          return false;
+        }
+        if(parseFloat(tax_amount2) < 0){
+          error_msg_alert("Tax amount-1 should not be less than 0 in row"+(i+1));
+          return false;
+        }
+      }
+      // Tax-2
+      if(ledger2!=""){
+        if(tax_name2==""){
+          error_msg_alert("Enter tax name-2 in row"+(i+1));
+          return false;
+        }
+        if(tax_amount2==""){
+          error_msg_alert("Enter Tax amount-2 in row"+(i+1));
+          return false;
+        }
+        if(parseFloat(tax_amount2) < 0){
+          error_msg_alert("Tax amount-1 should not be less than 0 in row"+(i+1));
+          return false;
+        }
+      }
+      reflection_array.push(reflection);
+      tax_name1_array.push(tax_name1);
+      tax_amount1_array.push(tax_amount1);
+      ledger1_array.push(ledger1);
+      tax_name2_array.push(tax_name2);
+      tax_amount2_array.push(tax_amount2);
+      ledger2_array.push(ledger2);
     }
   }
 
-  if(code_array.length==0){
+  if(reflection_array.length==0){
     error_msg_alert("Select rows to save taxes!");
     return false;
   }  
@@ -109,7 +180,7 @@ function taxes_master_save()
   $('#btn_taxes_save').button('loading');
   $.post( 
         base_url+"controller/business_rules/taxes/save.php",
-        { code_array : code_array, name_array : name_array,rate_in_array:rate_in_array,rate_array:rate_array },
+        { reflection_array : reflection_array, tax_name1_array : tax_name1_array,tax_amount1_array:tax_amount1_array,ledger1_array:ledger1_array,tax_name2_array:tax_name2_array,tax_amount2_array:tax_amount2_array,ledger2_array:ledger2_array },
         function(data) {
           var msg = data.split('--');
           if(msg[0].replace(/\s/g, '') === "error"){

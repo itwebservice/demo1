@@ -38,5 +38,4 @@ $branch_status = $_POST['branch_status'];
 <script>
 $('#save_modal').modal('show');
 </script>
- 
 <script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>

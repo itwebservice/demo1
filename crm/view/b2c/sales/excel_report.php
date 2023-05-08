@@ -232,6 +232,9 @@ while($row_sale = mysqli_fetch_assoc($row_sale1)){
 	$enq_data = json_decode($row_sale['enq_data']);
 	$net_total = $costing_data[0]->net_total;
 
+	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+	$cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
+    
 	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(`credit_charges`) as sumc from b2c_payment_master where booking_id='$row_sale[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 	$paid_amount = $sq_payment_info['sum'];
 	$credit_card_charges = $sq_payment_info['sumc'];
@@ -261,7 +264,7 @@ while($row_sale = mysqli_fetch_assoc($row_sale1)){
         ->setCellValue('B'.$row_count, ++$count)
         ->setCellValue('C'.$row_count, $booking_id)
         ->setCellValue('D'.$row_count, $row_sale['service'])
-        ->setCellValue('E'.$row_count, $row_sale['name'])
+        ->setCellValue('E'.$row_count, $cust_name)
         ->setCellValue('F'.$row_count, get_date_user($row_sale['created_at']))
         ->setCellValue('G'.$row_count, number_format($net_total,2))
         ->setCellValue('H'.$row_count, number_format($cancel_amount,2))

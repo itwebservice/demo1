@@ -34,12 +34,13 @@ $service_charge = $sq_quotation['service_charge'];
 $bsmValues = json_decode($sq_quotation['bsm_values']);
 //////////////////Service Charge Rules
 $service_tax_amount = 0;
-if ($sq_quotation['service_tax'] !== 0.00 && ($sq_quotation['service_tax']) !== '') {
-  $service_tax_subtotal1 = explode(',', $sq_quotation['service_tax']);
-  for ($i = 0; $i < sizeof($service_tax_subtotal1); $i++) {
-    $service_tax = explode(':', $service_tax_subtotal1[$i]);
+$percent = '';
+if($sq_quotation['service_tax'] !== 0.00 && ($sq_quotation['service_tax']) !== ''){
+  $service_tax_subtotal1 = explode(',',$sq_quotation['service_tax']);
+  for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
+    $service_tax = explode(':',$service_tax_subtotal1[$i]);
     $service_tax_amount +=  $service_tax[2];
-    $percent = $service_tax[1];
+    $percent .= $service_tax[0]  . $service_tax[1] .', ';
   }
 }
 
@@ -52,7 +53,7 @@ if ($sq_quotation['markup_cost_subtotal'] !== 0.00 && $sq_quotation['markup_cost
     $markupservice_tax_amount += $service_tax[2];
   }
 }
-$total_tax_amount_show = currency_conversion($currency, $currency, floatval($service_tax_amount) + floatval($markupservice_tax_amount));
+$total_tax_amount_show = currency_conversion($currency, $currency, floatval($service_tax_amount) + floatval($markupservice_tax_amount) + $sq_quotation['roundoff']);
 
 if (($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != '') {
   $tax_show = '';
@@ -84,7 +85,7 @@ $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['quota
         <h3 class="customerFrom">PREPARED FOR :</h3>
         <span class="customerName"><em><i class="fa fa-user"></i></em> : <?= $sq_quotation['customer_name'] ?></span><br>
         <span class="customerMail"><em><i class="fa fa-envelope"></i></em> : <?= $sq_quotation['email_id'] ?></span><br>
-        <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['mobile_no'] ?></span>
+        <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['mobile_no'] ?></span><br>
       </div>
       <div class="landingPageBlocks">
         <div class="detailBlock">
@@ -208,6 +209,14 @@ $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['quota
           </div>
         </div>
       </div>
+      <?php
+      if($quot_note!=''){?>
+        <div class="row mg_tp_10">
+          <div class="col-md-12">
+            <?php echo $quot_note; ?>
+          </div>
+        </div>
+      <?php } ?>
       </div>
     </section>
   </section>
@@ -222,7 +231,7 @@ $quotation_cost = currency_conversion($currency, $currency, $sq_quotation['quota
   <section class="endPageSection main_block mg_tp_30 pageSectionInner">
     <div class="row">
       <?php
-      $fare_cost = currency_conversion($currency, $currency, (floatval($newBasic) + $sq_quotation['roundoff']));
+      $fare_cost = currency_conversion($currency, $currency, (floatval($newBasic)));
       ?>
       <!-- Guest Detail -->
       <div class="col-md-12">

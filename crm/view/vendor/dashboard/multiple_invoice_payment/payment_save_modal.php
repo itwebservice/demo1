@@ -1,5 +1,6 @@
 <?php
 include_once('../../../../model/model.php');
+include_once('../../inc/vendor_generic_functions.php');
 $emp_id = $_SESSION['emp_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $role = $_SESSION['role'];
@@ -18,42 +19,38 @@ $branch_status = $_POST['branch_status'];
       <div class="modal-body">
 
             <div class="panel panel-default panel-body app_panel_style mg_tp_20 feildset-panel">
-            <legend>Select Sale</legend>
-
-              <div class="row">
-                <div class="col-md-3">
-                  <select class="form-control" name="vendor_type" id="vendor_type" title="Supplier Type" onchange="vendor_data_for_pay(this.value, 'div_vendor_type_content')">
-                    <option value="">*Supplier Type</option>
-                    <?php 
-                    $sq_vendor = mysqlQuery("select * from vendor_type_master order by vendor_type");
-                    while($row_vendor = mysqli_fetch_assoc($sq_vendor)){
-                      ?>
-                      <option value="<?= $row_vendor['vendor_type'] ?>"><?= $row_vendor['vendor_type'] ?></option>
+            <legend>Select Purchase</legend>
+            <div class="row">
+              <div class="col-md-5 col-sm-6 col-xs-12">
+                <select id="estimate_id" class="form-control" name="estimate_id" style="width:100%" title="Supplier Estimate ID" onchange="get_payment_outstanding(this.id)" required>
+                      <option value="">*Supplier Estimate ID</option>
                       <?php
-                    }
+                      $sq_estimate = mysqlQuery("select * from vendor_estimate where delete_status='0' order by estimate_id desc");
+                      while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
+                      $vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
+                      $estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
+                      $date = $row_estimate['purchase_date'];
+                      $yr = explode("-", $date);
+                      $year = $yr[0];
+                      if($row_estimate['purchase_return'] == '1' || $row_estimate['purchase_return'] == '2'){
+                        $status = '(Cancelled)';
+                      }else{
+                        $status = '';
+                      }
                     ?>
-                  </select>
-                </div>
-                <div id="div_vendor_type_content"></div>
-                <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-                  <select class="form-control" name="estimate_type3" id="estimate_type3" title="Purchase Type" onchange="payment_for_data_load(this.value, 'div_payment_for_content3', '3')">
-                    <option value="">Purchase Type</option>
-                    <?php 
-                    $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
-                    while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
-                      ?>
-                      <option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
+                      <option value="<?= $row_estimate['estimate_id'] ?>"><?= get_vendor_estimate_id($row_estimate['estimate_id'],$year)." : ".$vendor_type_val."(".$row_estimate['vendor_type'].") : ".$estimate_type_val.' '.$status ?></option>
                       <?php
-                    }
-                    ?>
+                      }
+                      ?>
                   </select>
-                </div>
-                <div id="div_payment_for_content3"></div>
               </div>
-
+              <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                <input type="text" class="form-control" id="outstanding" name="outstanding" title="Outstanding" placeholder="Outstanding" readonly/>
+                <input type="hidden" id="canc_status" name="canc_status" class="form-control"/>
+              </div>
+            </div>
             </div>
             <div id="div_payment_for"></div>
-
             <div class="panel panel-default panel-body app_panel_style mg_tp_20 feildset-panel">
             <legend>Payment Particulars</legend>
           
@@ -86,7 +83,7 @@ $branch_status = $_POST['branch_status'];
                   <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
                 </div>
                 <div class="col-md-4">
-                  <input type="text" id="transaction_id" name="transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+                  <input type="number" id="transaction_id" name="transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
                 </div>
                 <div class="col-md-4">
                   <select class="form-control" name="bank_id" id="bank_id" title="Debitor Bank" disabled>
@@ -124,6 +121,7 @@ $branch_status = $_POST['branch_status'];
 </form>
 
 <script src="<?= BASE_URL ?>js/ajaxupload.3.5.js"></script>
+<script src="<?= BASE_URL ?>js/app/footer_scripts.js"></script>
 <script>
 $('#v_payment_save_modal').modal('show');
 $('#payment_date').datetimepicker({timepicker:false, format:'d-m-Y'});
@@ -138,10 +136,8 @@ function payment_evidence_upload(offset='')
       name: 'uploadfile',
       onSubmit: function(file, ext){
 
-         var id_proof_url = $("#payment_evidence_url"+offset).val();
-          
-     
-         if (! (ext && /^(jpg|png|jpeg|gif)$/.test(ext))){ 
+        var id_proof_url = $("#payment_evidence_url"+offset).val();
+        if (! (ext && /^(jpg|png|jpeg|gif)$/.test(ext))){ 
                     // extension is not allowed 
           status.text('Only JPG, PNG files are allowed');
           //return false;
@@ -158,7 +154,7 @@ function payment_evidence_upload(offset='')
         } else{
           ///$('<li></li>').appendTo('#files').text(file).addClass('error');
           $("#payment_evidence_url"+offset).val(response);
-		  $(btnUpload).find('span').text('Uploaded');
+		      $(btnUpload).find('span').text('Uploaded');
           msg_alert('File uploaded!');
         }
       }
@@ -168,25 +164,16 @@ function payment_evidence_upload(offset='')
 $(function(){
   $('#frm_vendor_payment_save1').validate({
       rules:{              
-              vendor_type: { required: true },
-              payment_amount : { required: true, number:true },
-              payment_date : { required: true },
-              payment_mode : { required : true },
-              bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-              bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+        vendor_type: { required: true },
+        payment_amount : { required: true, number:true },
+        payment_date : { required: true },
+        payment_mode : { required : true },
+        bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){
         $('#payment_save').prop('disabled',true);
-        var status = validate_estimate_vendor('estimate_type3','3');
-        if(!status){ 
-        $('#payment_save').prop('disabled',false);
-        return false; }
-
-        var vendor_type = $('#vendor_type').val();
-        var vendor_type_id = get_vendor_type_id('vendor_type');
-        var estimate_type = $('#estimate_type3').val();
-        var estimate_type_id = get_estimate_type_id('estimate_type3','3');
+        var base_url = $('#base_url').val();
+        var estimate_id = $('#estimate_id').val();
         var payment_amount = $('#payment_amount').val();
         var payment_date = $('#payment_date').val();
         var payment_mode = $('#payment_mode').val();
@@ -196,12 +183,8 @@ $(function(){
         var payment_evidence_url = $('#payment_evidence_url').val();
         var branch_admin_id = $('#branch_admin_id1').val();
         var emp_id = $('#emp_id').val();
-        var base_url = $('#base_url').val();
-        if(vendor_type_id == ''){
-          error_msg_alert("Select "+vendor_type+"!");
-          $('#payment_save').prop('disabled',false);
-          return false;
-        }
+        var outstanding = $('#outstanding').val();
+        var canc_status = $('#canc_status').val();
         
         var advance_amount = $('#advance_amount').val();
         var advance_nullify = $('#advance_nullify').val();
@@ -216,6 +199,11 @@ $(function(){
         if(payment_mode=='Credit Card'){
           $('#payment_save').prop('disabled',false);
           error_msg_alert("Please select another payment mode!");
+          return false; 
+        }
+        if(parseFloat(outstanding) < parseFloat(payment_amount)){ 
+          $('#payment_save').prop('disabled',false);
+          error_msg_alert("Payment amount cannot be greater than outstanding amount.");
           return false; 
         }
 
@@ -236,7 +224,6 @@ $(function(){
         if(payment_mode=='Advance'){
           
           if(parseFloat(advance_nullify) <= 0 || parseFloat(advance_nullify) == ''){
-            
             $('#payment_save').prop('disabled',false);
             error_msg_alert("Please select another payment mode!");
             return false; 
@@ -272,47 +259,36 @@ $(function(){
 
         var total_payment_amount = parseFloat(payment_amount) + parseFloat(advance_nullify);
 
-        $.post('../inc/costing_check.php', {vendor_type : vendor_type,vendor_type_id : vendor_type_id,estimate_type : estimate_type, estimate_type_id : estimate_type_id}, function(check){
-          if(isNaN(check) || isNaN(parseInt(check))){
+          $.post(base_url+'view/load_data/finance_date_validation.php', { check_date: payment_date }, function(data){
+          if(data !== 'valid'){
             $('#payment_save').prop('disabled',false);
-            error_msg_alert("Please select the Booking(with a Purchase).");
+            error_msg_alert("The Payment date does not match between selected Financial year.");
+            $('#payment_save').prop('disabled', false);
             return false;
           }
           else{
-            $.post(base_url+'view/load_data/finance_date_validation.php', { check_date: payment_date }, function(data){
-            if(data !== 'valid'){
+            $('#payment_save').button('loading');
+            $.ajax({
+              type: 'post',
+              url: base_url+'controller/vendor/dashboard/multiple_invoice_payment/payment_save.php',
+              data:{ payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_evidence_url :payment_evidence_url, branch_admin_id : branch_admin_id , emp_id : emp_id,advance_nullify : advance_nullify,total_payment_amount:total_payment_amount,estimate_id:estimate_id,canc_status:canc_status },
+              success: function(result){
+              $('#payment_save').button('reset');
               $('#payment_save').prop('disabled',false);
-              error_msg_alert("The Payment date does not match between selected Financial year.");
-              return false;
-            }
-            else{
-              $('#payment_save').button('loading');
-
-              $.ajax({
-                type: 'post',
-                url: base_url+'controller/vendor/dashboard/multiple_invoice_payment/payment_save.php',
-                data:{ vendor_type : vendor_type, vendor_type_id : vendor_type_id,estimate_type : estimate_type,estimate_type_id : estimate_type_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_evidence_url :payment_evidence_url, branch_admin_id : branch_admin_id , emp_id : emp_id,advance_nullify : advance_nullify,total_payment_amount:total_payment_amount},
-                success: function(result){
-                $('#payment_save').button('reset');
-                $('#payment_save').prop('disabled',false);
-                var msg = result.split('-');
-                if(msg[0]=='error'){
-                  msg_alert(result);
-                }
-                else{
-                  msg_alert(result);
-                  $('#v_payment_save_modal').modal('hide'); 
-                  reset_form('frm_vendor_payment_save1'); 
-                  payment_list_reflect();
-                }
-                
+              var msg = result.split('-');
+              if(msg[0]=='error'){
+                error_msg_alert(result);
+              }
+              else{
+                msg_alert(result);
+                $('#v_payment_save_modal').modal('hide'); 
+                reset_form('frm_vendor_payment_save1'); 
+                payment_list_reflect();
+              }
               }
             });
           }
         });
-        }
-        });
-
       }
   });
 });

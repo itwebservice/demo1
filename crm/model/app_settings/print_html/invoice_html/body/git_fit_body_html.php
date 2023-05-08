@@ -193,7 +193,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
 <section class="print_sec main_block">
 <?php
 if($bg != ''){
-  $balance = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid);
+  $balance = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid) + floatval($charge);
 }else{
   $balance = floatval($net_total) - floatval($total_paid) + floatval($charge);
 }

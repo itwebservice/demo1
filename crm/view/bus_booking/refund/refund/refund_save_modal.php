@@ -34,7 +34,7 @@ $remaining_val = $_POST['remaining_val'];
 					    <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled/>
 					</div>      
 				    <div class="col-md-4 col-sm-6 mg_bt_20">
-				    	<input type="text" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id);" class="form-control" placeholder="Cheque No / ID" title="Cheque No / ID" disabled/>
+				    	<input type="number" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id);" class="form-control" placeholder="Cheque No / ID" title="Cheque No / ID" disabled/>
 				  	</div>
 				  	<div class="col-md-4 col-sm-6 mg_bt_20">
 				  		<select name="bank_id" id="bank_id" title="Bank" disabled>
@@ -69,8 +69,6 @@ $(function(){
               refund_amount : { required: true, number:true },
               refund_date : { required: true },
               refund_mode : { required : true },
-              bank_name : { required : function(){  if($('#refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id : { required : function(){  if($('#refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  }, 
               bank_id : { required : function(){  if($('#refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  }, 
       },
       submitHandler:function(form){

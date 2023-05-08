@@ -60,7 +60,7 @@ $branch_status = $_POST['branch_status'];
 								<input type="text" id="bank_name" name="bank_name" placeholder="Bank Name" class="bank_suggest" title="Bank Name" readonly>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12">
-								<input type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
+								<input type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12">
 								<select name="bank_id" id="bank_id" title="Select Bank" class='form-control' style="width:100%" disabled>
@@ -72,16 +72,16 @@ $branch_status = $_POST['branch_status'];
                 <div class="col-md-6">
                     <textarea id="narration" name="narration" class="form-control" placeholder="*Narration" title="Narration" rows="1" required></textarea>
 						    </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                   <div class="div-upload pull-left" id="div_upload_button">
                       <div id="payment_evidence_upload" class="upload-button1"><span>Payment Evidence</span></div>
                       <span id="payment_evidence_status" ></span>
                       <ul id="files" ></ul>
                       <input type="hidden" id="payment_evidence_url" name="payment_evidence_url">
-                  </div>
+                  </div>&nbsp;&nbsp;
+                  <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Upload JPG, JPEG, PNG or PDF only."><i class="fa fa-question-circle"></i></button>
                 </div>
                 <div class="col-xs-4"> 
-                  <div style="color: red;">Note : Upload : JPG, JPEG, PNG or PDF.</div>
                 </div>
             </div>
             <div class="row">
@@ -147,24 +147,6 @@ $('#frm_save').validate({
         payment_mode: {
           required: true
         },
-        bank_name: {
-					required: function() {
-						if ($('#payment_mode').val() != "Cash" && $('#payment_amount').val() != '0') {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				},
-				transaction_id: {
-					required: function() {
-						if ($('#payment_mode').val() != "Cash") {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				},
 				bank_id: {
 					required: function() {
 						if ($('#payment_mode').val() != "Cash") {

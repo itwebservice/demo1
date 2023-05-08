@@ -203,7 +203,10 @@ function package_tour_booking_master_delete(){
     $tour_name = $row_booking['tour_name'];
     $tour_from_date = $row_booking['tour_from_date'];
     
-    $particular = $tour_name.' for '.$cust_name.' for '.$total_tour_days.' Night(s) starting from '.get_date_user($tour_from_date);
+    $pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$booking_id' and status!='Cancel'"));
+    $sq_pass= mysqli_fetch_assoc(mysqlQuery("select * from package_travelers_details where booking_id='$booking_id' and status!='Cancel'"));
+
+    $particular = get_package_booking_id($booking_id,$year).' and '.$tour_name.' for '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') *'.$pass_count.' for '.$total_tour_days.' Night(s) starting from '.get_date_user($tour_from_date);
 
     $delete_master->delete_master_entries('Invoice','Package Tour',$booking_id,get_package_booking_id($booking_id,$year),$cust_name,$row_booking['net_total']);
 

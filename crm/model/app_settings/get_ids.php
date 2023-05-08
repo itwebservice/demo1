@@ -39,6 +39,9 @@ function get_b2b_booking_refund_id($booking_id,$year){
 function get_b2c_booking_id($booking_id,$year){
   return 'B2C/'.$year.'/'.$booking_id; }
 
+function get_b2c_payment_id($booking_id,$year){
+  return 'B2CP/'.$year.'/'.$booking_id; }
+
 function get_b2c_booking_refund_id($booking_id,$year){
   return 'B2C/'.$year.'/R/'.$booking_id;
 }

@@ -79,13 +79,15 @@ $(function () {
 						return false;
 					}
 				}
-			}
+			},
+			tax_apply_on : { required:true},
+			tax_value : { required:true}
 		},
 		submitHandler: function (form) {
-			var valid_state = package_tour_booking_tab4_validate();
-			if (valid_state == false) {
-				return false;
-			}
+			// var valid_state = package_tour_booking_tab4_validate();
+			// if (valid_state == false) {
+			// 	return false;
+			// }
 			var base_url = $('#base_url').val();
 			var dest_id = $('#dest_name2').val();
 			var package1 = $('#package1').val();
@@ -523,14 +525,6 @@ $(function () {
 					payment_mode1 != 'Advance' &&
 					payment_amount1 != '0'
 				) {
-					if (bank_name1 == '') {
-						error_msg_alert('Enter bank name');
-						return false;
-					}
-					if (transaction_id1 == '') {
-						error_msg_alert('Enter bank Cheque no/Id');
-						return false;
-					}
 					if (bank_id1 == '') {
 						error_msg_alert('Select creditor bank name');
 						return false;
@@ -565,14 +559,6 @@ $(function () {
 					payment_mode2 != 'Advance' &&
 					payment_amount2 != '0'
 				) {
-					if (bank_name2 == '') {
-						error_msg_alert('Enter bank name');
-						return false;
-					}
-					if (transaction_id2 == '') {
-						error_msg_alert('Enter bank Cheque no/Id');
-						return false;
-					}
 					if (bank_id2 == '') {
 						error_msg_alert('Select Bank name');
 						return false;
@@ -633,13 +619,18 @@ $(function () {
 			var hotel_markup_taxes = $('#hotel_markup_taxes').val();
 			var hotel_tds = $('#hotel_tds').val();
 			var roundoff = $('#roundoff').val();
+			var tax_apply_on = $('#tax_apply_on').val();
+			var tax_value = $('#tax_value').val();
+
 			var reflections = [];
 			reflections.push({
 				hotel_sc: hotel_sc,
 				hotel_markup: hotel_markup,
 				hotel_taxes: hotel_taxes,
 				hotel_markup_taxes: hotel_markup_taxes,
-				hotel_tds: hotel_tds
+				hotel_tds: hotel_tds,
+				'tax_apply_on':tax_apply_on,
+				'tax_value':tax_value,
 			});
 			var bsmValues = [];
 			bsmValues.push({
@@ -854,7 +845,7 @@ $(function () {
 															window.open(base_url+'view/vendor/dashboard/estimate/estimate_save_modal.php?type=Package Tour&amount='+basic_amount+'&booking_id='+msg1[1]);			
 															setTimeout(() => {
 																if ($('#whatsapp_switch').val() == 'on'){
-																	whatsapp_send_b(quotation_id,tour_name,	tour_from_date,	customer_id);
+																	whatsapp_send_b(quotation_id,tour_name,	tour_from_date,	customer_id,emp_id,msg1[1]);
 																}
 															}, 1000);
 															$('#btn_package_tour_master_save').button('reset');
@@ -877,7 +868,7 @@ $(function () {
 	});
 });
 
-function whatsapp_send_b(quotation_id, tour_name, tour_from_date, customer_id, emp_id) {
+function whatsapp_send_b(quotation_id, tour_name, tour_from_date, customer_id, emp_id,booking_id) {
 	$.post(
 		$('#base_url').val() + 'controller/package_tour/booking/whatsapp_send.php',
 		{
@@ -885,7 +876,8 @@ function whatsapp_send_b(quotation_id, tour_name, tour_from_date, customer_id, e
 			tour_name: tour_name,
 			tour_from_date: tour_from_date,
 			customer_id: customer_id,
-			emp_id: emp_id
+			emp_id: emp_id,
+			booking_id : booking_id
 		},
 		function (data) {
 			window.open(data);

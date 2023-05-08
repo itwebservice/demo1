@@ -165,9 +165,10 @@ $objPHPExcel->setActiveSheetIndex(0)
     ->setCellValue('H' . $row_count, "Cncl_Amount")
     ->setCellValue('I' . $row_count, "Total")
     ->setCellValue('J' . $row_count, "Paid Total")
-    ->setCellValue('K' . $row_count, "Created By");
-$objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':K' . $row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':K' . $row_count)->applyFromArray($borderArray);
+    ->setCellValue('K' . $row_count, "Created By")
+    ->setCellValue('L' . $row_count, "Booking Date");
+$objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':L' . $row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':L' . $row_count)->applyFromArray($borderArray);
 
 $row_count++;
 $query = "select * from visa_master where financial_year_id='$financial_year_id' and delete_status='0' ";
@@ -197,6 +198,8 @@ if ($branch_status == 'yes') {
 } elseif ($role != 'Admin' && $role != 'Branch Admin' && $role_id != '7' && $role_id < '7') {
     $query .= " and emp_id='$emp_id'";
 }
+$query .= " order by visa_id DESC";
+
 $sq_visa = mysqlQuery($query);
 while ($row_visa = mysqli_fetch_assoc($sq_visa)) {
     $sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_visa[emp_id]'"));
@@ -259,9 +262,10 @@ while ($row_visa = mysqli_fetch_assoc($sq_visa)) {
         ->setCellValue('H' . $row_count, number_format($cancel_amount, 2))
         ->setCellValue('I' . $row_count, number_format($total_visa_amount, 2) . $currency_amount)
         ->setCellValue('J' . $row_count, $paid_amount)
-        ->setCellValue('K' . $row_count, $emp_name);
-    $objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':K' . $row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':K' . $row_count)->applyFromArray($borderArray);
+        ->setCellValue('K' . $row_count, $emp_name)
+        ->setCellValue('L' . $row_count, date('d-m-Y',strtotime($row_visa['created_at'])));
+    $objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':L' . $row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B' . $row_count . ':L' . $row_count)->applyFromArray($borderArray);
 
     $row_count++;
 

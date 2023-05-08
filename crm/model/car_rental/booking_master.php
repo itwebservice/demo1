@@ -67,6 +67,8 @@ class booking_master
           break;
       }
     }
+    $from_date_p = ($travel_type != 'Local') ? $traveling_date : $from_date;
+
     $to_date = date('Y-m-d', strtotime($to_date));
     $traveling_date = date('Y-m-d', strtotime($traveling_date));
     $from_date = date('Y-m-d', strtotime($from_date));
@@ -153,7 +155,7 @@ class booking_master
 
 
       //Get Particular
-      $particular = $this->get_particular($customer_id, $vehicle_name, $traveling_date);
+      $particular = $this->get_particular($customer_id, $vehicle_name, $from_date_p,$booking_id);
         //Finance save
         $this->finance_save($booking_id, $payment_id, $row_spec, $branch_admin_id, $particular);
 
@@ -220,6 +222,7 @@ class booking_master
 		$row_misc = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));
     $vehicle_name = $row_misc['vehicle_name'];
     $traveling_date = get_date_user($row_misc['traveling_date']);
+    $from_date = get_date_user($row_misc['from_date']);
 		$reflections = json_decode($row_misc['reflections']);
 		$service_tax_markup = $row_misc['markup_cost_subtotal'];
 		$service_tax_subtotal = $row_misc['service_tax_subtotal'];
@@ -228,13 +231,15 @@ class booking_master
 		$yr = explode("-", $booking_date);
 		$year = $yr[0];
 		
+    $from_date_p = ($row_misc['travel_type'] != 'Local') ? $traveling_date : $from_date;
+
 		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 		if($sq_ct['type']=='Corporate'||$sq_ct['type'] == 'B2B'){
 			$cust_name = $sq_ct['company_name'];
 		}else{
 			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
 		}
-    $particular = $this->get_particular($customer_id, $vehicle_name, $traveling_date);
+    $particular = $this->get_particular($customer_id, $vehicle_name, $from_date_p,$booking_id);
 
 		$delete_master->delete_master_entries('Invoice','Car Rental',$booking_id,get_car_rental_booking_id($booking_id,$year),$cust_name,$row_misc['total_fees']);
 
@@ -376,13 +381,20 @@ class booking_master
     $model->send_message($mobile_no, $message);
   }
 
-  function get_particular($customer_id, $vehicle, $date)
+  function get_particular($customer_id, $vehicle, $date,$booking_id)
   {
 
     $sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
     $cust_name = $sq_ct['first_name'] . ' ' . $sq_ct['last_name'];
+    
+    $sq_car = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id'"));
+    $route = ($sq_car['travel_type'] == 'Local') ? $sq_car['local_places_to_visit'] : $sq_car['places_to_visit'];
+    $yr = explode("-", $sq_car['created_at']);
+    $year = $yr[0];
+    $booking_id = get_car_rental_booking_id($booking_id,$year);
+    $guest_name = ($sq_car['pass_name']!='') ? '('.$sq_car['pass_name'].')' : '';
 
-    return 'Towards the charge of ' . $cust_name . ' on ' . $vehicle . ' Dt.' . get_date_user($date);
+    return $booking_id.' and towards the charge of ' . $cust_name.$guest_name .' *'.$sq_car['total_pax'].', '.$route. ' on ' . $vehicle . ' Dt.' . get_date_user($date);
   }
   public function finance_save($booking_id, $payment_id, $row_spec, $branch_admin_id, $particular)
   {
@@ -650,7 +662,7 @@ class booking_master
         $transaction_id = $transaction_id1;
         $payment_amount = $payment_amount1;
         $payment_date = $booking_date;
-        $payment_particular = $particular;
+        $payment_particular = get_sales_paid_particular(get_car_rental_booking_id($booking_id, $yr1), $booking_date, $payment_amount1, $customer_id, $payment_mode, get_car_rental_booking_id($booking_id, $yr1), $bank_id, $transaction_id1);
         $ledger_particular = get_ledger_particular('By', 'Cash/Bank');
         $gl_id = $pay_gl;
         $payment_side = "Debit";
@@ -664,7 +676,7 @@ class booking_master
       $transaction_id = $transaction_id1;
       $payment_amount = $payment_amount1;
       $payment_date = $booking_date;
-      $payment_particular = $particular;
+      $payment_particular = get_sales_paid_particular(get_car_rental_booking_id($booking_id, $yr1), $booking_date, $payment_amount1, $customer_id, $payment_mode, get_car_rental_booking_id($booking_id, $yr1), $bank_id, $transaction_id1);
       $ledger_particular = get_ledger_particular('By', 'Cash/Bank');
       $gl_id = $cust_gl;
       $payment_side = "Credit";
@@ -823,7 +835,7 @@ class booking_master
 
       //Get Particular
       $cdate = ($travel_type == 'Local') ? $from_date : $traveling_date;
-      $particular = $this->get_particular($customer_id, $vehicle_name, $cdate);
+      $particular = $this->get_particular($customer_id, $vehicle_name, $cdate,$booking_id);
       //Finance update
       $this->finance_update($sq_booking_info, $row_spec, $particular);
 

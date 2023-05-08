@@ -14,7 +14,7 @@ $date = $sq_estimate['purchase_date'];
 $yr = explode("-", $date);
 $year =$yr[0];
 
-$sq_payment_info1 = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sumpay from vendor_payment_master where vendor_type='$vendor' and vendor_type_id='$vendor_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+$sq_payment_info1 = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sumpay from vendor_payment_master where estimate_id='$sq_estimate[estimate_id]' and vendor_type_id='$vendor_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
 $sq_refunded_info1 = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sumpay from vendor_refund_master where estimate_id='$sq_vendor_refund_master[estimate_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 

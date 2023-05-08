@@ -329,13 +329,14 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('R'.$row_count, "Paid Amount")
         ->setCellValue('S'.$row_count, "Balance Amount")
         ->setCellValue('T'.$row_count, "Due Date")
-        ->setCellValue('U'.$row_count, "Created By");
+        ->setCellValue('U'.$row_count, "Created By")
+        ->setCellValue('V'.$row_count, "Booking Date");
 
 
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($header_style_Array);
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($borderArray);    
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($borderArray);    
 
 
 
@@ -426,15 +427,16 @@ $sq_booking = mysqlQuery($query);
       ->setCellValue('R'.$row_count, number_format($sq_paid['paid_amount']+$sq_credit['sumc'], 2))
       ->setCellValue('S'.$row_count, number_format($balance_amount, 2).$currency_amount)
       ->setCellValue('T'.$row_count,  ($row_booking['due_date']=='1970-01-01') ? 'NA' : date('d-m-Y',strtotime($row_booking['due_date'])))
-      ->setCellValue('U'.$row_count,$emp_name);
+      ->setCellValue('U'.$row_count,$emp_name)
+      ->setCellValue('V'.$row_count,get_date_user($row_booking['booking_date']));
 
     $total_sale += $total_booking_amt;
     $total_cancel += $cancel_amount;
     $total_paid += $sq_paid['paid_amount']+$sq_credit['sumc'];
     $total_balance += $balance_amount;
 
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($content_style_Array);
-  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':U'.$row_count)->applyFromArray($borderArray);    
+  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($content_style_Array);
+  $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($borderArray);    
   $row_count++;
 }
 

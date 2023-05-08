@@ -32,6 +32,7 @@ $newBasic = $basic_cost1;
 $name = '';
 
 $charge = ($credit_card_charges != '') ? $credit_card_charges : 0;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 $total_paid = floatval($total_paid) + floatval($charge);
 
 //////////////////Service Charge Rules

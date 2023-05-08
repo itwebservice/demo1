@@ -1,8 +1,9 @@
 <?php include "../../model/model.php";
 
 $token = filter_input(INPUT_POST, 'token', FILTER_DEFAULT);
-
-if (!$token || $token !== $_SESSION['token']) {
+// var_dump($_SESSION);
+// exit;
+if (empty($token) || $token != $_SESSION['token']) {
     // return 405 http status code
     header($_SERVER['SERVER_PROTOCOL'] . ' 405 Method Not Allowed');
     exit;

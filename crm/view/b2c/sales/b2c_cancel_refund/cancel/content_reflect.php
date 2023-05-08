@@ -27,7 +27,7 @@ $booking_id = $_POST['booking_id'];
         $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum from b2c_payment_master where booking_id='$booking_id' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 
         begin_widget();
-            $title_arr = array("Booking Amount", "Tax","Coupon Amount","Total Amount","Paid Amount");
+            $title_arr = array("Basic Amount", "Tax","Coupon Amount","Total Amount","Paid Amount");
             $content_arr = array( number_format($total_cost,2), number_format($tax_amount,2),number_format($coupon_amount,2), number_format($final_total,2),number_format($sq_payment_info['sum'],2));
             $percent = ($final_total!='0') ? ($sq_payment_info['sum']/$final_total)*100 : 0;
             $percent = number_format($percent, 2);

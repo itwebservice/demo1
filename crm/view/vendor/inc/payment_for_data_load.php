@@ -32,7 +32,7 @@ if($estimate_type=="Group Tour"){
     </select>
   </div>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select class="form-control" id="tour_group_id<?= $offset ?>" name="tour_group_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>')"> 
+    <select class="form-control" id="tour_group_id<?= $offset ?>" name="tour_group_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')"> 
         <?php 
         if($estimate_type_id==""){
         ?>
@@ -56,7 +56,7 @@ if($estimate_type=="Group Tour"){
 if($estimate_type=="Package Tour"){
 ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select id="booking_id<?= $offset ?>" name="booking_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>')"> 
+    <select id="booking_id<?= $offset ?>" name="booking_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')"> 
             <?php
             if($estimate_type_id!=""){
 
@@ -111,7 +111,7 @@ if($estimate_type=="Package Tour"){
 if($estimate_type=="Car Rental"){
 ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>"  onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
+    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>"  onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')" style="width:100%">
           <?php 
           if($estimate_type_id==""){
             ?>
@@ -165,7 +165,7 @@ if($estimate_type=="Car Rental"){
 if($estimate_type=="Visa Booking"){
 ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="visa_id<?= $offset ?>" id="visa_id<?= $offset ?>"  onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
+    <select name="visa_id<?= $offset ?>" id="visa_id<?= $offset ?>"  onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')" style="width:100%">
       <?php 
           if($estimate_type_id==""){
             ?>
@@ -225,7 +225,7 @@ if($estimate_type=="Visa Booking"){
 if($estimate_type=="Ticket Booking"){
 ?>  
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="ticket_id<?= $offset ?>" id="ticket_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
+    <select name="ticket_id<?= $offset ?>" id="ticket_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')" style="width:100%">
       <?php 
           if($estimate_type_id==""){
             ?>
@@ -286,7 +286,7 @@ if($estimate_type=="Ticket Booking"){
 if($estimate_type=="Train Ticket Booking"){
 ?>  
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="train_ticket_id<?= $offset ?>" id="train_ticket_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
+    <select name="train_ticket_id<?= $offset ?>" id="train_ticket_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')" style="width:100%">
       <?php 
           if($estimate_type_id==""){
             ?>
@@ -346,7 +346,7 @@ if($estimate_type=="Train Ticket Booking"){
 if($estimate_type=="Hotel Booking"){
 ?>  
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>"  style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');">
+    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>"  style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')">
       <?php 
           if($estimate_type_id==""){
             ?>
@@ -406,7 +406,7 @@ if($estimate_type=="Hotel Booking"){
 if($estimate_type=="Bus Booking"){
   ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');">
+    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>" style="width:100%" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')">
       <?php 
         if($estimate_type_id==""){
           ?>
@@ -461,61 +461,10 @@ if($estimate_type=="Bus Booking"){
   <?php
 }
 
-if($estimate_type=="B2B Booking"){
-  ?>
-  <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>" style="width:100%">
-      <?php 
-        if($estimate_type_id==""){
-          ?>
-          <option value="">Select Booking</option>
-          <?php
-        }
-        else{
-          $sq_booking = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `b2b_booking_master` where booking_id='$estimate_type_id'"));
-          $created_at = $sq_booking['created_at'];
-          $yr = explode("-", $created_at);
-          $year =$yr[0];
-          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
-          if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-            $cust_name = $sq_customer['company_name'];
-          }else{
-            $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
-          }
-          ?>
-          <option value="<?= $sq_booking['booking_id'] ?>"><?= get_b2b_booking_id($sq_booking['booking_id'],$year).' : '.$cust_name ?> </option>
-           <?php
-        }
-          $sq_booking = mysqlQuery("select * from b2b_booking_master where 1 order by booking_id desc");
-         while($row_booking = mysqli_fetch_assoc($sq_booking)){
-            
-            $created_at = $row_booking['created_at'];
-            $yr = explode("-", $created_at);
-            $year =$yr[0];
-
-           $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-           if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
-             $cust_name = $sq_customer['company_name'];
-           }else{
-             $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
-           }
-           ?>
-          <option value="<?= $row_booking['booking_id'] ?>"><?= get_b2b_booking_id($row_booking['booking_id'],$year).' : '.$cust_name ?> </option>
-           <?php
-         }
-      ?>
-    </select>
-  </div>
-  <script>
-    $('#booking_id<?= $offset ?>').select2();
-  </script>
-  <?php
-}
-
 if($estimate_type=="Miscellaneous Booking"){
   ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="misc_id<?= $offset ?>" id="misc_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
+    <select name="misc_id<?= $offset ?>" id="misc_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')" style="width:100%">
       <?php 
         if($estimate_type_id==""){
             ?>
@@ -573,7 +522,7 @@ if($estimate_type=="Miscellaneous Booking"){
 if($estimate_type=="Excursion Booking"){
 ?>
   <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-    <select name="exc_id<?= $offset ?>" id="exc_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');" style="width:100%">
+    <select name="exc_id<?= $offset ?>" id="exc_id<?= $offset ?>" onchange="get_purchase_flag(this.id,'<?= $estimate_type ?>');get_supplier_costing(this.value,'<?php echo $estimate_type; ?>','estimate_count');get_basic_costing(this.id,'<?= $estimate_type ?>');get_payment_outstanding(this.id,'<?= $estimate_type ?>')" style="width:100%">
       <?php 
           if($estimate_type_id==""){
             ?>
@@ -626,6 +575,56 @@ if($estimate_type=="Excursion Booking"){
     $('#exc_id<?= $offset ?>').select2();
   </script>
 <?php
+}
+if($estimate_type=="B2B Booking"){
+  ?>
+  <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+    <select name="booking_id<?= $offset ?>" id="booking_id<?= $offset ?>" style="width:100%">
+      <?php 
+        if($estimate_type_id==""){
+          ?>
+          <option value="">Select Booking</option>
+          <?php
+        }
+        else{
+          $sq_booking = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `b2b_booking_master` where booking_id='$estimate_type_id'"));
+          $created_at = $sq_booking['created_at'];
+          $yr = explode("-", $created_at);
+          $year =$yr[0];
+          $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
+          if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
+            $cust_name = $sq_customer['company_name'];
+          }else{
+            $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+          }
+          ?>
+          <option value="<?= $sq_booking['booking_id'] ?>"><?= get_b2b_booking_id($sq_booking['booking_id'],$year).' : '.$cust_name ?> </option>
+           <?php
+        }
+          $sq_booking = mysqlQuery("select * from b2b_booking_master where 1 order by booking_id desc");
+         while($row_booking = mysqli_fetch_assoc($sq_booking)){
+            
+            $created_at = $row_booking['created_at'];
+            $yr = explode("-", $created_at);
+            $year =$yr[0];
+
+           $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
+           if($sq_customer['type'] == 'Corporate'||$sq_customer['type']=='B2B'){
+             $cust_name = $sq_customer['company_name'];
+           }else{
+             $cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+           }
+           ?>
+          <option value="<?= $row_booking['booking_id'] ?>"><?= get_b2b_booking_id($row_booking['booking_id'],$year).' : '.$cust_name ?> </option>
+           <?php
+         }
+      ?>
+    </select>
+  </div>
+  <script>
+    $('#booking_id<?= $offset ?>').select2();
+  </script>
+  <?php
 }
 ?>
 

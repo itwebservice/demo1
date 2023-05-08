@@ -34,17 +34,15 @@ $query = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `b2c_testimonials` where e
                             <textarea name="testm" placeholder="*Testimonial(Upto 1000 chars)" title="Testimonial" class="form-control" id="testm1" onchange="validate_char_size('testm',1000);" ><?= $testm ?></textarea>
                         </div>
                     </div>
-                        <div class="row mg_bt_20">
-                            <div class="col-md-1">
+                        <div class="row mg_bt_10">
+                            <div class="col-md-4">
                                 <div class="div-upload">
                                     <div id="id_upload_btn" class="upload-button1"><span><?php echo ($url=='') ?  'Upload' : 'Uploaded' ?></span></div>
                                     <span id="id_proof_status" ></span>
                                     <ul id="files"></ul>
                                     <input type="hidden" id="image_upload_url_testm1" name="image_upload_url_testm1" value="<?php echo $url; ?>">
                                 </div>
-                            </div>
-                            <div class="col-md-11">
-                                <div style="color: red; padding-left:25px;">Note :Upload Image below 200KB, resolution :900X450, Format:JPEG, JPG, PNG</div>
+                                <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note: Upload Image size below 200KB, resolution : 900*450, Format : JPEG,JPG,PNG"><i class="fa fa-question-circle"></i></button>
                             </div>
                         </div>
                         <?php

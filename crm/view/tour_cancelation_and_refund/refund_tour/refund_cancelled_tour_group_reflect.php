@@ -109,7 +109,7 @@ $total_amount = $traveling_amount_paid + $tour_amount_paid;
         <tr>
             <td class="text-right"><strong>Cheque No / ID</strong></td>
             <td>
-                <input type="text" id="transaction_id" name="transaction_id" placeholder="Cheque No / ID" title="Cheque No / ID" disabled>
+                <input type="number" id="transaction_id" name="transaction_id" placeholder="Cheque No / ID" title="Cheque No / ID" disabled>
             </td>
         </tr>
         <tr>
@@ -162,16 +162,28 @@ $total_amount = $traveling_amount_paid + $tour_amount_paid;
             $sq = mysqlQuery("select * from refund_tour_cancelation where tourwise_traveler_id='$tourwise_id' and refund_amount!=0 ");
             while($row = mysqli_fetch_assoc($sq)){
                     $sr_no++;
+                    if($row['clearance_status']=="Pending"){ 
+                        $bg = "warning";
+                    }
+                    else if($row['clearance_status']=="Cancelled"){ 
+                        $bg = "danger"; 
+                    }
+                    else if($row['clearance_status']=="Cleared"){ 
+                        $bg = "success"; 
+                    }
+                    else{
+                        $bg = ""; 
+                    }
             ?>
-                   <tr>
-                        <td><?php echo $sr_no ?></td>
-                        <td><?php echo number_format($row['refund_amount'],2) ?></td>
-                        <td><?php echo date("d-m-Y", strtotime($row['refund_date'])) ?></td>
-                        <td><?php echo $row['refund_mode'] ?></td>
-                        <td><?php echo $row['bank_name'] ?></td>
-                        <td><?php echo $row['transaction_id'] ?></td>   
-                        <td><a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="generate_voucher_for_cancelled_tour(<?= $row['refund_id'] ?>)" target="_BLANK"><i class="fa fa-file-pdf-o"></i></a></td>                    
-                   </tr> 
+                <tr class="<?= $bg ?>">
+                    <td><?php echo $sr_no ?></td>
+                    <td><?php echo number_format($row['refund_amount'],2) ?></td>
+                    <td><?php echo date("d-m-Y", strtotime($row['refund_date'])) ?></td>
+                    <td><?php echo $row['refund_mode'] ?></td>
+                    <td><?php echo $row['bank_name'] ?></td>
+                    <td><?php echo $row['transaction_id'] ?></td>   
+                    <td><a href="javascript:void(0)" class="btn btn-danger btn-sm" onclick="generate_voucher_for_cancelled_tour(<?= $row['refund_id'] ?>)" target="_BLANK"><i class="fa fa-file-pdf-o"></i></a></td>                    
+                </tr> 
             <?php        
                 }  
 
@@ -195,8 +207,6 @@ $('#frm_refund').validate({
             txt_refund_amount : { required : true, number:true },
             refund_date : { required : true },
             cmb_refund_mode : { required : true },
-            bank_name : { required : function(){  if($('#cmb_refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-            transaction_id : { required : function(){  if($('#cmb_refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
             bank_id : { required : function(){  if($('#cmb_refund_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
     },
     submitHandler:function(form){

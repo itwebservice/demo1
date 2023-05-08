@@ -12,6 +12,7 @@ $booking_id = $_GET['booking_id'];
 $customer_id = $_GET['customer_id'];
 $booking_by = $_GET['confirm_by'];
 $receipt_type = $_GET['receipt_type'];
+// $payment_id = $_GET['payment_id'];
 
 $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 
@@ -25,6 +26,10 @@ if($sq_count>0){
     $sq_payment = mysqlQuery("SELECT * from b2c_payment_master where booking_id='$booking_id' and clearance_status!='Pending' and clearance_status!='Cancelled' and payment_amount!='0'");
         while($row_payment = mysqli_fetch_assoc($sq_payment)){
 
+            $date = $row_payment['payment_date'];
+            $yr = explode("-", $date);
+            $year = $yr[0];
+            $payment_id = get_b2c_payment_id($row_payment['entry_id'],$year);
             $amount_in_word = $amount_to_word->convert_number_to_words($row_payment['payment_amount'],'');
             //Header
             include "standard_header_html.php";
@@ -35,7 +40,7 @@ if($sq_count>0){
             <div class="border_block inv_rece_back_detail">
                 <div class="row">
                 <div class="col-md-4"><p class="border_lt"><span class="font_5">RECEIPT ID : </span><?php echo $row_payment['payment_id']; ?></p></div>
-                <div class="col-md-4"><p class="border_lt"><span class="font_5">AMOUNT : </span><?php echo $currency_code_d.' '.$row_payment['payment_amount']; ?></p></div>
+                <div class="col-md-4"><p class="border_lt"><span class="font_5">AMOUNT : </span><?php echo $currency_code_d.' '.number_format($row_payment['payment_amount'] + $row_payment['credit_charges'],2); ?></p></div>
                 <div class="col-md-4"><p class="border_lt"><span class="font_5">Date : </span><?php echo get_date_user($row_payment['payment_date']); ?></p></div>
                 <div class="col-md-4"><p class="border_lt"><span class="font_5">Payment Mode : </span><?php echo $row_payment['payment_mode']; ?></p></div>
                 <div class="col-md-4"><p class="border_lt"><span class="font_5">Cheque No/ID : </span><?php echo ($row_payment['transaction_id']=='')?'NA': $row_payment['transaction_id']; ?></p></div>

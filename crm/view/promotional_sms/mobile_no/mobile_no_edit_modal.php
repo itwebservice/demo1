@@ -20,7 +20,7 @@ $sq_mobile_no_info = mysqli_fetch_assoc(mysqlQuery("select * from sms_mobile_no 
 
       	<div class="row">
       		<div class="col-md-6">
-      			<input type="text" id="mobile_no1" name="mobile_no1" onchange="validate_spaces(this.id);mobile_validate(this.id);" value="<?= $sq_mobile_no_info['mobile_no'] ?>" placeholder="Mobile Number" title="Mobile Number">
+      			<input type="text" id="mobile_no1" name="mobile_no1" class="form-control" onchange="validate_spaces(this.id);mobile_validate(this.id);" value="<?= $sq_mobile_no_info['mobile_no'] ?>" placeholder="Mobile Number" title="Mobile Number">
       		</div>
       		<div class="col-md-6">
       			<button class="btn btn-sm btn-success"><i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;Update</button>

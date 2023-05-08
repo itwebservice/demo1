@@ -6,8 +6,8 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
 <form id="section_package">
     <legend>Define Top Tour Packages</legend>
     <div class="row">
-        <div class="col-md-8"> <label class="alert-danger">For saving package keep checkbox selected!</label> </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-excel btn-sm" title="Note : For saving package keep checkbox selected!"><i class="fa fa-question-circle"></i></button>
             <button type="button" class="btn btn-excel btn-sm" onclick="addRow('tbl_dest_packages')" title="Add Row"><i
                     class="fa fa-plus"></i></button>
             <button type="button" class="btn btn-pdf btn-sm" onclick="deleteRow('tbl_dest_packages');"
@@ -17,7 +17,6 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
 
     <div class="row mg_bt_20">
         <div class="col-md-12">
-            <div class="table-responsive">
                 <table id="tbl_dest_packages" name="tbl_dest_packages" class="table border_0 table-hover no-marg">
                     <?php
                     if (sizeof($popular_dest) == 0) { ?>
@@ -26,7 +25,7 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
                         <td><input maxlength="15" value="1" type="text" name="no" placeholder="Sr. No."
                                 class="form-control" disabled /></td>
                         <td><select name="dest_name-1" id="dest_name-1" onchange="package_dynamic_reflect(this.id)"
-                                style="width:250px;" class="form-control app_select2">
+                                style="width:100%" class="form-control app_select2">
                                 <option value="">*Select Destination</option>
                                 <?php
                                     $sq_query = mysqlQuery("select * from destination_master where status != 'Inactive'");
@@ -36,10 +35,10 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
                                 <?php } ?>
                             </select></td>
                         <td><select id="package-1" name="package-1" title="Select Package" class="form-control"
-                                onchange="get_package_image(this.id)" style="width:250px;">
+                                onchange="get_package_image(this.id)" style="width:150px!important;">
                                 <option value="">*Select Package</option>
                             </select></td>
-                        <td><select id="image-1" name="image-1" class="form-control app_select2" style="width:300px;">
+                        <td><select id="image-1" name="image-1" class="form-control app_select2" style="width:100%;">
                                 <option value="">*Select Image</option>
                             </select></td>
                         <script>
@@ -61,7 +60,7 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
                         <td><input maxlength="15" value="<?= ($i + 1) ?>" type="text" name="no" placeholder="Sr. No."
                                 class="form-control" disabled /></td>
                         <td><select name="dest_name-1<?= $i ?>_u" id="dest_name-1<?= $i ?>_u"
-                                onchange="package_dynamic_reflect(this.id)" style="width:250px;" class="app_select2">
+                                onchange="package_dynamic_reflect(this.id)" style="width:100%;" class="app_select2">
                                 <?php if ($dest_id != '0') { ?>
                                 <option value="<?= $sq_dest['dest_id'] ?>"><?= $sq_dest['dest_name'] ?></option>
                                 <?php } ?>
@@ -74,7 +73,7 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
                                 <?php } ?>
                             </select></td>
                         <td><select id="package-1<?= $i ?>_u" name="package-1<?= $i ?>_u" title="Select Package"
-                                class="form-control" style="width:250px;" onchange="get_package_image(this.id)">
+                                class="form-control" style="width:100%;" onchange="get_package_image(this.id)">
                                 <?php if ($package_id != '0') { ?>
                                 <option value="<?= $sq_package['package_id'] ?>"><?= $sq_package['package_name'] ?>
                                 </option>
@@ -82,7 +81,7 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
                                 <option value="">*Select Package</option>
                             </select></td>
                         <td><select id="image-1<?= $i ?>_u" name="image-1<?= $i ?>_u" title="Select Image"
-                                class="form-control app_select2" style="width:250px;">
+                                class="form-control app_select2" style="width:150px!important;">
                                 <?php if ($image_url != '') { ?>
                                 <option value="<?= $popular_dest[$i]->url ?>"><?= $image_url ?></option>
                                 <?php } ?>
@@ -103,7 +102,6 @@ $popular_dest = ($query['popular_dest'] != '' && $query['popular_dest'] != 'null
                     <?php }
                     } ?>
                 </table>
-            </div>
         </div>
     </div>
     <div class="row mg_tp_20">

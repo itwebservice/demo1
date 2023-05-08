@@ -73,13 +73,21 @@ function list_reflect()
 list_reflect();
 
 function update_modal(service_id){
+    $('#edit-'+service_id).prop('disabled',true);
+    $('#edit-'+service_id).button('loading');
 	$.post('update_modal.php', {entry_id : service_id}, function(data){
 		$('#div_modal').html(data);
+        $('#edit-'+service_id).prop('disabled',false);
+        $('#edit-'+service_id).button('reset');
 	});
 }
 function time_slotupdate_modal(entry_id){
+    $('#tedit-'+entry_id).prop('disabled',true);
+    $('#tedit-'+entry_id).button('loading');
 	$.post('time_slot_update.php', {entry_id : entry_id}, function(data){
 		$('#div_modal').html(data);
+        $('#tedit-'+entry_id).prop('disabled',false);
+        $('#tedit-'+entry_id).button('reset');
 	});
 }
 function display_format_modal(){

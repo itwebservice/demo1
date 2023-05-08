@@ -27,9 +27,9 @@ $cancle_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_detai
 $bg = ($pass_count==$cancle_count) ? 'danger':'';
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-	$total_purchase += $row_purchase['net_total'];
+	
 	//Service Tax 
 	$service_tax_amount = 0;
 	if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -38,6 +38,14 @@ while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
 		$service_tax = explode(':',$service_tax_subtotal1[$i]);
 		$service_tax_amount +=  $service_tax[2];
 		}
+	}
+	if($row_purchase['purchase_return'] == 0){
+		$total_purchase += $row_purchase['net_total'];
+	}
+	else if($row_purchase['purchase_return'] == 2){
+		$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+		$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+		$total_purchase += $p_purchase;
 	}
 	$total_purchase -= $service_tax_amount;
 }
@@ -141,24 +149,24 @@ $profit_loss = $total_sale - $total_purchase;
 				<th>S_No.</th>
 				<th>Booking_date</th>
 				<th>Tour_name</th>
-				<th>User_name</th>
 				<th>Purchase/Expenses</th>
 				<th>Other Expense</th>
+				<th>User_name</th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php
 		$sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$tourwise_details[emp_id]'"));
 		$emp = ($tourwise_details['emp_id'] == 0)?'Admin': $sq_emp['first_name'].' '.$sq_emp['last_name'];
-		$btn = ($bg == '') ? '<button class="btn btn-info btn-sm" onclick="package_other_expnse_modal('. $booking_id .')" title="Add Other expense amount"><i class="fa fa-plus"></i></button>' : 'NA';
+		$btn = ($bg == '') ? '<button class="btn btn-info btn-sm" id="suppliere_btn-'. $booking_id.'" onclick="package_other_expnse_modal('. $booking_id .')" title="Add Other expense amount"><i class="fa fa-plus"></i></button>' : 'NA';
 		?>
 			<tr class="<?=$bg?>">
 				<td><?= 1 ?></td>
 				<td><?= get_date_user($tourwise_details['booking_date']) ?></td>
 				<td><?= $tourwise_details['tour_name'] ?></td>
-				<td><?= $emp ?></td>
-				<td><button class="btn btn-info btn-sm" onclick="view_purchase_modal('<?= $tourwise_details['booking_id'] ?>')" title="View Purchase"><i class="fa fa-eye"></i></button></td>
+				<td><button class="btn btn-info btn-sm" onclick="view_purchase_modal('<?= $tourwise_details['booking_id'] ?>')" title="View Details" id="supplierv_btn-<?= $booking_id ?>"><i class="fa fa-eye"></i></button></td>
                 <td><?= $btn ?></td>
+				<td><?= $emp ?></td>
 			</tr>
 		</tbody>	
 	</table>

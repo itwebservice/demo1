@@ -53,7 +53,7 @@ public function income_save()
 
 		if($payment_mode != 'Credit Note'){
 			//Finance Save
-			$this->finance_save($income_id,$row_spec);
+			$this->finance_save($income_id,$row_spec,$payment_id);
 			//Bank and Cash Book Save
 			$this->bank_cash_book_save($income_id);
 		}
@@ -81,6 +81,7 @@ public function income_delete(){
 
 	$sq_income = mysqli_fetch_assoc(mysqlQuery("select * from other_income_master where income_id='$income_id'"));
 	$sq_income_p = mysqli_fetch_assoc(mysqlQuery("select * from other_income_payment_master where income_type_id='$income_id'"));
+	$payment_id = $sq_income_p['payment_id'];
 	$particular = $sq_income['particular'];
 	$payment_mode = $sq_income_p['payment_mode'];
 	$income_type_id = $sq_income['income_type_id'];
@@ -104,7 +105,7 @@ public function income_delete(){
 
 	//Bank Or Cash    
 	$module_name = "Other Income Payment";
-	$module_entry_id = $income_id;
+	$module_entry_id = $payment_id;
 	$transaction_id = $sq_income_p['transaction_id'];
 	$payment_amount = 0;
 	$payment_date = $deleted_date;
@@ -117,7 +118,7 @@ public function income_delete(){
 
 	//Dynamic GL
 	$module_name = "Other Income Payment";
-	$module_entry_id = $income_id;
+	$module_entry_id = $payment_id;
 	$transaction_id = $sq_income_p['transaction_id'];
 	$payment_amount = 0;
 	$payment_date = $deleted_date;
@@ -129,7 +130,7 @@ public function income_delete(){
 	$transaction_master->transaction_update($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular,$old_gl_id, $gl_id,'', $payment_side, $clearance_status, $row_spec, $ledger_particular,$type);
 	
 	$module_name = "Other Income Payment";
-	$module_entry_id = $income_id;
+	$module_entry_id = $payment_id;
 	$payment_date = $deleted_date;
 	$payment_amount = 0;
 	$payment_mode = $payment_mode;
@@ -150,7 +151,7 @@ public function income_delete(){
 	}
 }
 
-public function finance_save($income_id,$row_spec)
+public function finance_save($income_id,$row_spec,$payment_id)
 {
 	$income_type_id = $_POST['income_type_id'];
 	$payment_amount1 = $_POST['payment_amount'];
@@ -174,7 +175,7 @@ public function finance_save($income_id,$row_spec)
 
 	//Bank Or Cash
 	$module_name = "Other Income Payment";
-	$module_entry_id = $income_id;
+	$module_entry_id = $payment_id;
 	$transaction_id = $transaction_id1;
 	$payment_amount = $payment_amount1;
 	$payment_date = $payment_date1;
@@ -187,7 +188,7 @@ public function finance_save($income_id,$row_spec)
 
 	//Dynamic GL
 	$module_name = "Other Income Payment";
-	$module_entry_id = $income_id;
+	$module_entry_id = $payment_id;
 	$transaction_id = $transaction_id1;
 	$payment_amount = $payment_amount1;
 	$payment_date = $payment_date1;
@@ -199,7 +200,7 @@ public function finance_save($income_id,$row_spec)
 	$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 }
 
-public function bank_cash_book_save($income_id)
+public function bank_cash_book_save($payment_id)
 {
 	global $bank_cash_book_master;
 
@@ -216,7 +217,7 @@ public function bank_cash_book_save($income_id)
 	$sq_income_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$income_type_id'"));
 	
 	$module_name = "Other Income Payment";
-	$module_entry_id = $income_id;
+	$module_entry_id = $payment_id;
 	$payment_date = $payment_date1;
 	$payment_amount = $payment_amount1;
 	$payment_mode = $payment_mode;
@@ -245,7 +246,6 @@ public function income_update()
 	$transaction_id = $_POST['transaction_id'];
 	$bank_id = $_POST['bank_id'];
 	$particular = $_POST['particular'];
-	$payment_old_value =  $_POST['payment_old_value'];
 
 	$financial_year_id = $_SESSION['financial_year_id']; 
 

@@ -36,28 +36,28 @@
                                     class="text-center form-control valid" title="Total Passenger(s)" readonly />
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs text-center">
-                                <label>Adult Cost</label>
-                                <input type="text" id="txt_adult_expense" name="txt_adult_expense" title="Adult Cost"
+                                <label>Adult Amount</label>
+                                <input type="text" id="txt_adult_expense" name="txt_adult_expense" title="Adult Amount"
                                     placeholder="Adult Cost" class="text-right form-control valid"
                                     onchange="tour_cost_calculate(this.id); validate_balance(this.id)" />
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs text-center">
-                                <label>Child With Bed Cost</label>
-                                <input type="text" id="txt_child_bed_expense" title="Child With Bed Cost"
-                                    placeholder="Child With Bed" name="txt_child_bed_expense"
+                                <label>Child With Bed Amount</label>
+                                <input type="text" id="txt_child_bed_expense" title="Child With Bed Amount"
+                                    placeholder="Child With Bed Amount" name="txt_child_bed_expense"
                                     class="text-right form-control valid"
                                     onchange="tour_cost_calculate(this.id);validate_balance(this.id)" />
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs text-center">
-                                <label>Child Without Bed Cost</label>
-                                <input type="text" id="txt_child_wbed_expense" title="Child Without Bed Cost"
-                                    placeholder="Child Without Bed" name="txt_child_wbed_expense"
+                                <label>Child Without Bed Amount</label>
+                                <input type="text" id="txt_child_wbed_expense" title="Child Without Bed Amount"
+                                    placeholder="Child Without Bed Amount" name="txt_child_wbed_expense"
                                     class="text-right form-control valid"
                                     onchange="tour_cost_calculate(this.id);validate_balance(this.id)" />
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs text-center">
-                                <label>Infant Cost</label>
-                                <input type="text" id="txt_infant_expense" title="Infant Cost" placeholder="Infant Cost"
+                                <label>Infant Amount</label>
+                                <input type="text" id="txt_infant_expense" title="Infant Amount" placeholder="Infant Amount"
                                     name="txt_infant_expense" class="text-right form-control valid"
                                     onchange="tour_cost_calculate(this.id);validate_balance(this.id)" />
                             </div>
@@ -65,7 +65,7 @@
                         <div class="col-md-12">
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs text-center">
                                 <label>Total Amount</label>
-                                <input type="text" id="txt_total_expense" title="Total Cost" name="txt_total_expense"
+                                <input type="text" id="txt_total_expense" title="Total Amount" name="txt_total_expense"
                                     class="text-right amount_feild_highlight form-control valid" readonly />
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs text-center">
@@ -226,6 +226,21 @@
                                     onchange="generic_tax_reflect(this.id, 'service_tax_per', 'calculate_total_discount');">
                                 </select>
                             </div>
+                            <div class="col-md-2 col-sm-3 col-xs-12 mg_bt_10"><label>Tax Apply On</label></div>
+                            <div class="col-md-2 col-sm-3 col-xs-12 mg_bt_10">
+                                <select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','false','service_charge','discount');">
+                                    <option value="">*Tax Apply On</option>
+                                    <option value="1">Tour Amount</option>
+                                    <option value="2">Basic Amount</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 col-sm-3 col-xs-12 mg_bt_10"><label>Select Tax</label></div>
+                            <div class="col-md-2 col-sm-3 col-xs-12 mg_bt_10">
+                                <select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','false','service_charge','discount');">
+                                    <option value="">*Select Tax</option>
+                                    <?php get_tax_dropdown('Income') ?>
+                                </select>
+                            </div>
                             <input type="hidden" id="service_tax_per" name="service_tax_per" value="0">
                             <div class="col-md-2 col-sm-3 col-xs-12 mg_bt_10"><label>Tax Total</label></div>
                             <div class="col-md-2 col-sm-3 col-xs-12 mg_bt_10">
@@ -310,7 +325,7 @@
                                             name="txt_bank_name1" placeholder="Bank Name" disabled />
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 text_center_xs mg_bt_10_xs">
-                                        <input type="text" id="txt_transaction_id1" title="Cheque No / ID"
+                                        <input type="number" id="txt_transaction_id1" title="Cheque No / ID"
                                             name="txt_transaction_id1" placeholder="Cheque No / ID" disabled />
                                     </div>
                                     <div class="col-md-2 col-sm-4 col-xs-12 text_center_xs mg_bt_10_xs hidden">
@@ -382,7 +397,7 @@
                                                 disabled />
                                         </div>
                                         <div class="col-md-2 col-sm-4 col-xs-12 text_center_xs mg_bt_10_xs">
-                                            <input type="text" id="txt_transaction_id2" title="Cheque No / ID"
+                                            <input type="number" id="txt_transaction_id2" title="Cheque No / ID"
                                                 name="txt_transaction_id2" onchange="validate_specialChar(this.id);"
                                                 placeholder="Cheque No / ID" disabled />
                                         </div>

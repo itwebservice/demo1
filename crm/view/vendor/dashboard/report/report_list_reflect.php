@@ -17,7 +17,7 @@ $to_date = $_POST['to_date'];
 $array_s = array();
 $temp_arr = array();
 
-$query = "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, purchase_date as date, net_total as credit, '' as debit from vendor_estimate where financial_year_id='$financial_year_id' and delete_status='0' and status!='Cancel' ";
+$query = "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, purchase_date as date, net_total as credit, '' as debit,purchase_return as purchase_return1,cancel_estimate as cancel_estimate1,estimate_id from vendor_estimate where financial_year_id='$financial_year_id' and delete_status='0' and status!='Cancel' ";
 if($estimate_type!=""){
 	$query .= " and estimate_type='$estimate_type' ";
 }
@@ -44,7 +44,7 @@ if($from_date!="" && $to_date!=""){
 include "../../../../model/app_settings/branchwise_filteration.php";
 $query .= " union all ";
 
-$query .= "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, payment_date as date1, '' as credit1, payment_amount as debit1 from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled' and financial_year_id='$financial_year_id' and delete_status='0' and payment_amount!='0'";
+$query .= "select estimate_type, estimate_type_id, vendor_type, vendor_type_id, payment_date as date1, '' as credit1, payment_amount as debit1,'' as purchase_return2,'' as cancel_estimate2,estimate_id from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled' and financial_year_id='$financial_year_id' and delete_status='0' and payment_amount!='0'";
 if($vendor_type!=""){
 	$query .= " and vendor_type='$vendor_type' ";
 }
@@ -69,11 +69,22 @@ $sq_estimate = mysqlQuery($query);
 $total_estimate_amt = 0;
 $total_paid_amt = 0;
 $count = 0;
-$total_arr = array (0 => array("data" => array("","","","","","","<strong>Opening_Balance(".$side.")</strong>", number_format($opening_bal,2)), "bg" => "warning"));
+$total_arr = array (0 => array("data" => array("","","","","","","","<strong>Opening_Balance(".$side.")</strong>", number_format($opening_bal,2)), "bg" => "warning"));
 while($row_report = mysqli_fetch_assoc($sq_estimate)){
 
 	$bg = ($row_report['status'] == 'Cancel') ? 'danger' : '';
-	$total_estimate_amt = $total_estimate_amt + floatval($row_report['credit']);
+	if($row_report['purchase_return1'] == 0){
+		$actual_purchase = $row_report['credit'];
+	}
+	else if($row_report['purchase_return1'] == 2){
+		$cancel_estimate = json_decode($row_report['cancel_estimate1']);
+		$p_purchase = ($row_report['credit'] - floatval($cancel_estimate[0]->net_total));
+		$actual_purchase = $p_purchase;
+	}else{
+		$actual_purchase = 0;
+	}
+
+	$total_estimate_amt = $total_estimate_amt + floatval($actual_purchase);
 	$vendor_type_val = get_vendor_name($row_report['vendor_type'], $row_report['vendor_type_id']);
 
 	if($side == 'Cr'){
@@ -82,7 +93,7 @@ while($row_report = mysqli_fetch_assoc($sq_estimate)){
 		$total_amount = ($total_estimate_amt);
 	}
 	if($row_report['debit1'] != ''){
-		$sq_pay1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where vendor_type='$row_report[vendor_type]' and vendor_type_id = '$row_report[vendor_type_id]'"));
+		$sq_pay1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where estimate_id='$row_report[estimate_id]'"));
 		$estimate_type_val = get_estimate_type_name($sq_pay1['estimate_type'], $sq_pay1['estimate_type_id']);
 		$estimate_type = $sq_pay1['estimate_type']; 
 	}
@@ -93,14 +104,22 @@ while($row_report = mysqli_fetch_assoc($sq_estimate)){
 	$total_paid_amt += floatval($row_report['debit']);
 	if($total_paid_amt==""){ $total_paid_amt = 0; }
 	
+	$vendor_type_val = get_vendor_name($row_report['vendor_type'], $row_report['vendor_type_id']);
+	$estimate_type_val = get_estimate_type_name($row_report['estimate_type'], $row_report['estimate_type_id']);
+	$date = $row_report['date'];
+	$yr = explode("-", $date);
+	$year = $yr[0];
+	$estimate_id = get_vendor_estimate_id($row_report['estimate_id'],$year)." : ".$vendor_type_val."(".$row_report['vendor_type'].") : ".$estimate_type_val;
+
 	$temp_arr = array( "data" => array(
 		(int)(++$count),
+		$estimate_id,
 		($estimate_type == '') ?'NA': $estimate_type,
 		($estimate_type_val == '') ? 'NA' : $estimate_type_val,
 		$row_report['vendor_type'],
 		$vendor_type_val,
 		date('d-m-Y', strtotime($row_report['date'])),
-		$row_report['credit'],
+		number_format($actual_purchase,2),
 		$row_report['debit']
 		), "bg" =>$bg);
 	array_push($total_arr,$temp_arr); 
@@ -132,7 +151,7 @@ $footer_data = array("footer_data" => array(
 	'class1' => "text-right success",
 
 	'foot2' => "Closing Balance :".number_format($total_amount, 2),
-	'col2' => 2,
+	'col2' => 3,
 	'class2' => "text-right warning"
 ));
 array_push($total_arr, $footer_data);

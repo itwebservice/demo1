@@ -143,9 +143,15 @@ while($row_booking = mysqli_fetch_assoc($sq_package))
 	if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
 	$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]' and delete_status='0'");
 	while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-		$p_due_date = get_date_user($row_purchase['due_date']); 			
-		$purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
-		$total_purchase = $total_purchase + $purchase_amt;
+		$p_due_date = get_date_user($row_purchase['due_date']);
+		if($row_purchase['purchase_return'] == 0){
+			$total_purchase += $row_purchase['net_total'];
+		}
+		else if($row_purchase['purchase_return'] == 2){
+			$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+			$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total));
+			$total_purchase += $p_purchase;
+		}
 	}
 	$sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id='$row_booking[tour_group_id]' and delete_status='0'"));		
 	$vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
@@ -239,7 +245,7 @@ $contact_no,
 $email_id,
 $sq_total_member,
 get_date_user($row_booking['form_date']),
-'<button class="btn btn-info btn-sm" onclick="group_view_modal('. $row_booking['id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+'<button class="btn btn-info btn-sm" onclick="group_view_modal('. $row_booking['id'] .')" id="packagev_btn-'. $row_booking['id'] .'" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 $tour,
 $group,
 number_format($row_booking['basic_amount'],2),
@@ -250,11 +256,11 @@ number_format($tour_fee,2),
 number_format($cancel_amount,2),
 number_format($total_amount,2),
 number_format($sq_paid_amount['sum'],2),
-'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['id'] .')" id="paymentv_btn-'. $row_booking['id'] .'" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 number_format($total_balance, 2),
 get_date_user($row_booking['balance_due_date']),
 number_format($total_purchase,2),
-'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['tour_group_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['tour_group_id'] .')" id="supplierv_btn-'. $row_booking['id'] .'" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 $branch_name,
 $emp_name,
 'NA'

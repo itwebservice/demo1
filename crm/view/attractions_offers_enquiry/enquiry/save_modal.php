@@ -10,6 +10,7 @@ $branch_status = $_POST['branch_status'];
 <input type="hidden" id="branch_admin_id" name="branch_admin_id" value="<?= $branch_admin_id ?>">
 <input type="hidden" id="financial_year_id" name="financial_year_id" value="<?= $financial_year_id ?>">
 <input type="hidden" id="login_id" name="login_id" value="<?= $login_id ?>">
+<input type="hidden" id="whatsapp_switch" value="<?= $whatsapp_switch ?>">
 <div class="modal fade" id="enquiry_save_modal" role="dialog" aria-labelledby="enquiry_save_modal"
     data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg" role="document" style="width: 95% !important;">
@@ -29,10 +30,10 @@ $branch_status = $_POST['branch_status'];
                                 <option value="Group Booking">Group Booking</option>
                                 <option value="Hotel">Hotel</option>
                                 <option value="Flight Ticket">Flight Ticket</option>
-                                <option value="Car Rental">Car Rental</option>
                                 <option value="Visa">Visa</option>
-                                <option value="Bus">Bus</option>
+                                <option value="Car Rental">Car Rental</option>
                                 <option value="Train Ticket">Train Ticket</option>
+                                <option value="Bus">Bus</option>
                             </select>
                         </div>
                     </div>
@@ -41,11 +42,6 @@ $branch_status = $_POST['branch_status'];
                             <input type="text" class="form-control" id="txt_name" name="txt_name"
                                 onchange="fname_validate(this.id)" placeholder="*Customer Name" title="Customer Name">
                             <input type="hidden" id="cust_data" name="cust_data" value='<?= get_customer_hint() ?>'>
-                        </div>
-                        <div class="col-md-3 col-sm-6 mg_bt_10">
-                            <input type="number" class="form-control" id="txt_mobile_no"
-                                onchange="mobile_validate(this.id);" name="txt_mobile_no" placeholder="*Mobile No"
-                                title="Mobile No">
                         </div>
                         <div class="col-md-3 col-sm-6 mg_bt_10">
                             <div class="row">
@@ -61,6 +57,11 @@ $branch_status = $_POST['branch_status'];
                                         placeholder="WhatsApp No" title="WhatsApp No" style="width: 140px;">
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mg_bt_10">
+                            <input type="number" class="form-control" id="txt_mobile_no"
+                                onchange="mobile_validate(this.id);" name="txt_mobile_no" placeholder="*Mobile No"
+                                title="Mobile No">
                         </div>
                         <div class="col-md-3 col-sm-6 mg_bt_10">
                             <input type="text" class="form-control" id="txt_email_id" name="txt_email_id"
@@ -462,9 +463,24 @@ function actual_enq_save(obj) {
                 msg_alert(data);
                 $('#btn_enq_save').button('reset');
                 enquiry_proceed_reflect();
+                notification_count_update();
+                setTimeout(() => {
+                    if ($('#whatsapp_switch').val() == "on")
+                        whatsapp_send(obj);
+                }, 1000);
                 return false;
             }
         });
+}
+
+function whatsapp_send(obj) {
+    
+    var base_url = $('#base_url').val();
+    $.post(base_url + 'controller/attractions_offers_enquiry/whatsapp_send.php', {
+        obj: obj
+    }, function(data) {
+        window.open(data);
+    });
 }
 
 $("#txt_name").autocomplete({

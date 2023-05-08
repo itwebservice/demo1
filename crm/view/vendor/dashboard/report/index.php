@@ -26,7 +26,7 @@ $branch_status = $_POST['branch_status'];
 			<select name="estimate_type2" id="estimate_type2" title="Purchase Type" onchange="payment_for_data_load(this.value, 'div_payment_for_content2')">
 				<option value="">Purchase Type</option>
 				<?php 
-				$sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
+				$sq_estimate_type = mysqlQuery("select * from estimate_type_master order by id");
 				while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
 					?>
 					<option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
@@ -51,9 +51,9 @@ $branch_status = $_POST['branch_status'];
 </div>
 
 </div>
-<div id="div_report_list" class="main_block loader_parent">
+<div id="div_preport_list" class="main_block loader_parent">
 <div class="row mg_tp_20"> <div class="col-md-12 no-pad"> <div class="table-responsive">
-	<table id="report" class="table table-hover mg_tp_20" style="margin: 20px 0 !important;">         
+	<table id="purchase_report" class="table table-hover mg_tp_20" style="margin: 20px 0 !important;">         
 	</table>
 </div></div></div>
 </div>
@@ -63,6 +63,7 @@ $('#from_date, #to_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
 
 var column = [
 	{ title : "S_No."},
+	{ title : "Estimate_ID"},
 	{ title : "Purchase_Type"},
 	{ title : "Purchase_ID"},
 	{ title : "Supplier_Type"},
@@ -73,7 +74,7 @@ var column = [
 ];
 function report_list_reflect()
 {
-	$('#div_report_list').append('<div class="loader"></div>');
+	$('#div_preport_list').append('<div class="loader"></div>');
 	
 	var estimate_type = $('#estimate_type2').val();
 	var vendor_type = $('#vendor_type2').val();
@@ -84,7 +85,7 @@ function report_list_reflect()
 	var from_date = $('#from_date').val();
 	var to_date = $('#to_date').val();
 	$.post('report/report_list_reflect.php', { estimate_type : estimate_type, estimate_type_id : estimate_type_id, vendor_type : vendor_type, vendor_type_id : vendor_type_id , branch_status : branch_status,from_date : from_date, to_date : to_date}, function(data){
-		pagination_load(data, column, true, true, 20, 'report',true);
+		pagination_load(data, column, true, true, 20, 'purchase_report',true);
 		$('.loader').remove();
 	});
 }

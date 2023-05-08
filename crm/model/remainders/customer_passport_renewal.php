@@ -18,7 +18,7 @@ global $secret_key,$encrypt_decrypt;
 				
 				
 				$email_id = $encrypt_decrypt->fnDecrypt($sq_customer['email_id'], $secret_key);
-				$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+				$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 				$pass_name = $row_pass['first_name'].' '.$row_pass['last_name'];
 
 					send_email($email_id,$row_pass['passport_expiry_date'],$cust_name,$pass_name);
@@ -31,7 +31,6 @@ global $secret_key,$encrypt_decrypt;
 
 		// GIT Passenger
 		$sq_count = mysqli_num_rows(mysqlQuery("SELECT * from  remainder_status where remainder_name = 'git_customer_passport_renewal' and date='$today' and status='Done'"));
-		echo '$exp_date : '.$exp_date;
 		if($sq_count==0)
 		{
 		$sq_pass = mysqlQuery("SELECT * from travelers_details where passport_expiry_date='$exp_date' and status!='Cancel'");
@@ -41,7 +40,7 @@ global $secret_key,$encrypt_decrypt;
 				$sq_customer = mysqli_fetch_assoc(mysqlQuery("SELECT * from customer_master where customer_id='$sq_booking[customer_id]'"));
 
 				$email_id = $encrypt_decrypt->fnDecrypt($sq_customer['email_id'], $secret_key);
-				$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+				$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 				$pass_name = $row_pass['first_name'].' '.$row_pass['last_name'];
 				
 				send_email($email_id,$row_pass['passport_expiry_date'],$cust_name,$pass_name);
@@ -63,7 +62,7 @@ global $secret_key,$encrypt_decrypt;
 				$sq_customer = mysqli_fetch_assoc(mysqlQuery("SELECT * from customer_master where customer_id='$sq_booking[customer_id]'"));
 				
 				$email_id = $encrypt_decrypt->fnDecrypt($sq_customer['email_id'], $secret_key);
-				$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+				$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 				$pass_name = $row_pass['first_name'].' '.$row_pass['last_name'];
 
 				send_email($email_id,$row_pass['passport_expiry_date'],$cust_name,$pass_name);
@@ -85,7 +84,7 @@ global $secret_key,$encrypt_decrypt;
 				$sq_customer = mysqli_fetch_assoc(mysqlQuery("SELECT * from customer_master where customer_id='$sq_booking[customer_id]'"));
 				
 				$email_id = $encrypt_decrypt->fnDecrypt($sq_customer['email_id'], $secret_key);
-				$cust_name = $sq_customer['first_name'].' '.$sq_customer['last_name'];
+				$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 				$pass_name = $row_pass['first_name'].' '.$row_pass['last_name'];
 
 				send_email($email_id,$row_pass['expiry_date'],$cust_name,$pass_name);
@@ -100,7 +99,7 @@ function send_email($email_id,$expiry_date,$cust_name,$pass_name)
 {
 	global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website;
 
-		$content1 .= '
+		$content1 = '
 		<tr>
             <table width="85%" cellspacing="0" cellpadding="5" style="color: #888888;border: 1px solid #888888;margin: 0px auto;margin-top:20px; min-width: 100%;" role="presentation">
 			<tr><td style="text-align:left;border: 1px solid #888888;">Passenger</td>   <td style="text-align:left;border: 1px solid #888888;">'.$pass_name.'</td></tr>

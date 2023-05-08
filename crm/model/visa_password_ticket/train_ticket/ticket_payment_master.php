@@ -217,7 +217,7 @@ public function ticket_payment_master_delete(){
 
 	$bank_cash_book_master->bank_cash_book_master_update($module_name, $module_entry_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 
-	$sq_delete = mysqlQuery("update train_ticket_payment_master set payment_amount = '0', delete_status='1' where payment_id='$payment_id'");
+	$sq_delete = mysqlQuery("update train_ticket_payment_master set payment_amount = '0', delete_status='1',credit_charges='0' where payment_id='$payment_id'");
 	if($sq_delete){
 		echo 'Entry deleted successfully!';
 		exit;
@@ -430,7 +430,7 @@ public function ticket_payment_master_update()
 
 	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_payment_master where payment_id='$payment_id'"));
 
-	$clearance_status = ($sq_payment_info['payment_mode']=='Cash' && $payment_mode!="Cash") ? "Pending" : $sq_payment_info['clearance_status'];
+	$clearance_status = $sq_payment_info['clearance_status'];
 	if($payment_mode=="Cash"){ $clearance_status = ""; }
 
 	begin_t();
@@ -679,9 +679,9 @@ public function payment_email_notification_send($train_ticket_id, $payment_amoun
    $customer_name = ($sq_customer_info['type'] == 'Corporate' || $sq_customer_info['type'] == 'B2B') ? $sq_customer_info['company_name'] : $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
 
    $due_date = ($sq_train_ticket_info['payment_due_date'] == '1970-01-01') ? '' : $sq_train_ticket_info['payment_due_date'];  
-   $sq_total_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum , sum(credit_charges) as sumc from train_ticket_payment_master where train_ticket_id='$train_ticket_id' and clearance_status!='Cancelled'"));
-  
-   $credit_card_amount = $sq_total_amount['sumc'];
+   $sq_total_amount = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum , sum(credit_charges) as sumc from train_ticket_payment_master where train_ticket_id='$train_ticket_id' and clearance_status!='Cancelled'"));	
+
+ 	$credit_card_amount = $sq_total_amount['sumc'];
 	$total_pay_amt = $sq_total_amount['sum']+$credit_card_amount;
 	$total_amount = $sq_train_ticket_info['net_total']+$credit_card_amount;
 
@@ -689,7 +689,7 @@ public function payment_email_notification_send($train_ticket_id, $payment_amoun
 	$sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id ='$train_ticket_id' and status='Cancel'"));
 	if($sq_entries == $sq_entries_cancel){
 		$canc_amount = $sq_train_ticket_info['cancel_amount'];
-		$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+		$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $credit_card_amount;
 	}else{
 		$outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 	}
@@ -764,7 +764,7 @@ public function whatsapp_send(){
 	$sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id ='$booking_id' and status='Cancel'"));
 	if($sq_entries == $sq_entries_cancel){
 		$canc_amount = $sq_ticket_info['cancel_amount'];
-		$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+		$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $credit_card_amount;
 	}else{
 		$outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 	}

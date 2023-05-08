@@ -54,6 +54,7 @@ public function ticket_master_update(){
 	$ticket_number_arr = $_POST['ticket_number_arr'];
 
 	$entry_id_arr = $_POST['entry_id_arr'];
+	$e_checkbox_arr = $_POST['e_checkbox_arr'];
 
 
 
@@ -106,7 +107,7 @@ public function ticket_master_update(){
 	}
 
 	//**Updating entries
-
+	$pax = 0;
 	for($i=0; $i<sizeof($first_name_arr); $i++){
 
 
@@ -115,49 +116,60 @@ public function ticket_master_update(){
 
 
 
-		if($entry_id_arr[$i]==""){
+		if($e_checkbox_arr[$i] == 'true'){
+			if($entry_id_arr[$i]==""){
 
 
 
-			$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from train_ticket_master_entries"));
+				$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from train_ticket_master_entries"));
 
-			$entry_id = $sq_max['max'] + 1;
+				$entry_id = $sq_max['max'] + 1;
 
 
 
-			$sq_entry = mysqlQuery("INSERT INTO train_ticket_master_entries (entry_id, train_ticket_id, honorific, first_name, middle_name, last_name, birth_date, adolescence, coach_number, seat_number, ticket_number) VALUES ('$entry_id', '$train_ticket_id', '$honorific_arr[$i]', '$first_name_arr[$i]', '$middle_name_arr[$i]', '$last_name_arr[$i]', '$birth_date_arr[$i]', '$adolescence_arr[$i]', '$coach_number_arr[$i]', '$seat_number_arr[$i]', '$ticket_number_arr[$i]')");
+				$sq_entry = mysqlQuery("INSERT INTO train_ticket_master_entries (entry_id, train_ticket_id, honorific, first_name, middle_name, last_name, birth_date, adolescence, coach_number, seat_number, ticket_number) VALUES ('$entry_id', '$train_ticket_id', '$honorific_arr[$i]', '$first_name_arr[$i]', '$middle_name_arr[$i]', '$last_name_arr[$i]', '$birth_date_arr[$i]', '$adolescence_arr[$i]', '$coach_number_arr[$i]', '$seat_number_arr[$i]', '$ticket_number_arr[$i]')");
+				if(!$sq_entry){
+
+					$GLOBALS['flag'] = false;
+
+					echo "error--Some entries not saved!";
+
+				}
+
+
+
+			}
+
+			else{
+
+
+
+				$sq_entry = mysqlQuery("UPDATE train_ticket_master_entries SET  honorific='$honorific_arr[$i]', first_name='$first_name_arr[$i]', middle_name='$middle_name_arr[$i]', last_name='$last_name_arr[$i]', birth_date='$birth_date_arr[$i]', adolescence='$adolescence_arr[$i]', coach_number='$coach_number_arr[$i]', seat_number='$seat_number_arr[$i]', ticket_number='$ticket_number_arr[$i]' WHERE entry_id='$entry_id_arr[$i]' ");
+
+				if(!$sq_entry){
+
+					$GLOBALS['flag'] = false;
+
+					echo "error--Some entries not updated!";
+
+				}
+
+
+
+			}
+			if($adolescence_arr[$i] != "Infant"){
+				$pax++;
+			}
+		}else{
+			
+			$sq_entry = mysqlQuery("delete from train_ticket_master_entries where entry_id='$entry_id_arr[$i]'");
 			if(!$sq_entry){
 
 				$GLOBALS['flag'] = false;
 
-				echo "error--Some entries not saved!";
+				echo "error--Some entries not deleted!";
 
 			}
-
-
-
-		}
-
-		else{
-
-
-
-			$sq_entry = mysqlQuery("UPDATE train_ticket_master_entries SET  honorific='$honorific_arr[$i]', first_name='$first_name_arr[$i]', middle_name='$middle_name_arr[$i]', last_name='$last_name_arr[$i]', birth_date='$birth_date_arr[$i]', adolescence='$adolescence_arr[$i]', coach_number='$coach_number_arr[$i]', seat_number='$seat_number_arr[$i]', ticket_number='$ticket_number_arr[$i]' WHERE entry_id='$entry_id_arr[$i]' ");
-
-			if(!$sq_entry){
-
-				$GLOBALS['flag'] = false;
-
-				echo "error--Some entries not updated!";
-
-			}
-
-
-
-		}
-		$pax = 0;
-		if($adolescence_arr[$i] != "Infant"){
-			$pax++;
 		}
 
 		
@@ -212,14 +224,9 @@ public function ticket_master_update(){
 			$sq_entry = mysqlQuery("UPDATE train_ticket_master_trip_entries SET  travel_datetime='$travel_datetime_arr[$i]', travel_from='$travel_from_arr[$i]', travel_to='$travel_to_arr[$i]', train_name='$train_name_arr[$i]', train_no='$train_no_arr[$i]', ticket_status='$ticket_status_arr[$i]', class='$class_arr[$i]', booking_from='$booking_from_arr[$i]', boarding_at='$boarding_at_arr[$i]', arriving_datetime='$arriving_datetime_arr[$i]' WHERE entry_id='$trip_entry_id[$i]' ");
 
 			if(!$sq_entry){
-
 				$GLOBALS['flag'] = false;
-
 				echo "error--Some trip entries not updated!";
-
 			}
-
-
 
 		}
 		if($i == 0)
@@ -227,52 +234,37 @@ public function ticket_master_update(){
 		if($i>0)
 			$sector = $sector.','.$travel_from_arr[$i].'-'.$travel_to_arr[$i];
 
-		
-
-
-
 	}
 
-
-
+	$sq_train = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_trip_entries where train_ticket_id='$train_ticket_id'"));
+	$sq_train_master = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id='$train_ticket_id'"));
 	//Get Particular
-	$particular = $this->get_particular($customer_id,$pax,$sector,$train_no_arr[0],$ticket_number_arr[0],$class_arr[0]);
+	$particular = $this->get_particular($customer_id,$pax,$sector,$sq_train['train_no'],$sq_train_master['ticket_number'],$sq_train['class'],$train_ticket_id);
 	//Finance update
 	$this->finance_update($sq_ticket_info, $row_spec, $particular);
 
-
-
 	if($GLOBALS['flag']){
-
 		commit_t();
-
 		echo "Train Ticket Booking has been successfully updated.";
-
 		exit;	
-
 	}
-
 	else{
-
 		rollback_t();
-
 		exit;
-
 	}
-
-
-
-		
-
 }
 
+function get_particular($customer_id,$pax,$sector,$train_no,$ticket_number,$class,$train_ticket_id){
+	$sq_train = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+	$booking_date = $sq_train['created_at'];
+	$yr = explode("-", $booking_date);
+	$year = $yr[0];
+	$sq_pass = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id='$sq_train[train_ticket_id]' and status!='Cancel'"));
 
-function get_particular($customer_id,$pax,$sector,$train_no,$ticket_number,$class){
 	$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 	$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-	return 'Towards the tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
+	return get_train_ticket_booking_id($train_ticket_id,$year).' and towards the train tkt of '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
 }
-
 
 public function finance_update($sq_ticket_info, $row_spec,$particular)
 {

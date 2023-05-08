@@ -28,17 +28,21 @@ $branch_status = $_POST['branch_status'];
                     $query .= " order by booking_id desc";
                     $sq_booking = mysqlQuery($query);
                     while($row_booking = mysqli_fetch_assoc($sq_booking)){
-        
+
+                      $pass_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]'"));
+	$cancle_count= mysqli_num_rows(mysqlQuery("select * from package_travelers_details where booking_id='$row_booking[booking_id]' and status='Cancel'"));
+              $statusBooking = $pass_count == $cancle_count ? "(cancelled)" : "";
+
                       $date = $row_booking['booking_date'];
                       $yr = explode("-", $date);
                       $year =$yr[0];
                   $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
                   if($sq_customer['type'] == 'Corporate'||$sq_customer['type'] == 'B2B'){
                    ?>
-                   <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['company_name']; ?></option>
+                   <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['company_name'].$statusBooking; ?></option>
                    <?php }
                    else{ ?> 
-                   <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name']; ?></option>
+                   <option value="<?php echo $row_booking['booking_id'] ?>"><?php echo get_package_booking_id($row_booking['booking_id'],$year)."-"." ".$sq_customer['first_name']." ".$sq_customer['last_name'].$statusBooking; ?></option>
                    <?php    
                  }
                 }

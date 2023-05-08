@@ -24,19 +24,20 @@ $sq_group1 =  mysqli_fetch_assoc(mysqlQuery("select subgroup_id,subgroup_name fr
                 <select name="tentry_id" id="tentry_id" title="Select Tax" data-toggle="tooltip" onchange="t_list_reflect()" style="width:100%" class='form-control' required>
                 <?php
                 $sq_tax = mysqli_fetch_assoc(mysqlQuery("select * from tax_master where entry_id='$sq_rules[entry_id]'"));
-                $rate = ($sq_tax['rate_in'] == "Percentage") ? $sq_tax['rate'].'(%)': $sq_tax['rate'];
-                $string = $sq_tax['name'].'-'.$rate; ?>
-                <option value="<?= $sq_tax['entry_id']?>"><?= $string ?></option>
-                <option value="">Select Tax</option>
-                <?php
-                $sq = mysqlQuery("select * from tax_master where status!='Inactive'");
-                while($row_taxes = mysqli_fetch_assoc($sq))
-                {
-                    $rate = ($row_taxes['rate_in'] == "Percentage") ? $row_taxes['rate'].'(%)': $row_taxes['rate'];
-                    $string = $row_taxes['name'].'-'.$rate;
+                $tax_string = $sq_tax['name1'].':('.$sq_tax['amount1'].'%):('.$sq_tax['ledger1'].')';
+                $tax_string .= ($sq_tax['name2'] != '') ? '+'.$sq_tax['name2'].':('.$sq_tax['amount2'].'%):('.$sq_tax['ledger2'].')' : '';
                 ?>
-                <option value="<?= $row_taxes['entry_id']?>"><?= $string ?></option>
-                <?php } ?>
+                <option value="<?= $sq_tax['entry_id']?>"><?= $tax_string ?></option>
+                  <?php
+                    $sq_tax = mysqlQuery("SELECT * FROM `tax_master` where status='Active' and reflection='Income'");
+                    while($row_tax = mysqli_fetch_assoc($sq_tax)){
+
+                      $tax_string = $row_tax['name1'].':('.$row_tax['amount1'].'%):('.$row_tax['ledger1'].')';
+                      $tax_string .= ($row_tax['name2'] != '') ? '+'.$row_tax['name2'].':('.$row_tax['amount2'].'%):('.$row_tax['ledger2'].')' : '';
+                  ?>
+                    <option value="<?= $row_tax['entry_id'] ?>"><?= $tax_string ?></option>
+                    <?php
+                    } ?>
                 </select>
             </div>
           </div>
@@ -61,42 +62,20 @@ $sq_group1 =  mysqli_fetch_assoc(mysqlQuery("select subgroup_id,subgroup_name fr
           </div>
           <div class="row"> 
               <div class="col-md-3">
-                  <select name="ledger" id="ledger" data-toggle="tooltip" class="form-control" title="*Select Ledger" style="width:100%" required>
-                      <optgroup value="<?= $sq_group1['subgroup_id'] ?>" label="<?= $sq_group1['subgroup_name'] ?>">
-                        <option value="<?= $sq_ledger['ledger_id'] ?>"><?= $sq_ledger['ledger_name'] ?></option>
-                      </optgroup>
-                      <option value="">*Select Ledger</option>
-                      <?php
-                      $sq_group = mysqlQuery("select subgroup_id,subgroup_name from subgroup_master");
-                      while($row_group = mysqli_fetch_assoc($sq_group)){ ?>
-                      <optgroup value="<?= $row_group['subgroup_id'] ?>" label="<?= $row_group['subgroup_name'] ?>">
-                      <?php
-                      $query = mysqlQuery("select ledger_id,ledger_name from ledger_master where group_sub_id='$row_group[subgroup_id]'");
-                      while($row_ledger = mysqli_fetch_assoc($query)){
-                        ?>
-                          <option value="<?= $row_ledger['ledger_id'] ?>"><?= $row_ledger['ledger_name'] ?></option>
-                      <?php } ?>
-                      </optgroup>
-                      <?php } ?>
-                  </select>
-              </div>
-              <div class="col-md-3">
                   <select name="travel_type" id="travel_type" data-toggle="tooltip" class="form-control" title="Travel Type" style="width:100%" required>
                       <option value="<?= $sq_rules['travel_type'] ?>"><?= $sq_rules['travel_type'] ?></option>
                       <option value="">*Travel Type</option>
                       <option value="All">All</option>
-                      <option value="Group Tour">Group Tour</option>
                       <option value="Package Tour">Package Tour</option>
+                      <option value="Group Tour">Group Tour</option>
                       <option value="Hotel">Hotel</option>
                       <option value="Flight">Flight</option>
-                      <option value="Train">Train</option>
                       <option value="Visa">Visa</option>
-                      <option value="Bus">Bus</option>
                       <option value="Car Rental">Car Rental</option>
                       <option value="Activity">Activity</option>
+                      <option value="Train">Train</option>
+                      <option value="Bus">Bus</option>
                       <option value="Miscellaneous">Miscellaneous</option>
-                      <option value="Forex">Forex</option>
-                      <option value="Passport">Passport</option>
                   </select>
               </div>
               <div class="col-md-3">
@@ -237,7 +216,7 @@ $('#frm_tax_rules_update').validate({
         if(to_date == ''){ error_msg_alert('Select valid to date!'); return false; }
       }
 
-      var ledger = $('#ledger').val();
+      var ledger = '';
       var travel_type = $('#travel_type').val();
       var calc_mode = $('#calc_mode').val();
       var target_amount = $('#target_amount').val();

@@ -97,7 +97,7 @@ $travel_state = ($sq_payment['payment_for']=="Tour") ? "disabled" : "";
 
                 <div class="col-md-4">
 
-                    <input class="form-control" type="text" id="txt_transaction_id"  name="txt_transaction_id" placeholder="Cheque No/ID" title="Cheque No / ID" onchange="validate_specialChar(this.id)" value="<?php echo $sq_payment['transaction_id'] ?>" <?= $bank_detail_state ?> />
+                    <input class="form-control" type="number" id="txt_transaction_id"  name="txt_transaction_id" placeholder="Cheque No/ID" title="Cheque No / ID" onchange="validate_specialChar(this.id)" value="<?php echo $sq_payment['transaction_id'] ?>" <?= $bank_detail_state ?> />
 
                 </div>                    
 
@@ -220,13 +220,7 @@ $('#frm_update_payment').validate({
 
           cmb_payment_mode:{ required : true },
 
-          txt_amount:{ required : true },
-
-
-
-          txt_bank_name : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-
-          txt_transaction_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+          txt_amount:{ required : true }, 
 
           bank_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },          
 

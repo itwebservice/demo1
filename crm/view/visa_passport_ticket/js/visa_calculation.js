@@ -1,25 +1,14 @@
-function get_auto_values(
-	booking_date,
-	sub_total,
-	payment_mode,
-	service_charge,
-	markup,
-	type,
-	charges_flag,
-	amount_type,
-	discount,
-	change = false
+function get_auto_values(booking_date,sub_total,payment_mode,service_charge,markup,type,charges_flag,amount_type,discount,change = false
 ) {
     const rules = get_other_rules('Visa', booking_date);
 	var basic_amount = $('#' + sub_total).val();
 	var payment_mode = $('#' + payment_mode).val();
 	var markup_amount = $('#' + markup).val();
 	var service_amount = $('#' + service_charge).val();
-	var discount_amount = $('#' + discount).val();
+
 	if (basic_amount === '') basic_amount = 0;
 	if (markup_amount === '') markup_amount = 0;
-	if (discount_amount === '' || discount_amount === undefined) discount_amount = 0;
-
+;
 	if (charges_flag === 'true') {
 		var service_charge_result = rules && rules.filter((rule) => rule['rule_for'] === '1');
 		var markup_amount_result = rules && rules.filter((rule) => rule['rule_for'] === '2');
@@ -29,15 +18,13 @@ function get_auto_values(
 			if ($('#' + service_charge).val() == '') $('#' + service_charge).val(parseInt(0).toFixed(2));
 		}
 		else {
-			var service_charge1 = calculate_charges(rules_array, type, basic_amount, 0);
+			var service_charge1 = calculate_charges(rules_array, type, basic_amount, markup_amount);
 			service_charge1 =
-
 				service_charge1 == '' ||
 					typeof service_charge1 === NaN ||
 					service_charge1 === undefined ? parseFloat(0).toFixed(2) :
 					parseFloat(service_charge1).toFixed(2);
-				if (change && Number($('#' + service_charge).val() != service_charge1) && Number($('#' + service_charge).val()) != 0) {
-
+				if (change && Number($('#' + service_charge).val() != service_charge1) && Number($('#' + service_charge).val()) != 0) 					{
 					$('#vi_confirm_box').vi_confirm_box({
 						message: "<span style='font-size:20px'>As per the Business rule Service Charge should be <b>" + service_charge1 + "</b> but the same has been altered by you with <b>" + $('#' + service_charge).val() + "</b> , Click on Yes to accept the Business Rule Service Charge.</span>",
 						callback: function (result) {
@@ -56,7 +43,6 @@ function get_auto_values(
 		if (rules_array.length && rules_array[0].type === 'Automatic')
 			$('#' + service_charge).attr({ readonly: 'readonly' });
 		else $('#' + service_charge).removeAttr('readonly');
-
 		/////////////////Service charge End/////////////////
 
 		/////////////////Markup Start///////////////////////
@@ -80,7 +66,7 @@ function get_auto_values(
 
 			}
 			else {
-				parseFloat(markup_cost).toFixed(2);
+				markup_cost = parseFloat(markup_cost).toFixed(2);
 			}
 			if (change && $('#' + markup).val() != markup_cost && $('#' + markup).val() !== '0.00') {
 				$('#vi_confirm_box').vi_confirm_box({
@@ -105,36 +91,103 @@ function get_auto_values(
 		/////////////////Markup End///////////////////////
 	}
 	/////////////////Tax Start///////////////////////
-	var taxes_result =
-		rules &&
-		rules.filter((rule) => {
-			var { entry_id, rule_id } = rule;
-			return entry_id !== '' && !rule_id;
-		});
-	if ($('#' + service_charge).val() == '') $('#' + service_charge).val(parseInt(0).toFixed(2));
-	if ($('#' + markup).val() == '') $('#' + markup).val(parseInt(0).toFixed(2));
+	if (type === 'save') {
+		var service_tax_subtotal = 'service_tax_subtotal';
+		var service_tax_markup = 'service_tax_markup';
+		var tax_apply_on1 = 'tax_apply_on';
+		var tax_value1 = 'tax_value';
+		var markup_tax_value1 = 'markup_tax_value';
+	}
+	else {
+		var service_tax_subtotal = 'service_tax_subtotal1';
+		var service_tax_markup = 'service_tax_markup1';
+		var tax_apply_on1 = 'atax_apply_on';
+		var tax_value1 = 'tax_value1';
+		var markup_tax_value1 = 'markup_tax_value1';
+	}
+	var tax_on_amount = 0;
+	var service_tax = 0;
+	var service_tax_amount = 0;
+	var applied_taxes = '';
+	var ledger_posting = '';
+	var tax_apply_on = $('#'+tax_apply_on1).val();
+	var tax_value = $('#'+tax_value1).val();
+	var visa_issue_amount = $('#'+sub_total).val();
+	var service_charge = $('#'+service_charge).val();
+	if(tax_apply_on == 1){
+		tax_on_amount = (visa_issue_amount=='') ? 0 : visa_issue_amount;
+	}
+	else if(tax_apply_on == 2){
+		tax_on_amount = (service_charge=='') ? 0 : service_charge;
+	}
+	else if(tax_apply_on == 3){
+		tax_on_amount = parseFloat(visa_issue_amount) + parseFloat(service_charge);
+	}
+	if(tax_apply_on!="" && tax_value!=""){
+		var service_tax_subtotal1 = tax_value.split("+");
+		for(var i=0;i<service_tax_subtotal1.length;i++){
+			var service_tax_string = service_tax_subtotal1[i].split(':');
+			if(parseInt(service_tax_string.length) > 0){
+				var service_tax_string1 = service_tax_string[1] && service_tax_string[1].split('%');
+				service_tax_string1[0] = service_tax_string1[0] && service_tax_string1[0].replace('(','');
+				service_tax = service_tax_string1[0];
+			}
 
-	var tax_service_charge = $('#' + service_charge).val();
-	var tax_markup = $('#' + markup).val();
-	get_tax_rules(
-		rules,
-		taxes_result,
-		basic_amount,
-		sub_total,
-		tax_markup,
-		markup,
-		tax_service_charge,
-		service_charge,
-		payment_mode,
-		type,
-		amount_type,
-		discount_amount,
-		charges_flag
-	);
-	/////////////////Tax End///////////////////////
+			service_tax_string[2] = service_tax_string[2].replace('(','');
+			service_tax_string[2] = service_tax_string[2].replace(')','');
+			service_tax_amount = (( parseFloat(tax_on_amount) * parseFloat(service_tax) ) / 100).toFixed(2);
+			if(applied_taxes==''){
+				applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting = service_tax_string[2];
+			}else{
+				applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting += ', ' + service_tax_string[2];
+			}
+		}
+		$('#'+service_tax_subtotal).val(applied_taxes);
+		$('#hotel_taxes').val(ledger_posting);
+	}else{
+		$('#'+service_tax_subtotal).val('');
+		$('#hotel_taxes').val('');
+	}
 
+	// Markup Tax
+	var applied_taxes = '';
+	var ledger_posting = '';
+	var markup_tax_value = $('#'+markup_tax_value1).val();
+	var markup_amount = $('#'+markup).val();
+	markup_amount = (markup_amount=='') ? 0 : markup_amount;
+
+	var service_tax_subtotal1 = markup_tax_value.split("+");
+	if(markup_tax_value!=''){
+		for(var i=0;i<service_tax_subtotal1.length;i++){
+			var service_tax_string = service_tax_subtotal1[i].split(':');
+			var service_tax_string1 = service_tax_string[1].split('%');
+			service_tax_string1[0] = service_tax_string1[0].replace('(','');
+			var service_tax = service_tax_string1[0];
+
+			service_tax_string[2] = service_tax_string[2].replace('(','');
+			service_tax_string[2] = service_tax_string[2].replace(')','');
+			service_tax_amount = (( parseFloat(markup_amount) * parseFloat(service_tax) ) / 100).toFixed(2);
+			if(applied_taxes==''){
+				applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting = service_tax_string[2];
+			}else{
+				applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting += ', ' + service_tax_string[2];
+			}
+		}
+		$('#'+service_tax_markup).val(applied_taxes);
+		$('#hotel_markup_taxes').val(ledger_posting);
+	}else{
+		$('#'+service_tax_markup).val('');
+		$('#hotel_markup_taxes').val('');
+	}
+	
 	if (type === 'save') calculate_total_amount();
-	else calculate_total_amount('1');
+	else calculate_total_amount('1')
+
+	/////////////////Tax End///////////////////////
 }
 
 ///////////////////////////////////// TAXES FUNCTIONS START /////////////////////////////////////////////
@@ -1005,9 +1058,14 @@ function get_final_rule(rules_array) {
 			if (customer_condition_rules && customer_condition_rules.length === 1) return customer_condition_rules;
 			else {
 				// If only one 'Customer' Conditional rule is there
-				var sorted_array = conditional_rule.sort((a, b) => a.rule_id - b.rule_id);
+				var sorted_array = [];
+				if(conditional_rule !== undefined){
+					sorted_array = conditional_rule && conditional_rule.sort((a, b) => a.rule_id - b.rule_id);
+				}
 				var latest_arr = [];
-				latest_arr.push(sorted_array[sorted_array.length - 1]);
+				if(sorted_array.length > 0){
+					latest_arr.push(sorted_array[sorted_array.length - 1]);
+				}
 				return latest_arr; // Return latest rule
 			}
 		}
@@ -1015,6 +1073,7 @@ function get_final_rule(rules_array) {
 }
 
 function calculate_charges(rules_array, type, basic_amount, markup_amount1) {
+	
 	if (rules_array.length) {
 		var apply_on = rules_array[0].apply_on;
 		if (rules_array[0].target_amount != '') {
@@ -1023,7 +1082,6 @@ function calculate_charges(rules_array, type, basic_amount, markup_amount1) {
 				var target_amount = parseFloat(basic_amount) + parseFloat(markup_amount1);
 		}
 		else var target_amount = 0;
-
 		if (type === 'save') {
 			var hotel_table = 'tbl_dynamic_visa';
 		}

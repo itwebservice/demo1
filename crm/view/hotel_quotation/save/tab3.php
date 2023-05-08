@@ -49,6 +49,8 @@ function switch_to_tab2(){
 
 $('#frm_tab3').validate({
 
+	rules:{
+	},
 	submitHandler:function(form,e)
 	{
 		$('#btn_quotation_save').prop('disabled',true);
@@ -82,17 +84,18 @@ $('#frm_tab3').validate({
 				if(row.cells[0].childNodes[0].checked){	      
 
 					eachHotel.push({
-						city_id	:	row.cells[2].childNodes[0].value,
-						hotel_id	:	row.cells[3].childNodes[0].value,
-						hotel_cat	:	row.cells[4].childNodes[0].value,
-						meal_plan : row.cells[5].childNodes[0].value,
-						checkin	:	row.cells[6].childNodes[0].value,
-						checkout	:	row.cells[7].childNodes[0].value,
-						hotel_type : row.cells[8].childNodes[0].value,
-						hotel_stay_days	:	row.cells[9].childNodes[0].value,
-						total_rooms	:	row.cells[10].childNodes[0].value,
-						extra_bed	:	row.cells[11].childNodes[0].value,
-						hotel_cost	:	row.cells[12].childNodes[0].value
+						tour_type	:	row.cells[2].childNodes[0].value,
+						city_id	:	row.cells[3].childNodes[0].value,
+						hotel_id	:	row.cells[4].childNodes[0].value,
+						hotel_cat	:	row.cells[5].childNodes[0].value,
+						meal_plan : row.cells[6].childNodes[0].value,
+						checkin	:	row.cells[7].childNodes[0].value,
+						checkout	:	row.cells[8].childNodes[0].value,
+						hotel_type : row.cells[9].childNodes[0].value,
+						hotel_stay_days	:	row.cells[10].childNodes[0].value,
+						total_rooms	:	row.cells[11].childNodes[0].value,
+						extra_bed	:	row.cells[12].childNodes[0].value,
+						hotel_cost	:	row.cells[13].childNodes[0].value
 					});
 				}
 			}
@@ -105,14 +108,33 @@ $('#frm_tab3').validate({
 			var rowCount = table.rows.length;
 				
 			var row = table.rows[0];
+			
+			if(row.cells[2].childNodes[1].value == ''){
+				$('#btn_quotation_save').prop('disabled',false);
+				error_msg_alert("Select Tax Apply On at row "+quot);
+				return false;
+			}
+			if(row.cells[3].childNodes[1].value == ''){
+				$('#btn_quotation_save').prop('disabled',false);
+				error_msg_alert("Select Tax at row "+quot);
+				return false;
+			}
+			if(row.cells[6].childNodes[1].value == ''){
+				$('#btn_quotation_save').prop('disabled',false);
+				error_msg_alert("Select Markup Tax at row "+quot);
+				return false;
+			}
 			eachHotel = {
 				hotel_cost	:	row.cells[0].childNodes[1].value,
 				service_charge	:	row.cells[1].childNodes[1].value,
-				tax_amount	:	row.cells[2].childNodes[1].value,
-				markup_cost	:	row.cells[3].childNodes[1].value,
-				markup_tax	:	row.cells[4].childNodes[1].value,
-				roundoff	:	row.cells[5].childNodes[1].value,
-				total_amount	:	row.cells[6].childNodes[1].value
+				tax_apply_on	:	row.cells[2].childNodes[1].value,
+				tax_value	:	row.cells[3].childNodes[1].value,
+				tax_amount	:	row.cells[4].childNodes[1].value,
+				markup_cost	:	row.cells[5].childNodes[1].value,
+				markup_tax_value	:	row.cells[6].childNodes[1].value,
+				markup_tax	:	row.cells[7].childNodes[1].value,
+				roundoff	:	row.cells[8].childNodes[1].value,
+				total_amount	:	row.cells[9].childNodes[1].value
 			};
 			costingJson.push(eachHotel);
 				

@@ -87,7 +87,7 @@ $total_paid_amt = 0;
 				$url = "";
 			}
 			if($row_payment['payment_mode']!='Debit Note'){
-				$update_btn = '<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'].')"  title="Edit"><i class="fa fa-pencil-square-o"></i></button>';
+				$update_btn = '<button class="btn btn-info btn-sm" onclick="payment_update_modal('.$row_payment['payment_id'].')"  title="Update Details" id="updatep1_btn-'. $row_payment['payment_id'] .'"><i class="fa fa-pencil-square-o"></i></button>';
 			}else{
 				$update_btn = '';
 			}
@@ -121,7 +121,7 @@ $total_paid_amt = 0;
 	<tfoot>
 		<tr class="active">
 			<th colspan="3" class="text-right info">Total Paid : <?= number_format($total_payment, 2); ?></th>
-			<th colspan="2" class="text-right warning">Total Pending : <?= number_format($sq_pending_amount, 2); ?></th>
+			<th colspan="2" class="text-right warning">Pending Clearance : <?= number_format($sq_pending_amount, 2); ?></th>
 			<th colspan="2" class="text-right danger">Total Cancel : <?= number_format($sq_cancel_amount, 2); ?></th>
 			<th colspan="3" class="text-right success">Total Payment : <?= number_format(($total_payment - $sq_pending_amount - $sq_cancel_amount), 2); ?></th>
 			<th colspan="2" class="text-right info"></th>

@@ -67,12 +67,8 @@ $branch_status = $_POST['branch_status'];
                         <div class="row mg_bt_10">
                             <div class="col-xs-12 text-right">
 
-                                <button type="button" class="btn btn-info btn-sm ico_left"
-                                    onClick="addRow('tbl_dynamic_bus_booking')"><i
-                                        class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-                                <button type="button" class="btn btn-danger btn-sm ico_left"
-                                    onClick="deleteRow('tbl_dynamic_bus_booking')"><i
-                                        class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+                                <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_bus_booking')"><i class="fa fa-plus"></i></button>
+                                <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('tbl_dynamic_bus_booking');"><i class="fa fa-trash"></i></button>
 
                             </div>
                         </div>
@@ -94,44 +90,66 @@ $branch_status = $_POST['branch_status'];
                         <legend>Costing Details</legend>
                         <div class="row mg_bt_10">
 
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="basic_show" style="color:#000000">&nbsp;</small>
-                                <input type="text" id="basic_cost" name="basic_cost" placeholder="*Amount"
-                                    title="Amount"
-                                    onchange="calculate_total_amount();get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','basic','discount',true);validate_balance(this.id)">
+                                <input type="text" id="basic_cost" name="basic_cost" placeholder="*Basic Amount"
+                                    title="Basic Amount" onchange="calculate_total_amount();get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','basic','discount',false);validate_balance(this.id)">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="service_show" style="color:#000000">&nbsp;</small>
                                 <input type="text" id="service_charge" name="service_charge"
                                     placeholder="Service Charge" title="Service Charge"
-                                    onchange="calculate_total_amount();validate_balance(this.id);get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',true)">
+                                    onchange="calculate_total_amount();validate_balance(this.id);get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',false)">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',false);" data-toggle="tooltip">
+									<option value="">*Tax Apply On</option>
+									<option value="1">Basic Amount</option>
+									<option value="2">Service Charge</option>
+									<option value="3">Total</option>
+								</select>
+							</div> 
+							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',false);" data-toggle="tooltip">
+									<option value="">*Select Tax</option>
+									<?php get_tax_dropdown('Income') ?>
+								</select>
+							</div>
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small>&nbsp;</small>
                                 <input type="text" id="service_tax_subtotal" name="service_tax_subtotal"
                                     placeholder="Tax Amount" title="Tax Amount" readonly>
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="markup_show" style="color:#000000">&nbsp;</small>
-                                <input type="text" id="markup" name="markup" placeholder="Markup " title="Markup"
-                                    onchange="calculate_total_amount();get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','markup','discount',true);validate_balance(this.id)">
+                                <input type="text" id="markup" name="markup" placeholder="Markup Amount" title="Markup Amount"
+                                    onchange="calculate_total_amount();get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','markup','discount',false);validate_balance(this.id)">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Select Markup Tax" id="markup_tax_value" name="markup_tax_value" class="form-control" onchange="get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',true);" data-toggle="tooltip">
+									<option value="">*Select Markup Tax</option>
+									<?php get_tax_dropdown('Income') ?>
+								</select>
+							</div>
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small>&nbsp;</small>
                                 <input type="text" id="service_tax_markup" name="service_tax_markup"
                                     placeholder="Tax on Markup" title="Tax on Markup" readonly>
                             </div>
 
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small>&nbsp;</small>
                                 <input type="text" name="roundoff" id="roundoff" class="text-right"
                                     placeholder="Round Off" title="RoundOff" readonly>
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_tp_10 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_tp_10 mg_bt_10">
                                 <input type="text" id="net_total" class="amount_feild_highlight text-right"
                                     name="net_total" placeholder="Net Total" title="Net Total" readonly>
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_tp_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_tp_10">
                                 <input type="text" name="balance_date" id="balance_date" value="<?= date('d-m-Y') ?>"
                                     placeholder="Booking Date" title="Booking Date"
                                     onchange="check_valid_date(this.id);get_auto_values('balance_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount',true);">
@@ -183,7 +201,7 @@ $branch_status = $_POST['branch_status'];
                             </div>
 
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10_xs">
-                                <input type="text" id="transaction_id" onchange="validate_specialChar(this.id);"
+                                <input type="number" id="transaction_id" onchange="validate_specialChar(this.id);"
                                     name="transaction_id" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
                             </div>
 
@@ -287,26 +305,6 @@ $('#frm_save').validate({
             required: true
         },
 
-        bank_name: {
-            required: function() {
-                if ($('#payment_mode').val() != "Cash" && $('#payment_amount').val() != '0') {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        },
-
-        transaction_id: {
-            required: function() {
-                if ($('#payment_mode').val() != "Cash") {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        },
-
         bank_id: {
             required: function() {
                 if ($('#payment_mode').val() != "Cash") {
@@ -316,6 +314,9 @@ $('#frm_save').validate({
                 }
             }
         },
+		tax_apply_on : { required:true},
+		tax_value : { required:true},
+		markup_tax_value : { required:true}
 
     },
     submitHandler: function() {
@@ -370,6 +371,9 @@ $('#frm_save').validate({
         var hotel_tds = $('#hotel_tds').val();
         var markup = $('#markup').val();
         var service_tax_markup = $('#service_tax_markup').val();
+        var tax_apply_on = $('#tax_apply_on').val();
+        var tax_value = $('#tax_value').val();
+        var markup_tax_value = $('#markup_tax_value').val();
 
         if (payment_mode == "Advance") {
             error_msg_alert("Please select another payment mode.");
@@ -383,7 +387,10 @@ $('#frm_save').validate({
             'hotel_markup': hotel_markup,
             'hotel_taxes': hotel_taxes,
             'hotel_markup_taxes': hotel_markup_taxes,
-            'hotel_tds': hotel_tds
+            'hotel_tds': hotel_tds,
+            'tax_apply_on':tax_apply_on,
+            'tax_value':tax_value,
+            'markup_tax_value':markup_tax_value
         });
         var bsmValues = [];
         bsmValues.push({

@@ -25,6 +25,7 @@ $bg = $_GET['bg'];
 $canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='') ? $credit_card_charges : 0 ;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 
 $amount_in_word = $amount_to_word->convert_number_to_words($net_amount);
 $sq_car = mysqli_fetch_assoc(mysqlQuery("select * from car_rental_booking where booking_id='$booking_id' and delete_status='0'"));

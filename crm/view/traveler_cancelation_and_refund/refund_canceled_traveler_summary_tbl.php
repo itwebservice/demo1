@@ -42,6 +42,9 @@ $tourwise_id = $_POST['cmb_tourwise_traveler_id'];
             $bg = "danger"; 
             $cancel = $cancel + $row_refund['total_refund'];    
         }
+        else if($row_refund['clearance_status']=="Cleared"){ 
+            $bg = "success"; 
+        }
         else{
             $bg = ""; 
         }

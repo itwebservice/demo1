@@ -4,7 +4,7 @@
 
         <div class="app_panel_content no-pad">
             <div class="">
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row">
                         <div class="panel panel-default panel-body main_block bg_light mg_bt_30">
                             <legend>Costing Details</legend>
@@ -13,10 +13,7 @@
                                     <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                         <small>&nbsp;</small>
                                         <label for="txt_hotel_expenses">Tour Amount</label>
-                                        <input type="text" id="txt_hotel_expenses" name="txt_hotel_expenses"
-                                            placeholder="Tour Amount" title="Tour Amount"
-                                            onchange="validate_balance(this.id);calculate_tour_cost(this.id);get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','true','basic');"
-                                            value="0">
+                                        <input type="text" id="txt_hotel_expenses" name="txt_hotel_expenses" placeholder="Tour Amount" title="Tour Amount" onchange="validate_balance(this.id);calculate_tour_cost(this.id);get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','true','basic');" value="0">
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                         <small>&nbsp;</small>
@@ -48,7 +45,24 @@
                                             title="Subtotal" value="0"
                                             onchange="validate_balance(this.id); calculate_total_tour_cost()" readonly>
                                     </div>
-                                    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
+                                    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                        <small>&nbsp;</small>
+                                        <select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','false','service_charge','discount');">
+                                            <option value="">*Tax Apply On</option>
+                                            <option value="1">Basic Amount</option>
+                                            <option value="2">Service Charge</option>
+                                            <option value="3">Total</option>
+                                            <option value="4">Tour Amount</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                        <small>&nbsp;</small>
+                                        <select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('txt_booking_date','total_basic_amt','payment_mode','service_charge','markup','save','false','service_charge','discount');">
+                                            <option value="">*Select Tax</option>
+                                            <?php get_tax_dropdown('Income') ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                         <label for="tour_service_tax_subtotal">Tax Subtotal</label>
                                         <input type="text" title="Tax Subtotal" id="tour_service_tax_subtotal"
                                             name="tour_service_tax_subtotal" value="0" readonly>
@@ -253,9 +267,8 @@
                                             </div>
                                             <div
                                                 class="col-md-2 col-sm-4 col-xs-12 text_center_xs mg_bt_10_xs mg_tp_10">
-                                                <input type="text" id="txt_transaction_id1" name="txt_transaction_id1"
-                                                    placeholder="Cheque No / ID"
-                                                    onchange="validate_specialChar(this.id)" title="Cheque No / ID"
+                                                <input type="number" id="txt_transaction_id1" name="txt_transaction_id1"
+                                                    placeholder="Cheque No / ID" title="Cheque No / ID"
                                                     disabled />
                                             </div>
                                             <div
@@ -331,9 +344,8 @@
                                                     onchange="fname_validate(this.id)" title="Amount" disabled />
                                             </div>
                                             <div class="col-md-2 col-sm-4 col-xs-12 text_center_xs mg_bt_10_xs">
-                                                <input type="text" id="txt_transaction_id2" name="txt_transaction_id2"
-                                                    placeholder="Cheque No / ID"
-                                                    onchange="validate_specialChar(this.id)" title="Cheque No / ID"
+                                                <input type="number" id="txt_transaction_id2" name="txt_transaction_id2"
+                                                    placeholder="Cheque No / ID" title="Cheque No / ID"
                                                     disabled />
                                             </div>
                                             <div class="col-md-2 col-sm-4 col-xs-12 text_center_xs mg_bt_10_xs">

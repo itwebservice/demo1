@@ -112,7 +112,7 @@ $client_modal_type = $_POST['client_modal_type'];
                         </div>
                         <div class="row mg_bt_10">
                             <div class="col-sm-2 ">
-                                <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+                                <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" placeholder="Personal Identification No(PIN)" title="Personal Identification No(PIN)" style="text-transform: uppercase;">
                                 <input type="hidden" id="as_of_date" name="as_of_date" placeholder="*As of Date" title="As of Date" required>
                             </div>
                             <div class="col-sm-2 ">
@@ -423,12 +423,7 @@ $client_modal_type = $_POST['client_modal_type'];
                                 <ul id="files"></ul>
                                 <input type="Hidden" id="hotel_upload_url" name="hotel_upload_url">
                             </div> (Upload Maximum 10 images)
-                        </div>
-                    </div>
-                    <div class="row mg_tp_10">
-                        <div class="col-sm-6">
-                            <span style="color: red;" class="note">Note : Image size should be less than 100KB,
-                                resolution : 900X450.</span>
+		                    <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Image size should be less than 100KB,resolution : 900X450."><i class="fa fa-question-circle"></i></button>
                         </div>
                     </div>
                     <div class="row mg_tp_20 mg_bt_20" id="images_list"></div>

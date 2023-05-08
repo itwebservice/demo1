@@ -7,11 +7,26 @@ $train_ticket_id = $_POST['train_ticket_id'];
 
 $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id' and delete_status='0'"));
 $reflections = json_decode($sq_booking['reflections']);
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <input type="hidden" id="train_ticket_id" name="train_ticket_id" value="<?= $train_ticket_id ?>">
 <input type="hidden" id="hotel_sc" name="hotel_sc" value="<?php echo $reflections[0]->train_sc ?>">
 <input type="hidden" id="hotel_markup" name="hotel_markup" value="<?php echo $reflections[0]->train_markup ?>">
 <input type="hidden" id="hotel_taxes" name="hotel_taxes" value="<?php echo $reflections[0]->train_taxes ?>">
+<input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+<input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+<input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+
 <input type="hidden" id="hotel_markup_taxes" name="hotel_markup_taxes"
     value="<?php echo $reflections[0]->train_markup_taxes ?>">
 <input type="hidden" id="hotel_tds" name="hotel_tds" value="<?php echo $reflections[0]->hotel_tds ?>">

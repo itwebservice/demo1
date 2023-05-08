@@ -12,9 +12,12 @@ $result = mysqlQuery("SELECT * FROM tax_master");
 while($row = mysqli_fetch_array($result)) {
     $temp_array = array(
         'entry_id' => $row['entry_id'],
-        'name' => $row['name'],
-        'rate_in' => $row['rate_in'],
-        'rate' => $row['rate'],
+        'name1' => $row['name1'],
+        'rate1' => $row['amount1'],
+        'ledger1' => $row['ledger1'],
+        'name2' => $row['name2'],
+        'amount2' => $row['amount2'],
+        'ledger2' => $row['ledger2'],
         'status' => $row['status']
     );
     array_push($taxes_data,$temp_array);

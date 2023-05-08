@@ -155,7 +155,7 @@ class miscellaneous_master
 			}
 		}
 			//Get Particular
-			$particular = $this->get_particular($customer_id, $services);
+			$particular = $this->get_particular($customer_id, $services,$misc_id);
 
 			//Finance save
 			$this->finance_save($misc_id, $payment_id, $row_spec, $branch_admin_id, $particular);
@@ -205,13 +205,24 @@ class miscellaneous_master
 		}
 	}
 
-	function get_particular($customer_id, $services)
+	function get_particular($customer_id, $services,$misc_id)
 	{
 
 		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from customer_master where customer_id='$customer_id'"));
 		$cust_name = $sq_ct['first_name'] . ' ' . $sq_ct['last_name'];
 
-		return $services . ' for ' . $cust_name;
+		$sq_misc=mysqli_num_rows(mysqlQuery("select created_at from miscellaneous_master where misc_id='$misc_id'"));
+		$booking_date = $sq_misc['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+
+		$sq_total_member=mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id='$misc_id' and status!='Cancel' "));     
+		$sq_pass=mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from miscellaneous_master_entries where misc_id='$misc_id' and status!='Cancel' "));
+		$pass_name = $sq_pass['first_name'].' '.$sq_pass['last_name'];
+
+		$particular =  get_misc_booking_id($misc_id,$year).' and '.$services . ' for ' . $pass_name.' *'.$sq_total_member;
+
+		return $particular;
 	}
 	public function miscellaneous_master_delete(){
 
@@ -237,7 +248,11 @@ class miscellaneous_master
 		}else{
 			$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
 		}
-		$particular =  $services . ' for ' . $cust_name;
+		$sq_total_member=mysqli_num_rows(mysqlQuery("select misc_id from miscellaneous_master_entries where misc_id='$misc_id' and status!='Cancel' "));     
+		$sq_pass=mysqli_fetch_assoc(mysqlQuery("select first_name,last_name from miscellaneous_master_entries where misc_id='$misc_id' and status!='Cancel' "));
+		$pass_name = $sq_pass['first_name'].' '.$sq_pass['last_name'];
+
+		$particular =  get_misc_booking_id($misc_id,$year).' and '.$services . ' for ' . $pass_name.' *'.$sq_total_member;
 
 		$delete_master->delete_master_entries('Invoice','Miscellaneous',$misc_id,get_misc_booking_id($misc_id,$year),$cust_name,$row_misc['misc_total_cost']);
 
@@ -731,6 +746,7 @@ class miscellaneous_master
 		$issue_date_arr = $_POST['issue_date_arr'];
 		$expiry_date_arr = $_POST['expiry_date_arr'];
 		$entry_id_arr = $_POST['entry_id_arr'];
+		$e_checkbox_arr = $_POST['e_checkbox_arr'];
 		$serv = $_POST['service'];
 		//$services = implode(', ',$serv);
 		$narration = $_POST['narration'];
@@ -762,7 +778,7 @@ class miscellaneous_master
 
 			rollback_t();
 
-			echo "error--Sorry, Miscellaneous information not update successfully!";
+			echo "error--Sorry, Miscellaneous information not updated successfully!";
 
 			exit;
 		} else {
@@ -776,35 +792,43 @@ class miscellaneous_master
 				$issue_date_arr[$i] = get_date_db($issue_date_arr[$i]);
 				$expiry_date_arr[$i] = get_date_db($expiry_date_arr[$i]);
 
-				if ($entry_id_arr[$i] == "") {
+				if($e_checkbox_arr[$i] == 'true'){
+					if ($entry_id_arr[$i] == "") {
 
-					$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from miscellaneous_master_entries"));
+						$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from miscellaneous_master_entries"));
 
-					$entry_id = $sq_max['max'] + 1;
+						$entry_id = $sq_max['max'] + 1;
 
-					$sq_entry = mysqlQuery("insert into miscellaneous_master_entries(entry_id, misc_id, first_name, middle_name, last_name, birth_date, adolescence,passport_id, issue_date, expiry_date) values('$entry_id', '$misc_id', '$first_name_arr[$i]', '$middle_name_arr[$i]', '$last_name_arr[$i]', '$birth_date_arr[$i]', '$adolescence_arr[$i]', '$passport_id_arr[$i]', '$issue_date_arr[$i]', '$expiry_date_arr[$i]')");
+						$sq_entry = mysqlQuery("insert into miscellaneous_master_entries(entry_id, misc_id, first_name, middle_name, last_name, birth_date, adolescence,passport_id, issue_date, expiry_date) values('$entry_id', '$misc_id', '$first_name_arr[$i]', '$middle_name_arr[$i]', '$last_name_arr[$i]', '$birth_date_arr[$i]', '$adolescence_arr[$i]', '$passport_id_arr[$i]', '$issue_date_arr[$i]', '$expiry_date_arr[$i]')");
 
-					if (!$sq_entry) {
+						if (!$sq_entry) {
 
-						$GLOBALS['flag'] = false;
+							$GLOBALS['flag'] = false;
 
-						echo "error--Some Miscellaneous entries are not saved!";
+							echo "error--Some Miscellaneous entries are not saved!";
 
-						//exit;
+							//exit;
 
+						}
+					} else {
+
+						$sq_entry = mysqlQuery("update miscellaneous_master_entries set misc_id='$misc_id', first_name='$first_name_arr[$i]', middle_name='$middle_name_arr[$i]', last_name='$last_name_arr[$i]', birth_date='$birth_date_arr[$i]', adolescence='$adolescence_arr[$i]', passport_id='$passport_id_arr[$i]', issue_date='$issue_date_arr[$i]', expiry_date='$expiry_date_arr[$i]' where entry_id='$entry_id_arr[$i]'");
+
+						if (!$sq_entry) {
+
+							$GLOBALS['flag'] = false;
+
+							echo "error--Some Miscellaneous entries are not updated!";
+
+							//exit;
+
+						}
 					}
-				} else {
-
-					$sq_entry = mysqlQuery("update miscellaneous_master_entries set misc_id='$misc_id', first_name='$first_name_arr[$i]', middle_name='$middle_name_arr[$i]', last_name='$last_name_arr[$i]', birth_date='$birth_date_arr[$i]', adolescence='$adolescence_arr[$i]', passport_id='$passport_id_arr[$i]', issue_date='$issue_date_arr[$i]', expiry_date='$expiry_date_arr[$i]' where entry_id='$entry_id_arr[$i]'");
-
-					if (!$sq_entry) {
-
+				}else{
+					$sq_entry = mysqlQuery("delete from miscellaneous_master_entries where entry_id='$entry_id_arr[$i]'");
+					if(!$sq_entry){
 						$GLOBALS['flag'] = false;
-
-						echo "error--Some Miscellaneous entries are not updated!";
-
-						//exit;
-
+						echo "error--Some entries not deleted!";
 					}
 				}
 			}
@@ -812,7 +836,7 @@ class miscellaneous_master
 
 
 			//Get Particular
-			$particular = $this->get_particular($customer_id, $serv);
+			$particular = $this->get_particular($customer_id, $serv,$misc_id);
 			//Finance update
 			$this->finance_update($sq_visa_info, $row_spec, $particular);
 

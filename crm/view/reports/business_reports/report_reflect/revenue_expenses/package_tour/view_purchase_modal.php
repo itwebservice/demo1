@@ -31,9 +31,10 @@ $sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where sta
                     <tbody>
                     <?php 
                     $count = 1;
-                    $sq_query = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'");
+                    $sq_query = mysqlQuery("select * from vendor_estimate where estimate_type='Package Tour' and estimate_type_id ='$booking_id' and status!='Cancel' and delete_status='0'");
                     while($row_query = mysqli_fetch_assoc($sq_query)){
                         $vendor_name = get_vendor_name_report($row_query['vendor_type'],$row_query['vendor_type_id']);
+                        $total_purchase = 0;
                         if($row_query['net_total'] != '0'){
                             //Service Tax 
                             $service_tax_amount = 0;
@@ -44,20 +45,30 @@ $sq_pcount = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where sta
                                 $service_tax_amount +=  $service_tax[2];
                                 }
                             }
+                            if($row_query['purchase_return'] == 0){
+                                $total_purchase += $row_query['net_total'];
+                            }
+                            else if($row_query['purchase_return'] == 2){
+                                $cancel_estimate = json_decode($row_query['cancel_estimate']);
+                                $p_purchase = ($row_query['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+                                $total_purchase += $p_purchase;
+                            }
                         ?>
                             <tr>
                                 <td><?= $count++ ?></td>
                                 <td><?= get_date_user($row_query['purchase_date']) ?></td>
                                 <td><?= $row_query['vendor_type'] ?></td>
                                 <td><?= $vendor_name ?></td>
-                                <td><?= number_format($row_query['net_total']-$service_tax_amount,2) ?></td>
+                                <td><?= number_format($total_purchase-$service_tax_amount,2) ?></td>
                             </tr>
                         <?php } 
                     } ?>
                     </tbody>
                 </table>
             </div> </div>
-            <?php } if($sq_count!=0){ ?>
+            <?php }else{
+                echo '<h4>No purchase taken for this booking</h4>';
+            } if($sq_count!=0){ ?>
             <div class="row mg_tp_20">
             <div class="col-md-12">
             <h3 class="editor_title">Other Expense</h3>

@@ -16,8 +16,6 @@ $query = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `b2c_blogs` where entry_id
                 </div>
                 <div class="modal-body">
                     <?php
-                    // for($i = 0;$i < sizeof($blog_array);$i++){
-
                         $url = $query['image'];
                         $title = $query['title'];
                         $description = $query['description'];
@@ -38,23 +36,21 @@ $query = mysqli_fetch_assoc(mysqlQuery("SELECT * FROM `b2c_blogs` where entry_id
                                 <textarea name="desc1" placeholder="*Description" title="Description" class="form-control feature_editor" id="desc1" rows="5" required><?php echo $description; ?></textarea>
                             </div>
                         </div>
-                        <div class="row mg_bt_20">
-                            <div class="col-md-1">
+                        <div class="row mg_bt_10">
+                            <div class="col-md-4">
                                 <div class="div-upload">
                                     <div id="id_upload_btn" class="upload-button1"><span><?php echo ($url=='') ?  'Upload' : 'Uploaded' ?></span></div>
                                     <span id="id_proof_status" ></span>
                                     <ul id="files"></ul>
                                     <input type="hidden" id="image_upload_url1" name="image_upload_url1" value="<?php echo $url; ?>">
                                 </div>
-                            </div>
-                            <div class="col-md-11">
-                                <div style="color: red; padding-left:25px;">Note :Upload Image below 200KB, resolution :900X450, Format:JPEG, JPG, PNG</div>
+                                <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note: Upload Image size below 1MB, resolution : 1800*700, Format : JPEG,JPG."><i class="fa fa-question-circle"></i></button>
                             </div>
                         </div>
                         <?php
                         $newUrl1 = preg_replace('/(\/+)/','/',$url); 
                         $newUrl = BASE_URL.str_replace('../', '', $newUrl1);
-                    ?>
+                        ?>
                     <img src="<?php echo $newUrl; ?>" class="img-responsive">
                     <input type="hidden" id="entry_id1" value="<?=$entry_id?>"/>
 

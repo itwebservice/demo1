@@ -158,7 +158,7 @@ $(function(){
 			       }      	
 
 
-
+				   console.log(train_from_location1);
 			       
 
 			       if(train_from_location1=="")

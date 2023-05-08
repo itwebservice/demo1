@@ -19,7 +19,7 @@ $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 
 
@@ -90,7 +90,7 @@ $query .= " order by booking_id desc";
 			}
 			else{
 				$bg="";
-				$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="update_modal('.$row_booking['booking_id'].')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+				$update_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="update_modal('.$row_booking['booking_id'].')" id="editb-'.$row_booking['booking_id'].'" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
 				$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['booking_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 			}
 
@@ -112,19 +112,19 @@ $query .= " order by booking_id desc";
 
 			$paid_amount = $sq_paid_amount['sum'] + $credit_card_charge;
 			$paid_amount = ($paid_amount == '') ? 0 : $paid_amount;
-			$sale_amount = $row_booking['net_total'] + $credit_card_charge;
+			$sale_amount = ($row_booking['net_total'] + $credit_card_charges);
 			
 			$cancel_amt = $row_booking['cancel_amount'];
 			if($cancel_amt == ""){ $cancel_amt = 0;}
 
 			$total_sale = $total_sale+$row_booking['net_total'] + $credit_card_charges;
 			$total_cancelation_amount = $total_cancelation_amount+$cancel_amt;
-			$total_balance = $total_balance+$sale_amount;
+			$total_balance = $total_balance+$sale_amount-$cancel_amt;
 
 			if($bg != ''){
 				$bal_amount = ($paid_amount > $cancel_amt) ? 0 : floatval($cancel_amt) - floatval($paid_amount);
 			}else{
-				$bal_amount = floatval($sale_amount) - floatval($paid_amount) - $credit_card_charge;
+				$bal_amount = floatval($row_booking['net_total']) - floatval($paid_amount) - $credit_card_charge;
 			}
 
 			$invoice_no = get_bus_booking_id($row_booking['booking_id'],$year);
@@ -153,18 +153,15 @@ $query .= " order by booking_id desc";
 				$row_booking['invoice_pr_id'],
 				get_bus_booking_id($row_booking['booking_id'],$year),
 				$customer_name,
-				date('d-m-Y', strtotime($row_booking['created_at'])),
 				$sq_total_seates,
 				$sq_bus['company_name'],
 				number_format($row_booking['net_total']+$credit_card_charges,2),
 				$cancel_amt,
 				number_format(($row_booking['net_total']-$row_booking['cancel_amount']+$credit_card_charges), 2),
 				$emp_name,
+				$invoice_date,
 				'<a data-toggle="tooltip" onclick="loadOtherPage(\'' .$url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></a>
-				
-				<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="view_modal('.$row_booking['booking_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>
-
-				'.$update_btn.$delete_btn
+				'.$update_btn.'<button data-toggle="tooltip" class="btn btn-info btn-sm" id="viewb-'.$row_booking['booking_id'].'" onclick="view_modal('.$row_booking['booking_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>'.$delete_btn
 				), "bg" =>$bg );
 				array_push($array_s,$temp_arr); 
 			}

@@ -3,7 +3,7 @@ include_once('../../../model/model.php');
 ?>
 <div class="row mg_bt_20">
 <div class="col-md-12 text-right">
-  <button class="btn btn-info btn-sm ico_left" onclick="branche_save_modal()" title="Add new Branch"><i class="fa fa-plus"></i>&nbsp;&nbsp;Branch</button>
+  <button class="btn btn-info btn-sm ico_left" onclick="branche_save_modal();btnDisableEnable(this.id)" id="branche_save_modal" title="Add new Branch"><i class="fa fa-plus"></i>&nbsp;&nbsp;Branch</button>
 </div>
 </div>
 <div class="app_panel_content Filter-panel">
@@ -23,11 +23,15 @@ include_once('../../../model/model.php');
 $('#location_id_filter').select2();
 function branche_save_modal()
 {
+	$('#branche_save_modal').prop('disabled',true);
   check_package_type('<?= $setup_package ?>','branch');
   var branch_count = $('#branch_count').val();
   if(<?= $setup_package ?> == '1' || <?= $setup_package ?> == '2'){
   		if(branch_count == '0'){
+	      $('#branche_save_modal').button('loading');
   			$.post('branches/branches_save_modal.php', {}, function(data){
+          $('#branche_save_modal').prop('disabled',false);
+          $('#branche_save_modal').button('reset');
 		      $('#div_branch_save_modal').html(data);
 		    });
   		}
@@ -36,8 +40,11 @@ function branche_save_modal()
   		}
   }
   else{
+	  $('#branche_save_modal').button('loading');
   	$.post('branches/branches_save_modal.php', {}, function(data){
       $('#div_branch_save_modal').html(data);
+      $('#branche_save_modal').prop('disabled',false);
+      $('#branche_save_modal').button('reset');
     });
   }
 }

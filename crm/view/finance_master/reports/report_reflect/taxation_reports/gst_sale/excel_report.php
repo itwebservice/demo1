@@ -1057,6 +1057,88 @@ $query = "select * from other_income_master where 1 and delete_status='0'";
         $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($borderArray);       
       $row_count++;
 }
+//B2C Booking
+$query = "select * from b2c_sale where 1";
+if($from_date !='' && $to_date != ''){
+	$from_date = get_date_db($from_date);
+	$to_date = get_date_db($to_date);
+	$query .= " and created_at between '$from_date' and '$to_date' ";
+}
+$query .= " order by booking_id desc";
+$sq_query = mysqlQuery($query);
+while($row_query = mysqli_fetch_assoc($sq_query))
+{
+	if($row_query['status'] != 'Cancel')
+	{
+		$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_query[customer_id]'"));
+		if($sq_cust['type'] == 'Corporate'||$sq_cust['type'] == 'B2B')
+			$cust_name = $sq_cust['company_name'];
+		else
+			$cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
+		if($row_query['service'] == 'Holiday'){
+			$service = 'Package Tour';
+		}else{
+			$service = $row_query['service'];
+		}
+		$hsn_code = get_service_info($service);
+		$sq_state = mysqli_fetch_assoc(mysqlQuery("select * from state_master where id='$sq_cust[state_id]'"));
+		
+		$costing_data = json_decode($row_query['costing_data']);
+
+		$total_cost = $costing_data[0]->total_cost;
+		$total_tax = $costing_data[0]->total_tax;
+		$net_total = $costing_data[0]->net_total;
+		$taxes = explode(',',$total_tax);
+		$tax_amount = 0;
+		$tax_string = '';
+		for($i=0; $i<sizeof($taxes);$i++){
+			$single_tax = explode(':',$taxes[$i]);
+			$tax_amount += floatval($single_tax[1]);
+			$temp_tax = explode(' ',$single_tax[1]);
+			$tax_string .= $single_tax[0].$temp_tax[1];
+		}
+		$grand_total = $costing_data[0]->grand_total;
+		$coupon_amount = $costing_data[0]->coupon_amount;
+		$coupon_amount = ($coupon_amount!='')?$coupon_amount:0;
+		$net_total = $costing_data[0]->net_total;
+		$markup_tax_amount = 0;
+
+		//Taxable amount
+		$taxable_amount = ($tax_per!=0)?($service_tax_amount / $tax_per) * 100:0;
+		$tax_total += $tax_amount;
+		$markup_tax_total += $markup_tax_amount;
+
+		$yr = explode("-",$row_query['created_at']);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('B'.$row_count, $count++)
+            ->setCellValue('C'.$row_count, "B2C Booking (".$row_query['service'].')')
+            ->setCellValue('D'.$row_count, $hsn_code)
+            ->setCellValue('E'.$row_count, $cust_name)
+            ->setCellValue('F'.$row_count, ($sq_cust['service_tax_no'] == '') ? 'NA' : $sq_cust['service_tax_no'])
+            ->setCellValue('G'.$row_count, ($sq_supply['state_name'] == '') ? 'NA' : $sq_supply['state_name'])
+            ->setCellValue('H'.$row_count, get_b2c_booking_id($row_query['booking_id'],$yr[0]))
+            ->setCellValue('I'.$row_count, get_date_user($row_query['created_at']))
+            ->setCellValue('J'.$row_count, ($sq_cust['service_tax_no'] == '') ? 'Unregistered' : 'Registered')
+            ->setCellValue('K'.$row_count, ($sq_state['state_name'] == '') ? 'NA' : $sq_state['state_name'])
+            ->setCellValue('L'.$row_count, $net_total)
+            ->setCellValue('M'.$row_count, number_format($total_cost,2))
+            ->setCellValue('N'.$row_count, $tax_string)
+            ->setCellValue('O'.$row_count, number_format($tax_amount,2))
+            ->setCellValue('P'.$row_count, 'NA')
+            ->setCellValue('Q'.$row_count, 'NA')
+            ->setCellValue('R'.$row_count, number_format($markup_tax_amount,2))
+            ->setCellValue('S'.$row_count,'0.00')
+            ->setCellValue('T'.$row_count,'0.00')
+            ->setCellValue('U'.$row_count, '')
+            ->setCellValue('V'.$row_count, '');
+  
+  
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($content_style_Array);
+        $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':V'.$row_count)->applyFromArray($borderArray);       
+      $row_count++;
+}
+}
 $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count,'' )
         ->setCellValue('C'.$row_count, '')

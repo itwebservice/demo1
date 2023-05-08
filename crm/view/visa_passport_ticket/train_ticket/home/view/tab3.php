@@ -9,7 +9,6 @@ $cancel_amount = $sq_booking['cancel_amount'];
 $pass_count = mysqli_num_rows(mysqlQuery("select * from  train_ticket_master_entries where train_ticket_id='$sq_booking[train_ticket_id]'"));
 $cancel_count = mysqli_num_rows(mysqlQuery("select * from  train_ticket_master_entries where train_ticket_id='$sq_booking[train_ticket_id]' and status='Cancel'"));
 
-
 //Paid
 $query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(credit_charges) as sumc from train_ticket_payment_master where train_ticket_id='$train_ticket_id' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
 $paid_amount = $query['sum'] + $query['sumc'];
@@ -21,7 +20,7 @@ if ($pass_count == $cancel_count) {
 			if ($paid_amount > $cancel_amount) {
 				$balance_amount = 0;
 			} else {
-				$balance_amount = $cancel_amount - $paid_amount;
+				$balance_amount = $cancel_amount - $paid_amount + $charge;
 			}
 		} else {
 			$balance_amount = 0;

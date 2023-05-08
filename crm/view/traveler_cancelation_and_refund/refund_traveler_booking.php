@@ -90,7 +90,7 @@ $remaining = $sq_refund_info1['total_refund_amount'] - $total_paid;
                             class="form-control" />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="refund_date" name="refund_date" placeholder="*Date" title="Date"
+                        <input type="text" id="refund_date" name="refund_date" placeholder="*Refund Date" title="Refund Date"
                             value="<?= date('d-m-Y') ?>" class="form-control">
                     </div>
                 </div>
@@ -109,7 +109,7 @@ $remaining = $sq_refund_info1['total_refund_amount'] - $total_paid;
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="transaction_id" onchange="validate_balance(this.id);"
+                        <input type="number" id="transaction_id" onchange="validate_balance(this.id);"
                             name="transaction_id" placeholder="Cheque No / ID" title="Cheque No / ID"
                             class="form-control" disabled>
                     </div>

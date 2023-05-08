@@ -5,7 +5,7 @@ $branch_status = $_POST['branch_status'];
 <div class="row text-right">
 	<div class="col-md-12">
 		<button class="btn btn-excel btn-sm" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
-		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Payment</button>
+		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()" id="pay_save"><i class="fa fa-plus"></i>&nbsp;&nbsp;Payment</button>
 	</div>
 </div>
 <div class="col-md-12 col-sm-9 no-pad mg_bt_20 text-right">
@@ -32,7 +32,7 @@ $branch_status = $_POST['branch_status'];
         	<select name="estimate_type2" id="estimate_type2" title="Purchase Type" onchange="payment_for_data_load(this.value, 'div_payment_for_content_i', '2')">
             <option value="">Purchase Type</option>
             <?php 
-            $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
+            $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by id");
             while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
 				?>
 				<option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
@@ -99,16 +99,25 @@ function payment_list_reflect()
 payment_list_reflect();
 
 function save_modal(){
+
+	$('#pay_save').prop('disabled',true);
 	var branch_status = $('#branch_status').val();
+	$('#pay_save').button('loading');
 	$.post('payment/payment_save_modal.php', { branch_status : branch_status }, function(data){
 		$('#div_payment_update_content').html(data);
+		$('#pay_save').prop('disabled',false);
+		$('#pay_save').button('reset');
 	});
 }
 
 function payment_update_modal(payment_id){
+    $('#updatep2_btn-'+payment_id).button('loading');
+    $('#updatep2_btn-'+payment_id).prop('disabled',true);
 	$.post('payment/payment_update_modal.php', { payment_id : payment_id }, function(data){
 		$('#div_payment_update_content').html(data);
 		payment_list_reflect();
+		$('#updatep2_btn-'+payment_id).button('reset');
+		$('#updatep2_btn-'+payment_id).prop('disabled',false);
 	});
 }
 

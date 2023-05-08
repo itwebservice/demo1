@@ -36,7 +36,7 @@ else{
 $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
 if($sq_group_info['tour_group_status'] == 'Cancel'){
 	if($cancel_amount > $paid_amount){
-		$balance_amount = $cancel_amount - $paid_amount;
+		$balance_amount = $cancel_amount - $paid_amount+$query['sumc'];
 	}
 	else{
 		$balance_amount = 0;
@@ -44,7 +44,7 @@ if($sq_group_info['tour_group_status'] == 'Cancel'){
 }else{
 	if($cancel_esti_count1 >= '1'){
 		if($cancel_amount > $paid_amount){
-			$balance_amount = $cancel_amount - $paid_amount;
+			$balance_amount = $cancel_amount - $paid_amount+$query['sumc'];
 		}
 		else{
 			$balance_amount = 0;
@@ -106,55 +106,36 @@ include "../../../../../../../model/app_settings/generic_sale_widget.php";
 					<tbody>
 
 					<?php
+					$count = 0;
+					$query2 = "SELECT * from payment_master where tourwise_traveler_id='$id'";		
+					$sq_group_payment = mysqlQuery($query2);	
+					$bg = "";
 
-					 $count = 0;
+					while($row_group_payment = mysqli_fetch_assoc($sq_group_payment)){
 
-					 $query2 = "SELECT * from payment_master where tourwise_traveler_id='$id'";		
-
-					 $sq_group_payment = mysqlQuery($query2);	
-
-					 $bg="";
-
-
-
-					 while($row_group_payment = mysqli_fetch_assoc($sq_group_payment)){
-
-					 	if($row_group_payment['amount'] != '0')
-
-					 	{
+						if($row_group_payment['amount'] != '0'){
 
 							$count++;
-
 							$bg = '';
-
 							if($row_group_payment['clearance_status']=="Pending"){ $bg="warning";}
-
 						    else if($row_group_payment['clearance_status']=="Cancelled"){ $bg="danger";} 
+						    else if($row_group_payment['clearance_status']=="Cleared"){ $bg="success";} 
 
 							$paid_amount1 = currency_conversion($currency,$sq_group_info['currency_code'],$row_group_payment['amount'] + $row_group_payment['credit_charges']);
 							?>
 
-
-
 							<tr class="<?php echo $bg; ?>">
-
 						        <td><?php echo $count; ?></td>
-
 						        <td><?php echo get_date_user($row_group_payment['date']); ?></td>
-
 						        <td><?php echo $row_group_payment['payment_mode']; ?></td>
-
 						        <td><?php echo $row_group_payment['bank_name']; ?></td>
-
 						        <td><?php echo $row_group_payment['transaction_id']; ?></td>
-
 						        <td class="text-right"><?php echo $paid_amount1; ?></td>
-
 						    </tr>
-
-					    <?php   } 
-
-					    }	 ?>
+					    <?php
+						} 
+					}
+					?>
 
 					</tbody>
 

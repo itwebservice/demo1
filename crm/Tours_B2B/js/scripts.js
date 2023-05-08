@@ -113,20 +113,20 @@ $(document).ready(function () {
 function error_msg_alert(message){
 	var base_url = $('#base_url').val();
 	var class_name = 'alert-danger';
-	$.post(base_url+'Tours_B2B/notification_modal.php', {message:message,class_name:class_name}, function(data){
+	// $.post(base_url+'Tours_B2B/notification_modal.php', {message:message,class_name:class_name}, function(data){
 		// $('#site_alert').html(data);
 		$('#site_alert').empty(); // to only display one error message
-		$('#site_alert').vialert({ type: 'error', title: 'Error', message: data, delay: 3000 });
-	});
+		$('#site_alert').vialert({ type: 'error', title: 'Error', message: message, delay: 3000 });
+	// });
 }
 function success_msg_alert(message){
 	var base_url = $('#base_url').val();
 	var class_name = 'alert-success';
-	$.post(base_url+'Tours_B2B/notification_modal.php', {message:message,class_name:class_name}, function(data){
+	// $.post(base_url+'Tours_B2B/notification_modal.php', {message:message,class_name:class_name}, function(data){
 		// $('#site_alert').html(data);
 		$('#site_alert').empty(); // to only display one error message
-		$('#site_alert').vialert({ message: data, delay: 3000 });
-	});
+		$('#site_alert').vialert({ type: 'success', message: message, delay: 3000 });
+	// });
 }
 
 function blockSpecialChar(e) {
@@ -525,15 +525,23 @@ function get_service_tax(result){
 		var ledger_posting = '';
 		applied_rules && applied_rules.map((rule) => {
 			var tax_data = taxes_result.find((entry_id_tax) => entry_id_tax['entry_id'] === rule['entry_id']);
-			var { rate_in, rate } = tax_data;
-			var { ledger_id, name } = rule;
-			if (applied_taxes != '') {
-				applied_taxes = applied_taxes + '+' + name + ':' + rate + ':' +rate_in;
-				ledger_posting = ledger_posting + '+' + ledger_id;
+			var {  ledger1,ledger2, name1,name2,amount1,amount2 } = tax_data;
+			var { name } = rule;
+			if (applied_taxes == '') {
+				applied_taxes = name1 + ':' + amount1 + ':' + 'Percentage';
+				ledger_posting = ledger1;
+				if (name2 != '') {
+					applied_taxes += '+' + name2 + ':' + amount2 + ':' + 'Percentage';
+					ledger_posting += '+' + ledger2;
+				}
 			}
 			else {
-				applied_taxes += name + ':' + rate + ':' +rate_in;
-				ledger_posting += ledger_id;
+				applied_taxes += name1 + ':' + amount1 + ':' + 'Percentage';
+				ledger_posting = ledger_posting + '+' + ledger1;
+				if (name2 != '') {
+					applied_taxes += '+' + name2 + ':' + amount2 + ':' + 'Percentage';
+					ledger_posting += '+' + ledger2;
+				}
 			}
 		});
 		return applied_taxes+','+ledger_posting;
@@ -687,6 +695,7 @@ function add_to_cart (id,type){
 		var rep_time = $('#rep_time-'+id).html();
 		var pick_point = $('#pick_point-'+id).html();
 		var checkDate = $('#checkDate').val();
+		var vehicles = $('#vehicles-'+id).val();
 		var total_pax = $('#total_pax').val();
 		
 		var result = get_other_rules ('Activity', checkDate);
@@ -705,6 +714,7 @@ function add_to_cart (id,type){
 		service_data_array.push({
 			'id':id,
 			'image':image,
+			'vehicles':parseInt(vehicles),
 			'act_name':act_name,
 			'rep_time':rep_time,
 			'pick_point':pick_point,

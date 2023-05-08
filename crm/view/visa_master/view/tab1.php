@@ -33,13 +33,33 @@
                   <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
                   <?php echo "<label>Form 1 <em>:</em></label> "?><a href="<?php echo $newUrl1; ?>" download title="Download Form"><i class="fa fa-id-card-o"></i></a> 
                 </span>
-                <?php } ?>
-	            <?php
+                <?php }
                 if($sq_visa['upload_url2']!=""){
                 	$newUrl2 = preg_replace('/(\/+)/','/',$sq_visa['upload_url2']); ?>	
                 <span class="main_block">
                   <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
                   <?php echo "<label>Form 2 <em>:</em></label> "?><a href="<?php echo $newUrl2; ?>" download title="Download Form"><i class="fa fa-id-card-o"></i></a> 
+                </span>
+                <?php }
+                if($sq_visa['upload_url3']!=""){
+                	$newUrl3 = preg_replace('/(\/+)/','/',$sq_visa['upload_url3']); ?>	
+                <span class="main_block">
+                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+                  <?php echo "<label>Form 3 <em>:</em></label> "?><a href="<?php echo $newUrl3; ?>" download title="Download Form"><i class="fa fa-id-card-o"></i></a> 
+                </span>
+                <?php }
+                if($sq_visa['upload_url4']!=""){
+                	$newUrl4 = preg_replace('/(\/+)/','/',$sq_visa['upload_url4']); ?>	
+                <span class="main_block">
+                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+                  <?php echo "<label>Form 4 <em>:</em></label> "?><a href="<?php echo $newUrl4; ?>" download title="Download Form"><i class="fa fa-id-card-o"></i></a> 
+                </span>
+                <?php }
+                if($sq_visa['upload_url5']!=""){
+                	$newUrl5 = preg_replace('/(\/+)/','/',$sq_visa['upload_url5']); ?>	
+                <span class="main_block">
+                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
+                  <?php echo "<label>Form 5 <em>:</em></label> "?><a href="<?php echo $newUrl5; ?>" download title="Download Form"><i class="fa fa-id-card-o"></i></a> 
                 </span>
                 <?php } ?>	 	 
 
@@ -49,7 +69,7 @@
 	                  <label>List Of Documents <em>:</em></label>
 	            </span>
 	            	<div class="">
-	            		<?= $sq_visa['list_of_documents'] ?>
+	            		<?= ($sq_visa['list_of_documents'] != '') ? $sq_visa['list_of_documents'] : 'NA' ?>
 	            	</div>
 	            </div>
 		</div>

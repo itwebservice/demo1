@@ -73,8 +73,8 @@ while ($sq_accomodation = mysqli_fetch_assoc($sq_accomodation1)) {
                     <?php echo $sq_hotel['hotel_address']; ?></div>
                 <p class="c-w-main no-marg"><img src="<?= BASE_URL ?>/images/icons/phone-icon.png" alt="" width="15">
                     <?php echo $mobile_no; ?></p>
-                <p class="c-w-main"><img src="<?= BASE_URL ?>/images/icons/email-icon.png" alt="" width="15">
-                    <?php echo $email_id; ?></p>
+                <?php if($email_id1!='') { ?><p class="c-w-main"><img src="<?= BASE_URL ?>/images/icons/email-icon.png" alt="" width="15">
+                    <?php echo $email_id1; ?></p> <?php } ?>
             </div>
         </div>
     </section>

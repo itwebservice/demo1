@@ -76,6 +76,9 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$date = $sq_booking['created_at'];
 		$yr = explode("-", $date);
 		$year =$yr[0];
+		$date1 = $row_payment['payemnt_date'];
+		$yr1 = explode("-", $date1);
+		$year1 = $yr1[0];
 
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
 		if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
@@ -98,12 +101,16 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 			$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount']+$row_payment['credit_charges'];
 			;
 		}
+		else if($row_payment['clearance_status']=="Cleared"){ 
+			$bg='success';
+			;
+		}
 	
 		$sq_paid_amount = $sq_paid_amount + $row_payment['payment_amount']+$row_payment['credit_charges'];
 		;
 
 		$payment_id_name = "Hotel Payment ID";
-		$payment_id = get_hotel_booking_payment_id($row_payment['payment_id'],$year);
+		$payment_id = get_hotel_booking_payment_id($row_payment['payment_id'],$year1);
 		$receipt_date = date('d-m-Y');
 		$booking_id = get_hotel_booking_id($row_payment['booking_id'],$year);
 		$customer_id = $sq_booking['customer_id'];
@@ -130,7 +137,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 			$edit_btn = '';
 			$delete_btn = '';
 		}else{
-			$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='payment_update_modal(".$row_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+			$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='payment_update_modal(".$row_payment['payment_id'].")' id='editr-".$row_payment['payment_id']."' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
 			$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 		}
 		
@@ -145,6 +152,7 @@ while($row_payment = mysqli_fetch_assoc($sq_payment)){
 		$temp_arr = array( "data" => array(
 			(int)($count),
 			$checshow,
+			$payment_id,
 			$booking_id,
 			$customer_name,
 			date('d/m/Y', strtotime($row_payment['payment_date'])),

@@ -4,6 +4,18 @@ include_once('../../../../model/model.php');
 $estimate_id = $_POST['estimate_id'];
 $sq_vendor_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$estimate_id' and delete_status='0'"));
 $reflections = json_decode($sq_vendor_estimate['reflections']);
+$reflections1 = json_decode($sq_vendor_estimate['tax_refl']);
+if($reflections1[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections1[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections1[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <input type="hidden" id="booking_id" name="booking_id" value="<?= $estimate_id ?>">
 <input type="hidden" id="purchase_sc1" name="purchase_sc" value="<?php echo $reflections[0]->purchase_sc ?>">
@@ -11,14 +23,17 @@ $reflections = json_decode($sq_vendor_estimate['reflections']);
 <input type="hidden" id="purchase_taxes1" name="purchase_taxes" value="<?php echo $reflections[0]->purchase_taxes ?>">
 <input type="hidden" id="purchase_tds1" name="purchase_tds" value="<?php echo $reflections[0]->purchase_tds ?>">
 <form id="frm_vendor_estimate_update">
-<input type="hidden" id="estimate_id_update" name="estimate_id_update" value="<?= $estimate_id ?>">
+	<input type="hidden" id="estimate_id_update" name="estimate_id_update" value="<?= $estimate_id ?>">
+	<input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+	<input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections1[0]->tax_apply_on ?>">
+	<input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections1[0]->tax_value ?>">
 
 <div class="modal fade" id="estimate_update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document" style="width:95%; margin-top:20px">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Update Purchase Cost</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Purchase Costing</h4>
       </div>
       <div class="modal-body">
 			<div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_20 mg_bt_30">
@@ -29,7 +44,7 @@ $reflections = json_decode($sq_vendor_estimate['reflections']);
 						<select name="estimate_type1" id="estimate_type1" title="Purchase Type" onchange="payment_for_data_load(this.value, 'div_payment_for_content1', '1')" disabled>
 							<option value="<?= $sq_vendor_estimate['estimate_type'] ?>"><?= $sq_vendor_estimate['estimate_type'] ?></option>
 							<?php 
-							$sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
+							$sq_estimate_type = mysqlQuery("select * from estimate_type_master order by id");
 							while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
 								?>
 								<option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
@@ -88,49 +103,49 @@ $reflections = json_decode($sq_vendor_estimate['reflections']);
 			<legend>Supplier Purchase</legend>
 
 				<div class="row">					
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" id="basic_cost" name="basic_cost" placeholder="Basic Cost" title="Basic Cost" onchange="validate_balance(this.id);calculate_estimate_amount('');get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','true','service_charge','discount','our_commission');" value="<?= $sq_vendor_estimate['basic_cost'] ?>">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" id="basic_cost" name="basic_cost" placeholder="Basic Amount" title="Basic Amount" onchange="validate_balance(this.id);calculate_estimate_amount('');get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','true','service_charge','discount','our_commission');" value="<?= $sq_vendor_estimate['basic_cost'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 						<input type="text" id="non_recoverable_taxes" name="non_recoverable_taxes" placeholder="Non Recoverable Taxes" title="Non Recoverable Taxes" onchange="validate_balance(this.id);calculate_estimate_amount('')" value="<?= $sq_vendor_estimate['non_recoverable_taxes'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
 						<input type="text" id="service_charge" name="service_charge" placeholder="Service Charge" title="Service Charge" onchange="validate_balance(this.id);calculate_estimate_amount('');get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','false','service_charge','discount','our_commission');" value="<?= $sq_vendor_estimate['service_charge'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 						<input type="text" id="other_charges" name="other_charges" placeholder="Other Charges" title="Other Charges" onchange="validate_balance(this.id);calculate_estimate_amount('')" value="<?= $sq_vendor_estimate['other_charges'] ?>">
 					</div>		
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 						<input type="text" id="discount" name="discount" placeholder="Discount" title="Discount" onchange="validate_balance(this.id);calculate_estimate_amount('');get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','true','discount','discount','our_commission');" value="<?= $sq_vendor_estimate['discount'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
 						<input type="text" id="service_tax_subtotal" name="service_tax_subtotal" placeholder="Tax Subtotal" title="Tax Subtotal" readonly value="<?= $sq_vendor_estimate['service_tax_subtotal'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 						<input type="text" id="our_commission" name="our_commission" placeholder="Our commission" title="Our commission" onchange="validate_balance(this.id);calculate_estimate_amount('');get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','true','service_charge','discount','our_commission');" value="<?= $sq_vendor_estimate['our_commission'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 						<input type="text" id="tds" name="tds" placeholder="TDS On Commision" title="TDS On Commision" onchange="validate_balance(this.id);calculate_estimate_amount('')" value="<?= $sq_vendor_estimate['tds'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
 						<input type="text" id="roundoff" class="text-right" name="roundoff" placeholder="Round Off" title="Round Off" readonly value="<?= $sq_vendor_estimate['roundoff'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
 						<input type="text" id="net_total" class="amount_feild_highlight text-right" name="net_total" placeholder="Net Total" title="Net Total" readonly value="<?= $sq_vendor_estimate['net_total'] ?>">
 					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<textarea name="remark" id="remark" placeholder="Remark" title="Remark" rows="1"><?= $sq_vendor_estimate['remark'] ?></textarea>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" placeholder="Invoice ID" onchange="validate_spaces(this.id)" title="Invoice ID" id="invoice_id1" name="invoice_id" value="<?= $sq_vendor_estimate['invoice_id'] ?>">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" placeholder="Purchase date" title="Purchase Date" id="purchase_date1" name="purchase_date1"  value="<?= date('d-m-Y', strtotime($sq_vendor_estimate['purchase_date'])) ?>" onchange="check_valid_date(this.id);get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','true','service_charge','discount','our_commission');">
+					</div>
+					<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+						<input type="text" placeholder="Due date" title="Due Date" id="payment_due_date" name="payment_due_date"  value="<?= date('d-m-Y', strtotime($sq_vendor_estimate['due_date'])) ?>">
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" placeholder="Invoice ID" onchange="validate_spaces(this.id)" title="Invoice ID" id="invoice_id1" name="invoice_id" value="<?= $sq_vendor_estimate['invoice_id'] ?>">
-					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" placeholder="Purchase date" title="Purchase Date" id="purchase_date1" name="purchase_date1"  value="<?= date('d-m-Y', strtotime($sq_vendor_estimate['purchase_date'])) ?>" onchange="check_valid_date(this.id);get_auto_values('purchase_date1','basic_cost','payment_mode','service_charge','update','true','service_charge','discount','our_commission');">
-					</div>
-					<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-						<input type="text" placeholder="Due date" title="Due Date" id="payment_due_date" name="payment_due_date"  value="<?= date('d-m-Y', strtotime($sq_vendor_estimate['due_date'])) ?>">
+					<div class="col-md-6 col-sm-4 col-xs-12 mg_bt_10">
+						<textarea name="remark" id="remark" placeholder="Remark" title="Remark" rows="1"><?= $sq_vendor_estimate['remark'] ?></textarea>
 					</div>
 				</div>
 			</div>
@@ -211,10 +226,11 @@ $(function(){
 			var estimate_type_id = get_estimate_type_id('estimate_type1', '1');
 			var vendor_type_id = get_vendor_type_id('vendor_type1', '1');
 
-			if(vendor_type=="Other Vendor"){
-				//estimate_type = "";
-				//estimate_type_id = "";
-			}
+            var tax_apply_on = $('#atax_apply_on').val();
+            var tax_value = $('#tax_value1').val();
+			var reflection_arr = [];
+			reflection_arr.push({'tax_apply_on':tax_apply_on,
+					'tax_value':tax_value});
 
 			var basic_cost = $('#basic_cost').val();
 			var non_recoverable_taxes = $('#non_recoverable_taxes').val();
@@ -256,7 +272,7 @@ $(function(){
 					$.ajax({
 						type:'post',
 						url: base_url+'controller/vendor/dashboard/estimate/vendor_estimate_update.php',
-						data:{ estimate_id : estimate_id, estimate_type : estimate_type, vendor_type : vendor_type, estimate_type_id : estimate_type_id, vendor_type_id : vendor_type_id, basic_cost : basic_cost, non_recoverable_taxes : non_recoverable_taxes, service_charge : service_charge, other_charges : other_charges,service_tax_subtotal : service_tax_subtotal, discount : discount, our_commission : our_commission, tds : tds, net_total : net_total, roundoff : roundoff,remark : remark, invoice_id : invoice_id, payment_due_date : payment_due_date,invoice_url : invoice_url,purchase_date : purchase_date,reflections:reflections },
+						data:{ estimate_id : estimate_id, estimate_type : estimate_type, vendor_type : vendor_type, estimate_type_id : estimate_type_id, vendor_type_id : vendor_type_id, basic_cost : basic_cost, non_recoverable_taxes : non_recoverable_taxes, service_charge : service_charge, other_charges : other_charges,service_tax_subtotal : service_tax_subtotal, discount : discount, our_commission : our_commission, tds : tds, net_total : net_total, roundoff : roundoff,remark : remark, invoice_id : invoice_id, payment_due_date : payment_due_date,invoice_url : invoice_url,purchase_date : purchase_date,reflections:reflections,reflection_arr:reflection_arr },
 						success:function(result){
 							$('#btn_update_estimate').button('reset');
 							msg_alert(result);

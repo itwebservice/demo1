@@ -35,7 +35,7 @@ class cms_master{
         //Mail to Customer
         $subject = 'Thank you for reaching with us. ('.$app_name.')';
         $model->app_email_send('123',$name, $email_id, '',$subject,'1');
-        echo 'Message sent successfully!';
+        echo 'Mail sent successfully!';
 	}
     function career_form_mail_send(){
         
@@ -68,6 +68,6 @@ class cms_master{
         //Mail to Customer 
         $subject = 'Thank you for reaching with us. ('.$app_name.')';
         $model->app_email_send('125',$name,$email, '',$subject,'1');
-        echo 'Message sent successfully!';
+        echo 'Mail sent successfully!';
     }
 }

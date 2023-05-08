@@ -5,8 +5,8 @@ $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='mis
 $branch_status = $sq['branch_status'];
 ?>
 <input type="hidden" id="branch_admin_id1" name="branch_admin_id1" value="<?= $branch_admin_id ?>" >
- <input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>" >
- 
+<input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>" >
+
 <div class="modal fade" id="visa_payment_save_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -65,11 +65,23 @@ $branch_status = $sq['branch_status'];
               </div>
           </div>
           <div class="row">
+          <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="hidden" type="text" id="credit_charges" name="credit_charges" title="Credit card charges" disabled>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <select class="hidden" id="identifier" onchange="get_credit_card_data('identifier','payment_mode','credit_card_details')" title="Identifier(4 digit)" required
+              ><option value=''>Select Identifier</option></select>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="hidden" type="text" id="credit_card_details" name="credit_card_details" title="Credit card details" disabled>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
               <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-              <input type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+              <input type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
               <select name="bank_id" id="bank_id" title="Creditor Bank" disabled>
@@ -81,16 +93,6 @@ $branch_status = $sq['branch_status'];
             <div class="col-md-3 col-sm-3">
               <input type="text" id="outstanding" name="outstanding" class="form-control" placeholder="Outstanding" title="Outstanding" readonly/>
               <input type="hidden" id="canc_status" name="canc_status" class="form-control"/>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <input class="hidden" type="text" id="credit_charges" name="credit_charges" title="Credit card charges" disabled>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <select class="hidden" id="identifier" onchange="get_credit_card_data('identifier','payment_mode','credit_card_details')" title="Identifier(4 digit)" required
-              ><option value=''>Select Identifier</option></select>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <input class="hidden" type="text" id="credit_card_details" name="credit_card_details" title="Credit card details" disabled>
             </div>
           </div>
           <div class="row mg_tp_20">
@@ -123,9 +125,7 @@ $('#frm_visa_payment_save').validate({
     visa_id : { required : true },
     payment_date : { required : true },
     payment_amount : { required : true, number: true },
-    payment_mode : { required : true },
-    bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-    transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+    payment_mode : { required : true },  
     bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
   },
   submitHandler:function(form){

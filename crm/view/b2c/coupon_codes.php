@@ -6,8 +6,8 @@ $coupon_codes = ($query['coupon_codes'] != '' && $query['coupon_codes'] != 'null
 <form id="section_hotels">
     <legend>Define Coupon codes</legend>
     <div class="row">
-        <div class="col-md-8"> <label class="alert-danger">For saving coupon keep checkbox selected!</label> </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-12 text-right">
+            <button type="button" class="btn btn-excel btn-sm" title="Note : For saving coupon keep checkbox selected!"><i class="fa fa-question-circle"></i></button>
             <button type="button" class="btn btn-excel btn-sm" onclick="addRow('tbl_coupons')" title="Add Row"><i
                     class="fa fa-plus"></i></button>
             <button type="button" class="btn btn-pdf btn-sm" onclick="deleteRow('tbl_coupons');" title="Delete Row"><i
@@ -26,8 +26,8 @@ $coupon_codes = ($query['coupon_codes'] != '' && $query['coupon_codes'] != 'null
                         <td><input maxlength="15" value="1" type="text" name="no" placeholder="Sr. No."
                                 class="form-control" disabled /></td>
                         <td><input type="text" id="title" name="title" class="form-control" placeholder="*Title"
-                                title="Title" /></td>
-                        <td><input type="text" id="coupon_code-1" name="coupon_code-1" style="width:135px"
+                                title="Title" style="width:100px" /></td>
+                        <td><input type="text" id="coupon_code-1" name="coupon_code-1" style="width:150px;"
                                 placeholder="*Coupon Code" title="Coupon Code" class="form-control" /></td>
                         <td><select name="amount_in-1" id="amount_in-1" title="Amount In" class="form-control"
                                 style="width:150px" class="form-control">
@@ -37,7 +37,7 @@ $coupon_codes = ($query['coupon_codes'] != '' && $query['coupon_codes'] != 'null
                             </select></td>
                         <td><input type="number" id="amount-1" name="amount-1" class="form-control" style="width:150px"
                                 placeholder="*Amount" title="Amount" /></td>
-                        <td><input type="text" id="valid_date-1" name="valid_date-1" class="form-control"
+                        <td><input type="text" id="valid_date-1" name="valid_date-1" class="form-control app_datepicker"
                                 style="width:150px" placeholder="*Valid date" title="Valid date" /></td>
                     </tr>
                     <script>
@@ -57,9 +57,9 @@ $coupon_codes = ($query['coupon_codes'] != '' && $query['coupon_codes'] != 'null
                         <td><input maxlength="15" value="<?= ($i + 1) ?>" type="text" name="no" placeholder="Sr. No."
                                 class="form-control" disabled /></td>
                         <td><input type="text" id="title" name="title" class="form-control" placeholder="*Title"
-                                title="Title" value="<?= $coupon_codes[$i]->title ?>" /></td>
+                                title="Title" value="<?= $coupon_codes[$i]->title ?>" style="width:100px" /></td>
                         <td><input type="text" id="coupon_code-1<?= $i ?>_u" name="coupon_code-1"
-                                placeholder="*Coupon Code" class="form-control"
+                                placeholder="*Coupon Code" style="width:150px" class="form-control"
                                 value="<?= $coupon_codes[$i]->coupon_code ?>" title="Coupon Code" /></td>
                         <td><select name="amount_in-1" id="amount_in-1<?= $i ?>_u" title="Amount In"
                                 class="form-control" style="width:150px" class="form-control">
@@ -69,10 +69,10 @@ $coupon_codes = ($query['coupon_codes'] != '' && $query['coupon_codes'] != 'null
                                 <option value="Percentage">Percentage</option>
                                 <option value="Flat">Flat</option>
                             </select></td>
-                        <td><input type="number" id="amount-1<?= $i ?>_u" name="amount-1" class="form-control"
+                        <td><input type="number" id="amount-1<?= $i ?>_u" name="amount-1" class="form-control" style="width:150px"
                                 placeholder="*Amount" title="Amount" value="<?= $coupon_codes[$i]->amount ?>" /></td>
                         <td><input type="text" id="valid_date-1<?= $i ?>_u" name="valid_date-1" class="form-control"
-                                placeholder="*Valid date" title="Valid date"
+                                placeholder="*Valid date" title="Valid date" style="width:150px"
                                 value="<?= $coupon_codes[$i]->valid_date ?>" /></td>
                     </tr>
                     <script>
@@ -145,7 +145,26 @@ $(function() {
                         return false;
                     }
                     if (valid_date == "") {
-                        error_msg_alert("Select valid dare at row " + (i + 1));
+                        error_msg_alert("Select valid date at row " + (i + 1));
+                        return false;
+                    }
+                    var status_arr = new Array();
+                    var emp_arr = new Array();
+                    
+                    var today = new Date();
+                    today = today.getTime();
+
+                    var from_parts = valid_date.split(' ');
+                    var parts = from_parts[0].split('-');
+                    var date = new Date();
+                    var new_month = parseInt(parts[1]) - 1;
+                    date.setFullYear(parts[2]);
+                    date.setDate(parts[0]);
+                    date.setMonth(new_month);
+                    var from_date_ms = date.getTime();
+
+                    if (today != from_date_ms && today > from_date_ms) {
+                        error_msg_alert('Past date is not allowed at row ' + (i + 1));
                         return false;
                     }
                     images_array.push({
@@ -157,6 +176,7 @@ $(function() {
                     });
                 }
             }
+            
             $('#btn_save').button('loading');
             $.ajax({
                 type: 'post',

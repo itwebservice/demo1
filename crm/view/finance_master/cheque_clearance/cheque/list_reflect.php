@@ -75,7 +75,7 @@ $query .= " and payment_amount!='0' and payment_type='Bank' order by register_id
 			if($row_transaction['module_name']=="Package Booking Payment"){ $payment_id = get_package_booking_payment_id($row_transaction['module_entry_id'],$year); }
 			if($row_transaction['module_name']=="Package Booking Traveller Refund Paid"){ $payment_id = get_package_booking_refund_id($row_transaction['module_entry_id'],$year); }
 
-			if($row_transaction['module_name']=="Other Expense Booking"){ $payment_id = get_other_expense_payment_id($row_transaction['module_entry_id'],$year); }
+			if($row_transaction['module_name']=="Other Expense Booking"||$row_transaction['module_name']=="Other Expense Booking Payment"){ $payment_id = get_other_expense_payment_id($row_transaction['module_entry_id'],$year); }
 			if($row_transaction['module_name']=="Other Income Payment"){ $payment_id = get_other_income_payment_id($row_transaction['module_entry_id'],$year); }
 
 			if($row_transaction['module_name']=="Vendor Payment"){ $payment_id = get_vendor_payment_id($row_transaction['module_entry_id'],$year); }
@@ -132,12 +132,12 @@ $query .= " and payment_amount!='0' and payment_type='Bank' order by register_id
 				</td>
 				<td>
 					<?php if($row_transaction['clearance_status']!="Cleared" && $row_transaction['payment_mode'] == 'Cheque'){ ?>
-					<button class="btn btn-info btn-sm" onclick="clearance_status_change(this, <?= $row_transaction['register_id'] ?>, 'Cleared', 'status_date<?= $count ?>','<?= $row_transaction['module_name'] ?>',<?= $row_transaction['module_entry_id'] ?>,<?= $row_transaction['transaction_id'] ?>,<?= $row_transaction['payment_amount']?>,'','cheque',<?= $count ?>)" title="Clear cheque"><i class="fa fa-check-square-o"></i></button>
+					<button class="btn btn-info btn-sm" onclick="clearance_status_change(this, <?= $row_transaction['register_id'] ?>, 'Cleared', 'status_date<?= $count ?>','<?= $row_transaction['module_name'] ?>',<?= $row_transaction['module_entry_id'] ?>,'<?= $row_transaction['transaction_id'] ?>',<?= $row_transaction['payment_amount']?>,'','cheque',<?= $count ?>)" title="Clear cheque"><i class="fa fa-check-square-o"></i></button>
 					<?php } ?>
 				</td>
 				<td>
 					<?php if($row_transaction['clearance_status']!="Cancelled" && $row_transaction['payment_mode'] == 'Cheque'){ ?>
-					<button class="btn btn-danger btn-sm" onclick="clearance_status_change(this, <?= $row_transaction['register_id'] ?>, 'Cancelled', 'status_date<?= $count ?>','<?= $row_transaction['module_name'] ?>',<?= $row_transaction['module_entry_id'] ?>,<?= $row_transaction['transaction_id'] ?>,<?= $row_transaction['payment_amount']?>,'','cheque',<?= $count ?>)" title="Cancel cheque"><i class="fa fa-times"></i></button>
+					<button class="btn btn-danger btn-sm" onclick="clearance_status_change(this, <?= $row_transaction['register_id'] ?>, 'Cancelled', 'status_date<?= $count ?>','<?= $row_transaction['module_name'] ?>',<?= $row_transaction['module_entry_id'] ?>,'<?= $row_transaction['transaction_id'] ?>',<?= $row_transaction['payment_amount']?>,'','cheque',<?= $count ?>)" title="Cancel cheque"><i class="fa fa-times"></i></button>
 					<?php } ?>
 				</td>
 			</tr>

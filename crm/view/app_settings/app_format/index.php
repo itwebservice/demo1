@@ -24,14 +24,15 @@ if($sq_settings['quot_format'] == 2){
 			<div class="panel panel-default panel-body app_panel_style feildset-panel ">
 			<legend>Color Setting</legend>
 				<div class="col-md-10 col-md-offset-2">
-					<a class="btn btn-info btn-sm ico_left" data-toggle="tooltip" data-placement="bottom" title="Setting" href="javascript:void(0)" onclick="theme_color_scheme_save_modal()"><i class="fa fa-cog"></i><span class="">&nbsp;&nbsp;Change</span></a>
+					<button class="btn btn-info btn-sm ico_left" data-toggle="tooltip" data-placement="bottom" title="Setting"  id="theme_color_scheme_save_modal_btn" onclick="theme_color_scheme_save_modal();btnDisableEnable(this.id)"><i class="fa fa-cog"></i><span class="">&nbsp;&nbsp;Change</span></button>
 				</div>
 				</div>
 		</div>
 		<div class="col-md-6">
 			<div class="panel panel-default panel-body app_panel_style feildset-panel ">
 			<legend>Invoice Setting</legend>
-				<div class="col-md-8 col-md-offset-2">
+				<div class="col-md-8 ">
+					
 					<select name="invoice_format_list" id="invoice_format_list" title="Invoice Format List">
 					<?php if($sq_settings_g['invoice_format'] == '4') {?>
 					<option value="4">Creative</option>
@@ -42,9 +43,12 @@ if($sq_settings['quot_format'] == 2){
 						<option value="Regular">Regular</option>
 						<option value="Advance">Advance</option>
 					</select>
-					<small>Note : Bydefault Standard Format is used.</small>
+					<!-- <small>Note : Bydefault Standard Format is used.</small> -->
 				</div>
-				<a class="btn btn-info btn-sm ico_left" data-toggle="tooltip" data-placement="bottom" title="View" href="javascript:void(0)" id="" onclick="display_modal_invoive()"><i class="fa fa-eye"></i><span class="">&nbsp;&nbsp;View</span></a>
+				<div class="col-md-4">
+					<button type="button" data-toggle="tooltip" class="btn btn-excel" title="Bydefault Standard Format is used."><i class="fa fa-question-circle"></i></button>
+					<button class="btn btn-info btn-sm ico_left" data-toggle="tooltip" data-placement="bottom" title="View"  id="display_modal_invoive_btn" onclick="display_modal_invoive();btnDisableEnable(this.id)"><i class="fa fa-eye"></i><span class="">&nbsp;&nbsp;View</span></button>
+				</div>
 			</div>
 	</div>
 	</div>
@@ -68,10 +72,10 @@ if($sq_settings['quot_format'] == 2){
 						<option value="3">Landscape Creative</option>
 						<option value="6">Landscape Advanced</option>
 					</select>
-					<small>Note : Bydefault Portrait Standard Format is used.</small>
 				</div>
 				<div class="col-md-6 no-pad">
 						<div class="col-md-6 text-left">
+							<button type="button" data-toggle="tooltip" class="btn btn-excel" title="Bydefault Portrait Standard Format is used."><i class="fa fa-question-circle"></i></button>
 							<a class="btn btn-info btn-sm ico_left" data-toggle="tooltip" data-placement="bottom" title="View" href="javascript:void(0)" onclick="display_modal('format_list')"><i class="fa fa-eye"></i><span class="">&nbsp;&nbsp;View</span></a>
 						</div>
 						<div class="col-md-6 text-right">
@@ -97,9 +101,13 @@ if($sq_settings['quot_format'] == 2){
 <script src="<?= BASE_URL ?>js/app/footer_scripts.js"></script>
 <script type="text/javascript">
 function display_modal_invoive(){
+	$('#display_modal_invoive_btn').button('loading');
+	$('#display_modal_invoive_btn').prop('disabled',true);
 	var base_url = $('#base_url').val();
 	$.post(base_url+'view/app_settings/basic_info/view/index.php', {}, function(data){
         $('#invoice_format_image').html(data);
+		$('#display_modal_invoive_btn').button('reset');
+		$('#display_modal_invoive_btn').prop('disabled',false);
     });
 
 }

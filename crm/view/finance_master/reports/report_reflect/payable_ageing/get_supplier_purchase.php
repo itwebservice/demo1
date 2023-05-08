@@ -48,13 +48,13 @@ while($row_supplier = mysqli_fetch_assoc($sq_supplier))
 
 		$booking_amt =0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
 		$booking_amt = $row_package['net_total'];
-		$total_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where vendor_type='$row_package[vendor_type]' and vendor_type_id ='$row_package[vendor_type_id]' and estimate_type='$row_package[estimate_type]' and estimate_type_id ='$row_package[estimate_type_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
+		$total_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where estimate_id ='$row_package[estimate_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
 		$total_paid = $total_pay['sum'];
 		$cancel_est = $row_package['cancel_amount'];
 
 		$estimate_type_val = get_estimate_type_name($row_package['estimate_type'], $row_package['estimate_type_id']);
 		//Consider sale cancel amount
-		if($row_package['status'] == 'Cancel'){ 	
+		if($row_package['purchase_return'] == '1'){
 			if($total_paid > 0){
 				if($cancel_est >0){
 					if($total_paid > $cancel_est){
@@ -63,15 +63,18 @@ while($row_supplier = mysqli_fetch_assoc($sq_supplier))
 						$pending_amt = $cancel_est - $total_paid;
 					}
 				}else{
-				$pending_amt = 0;
+					$pending_amt = 0;
 				}
 			}
 			else{
 				$pending_amt = $cancel_est;
 			}
+		}else if($row_package['purchase_return'] == '2'){
+			$cancel_estimate = json_decode($row_package['cancel_estimate']);
+			$pending_amt = (($booking_amt - floatval($cancel_estimate[0]->net_total)) + $cancel_est) - $total_paid;
 		}
 		else{
-			$pending_amt = $booking_amt-$total_paid;
+			$pending_amt = $booking_amt - $total_paid;
 		}
 		$due_date = get_date_user($row_package['due_date']);
 		if(strtotime($till_date1) < strtotime($due_date)) {
@@ -132,7 +135,7 @@ while($row_supplier = mysqli_fetch_assoc($sq_supplier))
 			(int)($count++),
 			$row_supplier['vendor_type'],
 			$supplier_name,
-			'<button class="btn btn-info btn-sm" onclick="view_modal(\''. implode(',', $booking_id_arr).'\',\''. implode(',', $pending_amt_arr).'\',\''.implode(',', $not_due_arr).'\',\''. implode(',',$total_days_arr).'\',\''. implode(',', $due_date_arr).'\')" data-toggle="tooltip" title="Ageing Information"><i class="fa fa-eye"></i></button>',
+			'<button class="btn btn-info btn-sm" onclick="view_modal(\''. implode(',', $booking_id_arr).'\',\''. implode(',', $pending_amt_arr).'\',\''.implode(',', $not_due_arr).'\',\''. implode(',',$total_days_arr).'\',\''. implode(',', $due_date_arr).'\','.$count.')" id="'.$count.'" data-toggle="tooltip" title="Ageing Information"><i class="fa fa-eye"></i></button>',
 			
 			number_format($total_outstanding,2),
 			number_format($not_due,2) ,

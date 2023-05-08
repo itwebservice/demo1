@@ -25,8 +25,8 @@ $db_name = "v9";
 global $connection;
 $connection = new mysqli($servername, $username, $password, $db_name);
 
-define('BASE_URL', 'http://localhost/demo1/crm/');
-define('BASE_URL_B2C', 'http://localhost/demo1/');
+define('BASE_URL', 'http://localhost/tours/demo1/crm/');
+define('BASE_URL_B2C', 'http://localhost/tours/demo1/');
 mysqli_query($connection,"SET SESSION sql_mode = ''");
 // mysqli_set_charset($connection,'utf8');
 //**********Global Variables start**************//

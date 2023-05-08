@@ -53,6 +53,11 @@
       $enquiry_specification = addslashes($enquiry_specification);
       $sq_enquiry = mysqlQuery("insert into enquiry_master (enquiry_id, login_id,branch_admin_id,financial_year_id, enquiry_type,enquiry, name, mobile_no, landline_no, country_code,email_id,location, assigned_emp_id, enquiry_specification, enquiry_date, followup_date, reference_id, enquiry_content,customer_name ) values ('$enquiry_id', '$login_id', '$branch_admin_id','$financial_year_id', '$enquiry_type','$enquiry', '$name', '$mobile_no', '$landline_no', '$country_code','$email_id','$location', '$assigned_emp_id', '$enquiry_specification', '$enquiry_date', '$followup_date', '$reference_id', '$enquiry_content','$customer_name')");
 
+      // For notification count
+      $row_emp = mysqli_fetch_assoc(mysqlQuery("select notification_count from emp_master where emp_id='$assigned_emp_id'"));
+      $notification_count = $row_emp['notification_count'] + 1;
+      $sq_emp = mysqlQuery("update emp_master set notification_count='$notification_count' where emp_id='$assigned_emp_id'");
+
       $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(entry_id) as max from enquiry_master_entries"));
       $entry_id = $sq_max['max'] + 1;
 
@@ -124,7 +129,7 @@
             <tr><td style="text-align:left;border: 1px solid #888888;">Mobile Number</td>   <td style="text-align:left;border: 1px solid #888888;">'.$ass_mobile.'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;">Email ID</td>   <td style="text-align:left;border: 1px solid #888888;">'.$ass_email_id.'</td></tr>';
             if($enqDetails['enquiry_type'] == 'Package Booking' || $enqDetails['enquiry_type'] == 'Group Booking'){
-
+              
               $content .= '<tr><td style="text-align:left;border: 1px solid #888888;">Tour Name</td>   <td style="text-align:left;border: 1px solid #888888;">'.$tour_name.'</td></tr>
               <tr><td style="text-align:left;border: 1px solid #888888;">Tour Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.$travel_from_date.' To '.$travel_to_date.'</td></tr>
               <tr><td style="text-align:left;border: 1px solid #888888;">Total Adult(s)</td>   <td style="text-align:left;border: 1px solid #888888;">'.$tour_adults.'</td></tr>
@@ -229,6 +234,7 @@
             <tr><td style="text-align:left;border: 1px solid #888888;">Enquiry Date</td>   <td style="text-align:left;border: 1px solid #888888;">'.get_date_user($sq_enquiry_details['enquiry_date']).'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;">Customer Name</td>   <td style="text-align:left;border: 1px solid #888888;" >'.$Cust_name.'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;">Mobile No</td>   <td style="text-align:left;border: 1px solid #888888;">'.$sq_enquiry_details['mobile_no'].'</td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;">Whatsapp No</td>   <td style="text-align:left;border: 1px solid #888888;">'.$sq_enquiry_details['country_code'].' '.$sq_enquiry_details['landline_no'].'</td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;">Email ID</td>   <td style="text-align:left;border: 1px solid #888888;">'.$sq_enquiry_details['email_id'].'</td></tr>';
 
             if($sq_enquiry_details['enquiry_type'] == 'Package Booking' || $sq_enquiry_details['enquiry_type'] == 'Group Booking'){
@@ -267,6 +273,42 @@
     global $model;
     $model->app_email_send('5',$emp_name,$ass_email_id, $content,$subject,'1');
   }
+
+  function whatsapp_send(){
+
+    global $app_contact_no, $app_email_id,$app_name;
+
+    $obj = $_POST['obj'];
+    $name = $obj["name"];
+    $assigned_emp_id = $obj["assigned_emp_id"]; 
+    $landline_no = $obj["landline_no"];
+    $country_code = $obj['country_code'];
+    $mobile_no = $country_code.$landline_no;
+
+    if($assigned_emp_id == "0"){  //md5 of "admin"
+      $ass_email_id = $app_email_id;
+      $ass_emp = $app_name;
+      $ass_mobile = $app_contact_no;
+    }
+    else{
+      $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$assigned_emp_id'"));
+      $ass_email_id = $sq_emp['email_id'];
+      $ass_emp = $sq_emp['first_name'].' '.$sq_emp['last_name'];
+      $ass_mobile = $sq_emp['mobile_no'];
+    }
+
+    $whatsapp_msg = rawurlencode("Dear ".$name.",
+We are glad to inform you that we've received your tour request.
+We look forward to serving you in the best possible way we can. Your personal travel concierge will contact you soon!
+
+Executive Name : ".$ass_emp."
+Mobile Number : ".$ass_mobile."
+Email ID : ".$ass_email_id);
+
+    $whatsapp_msg .= '%0a%0aThank%20you.%0a';
+    $link = 'https://web.whatsapp.com/send?phone='.$mobile_no.'&text='.$whatsapp_msg;
+    echo $link;
+  }
   ///////////////////////***Enquiry Master Update start*********//////////////
   function enquiry_master_update()
   {
@@ -296,6 +338,11 @@
 
     $sq_enquiry = mysqlQuery("update enquiry_master set name='$name', country_code = '$country_code', mobile_no='$mobile_no',landline_no = '$landline_no',email_id='$email_id',location='$location', enquiry = '$enquiry', enquiry_date='$enquiry_date', followup_date='$followup_date', reference_id='$reference_id', enquiry_content='$enquiry_content', enquiry_specification='$enquiry_specification', assigned_emp_id ='$assigned_emp_id',customer_name='$customer_dropdown' where enquiry_id='$enquiry_id'");
 
+    // For notification count
+    $row_emp = mysqli_fetch_assoc(mysqlQuery("select notification_count from emp_master where emp_id='$assigned_emp_id'"));
+    $notification_count = $row_emp['notification_count'] + 1;
+    $sq_emp = mysqlQuery("update emp_master set notification_count='$notification_count' where emp_id='$assigned_emp_id'");
+    
     $sq_enquiry = mysqlQuery("update enquiry_master_entries set followup_date='$followup_date' where enquiry_id='$enquiry_id'");
 
     if(!$sq_enquiry){
@@ -534,6 +581,10 @@
                         $sq_followup = mysqlQuery("insert into enquiry_master_entries(entry_id, enquiry_id, followup_reply,  followup_status,  followup_type, followup_date, followup_stage, created_at) values('$entry_id', '$enquiry_id', '', 'Active','', '$followup_date1', '$enquiry', '$enquiry_date1')");
                         
                         $sq_entryicsv = mysqlQuery("update enquiry_master set entry_id='$entry_id' where enquiry_id='$enquiry_id'");
+                        // For notification count
+                        $row_emp = mysqli_fetch_assoc(mysqlQuery("select notification_count from emp_master where emp_id='$assigned_emp_id'"));
+                        $notification_count = $row_emp['notification_count'] + 1;
+                        $sq_emp = mysqlQuery("update emp_master set notification_count='$notification_count' where emp_id='$assigned_emp_id'");
 
                         if(!$sq_enquiry){
                           echo "error--Enquiry Information Not Saved.";

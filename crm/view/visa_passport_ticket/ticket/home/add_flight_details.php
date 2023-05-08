@@ -131,12 +131,12 @@ if($pass_entry_id!=''){
 										<input type="text" id="layover_time-<?= $sq_trip_entries_count ?>" name="layover_time" placeholder="Layover Time" title="Layover Time" value="<?= $flight_details[0]->layover_time_arr[$i] ?>" >
 									</div>
 									<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-										<select id="airlines_name-<?= $sq_trip_entries_count ?>" name="airlines_name" title="Airlines Name" style="width:100%" data-dyn-valid="required" class="airlines_names app_select" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount');">
+										<select id="airlines_name-<?= $sq_trip_entries_count ?>" name="airlines_name" title="Airlines Name" style="width:100%" data-dyn-valid="required" class="airlines_names app_select">
 										<?php if($flight_details[0]->airlines_name_arr[$i]!=''){?><option value="<?= $flight_details[0]->airlines_name_arr[$i] ?>"><?= $flight_details[0]->airlines_name_arr[$i] ?></option><?php } ?>
 											<option value="">*Airline Name</option>
 										<?php $sq_airline = mysqlQuery("SELECT airline_name,airline_code FROM airline_master WHERE active_flag!='Inactive' ORDER BY airline_name ASC");
 											while($row_airline = mysqli_fetch_assoc($sq_airline)){
-										?>
+											?>
 											<option value="<?= $row_airline['airline_name'].' ('.$row_airline['airline_code'].')' ?>"><?= $row_airline['airline_name'].' ('.$row_airline['airline_code'].')' ?></option>
 										<?php
 										}
@@ -144,13 +144,9 @@ if($pass_entry_id!=''){
 									</select>
 									</div>
 									<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
-										<select name="class" id="class-<?= $sq_trip_entries_count ?>" title="Cabin" data-dyn-valid="required" onchange="get_auto_values('booking_date','basic_cost','payment_mode','service_charge','markup','save','true','service_charge','discount');">
+										<select name="class" id="class-<?= $sq_trip_entries_count ?>" title="Class" data-dyn-valid="required">
 										<?php if($flight_details[0]->class_arr[$i]!=''){?><option value="<?= $flight_details[0]->class_arr[$i] ?>"><?= $flight_details[0]->class_arr[$i] ?></option><?php } ?>
-											<option value="">Cabin</option>
-											<option value="Economy">Economy</option>
-											<option value="Business">Business</option>
-											<option value="First Class">First Class</option>
-											<option value="Other">Other</option>
+                            				<?php get_flight_class_dropdown(); ?>
 										</select>
 									</div>
 									<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
@@ -243,7 +239,7 @@ if($pass_entry_id!=''){
                     </div>
                     <div class="row text-center mg_tp_20">
                         <div class="col-xs-12">
-                        	<button class="btn btn-sm btn-success" id="btn_ticket_details"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;<?= $button_name ?></button>
+                        	<button id="update_btn" class="btn btn-sm btn-success" id="btn_ticket_details"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;<?= $button_name ?></button>
                         </div>
                     </div>
                 </form>
@@ -258,7 +254,7 @@ $('#flight_details_modal').modal('show');
 $('#quotation_id').select2();
 $('#frm_flight_details').validate({
 	submitHandler:function(form, e){
-
+		$('#update_btn').prop('disabled',true);
 		e.preventDefault();
 		var base_url = $('#base_url').val();
 		var count = $('#count').val();
@@ -317,12 +313,17 @@ $('#frm_flight_details').validate({
 			}
 		}
 		if(airpf_flag || airpt_flag || dd_flag || ad_flag || airline_flag || date_mismatch){
-			error_msg_alert(err_msg); return false
+			error_msg_alert(err_msg);
+			$('#update_btn').prop('disabled',false);
+			return false;
 		}
-
-		if(type_of_tour == undefined) { error_msg_alert(msg); return false;}
-
+		if(type_of_tour == undefined){
+			error_msg_alert(msg);
+			$('#update_btn').prop('disabled',false);
+			return false;
+		}
 		var airlin_pnr_arr = getDynFields('airlin_pnr');
+		$('#update_btn').button('loading');
 		$.ajax({
 			type: 'post',
 			url: base_url+'controller/visa_passport_ticket/ticket/ticket_pnr_check.php',
@@ -334,6 +335,8 @@ $('#frm_flight_details').validate({
 				else{
 					var msg = result.split('--');
 					error_msg_alert(msg[1]);
+					$('#update_btn').prop('disabled',false);
+					$('#update_btn').button('reset');
 					return false;
 				}
 			}
@@ -382,6 +385,8 @@ $('#frm_flight_details').validate({
 		}
 		if(valid_count == 0){
 			error_msg_alert('Atleast one flight details required!');
+			$('#update_btn').prop('disabled',false);
+			$('#update_btn').button('reset');
 			return false;
 		}
 		var dynamic_section_arr = [];
@@ -448,8 +453,16 @@ event_airport_s(num_airp);
 function copy_values(){
 	var count = $('#div_dynamic_ticket_info').attr('data-counter');
 	var currentdate = new Date(); 
-	var datetime = currentdate.getDate() + "-"
-                + (currentdate.getMonth()+1)  + "-" 
+	var day = currentdate.getDate();
+	var month = currentdate.getMonth() + 1;
+	if (day < 10) {
+		day = '0' + day;
+	}
+	if (month < 10) {
+		month = '0' + month;
+	}
+	var datetime = day + "-"
+                + month + "-" 
                 + currentdate.getFullYear() + " "  
                 + currentdate.getHours() + ":"  
                 + currentdate.getMinutes();
@@ -461,7 +474,8 @@ function copy_values(){
 	$('#airpt-'+count).val($('#airpf-1').val());
 	$('#to_city-'+count).val($('#from_city-1').val());
 	$('#arrival_city-'+count).val($('#departure_city-1').val());
-	$('#cancel_status-'+count).val($('#cancel_status-1').val());
+	// $('#cancel_status-'+count).val($('#cancel_status-1').val());
+	$('#cancel_status-'+count).val();
 }
 function addSection(id){
 	if($('#div_dynamic_ticket_info').attr('data-counter') == 1){

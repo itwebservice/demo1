@@ -23,7 +23,6 @@ $branch_status = $_POST['branch_status'];
 		            
 		            
 					
-                           
 		        </select>
 	    </div>
 	    <div id="company_div" class="hidden">
@@ -89,6 +88,7 @@ dynamic_customer_load('','');
 var columns = [
 	{ title : "S_No"},
 	{ title : " "},
+	{ title : "Receipt_ID"},
 	{ title : "Booking_ID"},
 	{ title : "Customer_Name"},
 	{ title : "Receipt_Date"},
@@ -120,9 +120,13 @@ $(document).ready(function () {
 });
 function train_ticket_payment_update_modal(payment_id)
 {
-	var branch_status = $('#branch_status').val();
+    $('#updater_btn-'+payment_id).prop('disabled',true);
+    var branch_status = $('#branch_status').val();
+    $('#updater_btn-' + payment_id).button('loading');
 	$.post('payment/ticket_payment_update_modal.php', { payment_id : payment_id, branch_status : branch_status  }, function(data){
 		$('#div_train_ticket_payment_update').html(data);
+    	$('#updater_btn-'+payment_id).prop('disabled',false);
+    	$('#updater_btn-'+payment_id).button('reset');
 	});
 }
 

@@ -832,20 +832,40 @@ function foo(tableID, quot_table_id, rowCounts) {
       "chk_program-" + quot_table_id + offset
     );
     row.cells[0].childNodes[1].setAttribute("for", "chk_program-" + offset);
+    row.cells[2].childNodes[0].setAttribute("id", "tour_type-" + offset);
 
-    row.cells[2].childNodes[0].setAttribute("id", "city_name-" + offset);
-    $(row.cells[2].childNodes[0]).next("span").remove();
-    row.cells[3].childNodes[0].setAttribute("id", "hotel_name-" + offset);
-    row.cells[4].childNodes[0].setAttribute("id", "room_cat-" + offset);
-    row.cells[5].childNodes[0].setAttribute("id", "meal_plan-" + offset);
-    row.cells[6].childNodes[0].setAttribute("id", "check_in-" + offset);
-    row.cells[7].childNodes[0].setAttribute("id", "check_out-" + offset);
-    row.cells[8].childNodes[0].setAttribute("id", "hotel_type-" + offset);
-    row.cells[9].childNodes[0].setAttribute("id", "hotel_stay_days-" + offset);
-    row.cells[10].childNodes[0].setAttribute("id", "no_of_rooms-" + offset);
-    row.cells[11].childNodes[0].setAttribute("id", "extra_bed-" + offset);
-    row.cells[12].childNodes[0].setAttribute("id", "hotel_cost-" + offset);
-    $(row.cells[12]).addClass("hidden");
+    row.cells[3].childNodes[0].setAttribute("id", "city_name-" + offset);
+    $(row.cells[3].childNodes[0]).next("span").remove();
+    row.cells[3].childNodes[0].setAttribute("title", "City Name");
+    row.cells[4].childNodes[0].setAttribute("id", "hotel_name-" + offset);
+    row.cells[5].childNodes[0].setAttribute("id", "room_cat-" + offset);
+    row.cells[6].childNodes[0].setAttribute("id", "meal_plan-" + offset);
+    row.cells[7].childNodes[0].setAttribute("id", "check_in-" + offset);
+    row.cells[8].childNodes[0].setAttribute("id", "check_out-" + offset);
+    row.cells[9].childNodes[0].setAttribute("id", "hotel_type-" + offset);
+    row.cells[10].childNodes[0].setAttribute("id", "hotel_stay_days-" + offset);
+    row.cells[11].childNodes[0].setAttribute("id", "no_of_rooms-" + offset);
+    row.cells[12].childNodes[0].setAttribute("id", "extra_bed-" + offset);
+    row.cells[13].childNodes[0].setAttribute("id", "hotel_cost-" + offset);
+    
+    row.cells[10].childNodes[0].value = 1;
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+    var today = dd + "-" + mm + "-" + yyyy;
+    row.cells[7].childNodes[0].value = today;
+    row.cells[8].childNodes[0].value = today;
+
+    $(row.cells[14]).addClass("hidden");
   }
   if (tableID == "dynamic_table_list_update") {
     row.cells[0].childNodes[0].setAttribute("id", "chk_program1" + foo.counter);
@@ -1118,6 +1138,7 @@ function foo(tableID, quot_table_id, rowCounts) {
     row.cells[2].childNodes[0].title = "Select Destination";
     // row.cells[3].childNodes[0].title = 'Select Package';
     row.cells[4].childNodes[0].title = "Select Image";
+    // row.cells[4].childNodes[0].setAttribute("style", "width: 150px");
     $(row.cells[2].childNodes[0]).select2().trigger("change");
   }
   if (tableID == "tbl_dest_tours") {
@@ -1127,8 +1148,8 @@ function foo(tableID, quot_table_id, rowCounts) {
     row.cells[4].childNodes[0].setAttribute("id", "image-1" + foo.counter);
 
     row.cells[2].childNodes[0].title = "Select Destination";
-    // row.cells[3].childNodes[0].title = 'Select Package';
-    row.cells[4].childNodes[0].title = "Select Image";
+    // row.cells[4].childNodes[0].setAttribute("style", "width: 150px");
+
     $(row.cells[2].childNodes[0]).select2().trigger("change");
   }
   if (tableID == "tbl_dest_packages_footer") {
@@ -1156,7 +1177,7 @@ function foo(tableID, quot_table_id, rowCounts) {
     $(row.cells[2].childNodes[0]).next("span").remove();
     city_lzloading("#city_name-1" + foo.counter);
     row.cells[2].childNodes[0].title = "Select City";
-    row.cells[3].childNodes[0].title = "Select Hotel";
+    // row.cells[3].childNodes[0].title = "Select Hotel";
   }
   if (tableID == "tbl_dest_packages_datewise") {
     row.cells[0].childNodes[0].setAttribute("id", "chk_dest1" + foo.counter);
@@ -1189,18 +1210,18 @@ function foo(tableID, quot_table_id, rowCounts) {
       "coupon_code-1" + foo.counter
     );
     row.cells[4].childNodes[0].setAttribute("id", "amount_in-1" + foo.counter);
-    row.cells[5].childNodetbl_package_tour_transports[0].setAttribute(
+    row.cells[5].childNodes[0].setAttribute(
       "id",
       "amount-1" + foo.counter
     );
     row.cells[6].childNodes[0].setAttribute("id", "valid_date-1" + foo.counter);
-    // dynamic_date(row.cells[5].childNodes[0].id);
     jQuery(row.cells[6].childNodes[0]).addClass("form-control").datetimepicker({
       timepicker: false,
       minDate: new Date(),
       format: "d-m-Y",
     });
   }
+
   if (tableID == "tbl_meta_tags") {
     row.cells[0].childNodes[0].setAttribute(
       "id",
@@ -1817,10 +1838,13 @@ function foo(tableID, quot_table_id, rowCounts) {
     row.cells[12].style.display = "none";
     row.cells[13].style.display = "none";
     row.cells[14].style.display = "none";
+    row.cells[15].childNodes[0].setAttribute("id", "no_vehicles-" + foo.counter);
 
-    if (row.cells[15]) {
-      row.cells[15].innerHTML = "";
-      row.cells[15].style.display = "none";
+    row.cells[16].childNodes[0].setAttribute("id","transfer_total-" + foo.counter);
+
+    if (row.cells[17]) {
+      row.cells[17].innerHTML = "";
+      row.cells[17].style.display = "none";
     }
   }
 
@@ -1907,13 +1931,29 @@ function foo(tableID, quot_table_id, rowCounts) {
     );
     row.cells[8].childNodes[0].setAttribute(
       "id",
-      "adult_cost-" + prefix + current_counter
+      "total_infant-" + prefix + current_counter
     );
     row.cells[9].childNodes[0].setAttribute(
       "id",
-      "child_cost-" + prefix + current_counter
+      "adult_cost-" + prefix + current_counter
     );
     row.cells[10].childNodes[0].setAttribute(
+      "id",
+      "child_cost-" + prefix + current_counter
+    );
+    row.cells[11].childNodes[0].setAttribute(
+      "id",
+      "infant_cost-" + prefix + current_counter
+    );
+    row.cells[12].childNodes[0].setAttribute(
+      "id",
+      "total_vehicle-" + prefix + current_counter
+    );
+    row.cells[13].childNodes[0].setAttribute(
+      "id",
+      "transfer_cost-" + prefix + current_counter
+    );
+    row.cells[14].childNodes[0].setAttribute(
       "id",
       "total_amount-" + prefix + current_counter
     );
@@ -1923,9 +1963,11 @@ function foo(tableID, quot_table_id, rowCounts) {
     row.cells[4].childNodes[0].setAttribute("onchange", function_name);
     row.cells[5].childNodes[0].setAttribute("onchange", function_name);
 
-    if (row.cells[11]) {
-      row.cells[11].style.display = "hidden";
+    if (row.cells[15]) {
+      row.cells[15].style.display = "hidden";
     }
+    row.cells[2].childNodes[0].setAttribute("title","Activity Date & Time");
+    row.cells[3].childNodes[0].setAttribute("title","City Name");
   }
   if (tableID == "tbl_package_tour_quotation_dynamic_costing") {
     row.cells[0].childNodes[1].setAttribute("id", "chk_costing1" + foo.counter);
@@ -1959,17 +2001,25 @@ function foo(tableID, quot_table_id, rowCounts) {
     row.cells[7].childNodes[1].setAttribute("value", "0.00");
     row.cells[8].childNodes[1].setAttribute(
       "id",
-      "service_tax_subtotal-" + foo.counter
+      "tax_apply_on-" + foo.counter
     );
     row.cells[9].childNodes[1].setAttribute(
       "id",
-      "total_tour_cost-" + foo.counter
+      "tax_value-" + foo.counter
     );
     row.cells[10].childNodes[1].setAttribute(
       "id",
+      "service_tax_subtotal-" + foo.counter
+    );
+    row.cells[11].childNodes[1].setAttribute(
+      "id",
+      "total_tour_cost-" + foo.counter
+    );
+    row.cells[12].childNodes[1].setAttribute(
+      "id",
       "package_name1" + foo.counter
     );
-    row.cells[11].childNodes[1].setAttribute("id", "package_id" + foo.counter);
+    row.cells[13].childNodes[1].setAttribute("id", "package_id" + foo.counter);
 
     $(row.cells[0]).addClass("header_btn");
     $(row.cells[1]).addClass("header_btn");
@@ -1989,7 +2039,7 @@ function foo(tableID, quot_table_id, rowCounts) {
     }
     row.cells[0].style.display = "none";
     row.cells[1].style.display = "none";
-    row.cells[10].style.display = "none";
+    row.cells[12].style.display = "none";
   }
   if (tableID == "tbl_vendor_quotation_dmc_entries") {
     row.cells[0].childNodes[0].setAttribute("id", "chk_dmc" + foo.counter);
@@ -2810,22 +2860,26 @@ function foo(tableID, quot_table_id, rowCounts) {
     );
     row.cells[2].childNodes[0].setAttribute(
       "id",
-      "city_id" + prefix + foo.counter
+      "tour_type" + prefix + foo.counter
     );
     row.cells[3].childNodes[0].setAttribute(
+      "id",
+      "city_id" + prefix + foo.counter
+    );
+    row.cells[4].childNodes[0].setAttribute(
       "id",
       "hotel_id" + prefix + foo.counter
     );
 
-    $(row.cells[2].childNodes[0]).next("span").remove();
-    city_lzloading(row.cells[2].childNodes[0]);
-    for (var i = row.cells[4].childNodes[0].attributes.length; i-- > 0; )
-      row.cells[4].childNodes[0].removeAttributeNode(
-        row.cells[4].childNodes[0].attributes[i]
+    $(row.cells[3].childNodes[0]).next("span").remove();
+    city_lzloading(row.cells[3].childNodes[0]);
+    for (var i = row.cells[5].childNodes[0].attributes.length; i-- > 0; )
+      row.cells[5].childNodes[0].removeAttributeNode(
+        row.cells[5].childNodes[0].attributes[i]
       );
 
-    row.cells[4].childNodes[0].setAttribute("id", "check_in" + foo.counter);
-    row.cells[4].childNodes[0].setAttribute(
+    row.cells[5].childNodes[0].setAttribute("id", "check_in" + foo.counter);
+    row.cells[5].childNodes[0].setAttribute(
       "onchange",
       "get_to_datetime(this.id,'check_out" +
         foo.counter +
@@ -2838,42 +2892,7 @@ function foo(tableID, quot_table_id, rowCounts) {
         foo.counter +
         "')"
     );
-    row.cells[4].childNodes[0].placeholder = "Check-In Date Time";
-    row.cells[4].childNodes[0].title = "Check-In Date Time";
-    row.cells[4].childNodes[0].type = "text";
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
-
-    var yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
-    var today =
-      dd + "-" + mm + "-" + yyyy + " " + "00" + ":" + "00" + ":" + "00";
-    row.cells[4].childNodes[0].value = today;
-    dynamic_datetime(row.cells[4].childNodes[0].id);
-
-    for (var i = row.cells[5].childNodes[0].attributes.length; i-- > 0; )
-      row.cells[5].childNodes[0].removeAttributeNode(
-        row.cells[5].childNodes[0].attributes[i]
-      );
-    row.cells[5].childNodes[0].setAttribute("id", "check_out" + foo.counter);
-    row.cells[5].childNodes[0].setAttribute(
-      "onchange",
-      "calculate_total_nights('check_in" +
-        foo.counter +
-        "', 'check_out" +
-        foo.counter +
-        "','no_of_nights" +
-        prefix +
-        foo.counter +
-        "')"
-    );
-    row.cells[5].childNodes[0].placeholder = "Check-Out Date Time";
+    row.cells[5].childNodes[0].placeholder = "Check-In Date Time";
     row.cells[5].childNodes[0].title = "Check-In Date Time";
     row.cells[5].childNodes[0].type = "text";
     var today = new Date();
@@ -2891,39 +2910,74 @@ function foo(tableID, quot_table_id, rowCounts) {
       dd + "-" + mm + "-" + yyyy + " " + "00" + ":" + "00" + ":" + "00";
     row.cells[5].childNodes[0].value = today;
     dynamic_datetime(row.cells[5].childNodes[0].id);
+
+    for (var i = row.cells[6].childNodes[0].attributes.length; i-- > 0; )
+      row.cells[6].childNodes[0].removeAttributeNode(
+        row.cells[6].childNodes[0].attributes[i]
+      );
+    row.cells[6].childNodes[0].setAttribute("id", "check_out" + foo.counter);
     row.cells[6].childNodes[0].setAttribute(
+      "onchange",
+      "calculate_total_nights('check_in" +
+        foo.counter +
+        "', 'check_out" +
+        foo.counter +
+        "','no_of_nights" +
+        prefix +
+        foo.counter +
+        "')"
+    );
+    row.cells[6].childNodes[0].placeholder = "Check-Out Date Time";
+    row.cells[6].childNodes[0].title = "Check-Out Date Time";
+    row.cells[6].childNodes[0].type = "text";
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
+
+    var yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+    var today =
+      dd + "-" + mm + "-" + yyyy + " " + "00" + ":" + "00" + ":" + "00";
+    row.cells[6].childNodes[0].value = today;
+    dynamic_datetime(row.cells[6].childNodes[0].id);
+    row.cells[7].childNodes[0].setAttribute(
       "id",
       "no_of_nights" + prefix + foo.counter
     );
-    row.cells[7].childNodes[0].setAttribute(
+    row.cells[8].childNodes[0].setAttribute(
       "id",
       "rooms" + prefix + foo.counter
     );
-    row.cells[8].childNodes[0].setAttribute(
+    row.cells[9].childNodes[0].setAttribute(
       "id",
       "room_type" + prefix + foo.counter
     );
-    row.cells[9].childNodes[0].setAttribute(
+    row.cells[10].childNodes[0].setAttribute(
       "id",
       "category" + prefix + foo.counter
     );
-    row.cells[10].childNodes[0].setAttribute(
+    row.cells[11].childNodes[0].setAttribute(
       "id",
       "accomodation_type" + prefix + foo.counter
     );
-    row.cells[11].childNodes[0].setAttribute(
+    row.cells[12].childNodes[0].setAttribute(
       "id",
       "extra_beds" + prefix + foo.counter
     );
-    row.cells[12].childNodes[0].setAttribute(
+    row.cells[13].childNodes[0].setAttribute(
       "id",
       "meal_plan" + prefix + foo.counter
     );
-    row.cells[13].childNodes[0].setAttribute(
+    row.cells[14].childNodes[0].setAttribute(
       "id",
       "conf_no" + prefix + foo.counter
     );
-    $(row.cells[14]).addClass("hidden");
+    $(row.cells[15]).addClass("hidden");
   }
   //*******Hotel Booking table start*******//
 
@@ -2972,14 +3026,16 @@ function foo(tableID, quot_table_id, rowCounts) {
       "id",
       "visa_type" + prefix + foo.counter
     );
-    row.cells[8].childNodes[0].setAttribute(
-      "onchange",
-      "reflect_cost(this.id)"
-    );
-    row.cells[0].childNodes[0].setAttribute(
-      "onchange",
-      "reflect_cost(this.id)"
-    );
+    if (tableID == "tbl_dynamic_visa"){
+      row.cells[8].childNodes[0].setAttribute(
+        "onchange",
+        "reflect_cost(this.id)"
+      );
+      row.cells[0].childNodes[0].setAttribute(
+        "onchange",
+        "reflect_cost(this.id)"
+      );
+    }
     row.cells[9].childNodes[0].setAttribute(
       "id",
       "passport_id" + prefix + foo.counter
@@ -2995,19 +3051,6 @@ function foo(tableID, quot_table_id, rowCounts) {
     );
     row.cells[10].childNodes[0].placeholder = "Issue Date";
     row.cells[10].childNodes[0].setAttribute("title", "Issue Date");
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
-
-    var yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
-    var today = dd + "-" + mm + "-" + yyyy;
-    row.cells[10].childNodes[0].value = today;
     dynamic_date(row.cells[10].childNodes[0].id);
     var date = new Date();
     var yest = date.setDate(date.getDate() - 1);
@@ -3028,19 +3071,6 @@ function foo(tableID, quot_table_id, rowCounts) {
     );
     row.cells[11].childNodes[0].placeholder = "Expiry Date";
     row.cells[11].childNodes[0].setAttribute("title", "Expiry Date");
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
-
-    var yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
-    var today = dd + "-" + mm + "-" + yyyy;
-    row.cells[11].childNodes[0].value = today;
     dynamic_date(row.cells[11].childNodes[0].id);
 
     if (tableID == "tbl_dynamic_visa_update") {
@@ -3440,6 +3470,8 @@ function foo(tableID, quot_table_id, rowCounts) {
       format: "d-m-Y",
       maxDate: "d-m-Y",
     });
+    row.cells[2].childNodes[0].value = get_date();
+    dynamic_date(row.cells[2].childNodes[0].id);
     $(row.cells[6]).addClass("hidden");
   }
   //*******Daily activity*******//
@@ -3643,8 +3675,9 @@ function foo(tableID, quot_table_id, rowCounts) {
     row.cells[5].childNodes[0].setAttribute("id", "adult_cost" + foo.counter);
     row.cells[6].childNodes[0].setAttribute("id", "child_cost" + foo.counter);
     row.cells[7].childNodes[0].setAttribute("id", "infant_cost" + foo.counter);
-    row.cells[8].childNodes[0].setAttribute("id", "markup_in" + foo.counter);
-    row.cells[9].childNodes[0].setAttribute("id", "amount" + foo.counter);
+    row.cells[8].childNodes[0].setAttribute("id", "transfer_cost" + foo.counter);
+    row.cells[9].childNodes[0].setAttribute("id", "markup_in" + foo.counter);
+    row.cells[10].childNodes[0].setAttribute("id", "amount" + foo.counter);
 
     row.cells[3].childNodes[0].value = get_date();
     dynamic_date(row.cells[3].childNodes[0].id);
@@ -3673,7 +3706,7 @@ function foo(tableID, quot_table_id, rowCounts) {
         '")'
     );
 
-    $(row.cells[10]).addClass("hidden");
+    $(row.cells[11]).addClass("hidden");
   }
   if (tableID == "table_exc_tarrif_offer") {
     row.cells[0].childNodes[0].setAttribute("id", "chk_offer" + foo.counter);
@@ -3738,12 +3771,51 @@ function foo(tableID, quot_table_id, rowCounts) {
     );
   }
 
+  if (tableID == "tbl_similar_package_hotels" + quot_table_id) {
+    row.cells[0].childNodes[0].setAttribute(
+      "id",
+      "ochk_plan" + quot_table_id + foo.counter
+    );
+    row.cells[2].childNodes[0].setAttribute(
+      "id",
+      "oavail1" + quot_table_id + foo.counter
+    );
+    // row.cells[2].childNodes[0].selectedIndex = 1;
+    row.cells[3].childNodes[0].setAttribute(
+      "id",
+      "city_id1" + quot_table_id + foo.counter
+    );
+    row.cells[4].childNodes[0].setAttribute(
+      "id",
+      "hotel_id1" + quot_table_id + foo.counter
+    );
+    row.cells[5].childNodes[0].setAttribute(
+      "id",
+      "omobile_no1" + quot_table_id + foo.counter
+    );
+    row.cells[6].childNodes[0].setAttribute(
+      "id",
+      "oemail_id1" + quot_table_id + foo.counter
+    );
+    row.cells[7].childNodes[0].setAttribute(
+      "id",
+      "oreply_by1" + quot_table_id + foo.counter
+    );
+    row.cells[8].childNodes[0].setAttribute(
+      "id",
+      "ospec1" + quot_table_id + foo.counter
+    );
+  }
+
   if (tableID == "tbl_taxes") {
     row.cells[0].childNodes[0].setAttribute("id", "chk_tax1" + foo.counter);
-    row.cells[2].childNodes[0].setAttribute("id", "code" + foo.counter);
-    row.cells[3].childNodes[0].setAttribute("id", "name" + foo.counter);
-    row.cells[4].childNodes[0].setAttribute("id", "rate_in" + foo.counter);
-    row.cells[5].childNodes[0].setAttribute("id", "rate" + foo.counter);
+    row.cells[2].childNodes[0].setAttribute("id", "reflt1" + foo.counter);
+    row.cells[3].childNodes[0].setAttribute("id", "namet1" + foo.counter);
+    row.cells[4].childNodes[0].setAttribute("id", "amountt1" + foo.counter);
+    row.cells[5].childNodes[0].setAttribute("id", "ledgert1" + foo.counter);
+    row.cells[6].childNodes[0].setAttribute("id", "namet2" + foo.counter);
+    row.cells[7].childNodes[0].setAttribute("id", "amountt2" + foo.counter);
+    row.cells[8].childNodes[0].setAttribute("id", "ledgert2" + foo.counter);
   }
 
   if (tableID == "tbl_taxe_rule_conditions") {

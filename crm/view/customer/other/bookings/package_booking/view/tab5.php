@@ -14,7 +14,7 @@ if ($cancel_amount != '') {
 	if ($cancel_amount <= $paid_amount) {
 		$balance_amount = 0;
 	} else {
-		$balance_amount =  $cancel_amount - $paid_amount;
+		$balance_amount =  $cancel_amount - $paid_amount + $credit_card_amount;
 	}
 } else {
 	$cancel_amount = ($cancel_amount == '') ? '0' : $cancel_amount;

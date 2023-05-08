@@ -17,7 +17,7 @@ $count = 0;
 $sq_salary = mysqli_fetch_assoc(mysqlQuery("select * from employee_salary_master where emp_id=$emp_id and year=$year and month=$month"));
 ?>
 <!-- header -->
-<section class="print_header main_block">
+<section class="print_header main_block" style="margin-bottom: 0 !important;">
 	<div class="col-md-6 no-pad">
 		<div class="print_header_logo">
 		<img src="<?php echo $admin_logo_url; ?>" class="img-responsive mg_tp_10">

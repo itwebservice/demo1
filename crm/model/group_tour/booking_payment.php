@@ -222,7 +222,7 @@ public function payment_master_delete(){
 
   $bank_cash_book_master->bank_cash_book_master_update($module_name, $payment_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 
-  $sq_delete = mysqlQuery("update payment_master set amount = '0', delete_status='1' where payment_id='$payment_id'");
+  $sq_delete = mysqlQuery("update payment_master set amount = '0', delete_status='1',credit_charges='0' where payment_id='$payment_id'");
   if($sq_delete){
     echo 'Entry deleted successfully!';
     exit;
@@ -435,11 +435,11 @@ function payment_master_update()
 
   $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from payment_master where payment_id='$payment_id'"));
 
-  $clearance_status = ($sq_payment_info['payment_mode']=='Cheque'  || $payment_mode == 'Credit Card') ? "Pending" : '';
+  $clearance_status = $sq_payment_info['clearance_status'];
 
   begin_t();
 
-  $sq = mysqlQuery("update payment_master set tourwise_traveler_id = '$tourwise_traveler_id',financial_year_id='$financial_year_id', date='$payment_date', payment_mode='$payment_mode', amount='$payment_amount', bank_name='$bank_name', transaction_id='$transaction_id', payment_for='$payment_for', travel_type='$p_travel_type', bank_id='$bank_id', clearance_status='$clearance_status', clearance_status='$clearance_status',credit_charges='$credit_charges' where payment_id='$payment_id'"); 
+  $sq = mysqlQuery("update payment_master set tourwise_traveler_id = '$tourwise_traveler_id',financial_year_id='$financial_year_id', date='$payment_date', payment_mode='$payment_mode', amount='$payment_amount', bank_name='$bank_name', transaction_id='$transaction_id', payment_for='$payment_for', travel_type='$p_travel_type', bank_id='$bank_id', clearance_status='$clearance_status',credit_charges='$credit_charges' where payment_id='$payment_id'"); 
   if(!$sq)
   {
     rollback_t();
@@ -748,7 +748,7 @@ public function bank_cash_book_update($sq_payment_info, $clearance_status)
     $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
     if($sq_tourwise['tour_group_status'] == 'Cancel'){
       if($cancel_amount > $paid_amount){
-        $outstanding = $cancel_amount - $paid_amount;
+        $outstanding = $cancel_amount - $paid_amount + $credit_card_amount;
       }
       else{
         $outstanding = 0;
@@ -756,7 +756,7 @@ public function bank_cash_book_update($sq_payment_info, $clearance_status)
     }else{
       if($pass_count==$cancelpass_count){
         if($cancel_amount > $paid_amount){
-          $outstanding = $cancel_amount - $paid_amount;
+          $outstanding = $cancel_amount - $paid_amount + $credit_card_amount;
         }
         else{
           $outstanding = 0;
@@ -766,48 +766,6 @@ public function bank_cash_book_update($sq_payment_info, $clearance_status)
         $outstanding = $total_amount - $paid_amount;
       }
     }
-    // $pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_tourwise[traveler_group_id]'"));
-    // $cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_tourwise[traveler_group_id]' and status='Cancel'"));    
-    
-    // if($sq_tourwise['tour_group_status'] == 'Cancel'){
-    //   //Group Tour cancel
-    //   $cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_tourwise[id]'"));
-    //   if($cancel_tour_count2 >= '1'){
-    //     $cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$sq_tourwise[id]'"));
-    //     $cancel_amount = $cancel_tour['cancel_amount'];
-    //   }
-    //   else{ $cancel_amount = 0; }
-    // }
-    // else{
-    //   // Group booking cancel
-    //   if($pass_count==$cancelpass_count){
-    //     $cancel_esti1=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$sq_tourwise[id]'"));
-    //     $cancel_amount = $cancel_esti1['cancel_amount'];
-    //   }
-    //   else{ $cancel_amount = 0; }
-    // }
-    
-    // $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
-    // if($sq_tourwise['tour_group_status'] == 'Cancel'){
-    //   if($cancel_amount > $paid_amount){
-    //     $outstanding = $cancel_amount - $paid_amount;
-    //   }
-    //   else{
-    //     $outstanding = 0;
-    //   }
-    // }else{
-    //   if($pass_count==$cancelpass_count){
-    //     if($cancel_amount > $paid_amount){
-    //       $outstanding = $cancel_amount - $paid_amount;
-    //     }
-    //     else{
-    //       $outstanding = 0;
-    //     }
-    //   }
-    //   else{
-    //     $outstanding = $total_amount - $paid_amount;
-    //   }
-    // }
 
     $due_date = ($sq_tourwise['balance_due_date'] == '1970-01-01') ? '' : $sq_tourwise['balance_due_date'];
     $customer_details = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id  = ".$sq_tourwise['customer_id']));
@@ -930,7 +888,7 @@ public function bank_cash_book_update($sq_payment_info, $clearance_status)
   }else{
     if($pass_count==$cancelpass_count){
       if($cancel_amount > $paid_amount){
-        $outstanding = $cancel_amount - $paid_amount;
+        $outstanding = $cancel_amount - $paid_amount + $credit_card_amount;
       }
       else{
         $outstanding = 0;

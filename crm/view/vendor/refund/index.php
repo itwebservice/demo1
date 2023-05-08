@@ -3,12 +3,12 @@ include "../../../model/model.php";
 /*======******Header******=======*/
 require_once('../../layouts/admin_header.php');
 ?>
-<?= begin_panel('Supplier Refund',63) ?> 
+<?= begin_panel('Purchase Cancel & Refund',63) ?> 
 
 <div class="row text-center text_left_sm_xs mg_bt_20">
   <label for="rd_estimate" class="app_dual_button active mg_bt_10">
       <input type="radio" id="rd_estimate" name="rd_refund" checked onchange="vendor_refund_content_reflect()">
-      &nbsp;&nbsp;Purchase Cancellation
+      &nbsp;&nbsp;Cancel
   </label>
   <label for="rd_home" class="app_dual_button mg_bt_10">
       <input type="radio" id="rd_home" name="rd_refund"  onchange="vendor_refund_content_reflect()">

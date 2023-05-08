@@ -124,20 +124,30 @@ $('#frm_save').validate({
 
         $('#btn_save').button('loading');
 
-        $.ajax({
-          type:'post',
-          url:base_url+'controller/bank_vouchers/cash_withdrawal_save.php',
-          data: { bank_id : bank_id, payment_amount : payment_amount, payment_date : payment_date,payment_evidence_url : payment_evidence_url, branch_admin_id : branch_admin_id,emp_id : emp_id },
-          success:function(result){        
-            msg_alert(result);
-            var msg = result.split('--');
-            $('#btn_save').prop('disabled',false);
-            if(msg[0]!="error"){
-              $('#save_modal').modal('hide');
-              list_reflect();
-            }
+        $("#vi_confirm_box").vi_confirm_box({
+        callback: function(result){
+          if(result=="yes"){
+
+            $.ajax({
+              type:'post',
+              url:base_url+'controller/bank_vouchers/cash_withdrawal_save.php',
+              data: { bank_id : bank_id, payment_amount : payment_amount, payment_date : payment_date,payment_evidence_url : payment_evidence_url, branch_admin_id : branch_admin_id,emp_id : emp_id },
+              success:function(result){        
+                msg_alert(result);
+                var msg = result.split('--');
+                $('#btn_save').prop('disabled',false);
+                if(msg[0]!="error"){
+                  $('#save_modal').modal('hide');
+                  list_reflect();
+                }
+              }
+            });
+          }else{
+                $('#btn_save').prop('disabled',false);
+                $('#btn_save').button('reset');
           }
-        });
+        }
+      });
     }
     });
 

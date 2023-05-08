@@ -4,7 +4,7 @@
 $query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(amount) as sum,sum(credit_charges) as sumc from payment_master where tourwise_traveler_id='$sq_group_info[id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
 $paid_amount = $query['sum']+$query['sumc'];
 $paid_amount = ($paid_amount == '')?'0':$paid_amount;
-$sale_total_amount=$sq_group_info['net_total'] +$query['sumc'];
+$sale_total_amount=$sq_group_info['net_total'] + $query['sumc'];
 if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
 
 $pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_group_info[traveler_group_id]'"));
@@ -32,7 +32,7 @@ else{
 $cancel_amount = ($cancel_amount == '')?'0':$cancel_amount;
 if($sq_group_info['tour_group_status'] == 'Cancel'){
 	if($cancel_amount > $paid_amount){
-		$balance_amount = $cancel_amount - $paid_amount;
+		$balance_amount = $cancel_amount - $paid_amount + $query['sumc'];
 	}
 	else{
 		$balance_amount = 0;
@@ -40,7 +40,7 @@ if($sq_group_info['tour_group_status'] == 'Cancel'){
 }else{
 	if($pass_count==$cancelpass_count){
 		if($cancel_amount > $paid_amount){
-			$balance_amount = $cancel_amount - $paid_amount;
+			$balance_amount = $cancel_amount - $paid_amount + $query['sumc'];
 		}
 		else{
 			$balance_amount = 0;
@@ -108,12 +108,12 @@ include "../../../model/app_settings/generic_sale_widget.php";
 
 							$count++;
 
-							$bg = '';
-
 							if($row_group_payment['clearance_status']=="Pending"){ $bg="warning";}
-
 						    else if($row_group_payment['clearance_status']=="Cancelled"){ $bg="danger";} 
-
+						    else if($row_group_payment['clearance_status']=="Cleared"){ $bg="success";}
+							else{
+								$bg = '';
+							}
 							?>
 
 

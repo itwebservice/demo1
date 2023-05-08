@@ -22,6 +22,10 @@ $grand_total = $_GET['grand_total'];
 $coupon_amount = $_GET['coupon_amount'];
 $net_total = $_GET['net_total'];
 $paid_amount = $_GET['paid_amount'];
+$bg = $_GET['bg'];
+$canc_amount = $_GET['canc_amount'];
+$bal_amount = $_GET['bal_amount'];
+
 $net_total1 = $net_total;
 
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
@@ -33,7 +37,7 @@ if($service_name =='Package Invoice'){
   $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from tourwise_traveler_details where id='$booking_id' and delete_status='0'"));
 }
 
-$total_balance = floatval($net_total) - floatval($paid_amount);
+// $total_balance = floatval($net_total) - floatval($paid_amount);
 $total_balance1 = currency_conversion($currency,$currency,$total_balance);
 $charge = currency_conversion($currency,$currency,$charge);
 $total_cost = currency_conversion($currency,$currency,$total_cost);
@@ -52,7 +56,7 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
 ?>
 <section class="no-pad main_block">
 <div class="col-md-6 mg_tp_10"><p class="border_lt"><span class="font_5">Tour Name : <?= $tour_name?> </span></p></div>
-<div class="col-md-6 mg_tp_10"><p class="border_lt"><span class="font_5">Total Guest : <?= $total_pax ?> </span></p></div>
+<div class="col-md-6 mg_tp_10"><p class="border_lt"><span class="font_5">Total Guest(s) : <?= $total_pax ?> </span></p></div>
 </section>
 
 <section class="print_sec main_block">
@@ -65,8 +69,22 @@ if($app_invoice_format == "Advance"){include "../headers/advance_header_html.php
         <div class="col-md-6"><p class="border_lt"><span class="font_5">TAX</span><span class="float_r"><?= $tax.' '.$tax_amount ?></span></p></div>
         <div class="col-md-6"><p class="border_lt"><span class="font_5">ADVANCE PAID </span><span class="font_5 float_r"><?= $paid_amount ?></span></p></div> 
         <div class="col-md-6"><p class="border_lt"><span class="font_5">COUPON AMOUNT </span><span class="float_r"><?= $coupon_amount ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $total_balance1 ?></span></p></div>
-        <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $net_total ?></span></p></div>
+        <?php
+        if($bg != ''){ ?>
+          <div class="col-md-6">
+            <p class="border_lt"><span class="font_5">CANCELLATION CHARGES </span><span class="font_5 float_r"><?= $currency_code . " " . number_format($canc_amount, 2) ?></span></p>
+          </div>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $net_total ?></span></p></div>
+        <?php } ?>
+        <?php
+        // if($bg != ''){ ?>
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">CURRENT DUE </span><span class="font_5 float_r"><?= $currency_code . " " . number_format(floatval($bal_amount), 2) ?></span></p></div>
+        <?php //} ?>
+        <?php
+        if($bg == ''){ ?>
+          <!-- <div class="col-md-6"></div> -->
+          <div class="col-md-6"><p class="border_lt"><span class="font_5">TOTAL </span><span class="font_5 float_r"><?= $net_total ?></span></p></div>
+        <?php } ?>
       </div>
     </div>
   </div>

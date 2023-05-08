@@ -204,7 +204,7 @@ $query .= " order by booking_id desc";
                 ->setCellValue('B'.$row_count, "Sr. No")
                 ->setCellValue('C'.$row_count, "Booking ID")
                 ->setCellValue('D'.$row_count, "Customer_Name")
-                ->setCellValue('E'.$row_count, "Contact")
+                ->setCellValue('E'.$row_count, "Mobile")
                 ->setCellValue('F'.$row_count, "EMAIL_ID")
                 ->setCellValue('G'.$row_count, "Total_Hotel")
                 ->setCellValue('H'.$row_count, "Booking_Date")
@@ -232,13 +232,14 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':Z'.$row_count)->applyF
 
 $row_count++;
 
-$count = 0;
+        $count = 0;
         $total_balance=0;
         $total_refund=0;        
         $cancel_total =0;
         $sale_total = 0;
         $paid_total = 0;
         $balance_total = 0;
+        $vendor_name1 = '';
 
         $sq_booking = mysqlQuery($query);
         while($row_booking = mysqli_fetch_assoc($sq_booking)){
@@ -338,14 +339,19 @@ $count = 0;
             $sq_purchase_count = mysqli_num_rows(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Hotel Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'"));
             if($sq_purchase_count == 0){  $p_due_date = 'NA'; }
             $sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Hotel Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'");
-            while($row_purchase = mysqli_fetch_assoc($sq_purchase)){		
-                $purchase_amt = $row_purchase['net_total'] - $row_purchase['refund_net_total'];
-                $total_purchase = $total_purchase + $purchase_amt;
+            while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+                if($row_purchase['purchase_return'] == 0){
+                    $total_purchase += $row_purchase['net_total'];
+                }
+                else if($row_purchase['purchase_return'] == 2){
+                    $cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+                    $p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total));
+                    $total_purchase += $p_purchase;
+                }
+                $vendor_name = get_vendor_name_report($row_purchase['vendor_type'], $row_purchase['vendor_type_id']);
+                if($vendor_name != ''){ $vendor_name1 .= $vendor_name.','; }
             }
-            $sq_purchase1 = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Hotel Booking' and estimate_type_id='$row_booking[booking_id]' and delete_status='0'"));		
-            $vendor_name = get_vendor_name_report($sq_purchase1['vendor_type'], $sq_purchase1['vendor_type_id']);
-            if($vendor_name == ''){ $vendor_name1 = 'NA';  }
-            else{ $vendor_name1 = $vendor_name; }
+            $vendor_name1 = substr($vendor_name1, 0, -1);
 
             $invoice_no = get_hotel_booking_id($row_booking['booking_id'],$year);
             $booking_id = $row_booking['booking_id'];

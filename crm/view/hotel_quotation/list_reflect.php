@@ -10,14 +10,17 @@ $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_status = $_POST['branch_status'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 
 if($status != ''){
 
-	$query = "select * from hotel_quotation_master where financial_year_id='$financial_year_id' and status='$status'";
+	$query = "select * from hotel_quotation_master where status='$status'";
 }else{
 
-	$query = "select * from hotel_quotation_master where financial_year_id='$financial_year_id' and status='1' ";
+	$query = "select * from hotel_quotation_master where status='1' ";
+}
+if($financial_year_id!=""){
+	$query .=" and financial_year_id='$financial_year_id'";
 }
 
 if($from_date!='' && $to_date!=""){
@@ -98,9 +101,9 @@ $array_s = array();
 		
 		$copy_btn = ($row_quotation['status'] == '1') ? '<button class="btn btn-warning btn-sm" onclick="quotation_clone('.$row_quotation['quotation_id'].')" title="Create Copy of this Quotation" data-toggle="tooltip"><i class="fa fa-files-o"></i></button>' : '';
 
-		$pdf_btn = ($row_quotation['status'] == '1') ? '<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a> <button class="btn btn-info btn-sm" onclick="send_mail(\''.trim($enq_details['email_id']).'\')" title="Email Quotation to Customer" data-toggle="tooltip"><i class="fa fa-envelope-o"></i></button>' : '';
+		$pdf_btn = ($row_quotation['status'] == '1') ? '<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a> <button class="btn btn-info btn-sm" onclick="send_mail(\''.trim($enq_details['email_id']).'\',\''.$row_quotation['quotation_id'].'\')" id="email-'.$row_quotation['quotation_id'].'" title="Email Quotation to Customer" data-toggle="tooltip"><i class="fa fa-envelope-o"></i></button>' : '';
 
-		$whatsapp_show = ($row_quotation['status'] == '1') ? '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>' : '';
+		$whatsapp_show = ($row_quotation['status'] == '1') ? '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" id="whatsapp-'.$row_quotation['quotation_id'].'" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>' : '';
 
 		$temp_arr = array( "data" => array(
 			(int)(++$count),
@@ -109,12 +112,12 @@ $array_s = array();
 			$enq_details['customer_name'],
 			number_format($cost_details['total_amount'],2).$currency_amount,
 			$emp_name,
-			$pdf_btn.$copy_btn.$whatsapp_show.'<form  style="display:inline-block" action="update/index.php" id="frm_booking_'.$count.'" method="POST">
-				<input  style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
-				<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
-			</form><form  style="display:inline-block" action="quotation_view.php" target="_blank" id="frm_booking_view_'.$count.'" method="GET">
+			$pdf_btn.'<form  style="display:inline-block" action="update/index.php" id="frm_booking_'.$count.'" method="POST">
+			<input  style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
+			<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" id="edit-'.$row_quotation['quotation_id'].'" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>
+			</form>'.$copy_btn.$whatsapp_show.'<form  style="display:inline-block" action="quotation_view.php" target="_blank" id="frm_booking_view_'.$count.'" method="GET">
 				<input style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
-				<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="View Details"><i class="fa fa-eye"></i></button>
+				<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="View Details" id="view-'.$row_quotation['quotation_id'].'"><i class="fa fa-eye"></i></button>
 			</form>',
 		), "bg" =>$bg);
 		array_push($array_s,$temp_arr); 

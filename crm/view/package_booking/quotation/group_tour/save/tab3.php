@@ -26,7 +26,7 @@
 										    <table id="tbl_package_tour_quotation_dynamic_train" name="tbl_package_tour_quotation_dynamic_train" class="table table-bordered no-marg pd_bt_51">
 											<input type="hidden" id="train_dept_date_hidde">
 										        <tr>
-									                <td><input class="css-checkbox" id="chk_tour_group1" type="checkbox" checked><label class="css-label" for="chk_tour_group1"> <label></td>
+									                <td><input class="css-checkbox" id="chk_tour_group1" type="checkbox" checked><label class="css-label" for="chk_tour_group1" checked> <label></td>
 									                <td><input maxlength="15" value="1" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
 									                <td class="col-md-3"><select id="train_from_location1" onchange="validate_location('train_to_location1','train_from_location1')" class="app_select2 form-control train_from" name="train_from_location1" title="From Location" style="width: 100%;">
 											            </select>
@@ -121,12 +121,8 @@
 								                    <option value="">Airline Name</option>
 								                    <?php get_airline_name_dropdown(); ?>
 								            </select></td>
-								            <td><select name="plane_class" id="plane_class1" title="Class" style="width: 300px;">
-								            	<option value="">Class</option>
-								            	<option value="Economy">Economy</option>
-							                    <option value="Premium Economy">Premium Economy</option>
-							                    <option value="Business">Business</option>
-							                    <option value="First Class">First Class</option>
+								            <td><select name="plane_class" id="plane_class1" title="Class" style="width: 180px;">
+                            					<?php get_flight_class_dropdown(); ?>
 								            </select></td>	            
 								            <td><input type="text" id="txt_dapart1" name="txt_dapart" class="app_datetimepicker" placeholder="Departure Date and time" title="Departure Date and time" onchange="get_to_datetime(this.id,'txt_arrval1')" value="<?= date('d-m-Y H:i') ?>" style="width: 160px;" /></td>
 								            <td><input type="text" id="txt_arrval1" name="txt_arrval" class="app_datetimepicker" placeholder="Arrival Date and time" title="Arrival Date and time" style="width: 160px;" value="<?= date('d-m-Y H:i') ?>"/></td>

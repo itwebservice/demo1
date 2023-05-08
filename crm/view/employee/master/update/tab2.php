@@ -8,7 +8,7 @@
 
               <div class="col-md-3 col-sm-6 mg_bt_10">
 
-                  <input class="form-control" type="text" id="txt_bank_name1" name="txt_bank_name" placeholder="Bank Name" title="Bank Name" value="<?= $emp_info['bank_name'] ?>" style="text-transform: uppercase;" > 
+                  <input class="form-control bank_suggest" type="text" id="txt_bank_name1" name="txt_bank_name" placeholder="Bank Name" title="Bank Name" value="<?= $emp_info['bank_name'] ?>" style="text-transform: uppercase;" > 
 
               </div>
 

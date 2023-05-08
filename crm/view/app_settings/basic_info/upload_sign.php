@@ -49,8 +49,8 @@ $current_dir = check_dir($current_dir , $day);
 $current_dir = check_dir($current_dir , $timestamp);
 
 
-
-$file = $current_dir.basename($_FILES['uploadfileSIGN']['name']); 
+$file_name = str_replace(' ','_',basename($_FILES['uploadfileSIGN']['name']));
+$file = $current_dir.$file_name; 
 
 if($_FILES['uploadfileSIGN']['size']<=100000){
 	if (move_uploaded_file($_FILES['uploadfileSIGN']['tmp_name'], $file)) { 

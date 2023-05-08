@@ -175,6 +175,54 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
           </div>
         </section>
         <?php } ?>
+        <?php 
+        $sq_h_count = mysqli_num_rows(mysqlQuery("select * from group_tour_hotel_entries where tour_id='$sq_quotation[tour_group_id]'"));
+        if($sq_h_count>0){ 
+        ?>
+        <!-- hotel -->
+        <section class="transportDetailsPanel main_block side_pad mg_tp_30 mg_bt_30">
+          <div class="travsportInfoBlock">
+            <div class="transportIcon">
+              <img src="<?= BASE_URL ?>images/quotation/p4/TI_hotel.png" class="img-responsive">
+            </div>
+            <div class="transportDetails">
+              <div class="table-responsive" style="margin-top:1px;margin-right: 1px;">
+                <table class="table tableTrnasp no-marg" id="tbl_emp_list">
+                  <thead>
+                    <tr class="table-heading-row">
+                      <th>City Name</th>
+                      <th>Hotel Name</th>
+                      <th>Hotel Type</th>
+                      <th>Total Nights</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php
+                    $count = 0;
+                    $sq_hotel = mysqlQuery("select * from group_tour_hotel_entries where tour_id='$sq_quotation[tour_group_id]'");
+                    while($row_hotel = mysqli_fetch_assoc($sq_hotel))
+                    {
+                      ?>
+                      <tr>
+                        <td><?php
+                        $city = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id = ".$row_hotel['city_id']));
+                        echo $city['city_name'] ?></td>
+                        <td><?php
+                        $hotel = mysqli_fetch_assoc(mysqlQuery("select hotel_name from hotel_master where hotel_id = ".$row_hotel['hotel_id']));
+                        echo $hotel['hotel_name'] ?></td>
+                        <td><?= $row_hotel['hotel_type'] ?></td>
+                        <td><?= $row_hotel['total_nights'] ?></td>
+                      </tr>
+                      <?php
+                    }
+                    ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+        <?php } ?>
         <?php
         $sq_cr_count = mysqli_num_rows(mysqlQuery("select * from group_tour_quotation_cruise_entries where quotation_id='$quotation_id'"));
         if($sq_cr_count>0){ ?>
@@ -464,12 +512,12 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accName.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $acc_name ?></h4>
+                  <h4 class="no-marg"><?= ($acc_name != '') ? $acc_name : 'NA' ?></h4>
                   <p>A/C TYPE</p>
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/accNumber.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_acc_no ?></h4>
+                  <h4 class="no-marg"><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></h4>
                   <p>A/C NO</p>
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
@@ -479,7 +527,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 </div>
                 <div class="col-md-4 text-center mg_bt_30">
                   <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/code.png" class="img-responsive"></div>
-                  <h4 class="no-marg"><?= $bank_swift_code ?></h4>
+                  <h4 class="no-marg"><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></h4>
                   <p>SWIFT CODE</p>
                 </div>
                 <?php 

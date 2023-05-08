@@ -9,7 +9,7 @@ if ($costDetails['tax_amount'] !== 0.00 && ($costDetails['tax_amount']) !== '') 
 	$service_tax_subtotal1 = explode(',', $costDetails['tax_amount']);
 	for ($i = 0; $i < sizeof($service_tax_subtotal1); $i++) {
 		$service_tax = explode(':', $service_tax_subtotal1[$i]);
-		$service_tax_amount = $service_tax_amount + $service_tax[2];
+		$service_tax_amount = $service_tax_amount + floatval($service_tax[2]);
 	}
 }
 $markupservice_tax_amount = 0;
@@ -17,8 +17,19 @@ if ($costDetails['markup_tax'] !== 0.00 && $costDetails['markup_tax'] !== "") {
 	$service_tax_markup1 = explode(',', $costDetails['markup_tax']);
 	for ($i = 0; $i < sizeof($service_tax_markup1); $i++) {
 		$service_tax = explode(':', $service_tax_markup1[$i]);
-		$markupservice_tax_amount = $markupservice_tax_amount + $service_tax[2];
+		$markupservice_tax_amount = $markupservice_tax_amount + floatval($service_tax[2]);
 	}
+}
+if($costDetails['tax_apply_on']== '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($costDetails['tax_apply_on'] == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($costDetails['tax_apply_on'] == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
 }
 foreach ($bsmValues as $key => $value) {
 	switch ($key) {
@@ -39,8 +50,10 @@ foreach ($bsmValues as $key => $value) {
 ?>
 <form id="frm_tab3">
     <div class="app_panel">
-        <?php
-		?>
+        <input type="hidden" id="tax_apply_on-u_1" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+        <input type="hidden" id="atax_apply_on-u_1" name="atax_apply_on" value="<?php echo $costDetails['tax_apply_on'] ?>">
+        <input type="hidden" id="tax_value1-u_1" name="tax_value1" value="<?php echo $costDetails['tax_value'] ?>">
+        <input type="hidden" id="markup_tax_value1-u_1" name="markup_tax_value1" value="<?php echo $costDetails['markup_tax_value'] ?>">
         <div class="container" id="table_data">
             <div class="row mg_tp_10">
                 <div class="col-xs-12">
@@ -54,8 +67,8 @@ foreach ($bsmValues as $key => $value) {
                                         <td class="header_btn header_btn" style="padding:4px"><small id="basic_show-u_1"
                                                 style="color:red"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_b ?></span></small><input
                                                 type="number" id="basic_cost-u_1" name="basic_cost-u_1"
-                                                placeholder="Hotel Cost" title="Hotel Cost" value="<?= $basic_cost ?>"
-                                                onchange="validate_balance(this.id);get_auto_values('quotation_date1','basic_cost-u_1','payment_mode','service_charge-u_1','markup_cost-u_1','update','true','service_charge','discount1',true);">
+                                                placeholder="Basic Amount" title="Basic Amount" value="<?= $basic_cost ?>"
+                                                onchange="validate_balance(this.id);get_auto_values('quotation_date1','basic_cost-u_1','payment_mode','service_charge-u_1','markup_cost-u_1','update','true','service_charge');">
                                         </td>
 
                                         <td class="header_btn header_btn" style="padding:4px"><small id="service_show-u_1"
@@ -63,7 +76,7 @@ foreach ($bsmValues as $key => $value) {
                                                 type="number" id="service_charge-u_1" name="service_charge-u_1"
                                                 placeholder="Service Charge" title="Service Charge"
                                                 value="<?= $service_charge ?>"
-                                                onchange="validate_balance(this.id);get_auto_values('quotation_date1','basic_cost-u_1','payment_mode','service_charge-u_1','markup_cost-u_1','update','false','service_charge','discount1',true);">
+                                                onchange="validate_balance(this.id);get_auto_values('quotation_date1','basic_cost-u_1','payment_mode','service_charge-u_1','markup_cost-u_1','update','false','service_charge');">
                                         </td>
 
                                         <td class="header_btn header_btn" style="padding:4px"><small>&nbsp;</small><input type="text" id="tax_amount-u_1"
@@ -71,7 +84,7 @@ foreach ($bsmValues as $key => $value) {
                                                 value="<?= $costDetails['tax_amount'] ?>"
                                                 onchange="validate_balance(this.id)" readonly> </td>
 
-                                        <td class="header_btn header_btn" style="padding:4px"><small>&nbsp;</small><input type="number" id="markup_cost-u_1" name="markup_cost-u_1" placeholder="Markup Cost" title="Markup Cost" value="<?= $markup ?>" onchange="validate_balance(this.id);get_auto_values('quotation_date1','basic_cost-u_1','payment_mode','service_charge-u_1','markup_cost-u_1','update','false','service_charge','discount1',true);">
+                                        <td class="header_btn header_btn" style="padding:4px"><small>&nbsp;</small><input type="number" id="markup_cost-u_1" name="markup_cost-u_1" placeholder="Markup Amount" title="Markup Amount" style="width:160px" value="<?= $markup ?>" onchange="validate_balance(this.id);get_auto_values('quotation_date1','basic_cost-u_1','payment_mode','service_charge-u_1','markup_cost-u_1','update','false','service_charge');">
                                         </td>
 
                                         <td class="header_btn header_btn" style="padding:4px"><small id="markup_show-u_1"
@@ -167,23 +180,28 @@ $('#frm_tab3').validate({
             if (row.cells[0].childNodes[0].checked) {
 
                 hotelDetails.push({
-                    city_id: row.cells[2].childNodes[0].value,
-                    hotel_id: row.cells[3].childNodes[0].value,
-                    hotel_cat: row.cells[4].childNodes[0].value,
-                    meal_plan: row.cells[5].childNodes[0].value,
-                    checkin: row.cells[6].childNodes[0].value,
-                    checkout: row.cells[7].childNodes[0].value,
-                    hotel_type: row.cells[8].childNodes[0].value,
-                    hotel_stay_days: row.cells[9].childNodes[0].value,
-                    total_rooms: row.cells[10].childNodes[0].value,
-                    extra_bed: row.cells[11].childNodes[0].value,
-                    hotel_cost: row.cells[12].childNodes[0].value
+                    tour_type: row.cells[2].childNodes[0].value,
+                    city_id: row.cells[3].childNodes[0].value,
+                    hotel_id: row.cells[4].childNodes[0].value,
+                    hotel_cat: row.cells[5].childNodes[0].value,
+                    meal_plan: row.cells[6].childNodes[0].value,
+                    checkin: row.cells[7].childNodes[0].value,
+                    checkout: row.cells[8].childNodes[0].value,
+                    hotel_type: row.cells[9].childNodes[0].value,
+                    hotel_stay_days: row.cells[10].childNodes[0].value,
+                    total_rooms: row.cells[11].childNodes[0].value,
+                    extra_bed: row.cells[12].childNodes[0].value,
+                    hotel_cost: row.cells[13].childNodes[0].value
                 });
             }
         }
 
         var table = document.getElementById("hotel_quotation_costing_update");
         var rowCount = table.rows.length;
+
+		var tax_apply_on = $('#atax_apply_on-u_1').val();
+		var tax_value = $('#tax_value1-u_1').val();
+		var markup_tax_value = $('#markup_tax_value1-u_1').val();
 
         var row = table.rows[0];
         var costingDetails = {
@@ -193,7 +211,10 @@ $('#frm_tab3').validate({
             markup_cost: row.cells[3].childNodes[1].value,
             markup_tax: row.cells[4].childNodes[1].value,
             roundoff: row.cells[5].childNodes[1].value,
-            total_amount: row.cells[6].childNodes[1].value
+            total_amount: row.cells[6].childNodes[1].value,
+			'tax_apply_on':tax_apply_on,
+			'tax_value':tax_value,
+			'markup_tax_value':markup_tax_value
         };
         var bsmValues = {
             "basic": $(row.cells[0].childNodes[0]).find('span').text(),

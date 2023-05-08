@@ -390,6 +390,7 @@ $(function () {
 			}
 
 			//Itinerary Table
+            var tours_count = $('#sq_tours_count').val();
 			var quotation_id = $('#quotation_id1').val();
 			if (quotation_id == 0) {
 				var special_attraction_arr = new Array();
@@ -476,15 +477,19 @@ $(function () {
 			var hotel_taxes = $('#hotel_taxes').val();
 			var hotel_markup_taxes = $('#hotel_markup_taxes').val();
 			var hotel_tds = $('#hotel_tds').val();
-
+            var tax_apply_on = $('#atax_apply_on').val();
+            var tax_value = $('#tax_value1').val();
 			var roundoff = $('#roundoff').val();
+
 			var reflections = [];
 			reflections.push({
 				hotel_sc: hotel_sc,
 				hotel_markup: hotel_markup,
 				hotel_taxes: hotel_taxes,
 				hotel_markup_taxes: hotel_markup_taxes,
-				hotel_tds: hotel_tds
+				hotel_tds: hotel_tds,
+				'tax_apply_on':tax_apply_on,
+				'tax_value':tax_value
 			});
 			var bsmValues = [];
 			bsmValues.push({

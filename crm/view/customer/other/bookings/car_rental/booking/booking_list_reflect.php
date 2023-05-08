@@ -54,7 +54,7 @@ if ($booking_id != "") {
 									if ($paid_amount > $cancel_amount){
 										$balance_amount = 0;
 									} else {
-										$balance_amount = $cancel_amount - $paid_amount;
+										$balance_amount = $cancel_amount - $paid_amount + $sq_payment_info['sumc'];
 									}
 								} else {
 									$balance_amount = 0;

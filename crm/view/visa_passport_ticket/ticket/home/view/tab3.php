@@ -19,7 +19,7 @@ if($sq_visa_info['cancel_type'] == '1'){
 			if($paid_amount > $cancel_amount){
 				$balance_amount = 0;
 			}else{
-				$balance_amount = $cancel_amount - $paid_amount;
+				$balance_amount = $cancel_amount - $paid_amount + $charge;
 			}
 		}else{
 			$balance_amount = 0;
@@ -35,6 +35,7 @@ if($sq_visa_info['cancel_type'] == '1'){
 else{
 	$balance_amount = $sale_total_amount - $paid_amount;
 }
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 
 include "../../../../../model/app_settings/generic_sale_widget.php";
 ?>

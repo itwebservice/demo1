@@ -36,7 +36,7 @@ while($row_booking = mysqli_fetch_assoc($sq_exc)){
 	$yr = explode("-", $date);
 	$year = $yr[0];
 	$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-	$contact_no = $sq_customer_info['country_code'].$encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
+	$contact_no = $encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
 	$email_id = $encrypt_decrypt->fnDecrypt($sq_customer_info['email_id'], $secret_key);
 
 	$customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];
@@ -93,7 +93,7 @@ while($row_booking = mysqli_fetch_assoc($sq_exc)){
 	$email_id,
 	$row_booking['service'],
 	get_date_user($row_booking['created_at']),
-	'<button class="btn btn-info btn-sm" onclick="exc_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" id="packagev_btn-'. $row_booking['booking_id'] .'" onclick="exc_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($total_cost,2),
 	number_format($tax_amount,2),
 	number_format($coupon_amount,2),
@@ -102,10 +102,10 @@ while($row_booking = mysqli_fetch_assoc($sq_exc)){
 	number_format($cancel_amount, 2),
 	number_format($total_cost1, 2),
 	number_format($paid_amount, 2),
-	'<button class="btn btn-info btn-sm" onclick="payment_view_modal('.$row_booking['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	'<button class="btn btn-info btn-sm" id="paymentv_btn-'. $row_booking['booking_id'] .'" onclick="payment_view_modal('.$row_booking['booking_id'] .')"  data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	number_format($balance_amount, 2),
-	number_format($total_purchase,2),
-	'<button class="btn btn-info btn-sm" onclick="supplier_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
+	// number_format($total_purchase,2),
+	// '<button class="btn btn-info btn-sm" id="supplierv_btn-'. $row_booking['booking_id'] .'" onclick="supplier_view_modal('. $row_booking['booking_id'] .')" data-toggle="tooltip" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>',
 	$emp_name,
 	), "bg" =>$bg);
 	array_push($array_s,$temp_arr);

@@ -20,10 +20,10 @@ if($pass_count == $cancel_count){
 			if($paid_amount > $cancel_amount){
 				$balance_amount = 0;
 			}else{
-				$balance_amount = $cancel_amount - $paid_amount;
+				$balance_amount = $cancel_amount - $paid_amount + $charge;
 			}
 		}else{
-		   $balance_amount = 0;
+			$balance_amount = 0;
 		}
 	}
 	else{
@@ -99,6 +99,9 @@ include "../../../../../model/app_settings/generic_sale_widget.php";
 									else if($row_payment['clearance_status']=="Cancelled"){ 
 										$bg='danger';
 										$sq_cancel_amount = $sq_cancel_amount + $row_payment['payment_amount'];
+									}
+									else if($row_payment['clearance_status']=="Cleared"){ 
+										$bg='success';
 									}
 
 									?>

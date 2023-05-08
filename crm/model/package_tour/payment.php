@@ -362,7 +362,7 @@ function package_tour_payment_master_delete(){
 
   $bank_cash_book_master->bank_cash_book_master_update($module_name, $payment_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 
-  $sq_delete = mysqlQuery("update package_payment_master set amount = '0', delete_status='1' where payment_id='$payment_id'");
+  $sq_delete = mysqlQuery("update package_payment_master set amount = '0', delete_status='1',credit_charges='0' where payment_id='$payment_id'");
   if($sq_delete){
     echo 'Entry deleted successfully!';
     exit;
@@ -441,7 +441,7 @@ function package_tour_payment_master_update()
 
   $sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from package_payment_master where payment_id='$payment_id'"));
 
-  $clearance_status = ( $payment_mode=='Cheque' && $payment_mode=="Credit Card") ? "Pending" : $sq_payment_info['clearance_status'];
+  $clearance_status = $sq_payment_info['clearance_status'];
   if($payment_mode=="Cash"){ $clearance_status = ""; }
   
   begin_t();
@@ -689,7 +689,7 @@ public function payment_email_notification_send($booking_id, $payment_amount, $p
     if($pass_count == $cancle_count){
       $sq_esti = mysqli_fetch_assoc(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$booking_id'"));
       $canc_amount = $sq_esti['cancel_amount'];
-      $outstanding = ($paid_amount > $canc_amount) ? 0 : (floatval($canc_amount) - floatval($paid_amount));
+      $outstanding = ($paid_amount > $canc_amount) ? 0 : (floatval($canc_amount) - floatval($paid_amount) + $credit_card_amount);
     }else{
       $outstanding =  $total_amount - $paid_amount;
     }
@@ -772,7 +772,7 @@ public function whatsapp_send(){
 	if($pass_count == $cancle_count){
     $sq_esti = mysqli_fetch_assoc(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$booking_id'"));
     $canc_amount = $sq_esti['cancel_amount'];
-    $outstanding = ($paid_amount > $canc_amount) ? 0 : (floatval($canc_amount) - floatval($paid_amount));
+    $outstanding = ($paid_amount > $canc_amount) ? 0 : (floatval($canc_amount) - floatval($paid_amount)) + $credit_card_amount;
   }else{
     $outstanding =  $total_amount - $paid_amount;
   }

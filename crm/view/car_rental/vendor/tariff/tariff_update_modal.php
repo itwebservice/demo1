@@ -56,7 +56,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
                                     <input type="text" id="local_extra_km" name="local_extra_km" data-toggle="tooltip" placeholder="Extra KM Rate" title="Extra KM Rate" class="form-control" value="<?= $sq_vendor['extra_km_rate']?>"/>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
-                                    <input type="text" id="local_rate" name="local_rate" data-toggle="tooltip" placeholder="Cost" title="Cost" class="form-control" value="<?= $sq_vendor['rate']?>"/>
+                                    <input type="text" id="local_rate" name="local_rate" data-toggle="tooltip" placeholder="*Amount" title="Amount" class="form-control" value="<?= $sq_vendor['rate']?>"/>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10" >
                                     <select name="local_status" id="local_status" data-toggle="tooltip" title="Status" class="form-control">
@@ -114,7 +114,7 @@ if($role!='Admin' && $role!="Branch Admin"){ $value="readonly"; }
                                     <input type="text" id="total_max_km" name="total_max_km" data-toggle="tooltip" placeholder="Total Max KM" title="Total Max KM" class="form-control" value="<?= $sq_vendor['total_max_km']?>"/>
                                 </div>
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
-                                    <input type="text" id="rate" name="rate" data-toggle="tooltip" placeholder="Cost" title="Cost" class="form-control" value="<?= $sq_vendor['rate']?>"/>
+                                    <input type="text" id="rate" name="rate" data-toggle="tooltip" placeholder="*Amount" title="Amount" class="form-control" value="<?= $sq_vendor['rate']?>"/>
                                 </div>
 
                                 <div class="col-sm-3 col-sm-6 mg_bt_10">
@@ -185,7 +185,12 @@ $('#frm_car_rental_vendor_update').validate({
         var local_extra_km = $('#local_extra_km').val();
         var local_rate = $('#local_rate').val();
         var local_status = $('#local_status').val();
-
+        if(tour_type=="Local" ){
+            if(local_vehicle_name == ''){
+                error_msg_alert("Enter vehicle name"); return false; }
+            if(local_rate == ''){
+                error_msg_alert("Enter amount"); return false; }
+        }
         var vehicle_name = $('#vehicle_name').val();
         var extra_hrs_rate = $("#extra_hrs_rate").val();
         var extra_km = $("#extra_km").val();
@@ -199,6 +204,12 @@ $('#frm_car_rental_vendor_update').validate({
         var state_entry_pass = $("#state_entry_pass").val();
         var other_charges = $("#other_charges").val();
         var status = $("#status").val();
+        if(tour_type!="Local" ){
+            if(local_vehicle_name == ''){
+                vehicle_name("Enter vehicle name"); return false; }
+            if(rate == ''){
+                error_msg_alert("Enter amount"); return false; }
+        }
 
         var base_url = $('#base_url').val();
         $('#tbtn_update').button('loading');

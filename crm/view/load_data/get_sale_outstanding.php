@@ -10,7 +10,7 @@ if($booking_type=="visa"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_visa['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -27,7 +27,7 @@ else if($booking_type=="flight"){
                 if($total_pay_amt > $canc_amount){
                     $outstanding = 0;
                 }else{
-                    $outstanding = $canc_amount - $total_pay_amt;
+                    $outstanding = $canc_amount - $total_pay_amt  + $sq_pay['sumc'];
                 }
             }else{
                 $outstanding = 0;
@@ -51,7 +51,7 @@ else if($booking_type=="train"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_train_ticket_info['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -63,7 +63,7 @@ else if($booking_type=="hotel"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_booking['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -75,7 +75,7 @@ else if($booking_type=="bus"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_bus_info['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -87,7 +87,7 @@ else if($booking_type=="car"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_booking['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -99,7 +99,7 @@ else if($booking_type=="excursion"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_exc_info['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -111,7 +111,7 @@ else if($booking_type=="miscellaneous"){
     $total_pay_amt = $sq_pay['sum']  + $sq_pay['sumc'];
     if($status != ''){
         $canc_amount = $sq_visa_info['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -128,7 +128,7 @@ else if($booking_type=="package"){
     if($status != ''){
         $sq_esti = mysqli_fetch_assoc(mysqlQuery("select * from package_refund_traveler_estimate where booking_id='$sq_booking[booking_id]'"));
         $canc_amount = $sq_esti['cancel_amount'];
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }
@@ -149,7 +149,7 @@ else if($booking_type=="group"){
             $sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_traveler_estimate where tourwise_traveler_id='$sq_booking[id]'"));
             $canc_amount = $sq_tour_refund['cancel_amount'];
         }
-        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+        $outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $sq_pay['sumc'];
     }else{
         $outstanding =  $total_sale - $total_pay_amt;
     }

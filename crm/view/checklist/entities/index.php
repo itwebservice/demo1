@@ -7,7 +7,7 @@ require_once('../../layouts/admin_header.php');
 $emp_id = $_SESSION['emp_id'];
 ?>
 <div class="row text-right mg_tp_20 mg_bt_20"> <div class="col-md-12">
-	<button class="btn btn-info btn-sm ico_left" onclick="checklist_save()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Checklist</button>
+	<button class="btn btn-info btn-sm ico_left" data-toggle="tooltip" title="Add Checklist" id="checklist_save_btn_add" onclick="checklist_save();btnDisableEnable(this.id)"><i class="fa fa-plus"></i>&nbsp;&nbsp;Checklist</button>
 </div> </div>
 <div class="app_panel_content Filter-panel">
 <div class="row">
@@ -49,14 +49,22 @@ entities_list_reflect();
 function update_modal(entity_id)
 {
 	
+    $('#update_btn-'+entity_id).button('loading');
+    $('#update_btn-'+entity_id).prop('disabled',true);
     $.post('entity_update_modal.php', {entity_id : entity_id}, function(data){
         $('#div_entitiesup_list').html(data);
+        $('#update_btn-'+entity_id).button('reset');
+        $('#update_btn-'+entity_id).prop('disabled',false);
     });
 }
 function view_modal(entity_id)
 {
+    $('#view_btn-'+entity_id).button('loading');
+    $('#view_btn-'+entity_id).prop('disabled',true);
 	$.post('view_to_do_name.php', {entity_id : entity_id}, function(data){
         $('#div_view_entries').html(data);
+        $('#view_btn-'+entity_id).button('reset');
+        $('#view_btn-'+entity_id).prop('disabled',false);
     });
 }
 // checklist_content_reflect();

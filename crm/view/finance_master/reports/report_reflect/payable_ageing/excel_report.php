@@ -206,12 +206,12 @@ while($row_supplier = mysqli_fetch_assoc($sq_supplier))
 
     $booking_amt =0; $total_paid = 0; $cancel_est = 0; $total_outstanding = 0;
     $booking_amt = $row_package['net_total'];
-    $total_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where vendor_type='$row_package[vendor_type]' and vendor_type_id ='$row_package[vendor_type_id]' and estimate_type='$row_package[estimate_type]' and estimate_type_id ='$row_package[estimate_type_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
+    $total_pay=mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where estimate_id ='$row_package[estimate_id]' and clearance_status!='Pending' AND clearance_status!='Cancelled'"));
     $total_paid = $total_pay['sum'];
     $cancel_est = $row_package['cancel_amount'];
 
 		//Consider sale cancel amount
-		if($row_package['status'] == 'Cancel'){ 	
+		if($row_package['purchase_return'] == '1'){
 			if($total_paid > 0){
 				if($cancel_est >0){
 					if($total_paid > $cancel_est){
@@ -220,15 +220,18 @@ while($row_supplier = mysqli_fetch_assoc($sq_supplier))
 						$pending_amt = $cancel_est - $total_paid;
 					}
 				}else{
-				$pending_amt = 0;
+					$pending_amt = 0;
 				}
 			}
 			else{
 				$pending_amt = $cancel_est;
 			}
+		}else if($row_package['purchase_return'] == '2'){
+			$cancel_estimate = json_decode($row_package['cancel_estimate']);
+			$pending_amt = (($booking_amt - floatval($cancel_estimate[0]->net_total)) + $cancel_est) - $total_paid;
 		}
 		else{
-			$pending_amt = $booking_amt-$total_paid;
+			$pending_amt = $booking_amt - $total_paid;
 		}
     $due_date = get_date_user($row_package['due_date']);
     if(strtotime($till_date1) < strtotime($due_date)) {

@@ -84,6 +84,9 @@ var columns = [{
         "bSortable": false
     },
     {
+        title: "Receipt_ID"
+    },
+    {
         title: "Booking_ID"
     },
     {
@@ -131,12 +134,16 @@ function payment_list_reflect() {
 payment_list_reflect();
 
 function payment_update_modal(payment_id) {
+    
+    $('#edit-'+payment_id).button('loading');
+    $('#edit-'+payment_id).prop('disabled',true);
     var branch_status = $('#branch_status').val();
     $.post('../payment/payment_update_modal.php', {
         payment_id: payment_id,
         branch_status: branch_status
     }, function(data) {
-        console.log(data);
+        $('#edit-'+payment_id).button('reset');
+        $('#edit-'+payment_id).prop('disabled',false);
         $('#div_payment_update').html(data);
     });
 }

@@ -47,14 +47,9 @@ $role_id = $_SESSION['role_id'];
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <input type="text" id="customer_name" name="customer_name" placeholder="*Customer Name"
                         title="Customer Name" required>
+                    <input type="hidden" id="cust_data" name="cust_data" value='<?= get_customer_hint() ?>'>
                 </div>
-
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <input type="text" id="email_id" name="email_id" placeholder="Email Id" title="Email Id">
-                </div>
-            </div>
-            <div class="row mg_tp_10">
-                <div class="col-md-4 col-sm-6 mg_bt_10">
+                <div class="col-md-4 col-sm-6">
                     <div class="col-md-4" style="padding-left:0px;">
                         <select name="country_code" id="country_code" title="Country code" style="width:100px;">
                             <?= get_country_code(); ?>
@@ -64,6 +59,12 @@ $role_id = $_SESSION['role_id'];
                         <input type="text" class="form-control" id="whatsapp_no" onchange="mobile_validate(this.id);"
                             name="whatsapp_no" placeholder="*WhatsApp No" title="WhatsApp No">
                     </div>
+                </div>
+
+            </div>
+            <div class="row mg_tp_10">
+                <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                    <input type="text" id="email_id" name="email_id" placeholder="Email Id" title="Email Id">
                 </div>
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <input type="text" id="total_adult" name="total_adult" placeholder="*Total Adult(s)"
@@ -119,6 +120,25 @@ $role_id = $_SESSION['role_id'];
 <script>
 $('#country_code').select2();
 
+$("#customer_name").autocomplete({
+    source: JSON.parse($('#cust_data').val()),
+    select: function(event, ui) {
+        $("#customer_name").val(ui.item.label);
+        var newOption = $("<option selected='selected'></option>").val(ui.item.country_id).text(ui.item.country_code);
+        $('#country_code').append(newOption).trigger('change.select2');
+        $('#whatsapp_no').val(ui.item.contact_no);
+        $('#email_id').val(ui.item.email_id);
+    },
+    open: function(event, ui) {
+        $(this).autocomplete("widget").css({
+            "width": document.getElementById("customer_name").offsetWidth
+        });
+    }
+}).data("ui-autocomplete")._renderItem = function(ul, item) {
+    return $("<li disabled>")
+        .append("<a>" + item.label + "</a>")
+        .appendTo(ul);
+};
 // New Customization ----start
 $(document).ready(function() {
     let searchParams = new URLSearchParams(window.location.search);

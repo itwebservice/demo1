@@ -194,7 +194,7 @@ class cms_master{
 			$j = 0;
 
 			$entry_id = $data[$j]->entry_id;
-			$title = $data[$j]->title;
+			$title = addslashes($data[$j]->title);
 			$image = $data[$j]->image;
 			$description = addslashes($data[$j]->description);
 
@@ -274,11 +274,11 @@ class cms_master{
 		}else{
 
 			if($sq_color){
-				echo "Color saved successfully.";
+				echo "B2C CMS settings updated.";
 				exit;
 			}else{
 
-				echo "Color not saved successfully.";
+				echo "B2C CMS settings not updated.";
 				exit;
 			}
 		}

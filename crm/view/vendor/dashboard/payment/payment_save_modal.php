@@ -72,7 +72,7 @@ $role = $_SESSION['role'];
                   <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
                 </div>
                 <div class="col-md-4">
-                  <input type="text" id="transaction_id" onchange="validate_balance(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+                  <input type="number" id="transaction_id" onchange="validate_balance(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
                 </div>
                 <div class="col-md-4">
                   <select class="form-control" name="bank_id" id="bank_id" title="Debitor Bank" disabled>
@@ -168,13 +168,11 @@ function payment_evidence_upload(offset='')
 $(function(){
   $('#frm_vendor_payment_save1').validate({
       rules:{              
-              vendor_type: { required: true },
-              payment_amount : { required: true, number:true },
-              payment_date : { required: true },
-              payment_mode : { required : true },
-              bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-              bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+        vendor_type: { required: true },
+        payment_amount : { required: true, number:true },
+        payment_date : { required: true },
+        payment_mode : { required : true },     
+        bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){
         $('#payment_save').prop('disabled',true);
@@ -268,6 +266,7 @@ $(function(){
         var payment_amount_arr = new Array();
         var purchase_type_arr = new Array();
         var purchase_id_arr = new Array();
+        var estimate_id_arr = [];
         
         var temp_payment = parseFloat(payment_amount) + parseFloat(advance_nullify);
         
@@ -294,10 +293,11 @@ $(function(){
         var rowCount = table.rows.length;
         for(var i=0; i<rowCount; i++){
           var row = table.rows[i];
-          if(row.cells[4].childNodes[0].checked){
+          if(row.cells[6].childNodes[0].checked){
             var purchase_type = row.cells[1].childNodes[0].value;
-            var purchase_id = row.cells[2].childNodes[0].value;
-            var purchase_amount = row.cells[3].childNodes[0].value; 
+            var estimate_id = row.cells[2].childNodes[0].value;
+            var purchase_id = row.cells[3].childNodes[0].value;
+            var purchase_amount = row.cells[5].childNodes[0].value; 
             
             // Payment is equal to the purchase amount
             if(parseFloat(temp_payment) == parseFloat(purchase_amount)){
@@ -305,6 +305,7 @@ $(function(){
               payment_amount_arr.push(purchase_amount);
               purchase_type_arr.push(purchase_type);
               purchase_id_arr.push(purchase_id);
+              estimate_id_arr.push(estimate_id);
             }  
             // Payment is less than purchase amount
             else if(parseFloat(temp_payment) < parseFloat(purchase_amount)){
@@ -312,6 +313,7 @@ $(function(){
               payment_amount_arr.push(temp_payment);
               purchase_type_arr.push(purchase_type);
               purchase_id_arr.push(purchase_id);
+              estimate_id_arr.push(estimate_id);
               temp_payment = 0;
             } 
             // Payment is greater than purchase amount
@@ -320,6 +322,7 @@ $(function(){
               payment_amount_arr.push(purchase_amount);
               purchase_type_arr.push(purchase_type);
               purchase_id_arr.push(purchase_id);
+              estimate_id_arr.push(estimate_id);
             }
           }
         }
@@ -341,7 +344,7 @@ $(function(){
                   $.ajax({
                     type: 'post',
                     url: base_url+'controller/vendor/dashboard/payment/payment_save.php',
-                    data:{ vendor_type : vendor_type, vendor_type_id : vendor_type_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_evidence_url :payment_evidence_url, branch_admin_id : branch_admin_id , emp_id : emp_id,advance_nullify : advance_nullify,total_payment_amount : total_payment_amount,total_purchase : total_purchase,payment_amount_arr : payment_amount_arr,purchase_type_arr : purchase_type_arr,purchase_id_arr : purchase_id_arr},
+                    data:{ vendor_type : vendor_type, vendor_type_id : vendor_type_id, payment_amount : payment_amount, payment_date : payment_date, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, payment_evidence_url :payment_evidence_url, branch_admin_id : branch_admin_id , emp_id : emp_id,advance_nullify : advance_nullify,total_payment_amount : total_payment_amount,total_purchase : total_purchase,payment_amount_arr : payment_amount_arr,purchase_type_arr : purchase_type_arr,purchase_id_arr : purchase_id_arr,estimate_id_arr:estimate_id_arr},
                     success: function(result){
                     $('#payment_save').button('reset');
                     $('#payment_save').prop('disabled',false);

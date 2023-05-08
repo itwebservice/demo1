@@ -94,6 +94,7 @@ public function finance_save($refund_id)
 {
 	$row_spec = 'purchase';
 	$estimate_id = $_POST['estimate_id'];
+	$estimate_type = $_POST['estimate_type'];
 	$estimate_type_id =$_POST['estimate_type_id'];
 	$vendor_type = $_POST['vendor_type'];
 	$vendor_type_id = $_POST['vendor_type_id'];
@@ -116,19 +117,25 @@ public function finance_save($refund_id)
 	    $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
 		$pay_gl = $sq_bank['ledger_id'];
 		$type='BANK RECEIPT';
-     } 
+    } 
 
      //Getting supplier Ledger
     $sq_sup = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$vendor_type_id' and user_type='$vendor_type'"));
     $supplier_gl = $sq_sup['ledger_id'];
 
+	$vendor_type_val = get_vendor_name($vendor_type, $vendor_type_id);
+	$estimate_type_val = get_estimate_type_name($estimate_type, $estimate_type_id);
+	$yr = explode("-", $refund_date);
+	$year = $yr[0];
+	$estimate_id_full = get_vendor_estimate_id($estimate_id,$year)." : ".$vendor_type_val."(".$vendor_type.") : ".$estimate_type_val;
+	
 	////////Refund Amount//////
     $module_name = $vendor_type;
     $module_entry_id = $refund_id;
     $transaction_id = "";
     $payment_amount = $payment_amount1;
     $payment_date = $refund_date;
-    $payment_particular = get_refund_charges_particular(get_vendor_estimate_id($estimate_id,$yr1),get_vendor_refund_id($refund_id,$yr1),$vendor_type,$vendor_type_id,$payment_date,$payment_mode);
+    $payment_particular = get_refund_charges_particular(get_vendor_estimate_id($estimate_id,$yr1),get_vendor_refund_id($refund_id,$yr1),$vendor_type,$vendor_type_id,$payment_date,$payment_mode,$estimate_id_full);
     $ledger_particular = '';
     $gl_id = $pay_gl;
     $payment_side = "Debit";
@@ -141,7 +148,7 @@ public function finance_save($refund_id)
     $transaction_id = "";
     $payment_amount = $payment_amount1;
     $payment_date = $refund_date;
-    $payment_particular = get_refund_charges_particular(get_vendor_estimate_id($estimate_id,$yr1),get_vendor_refund_id($refund_id,$yr1),$vendor_type,$vendor_type_id,$payment_date,$payment_mode);
+    $payment_particular = get_refund_charges_particular(get_vendor_estimate_id($estimate_id,$yr1),get_vendor_refund_id($refund_id,$yr1),$vendor_type,$vendor_type_id,$payment_date,$payment_mode,$estimate_id_full);
     $ledger_particular = '';
     $gl_id = $supplier_gl;
     $payment_side = "Credit";
@@ -154,6 +161,7 @@ public function finance_save($refund_id)
 public function bank_cash_book_save($refund_id)
 {
 	$estimate_id = $_POST['estimate_id'];
+	$estimate_type = $_POST['estimate_type'];
 	$estimate_type_id =$_POST['estimate_type_id'];
 	$vendor_type = $_POST['vendor_type'];
 	$vendor_type_id = $_POST['vendor_type_id'];
@@ -168,6 +176,12 @@ public function bank_cash_book_save($refund_id)
 	$year1 = explode("-", $refund_date);
 	$yr1 =$year1[0];
 
+	$vendor_type_val = get_vendor_name($vendor_type, $vendor_type_id);
+	$estimate_type_val = get_estimate_type_name($estimate_type, $estimate_type_id);
+	$yr = explode("-", $refund_date);
+	$year = $yr[0];
+	$estimate_id_full = get_vendor_estimate_id($estimate_id,$year)." : ".$vendor_type_val."(".$vendor_type.") : ".$estimate_type_val;
+
 	global $bank_cash_book_master;
 
 	$module_name = "Vendor Refund Paid";
@@ -178,7 +192,7 @@ public function bank_cash_book_save($refund_id)
 	$bank_name = $bank_name;
 	$transaction_id = $transaction_id;
 	$bank_id = $bank_id;
-	$particular = get_refund_charges_particular(get_vendor_estimate_id($estimate_id,$yr1),get_vendor_refund_id($refund_id,$yr1),$vendor_type,$vendor_type_id,$payment_date,$payment_mode1);
+	$particular = get_refund_charges_particular(get_vendor_estimate_id($estimate_id,$yr1),get_vendor_refund_id($refund_id,$yr1),$vendor_type,$vendor_type_id,$payment_date,$payment_mode1,$estimate_id_full);
 	$clearance_status = ($payment_mode=="Cheque") ? "Pending" : "";
 	$payment_side = "Debit";
 	$payment_type = ($payment_mode=="Cash") ? "Cash" : "Bank";

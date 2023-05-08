@@ -75,7 +75,9 @@ $('#frm_tab_3').validate({
 					return false;
 				}
 			}
-		}
+		},
+		tax_apply_on : { required:true},
+		tax_value : { required:true},
 	},
 	submitHandler: function (form) {
 		var tour_payment = document.getElementById('chk_pay_for_tour').checked;
@@ -108,14 +110,6 @@ $('#frm_tab_3').validate({
 				payment_mode1 != 'Advance' &&
 				payment_amount1 != '0'
 			) {
-				if (bank_name1 == '') {
-					error_msg_alert('Enter tour payment bank name.');
-					return false;
-				}
-				if (transaction_id1 == '') {
-					error_msg_alert('Enter tour payment transaction ID.');
-					return false;
-				}
 				if (bank_id1 == '') {
 					error_msg_alert('Select creditor bank name.');
 					return false;
@@ -132,14 +126,6 @@ $('#frm_tab_3').validate({
 				payment_mode2 != 'Advance' &&
 				payment_amount2 != '0'
 			) {
-				if (bank_name2 == '') {
-					error_msg_alert('Enter travel payment bank name.');
-					return false;
-				}
-				if (transaction_id2 == '') {
-					error_msg_alert('Enter travel payment transaction ID.');
-					return false;
-				}
 				if (bank_id2 == '') {
 					error_msg_alert('Select creditor bank name.');
 					return false;
@@ -514,6 +500,8 @@ function save_booking_details() {
 	var total_discount = $('#txt_total_discount').val();
 	var tcs_tax = $('#tcs_tax').val();
 	var tcs = $('#tcs').val();
+	var tax_apply_on = $('#tax_apply_on').val();
+	var tax_value = $('#tax_value').val();
 
 	var reflections = [];
 	reflections.push({
@@ -521,7 +509,9 @@ function save_booking_details() {
 		hotel_markup: hotel_markup,
 		hotel_taxes: hotel_taxes,
 		hotel_markup_taxes: hotel_markup_taxes,
-		hotel_tds: hotel_tds
+		hotel_tds: hotel_tds,
+		'tax_apply_on':tax_apply_on,
+		'tax_value':tax_value,
 	});
 	var bsmValues = [];
 	bsmValues.push({

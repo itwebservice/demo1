@@ -76,17 +76,17 @@ $('#frm_tab_1').validate({
         if (row.cells[13]) {
           (row.cells[13].childNodes[0].value == '') ? entry_id_array.push(row.cells[13].childNodes[0].value) : '';
         }
-        if (row.cells[0].childNodes[0].checked && tour_type == 'International') {
-          if (row.cells[10].childNodes[0].value == '') {
-            err_msg += 'Enter traveller Passport no in row-' + (i + 1) + '<br>';
-          }
-          if (row.cells[11].childNodes[0].value == '') {
-            err_msg += 'Enter traveller Passport issue date in row-' + (i + 1) + '<br>';
-          }
-          if (row.cells[12].childNodes[0].value == '') {
-            err_msg += 'Enter traveller Passport expiry date in row-' + (i + 1) + '<br>';
-          }
-        }
+        // if (row.cells[0].childNodes[0].checked && tour_type == 'International') {
+        //   if (row.cells[10].childNodes[0].value == '') {
+        //     err_msg += 'Enter traveller Passport no in row-' + (i + 1) + '<br>';
+        //   }
+        //   if (row.cells[11].childNodes[0].value == '') {
+        //     err_msg += 'Enter traveller Passport issue date in row-' + (i + 1) + '<br>';
+        //   }
+        //   if (row.cells[12].childNodes[0].value == '') {
+        //     err_msg += 'Enter traveller Passport expiry date in row-' + (i + 1) + '<br>';
+        //   }
+        // }
         passport_issue_date = php_to_js_date_converter(passport_issue_date);
         passport_expiry_date = php_to_js_date_converter(passport_expiry_date);
 

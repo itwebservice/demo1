@@ -83,7 +83,7 @@ function journal_master_delete(){
 	$yr = explode("-", $date);
 	$year = $yr[0];
 
-	$sq_jv_entry = mysqli_fetch_assoc(mysqlQuery("select * from journal_entry_accounts where entry_id='$entry_id' and type='Debit'"));
+	$sq_jv_entry = mysqli_fetch_assoc(mysqlQuery("select sum(amount) as amount,entry_id,ledger_id from journal_entry_accounts where entry_id='$entry_id' and type='Debit'"));
 	$sq_ledger = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where ledger_id='$sq_jv_entry[ledger_id]'"));
 	
 	$delete_master->delete_master_entries('Journal Voucher','Journal Entry',$entry_id,get_jv_entry_id($entry_id,$year),$sq_ledger['ledger_name'],$sq_jv_entry['amount']);

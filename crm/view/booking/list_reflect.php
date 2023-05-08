@@ -3,7 +3,7 @@ include "../../model/model.php";
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $emp_id = $_SESSION['emp_id'];
 
 $branch_status = $_POST['branch_status'];
@@ -62,16 +62,6 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 	$pass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]'"));
 	$cancelpass_count = mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]' and status='Cancel'"));
 	
-	$update_btn = '
-		<form style="display:inline-block" action="booking_update/booking_update.php" id="frm_booking_'.$count.'" method="POST">
-			<input type="hidden" id="booking_id" style="display:inline-block" name="booking_id" value="'.$row_booking['id'].'">
-			<input type="hidden" id="branch_status" name="branch_status" style="display:inline-block" value="'.$branch_status .'" >
-			<button data-toggle="tooltip" class="btn btn-info btn-sm" style="display:inline-block" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>
-		</form>';
-	$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
-	// Booking Form
-	$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/group_tour.php?booking_id=$row_booking[id]&branch_status=$branch_status&year=$year&credit_card_charges=$credit_card_charges";
-	$conf_btn = '<a onclick="loadOtherPage(\''. $b_url .'\')" data-toggle="tooltip" class="btn btn-info btn-sm" title="Download Confirmation Form"><i class="fa fa-print"></i></a>';
 	$bg = "";
 	if($row_booking['tour_group_status']=="Cancel"){
 		$bg = "danger";
@@ -119,16 +109,38 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 	$tour = $sq_tour['tour_name'];
 	$group = get_date_user($sq_group['from_date']).' to '.get_date_user($sq_group['to_date']);
 
-	$sq_est_count = mysqli_num_rows(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
-	if($sq_est_count!='0'){
-		$sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
-		$cancel_tour_amount = $sq_tour_refund['cancel_amount'];
+	if($row_booking['tour_group_status'] == 'Cancel'){
+		//Group Tour cancel
+		$cancel_tour_count2=mysqli_num_rows(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
+		if($cancel_tour_count2 >= '1'){
+			$cancel_tour=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_tour_estimate where tourwise_traveler_id='$row_booking[id]'"));
+			$cancel_tour_amount = $cancel_tour['cancel_amount'];
+		}
+		else{ 
+			$cancel_tour_amount = 0;
+		}
 	}
 	else{
-		$sq_tour_refund = mysqli_fetch_assoc(mysqlQuery("select * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
-		$cancel_tour_amount = $sq_tour_refund['cancel_amount'];
+		// Group booking cancel
+		$cancel_esti_count1=mysqli_num_rows(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id='$row_booking[id]'"));
+		if($cancel_esti_count1 >= '1'){
+			$cancel_esti1=mysqli_fetch_assoc(mysqlQuery("SELECT * from refund_traveler_estimate where tourwise_traveler_id = '$row_booking[id]'"));
+			$cancel_tour_amount = $cancel_esti1['cancel_amount'];
+		}
+		else{ $cancel_tour_amount = 0; }
 	}
 
+	$update_btn = '
+		<form style="display:inline-block" action="booking_update/booking_update.php" id="frm_booking_'.$count.'" method="POST">
+			<input type="hidden" id="booking_id" style="display:inline-block" name="booking_id" value="'.$row_booking['id'].'">
+			<input type="hidden" id="branch_status" name="branch_status" style="display:inline-block" value="'.$branch_status .'" >
+			<button data-toggle="tooltip" class="btn btn-info btn-sm" style="display:inline-block" title="Update Details" id="edit-'.$row_booking['id'].'"><i class="fa fa-pencil-square-o"></i></button>
+		</form>';
+	$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="delete_entry('.$row_booking['id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
+	// Booking Form
+	$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/group_tour.php?booking_id=$row_booking[id]&branch_status=$branch_status&year=$year&credit_card_charges=$credit_card_charges";
+	$conf_btn = '<a onclick="loadOtherPage(\''. $b_url .'\')" data-toggle="tooltip" class="btn btn-info btn-sm" title="Download Confirmation Form"><i class="fa fa-print"></i></a>';
+	
 	$invoice_no = get_group_booking_id($row_booking['id'],$year);
 	$invoice_date = date('d-m-Y',strtotime($row_booking['form_date']));
 	$customer_id = $row_booking['customer_id'];
@@ -250,10 +262,10 @@ while($row_booking = mysqli_fetch_assoc($sq_booking)){
 		number_format($cancel_tour_amount,2),
 		number_format(floatval($row_booking['net_total']) + floatval($credit_card_charges) - floatval($cancel_tour_amount),2).$currency_amount,
 		$emp_name,
+		get_date_user($date),
 		$conf_btn.
-		'<a onclick="loadOtherPage(\''.$url1 .'\')" class="btn btn-info btn-sm" data-toggle="tooltip" title="Download Invoice"><i class="fa fa-print"></i></a>'.'
-
-		<button  data-toggle="tooltip" class="btn btn-info btn-sm" style="display:inline-block" onclick="display_modal(\''.$row_booking['id'] .'\')" title="View Details"><i class="fa fa-eye"></i></button>'.$update_btn.$delete_btn), "bg" => $bg
+		'<a onclick="loadOtherPage(\''.$url1 .'\')" class="btn btn-info btn-sm" data-toggle="tooltip" title="Download Invoice"><i class="fa fa-print"></i></a>'.$update_btn.'
+		<button  data-toggle="tooltip" class="btn btn-info btn-sm" style="display:inline-block" onclick="display_modal(\''.$row_booking['id'] .'\')" title="View Details" id="viewb-'.$row_booking['id'].'"><i class="fa fa-eye"></i></button>'.$delete_btn), "bg" => $bg
 		);
 	array_push($array_s,$temp_arr); 
 

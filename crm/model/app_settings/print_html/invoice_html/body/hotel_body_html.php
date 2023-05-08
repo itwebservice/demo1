@@ -25,6 +25,7 @@ $bg = $_GET['bg'];
 $canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='')?$credit_card_charges:0 ;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 $basic_cost = number_format($basic_cost1,2);
 
 $sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master where booking_id='$booking_id' and delete_status='0'"));
@@ -103,7 +104,7 @@ $other_charges = $markupservice_tax_amount + $sq_hotel['markup'];
 $other_charges = currency_conversion($currency,$sq_hotel['currency_code'],$other_charges);
 
 if($bg != ''){
-  $balance = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid);
+  $balance = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid) + floatval($credit_card_charges);
 }else{
   
   $balance = floatval($net_amount1) - floatval($total_paid) + floatval($credit_card_charges);

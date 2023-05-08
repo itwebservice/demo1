@@ -34,12 +34,13 @@ $service_charge = $sq_quotation['service_charge'];
 $bsmValues = json_decode($sq_quotation['bsm_values']);
 //////////////////Service Charge Rules
 $service_tax_amount = 0;
+$percent = '';
 if($sq_quotation['service_tax'] !== 0.00 && ($sq_quotation['service_tax']) !== ''){
   $service_tax_subtotal1 = explode(',',$sq_quotation['service_tax']);
   for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
     $service_tax = explode(':',$service_tax_subtotal1[$i]);
     $service_tax_amount +=  $service_tax[2];
-    $percent = $service_tax[1];
+    $percent .= $service_tax[0]  . $service_tax[1] .', ';
   }
 }
 ////////////////////Markup Rules
@@ -51,7 +52,7 @@ if($sq_quotation['markup_cost_subtotal'] !== 0.00 && $sq_quotation['markup_cost_
     $markupservice_tax_amount += $service_tax[2];
   }
 }
-$total_tax_amount_show = currency_conversion($currency,$currency,floatval($service_tax_amount) + floatval($markupservice_tax_amount));
+$total_tax_amount_show = currency_conversion($currency,$currency,floatval($service_tax_amount) + floatval($markupservice_tax_amount) + $sq_quotation['roundoff']);
 
 if(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != ''){
   $tax_show = '';
@@ -196,7 +197,7 @@ $quotation_cost = currency_conversion($currency,$currency,$sq_quotation['quotati
           <h3 class="costBankTitle text-center">COSTING DETAILS</h3>
           <div class="row mg_bt_20">
             <?php
-            $fare_cost = currency_conversion($currency,$currency,(floatval($newBasic) + $sq_quotation['roundoff']));
+            $fare_cost = currency_conversion($currency,$currency,(floatval($newBasic)));
             ?>
             <div class="col-md-4 text-center">
               <div class="icon"><img src="<?= BASE_URL ?>images/quotation/p4/subtotal.png" class="img-responsive"></div>

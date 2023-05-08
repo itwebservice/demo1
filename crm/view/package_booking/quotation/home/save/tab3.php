@@ -62,13 +62,8 @@
                                                                     <?php get_airline_name_dropdown(); ?>
                                                                 </select></td>
                                                             <td><select name="plane_class" id="plane_class1"
-                                                                    title="Class" style="width: 120px;">
-                                                                    <option value="">Class</option>
-                                                                    <option value="Economy">Economy</option>
-                                                                    <option value="Premium Economy">Premium Economy
-                                                                    </option>
-                                                                    <option value="Business">Business</option>
-                                                                    <option value="First Class">First Class</option>
+                                                                    title="Class" style="width: 170px !important;">
+                            	                                        <?php get_flight_class_dropdown(); ?>
                                                                 </select></td>
                                                             <td><input type="text" id="txt_dapart1" name="txt_dapart"
                                                                     class="app_datetimepicker"
@@ -100,7 +95,7 @@
                         <div class="accordion_content main_block mg_bt_10">
 
                             <div class="panel panel-default main_block">
-                                <div class="panel-heading main_block" role="tab" id="heading_<?= $count ?>">
+                                <div class="panel-heading main_block" role="tab" id="heading1">
                                     <div class="Normal main_block" role="button" data-toggle="collapse"
                                         data-parent="#accordion" href="#collapse1" aria-expanded="true"
                                         aria-controls="collapse1" id="collapsed1">
@@ -323,10 +318,7 @@
                                                         name="tbl_package_tour_quotation_dynamic_transport"
                                                         class="table mg_bt_0 table-bordered mg_bt_10">
                                                         <tr>
-                                                            <td><input class="css-checkbox" id="chk_transport-"
-                                                                    type="checkbox" onchange="get_transport_cost();"
-                                                                    checked readonly><label class="css-label"
-                                                                    for="chk_transport1"> </label></td>
+                                                            <td><input class="css-checkbox" id="chk_transport-" type="checkbox" onchange="get_transport_cost();" readonly><label class="css-label" for="chk_transport1"> </label></td>
                                                             <td><input maxlength="15" value="1" type="text"
                                                                     name="username" placeholder="Sr. No."
                                                                     class="form-control" disabled /></td>
@@ -508,6 +500,8 @@
                                                             <td style="display:none"><input type="number"
                                                                     id="infant_total-1" name="infant_total-1"
                                                                     style="width:100px;display:none;"></td>
+                                                            <td><input type="number" id="no_vehicles-1" name="no_vehicles-1" placeholder="No.Of Vehicles" title="No.Of Vehicles" style="width:150px" onchange="get_excursion_amount();">
+                                                            <td style="display:none"><input type="number" id="transfer_total-1" name="transfer_total-1" style="width:100px;display:none;"></td>
                                                         </tr>
                                                     </table>
                                                 </div>
@@ -633,9 +627,11 @@ event_airport('tbl_package_tour_quotation_dynamic_plane');
 jQuery(document).ready(function() {
     jQuery(".panel-heading").click(function() {
         jQuery('#accordion .panel-heading').not(this).removeClass('isOpen');
+        jQuery('#accordionl .panel-heading').not(this).removeClass('isOpen');
         jQuery(this).toggleClass('isOpen');
         jQuery(this).next(".panel-collapse").addClass('thePanel');
         jQuery('#accordion .panel-collapse').not('.thePanel').slideUp("slow");
+        jQuery('#accordionl .panel-collapse').not('.thePanel').slideUp("slow");
         jQuery(".thePanel").slideToggle("slow").removeClass('thePanel');
     });
 });
@@ -1372,6 +1368,7 @@ $(function() {
             var exc_child_cot = 0;
             var exc_childwo_cot = 0;
             var exc_infant_cost = 0;
+            var exc_transfer_cost = 0;
             for (var e = 0; e < rowCount; e++) {
                 var row = table.rows[e];
                 if (row.cells[0].childNodes[0].checked) {
@@ -1420,6 +1417,8 @@ $(function() {
                         .childNodes[0].value);
                     exc_infant_cost = parseFloat(exc_infant_cost) + parseFloat(row.cells[14]
                         .childNodes[0].value);
+                    exc_transfer_cost = parseFloat(exc_transfer_cost) + parseFloat(row.cells[16]
+                        .childNodes[0].value);
                 }
             }
             //Group costing
@@ -1442,6 +1441,11 @@ $(function() {
                 exc_childwo_cot) / parseInt(child_without_bed) : 0;
             var exc_infant_coste = (parseInt(total_infant) !== 0) ? parseFloat(exc_infant_cost) /
                 parseInt(total_infant) : 0;
+            var exc_ftransfer_cost = (parseInt(adult_count) !== 0) ? parseFloat(exc_transfer_cost) /
+                (parseInt(adult_count)+parseInt(child_with_bed)) : 0;
+
+            var exc_atransfer_cost = (parseInt(adult_count) !== 0) ? exc_ftransfer_cost : 0;
+            var exc_cwtransfer_cost = (parseInt(child_with_bed) !== 0) ? exc_ftransfer_cost : 0;
 
             var table = document.getElementById("tbl_package_tour_quotation_adult_child");
             var rowCount = table.rows.length;
@@ -1462,9 +1466,9 @@ $(function() {
                 var cwob_cost_total1 = (per_cwob[j]) ? per_cwob[j] : 0;
                 var infant_cost_total1 = (per_infant[j]) ? per_infant[j] : 0;
                 row.cells[1].childNodes[0].value = parseFloat(parseFloat(hadult_cost) + parseFloat(
-                    adult_cost_total1)).toFixed(2);
+                    adult_cost_total1) + parseFloat(exc_atransfer_cost)).toFixed(2);
                 row.cells[2].childNodes[0].value = parseFloat(parseFloat(child_with_bed_coste) +
-                    parseFloat(cwb_cost_total1)).toFixed(2);
+                    parseFloat(cwb_cost_total1) + parseFloat(exc_cwtransfer_cost)).toFixed(2);
                 row.cells[3].childNodes[0].value = parseFloat(parseFloat(child_without_bede) +
                     parseFloat(cwob_cost_total1)).toFixed(2);
                 row.cells[4].childNodes[0].value = parseFloat(parseFloat(exc_infant_coste) +
@@ -1482,12 +1486,12 @@ $(function() {
                 var total_tour_cost = parseFloat(unique_package_id_arr[0]['transport_cost']) +
                     parseFloat(hotel_cost);
 
-                row.cells[9].childNodes[1].value = total_tour_cost;
+                row.cells[11].childNodes[1].value = total_tour_cost;
 
-                var total_cost = row.cells[9].childNodes[1].value;
+                var total_cost = row.cells[11].childNodes[1].value;
                 var exc_cost = row.cells[5].childNodes[1].value;
                 row.cells[6].childNodes[1].value = parseFloat(total_cost) + parseFloat(exc_cost);
-                row.cells[9].childNodes[1].value = parseFloat(total_cost) + parseFloat(exc_cost);
+                row.cells[11].childNodes[1].value = parseFloat(total_cost) + parseFloat(exc_cost);
                 $(row.cells[6].childNodes[1]).trigger('change');
             }
 

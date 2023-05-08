@@ -100,9 +100,12 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 	$date = $sq_ticket_info['created_at'];
 	$yr = explode("-", $date);
 	$year = $yr[0];
+	$date1 = $row_ticket_payment['payment_date'];
+	$yr1 = explode("-", $date1);
+	$year1 = $yr1[0];
 
 	$bg='';
-	$sq_depa_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id ='$row_ticket_payment[ticket_id]' and status!='Cancel'"));
+	$sq_depa_date = mysqli_fetch_assoc(mysqlQuery("select * from ticket_trip_entries where ticket_id ='$row_ticket_payment[ticket_id]'"));
 
 	$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_ticket_info[customer_id]'"));
 	if($sq_customer_info['type']=='Corporate'||$sq_customer_info['type']=='B2B'){
@@ -128,7 +131,7 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 	$sq_paid_amount = $sq_paid_amount + $row_ticket_payment['payment_amount'] + $row_ticket_payment['credit_charges'];
 
 	$payment_id_name = "Flight Ticket Payment ID";
-	$payment_id = get_ticket_booking_payment_id($row_ticket_payment['payment_id'],$year);
+	$payment_id = get_ticket_booking_payment_id($row_ticket_payment['payment_id'],$year1);
 	$receipt_date = date('d-m-Y');
 	$booking_id = get_ticket_booking_id($row_ticket_payment['ticket_id'],$year);
 	$customer_id = $sq_ticket_info['customer_id'];
@@ -158,7 +161,7 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 		$edit_btn = '';
 		$delete_btn = '';
 	}else{
-		$edit_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="ticket_payment_update_modal('.$row_ticket_payment['payment_id'] .')" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$edit_btn = '<button data-toggle="tooltip" class="btn btn-info btn-sm" onclick="ticket_payment_update_modal('.$row_ticket_payment['payment_id'] .')" id="updater-'.$row_ticket_payment['payment_id'] .'" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
 		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_ticket_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 
@@ -166,6 +169,7 @@ while($row_ticket_payment = mysqli_fetch_assoc($sq_ticket_payment)){
 	$temp_arr = array( "data" => array(
 		(int)($count),
 		$checkshow,
+		$payment_id,
 		get_ticket_booking_id($row_ticket_payment['ticket_id'],$year),
 		$customer_name,
 		date('d/m/Y', strtotime($row_ticket_payment['payment_date'])),

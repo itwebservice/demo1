@@ -11,6 +11,7 @@ public function expense_save()
 	$sub_total = $_POST['sub_total'];
 	$ledger_ids = $_POST['ledger_ids'];
 	$service_tax_subtotal = $_POST['service_tax_subtotal'];
+	$service_tax_subtotals = $_POST['service_tax_subtotals'];
 	$tds = $_POST['tds'];
 	$net_total = $_POST['net_total'];
 	$due_date = $_POST['due_date'];
@@ -39,7 +40,7 @@ public function expense_save()
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(expense_id) as max from other_expense_master"));
 	$expense_id = $sq_max['max'] + 1;
-	$sq_expense = mysqlQuery("insert into other_expense_master (expense_id, expense_type_id, supplier_id, financial_year_id, branch_admin_id, amount,ledgers, service_tax_subtotal, tds, total_fee, due_date,invoice_no,expense_date,invoice_url,created_at) values ('$expense_id', '$expense_type', '$supplier_type', '$financial_year_id', '$branch_admin_id', '$sub_total','$ledger_ids','$service_tax_subtotal', '$tds','$net_total','$due_date','$invoice_no','$booking_date','$id_upload_url','$created_at' ) ");
+	$sq_expense = mysqlQuery("insert into other_expense_master (expense_id, expense_type_id, supplier_id, financial_year_id, branch_admin_id, amount,ledgers, service_tax_subtotal, tds, total_fee, due_date,invoice_no,expense_date,invoice_url,created_at,tax_refl) values ('$expense_id', '$expense_type', '$supplier_type', '$financial_year_id', '$branch_admin_id', '$sub_total','$ledger_ids','$service_tax_subtotal', '$tds','$net_total','$due_date','$invoice_no','$booking_date','$id_upload_url','$created_at','$service_tax_subtotals' ) ");
 
 	$sq_max = mysqli_fetch_assoc(mysqlQuery("select max(payment_id) as max from other_expense_payment_master"));
 	$payment_id = $sq_max['max']+1;
@@ -333,7 +334,7 @@ public function bank_cash_book_save($expense_id, $payment_id, $branch_admin_id)
 	$yr = explode("-", $payment_date);
 	$year = $yr[0];
 
-	$module_name = "Other Expense Booking";
+	$module_name = "Other Expense Booking Payment";
 	$module_entry_id = $payment_id;
 	$payment_date = $payment_date;
 	$payment_amount = $payment_amount;
@@ -356,6 +357,7 @@ public function expense_update(){
 	$sub_total = $_POST['sub_total'];
 	$ledger_ids = $_POST['ledger_ids'];
     $service_tax_subtotal = $_POST['service_tax_subtotal'];
+	$service_tax_subtotals = $_POST['service_tax_subtotals'];
 	$tds = $_POST['tds'];
 	$net_total = $_POST['net_total'];
 	$due_date = $_POST['due_date'];
@@ -367,7 +369,7 @@ public function expense_update(){
     $booking_date = get_date_db($booking_date);
 
 	begin_t();
-	$sq_expense_u = mysqlQuery("update other_expense_master set expense_type_id='$expense_type',supplier_id='$supplier_type',amount='$sub_total',ledgers='$ledger_ids', service_tax_subtotal='$service_tax_subtotal', tds='$tds', total_fee='$net_total', due_date='$due_date',invoice_no='$invoice_no',expense_date='$booking_date',invoice_url='$id_upload_url' where expense_id='$expense_id'");
+	$sq_expense_u = mysqlQuery("update other_expense_master set expense_type_id='$expense_type',supplier_id='$supplier_type',amount='$sub_total',ledgers='$ledger_ids', service_tax_subtotal='$service_tax_subtotal', tds='$tds', total_fee='$net_total', due_date='$due_date',invoice_no='$invoice_no',expense_date='$booking_date',invoice_url='$id_upload_url',tax_refl='$service_tax_subtotals' where expense_id='$expense_id'");
 
 	if($sq_expense_u){
 		//Finance save

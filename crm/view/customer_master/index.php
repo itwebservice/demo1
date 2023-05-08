@@ -28,7 +28,7 @@ $branch_status = $sq['branch_status'];
         <button class="btn btn-excel btn-sm " onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
         <?php } ?>
         <span style="display: inline-block;">
-            <button class="btn btn-info btn-sm ico_left " onclick="customer_save_modal('master')"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;Customer</button>
+            <button class="btn btn-info btn-sm ico_left " data-toggle="tooltip" title="Add Customer" id="customer_save_modal_add_btn" onclick="customer_save_modal('master');btnDisableEnable(this.id)"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;Customer</button>
         </span>
     </div>
 </div>
@@ -195,14 +195,22 @@ function showEmail(count)
 }
 function customer_update_modal(customer_id)
 {
+	$('#customer_display_modal_edit_btn-'+customer_id).button('loading');
+	$('#customer_display_modal_edit_btn-'+customer_id).prop('disabled',true);
 	$.post('customer_update_modal.php', { customer_id : customer_id }, function(data){
 		$('#div_customer_update_modal').html(data);
+        $('#customer_display_modal_edit_btn-'+customer_id).button('reset');
+        $('#customer_display_modal_edit_btn-'+customer_id).prop('disabled',false);
 	})
 }
 function customer_display_modal(customer_id)
 {
+	$('#customer_display_modal_view_btn-'+customer_id).button('loading');
+	$('#customer_display_modal_view_btn-'+customer_id).prop('disabled',true);
 	$.post('view/index.php', { customer_id : customer_id }, function(data){
 		$('#div_customer_update_modal').html(data);
+        $('#customer_display_modal_view_btn-'+customer_id).button('reset');
+        $('#customer_display_modal_view_btn-'+customer_id).prop('disabled',false);
 	})
 }
 function customer_history_modal(customer_id)

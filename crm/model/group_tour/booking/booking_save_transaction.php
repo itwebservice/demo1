@@ -156,7 +156,10 @@ public function complete_booking_information_delete(){
     $to_date = new DateTime($sq_tourgroup['to_date']);
     $numberOfNights = $from_date->diff($to_date)->format("%a");
     
-    $particular = $tour_name.' for '.$cust_name.' for '.$numberOfNights.' Nights starting from '.get_date_user($sq_tourgroup['from_date']);
+    $pass_count= mysqli_num_rows(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]' and status!='Cancel'"));
+    $sq_pass= mysqli_fetch_assoc(mysqlQuery("select * from travelers_details where traveler_group_id='$row_booking[traveler_group_id]' and status!='Cancel'"));
+
+    $particular = get_group_booking_id($tourwise_traveler_id,$year).' and '.$tour_name.' for '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') *'.$pass_count.' for '.$numberOfNights.' Nights starting from '.get_date_user($sq_tourgroup['from_date']);
 
     $delete_master->delete_master_entries('Invoice','Group Tour',$tourwise_traveler_id,get_group_booking_id($tourwise_traveler_id,$year),$cust_name,$row_booking['net_total']);
 

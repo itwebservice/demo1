@@ -34,7 +34,7 @@ var column = [
 	{ title : "QUOTATION_ID"},
 	{ title : "Quotation_Date&Time"},
 	{ title : "Customer_name"},
-	{ title : "Package_Name"},
+	{ title : "Tour_Name"},
 	{ title : "QUOTATION_Cost"},
 	{ title : "Actions" , className:"text-center action_width"}
 ];

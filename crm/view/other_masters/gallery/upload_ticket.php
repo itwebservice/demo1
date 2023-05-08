@@ -24,10 +24,16 @@ $current_dir = check_dir($current_dir , $month);
 $current_dir = check_dir($current_dir , $day);
 $current_dir = check_dir($current_dir , $timestamp);
 
-$rand_string = uniqid('image_');
-$path = $_FILES['uploadfile']['name'];
-$ext = pathinfo($path, PATHINFO_EXTENSION);
-$file = $current_dir.$rand_string.'.'.$ext;
+$file_name = str_replace(' ','_',basename($_FILES['uploadfile']['name']));
+$file = $current_dir.$file_name; 
+$fileinfo = @getimagesize($_FILES["uploadfile"]["tmp_name"]);
+$width = $fileinfo[0];
+$height = $fileinfo[1];
+
+if ($width !== 900 || $height !== 450) {
+	echo "error2";
+	exit;
+}
 
 if($_FILES['uploadfile']['size']<300000){
 	if (move_uploaded_file($_FILES['uploadfile']['tmp_name'], $file)) { 

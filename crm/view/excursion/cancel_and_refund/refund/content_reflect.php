@@ -97,7 +97,7 @@ $remaining_pay = $refund_amount - $total_refund_pay;
                             placeholder="Bank Name" title="Bank Name" disabled />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="transaction_id" onchange="validate_balance(this.id)"
+                        <input type="number" id="transaction_id" onchange="validate_balance(this.id)"
                             name="transaction_id" class="form-control" placeholder="Cheque No / ID"
                             title="Cheque No / ID" disabled />
                     </div>
@@ -114,7 +114,7 @@ $remaining_pay = $refund_amount - $total_refund_pay;
 							$sq_exc_entries = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$exc_id' and delete_status='0'"));
 							$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_exc_entries[customer_id]'"));
 							?>
-                            <option value="<?= $sq_cust['customer_id'] ?>">
+                            <option value="<?= $sq_cust['customer_id'] ?>" selected>
                                 <?= $sq_cust['first_name'] . ' ' . $sq_cust['last_name'] ?></option>
                         </select>
                     </div>
@@ -246,24 +246,6 @@ $(function() {
             },
             refund_mode: {
                 required: true
-            },
-            bank_name: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            transaction_id: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
             },
             bank_id: {
                 required: function() {

@@ -2,9 +2,9 @@
 <?php
 $query = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(`credit_charges`) as sumc from b2c_payment_master where booking_id='$sq_package_info[booking_id]' and clearance_status != 'Pending' and clearance_status != 'Cancelled'"));
 $credit_card_amount = $query['sumc'];
-$paid_amount = $query['sum'] + $credit_card_amount;
+$paid_amount = $query['sum'];
 $paid_amount = ($paid_amount == '') ? '0' : $paid_amount;
-$sale_total_amount = $net_total + $credit_card_amount;
+$sale_total_amount = $net_total;
 if ($sale_total_amount == "") {
 	$sale_total_amount = 0;
 }

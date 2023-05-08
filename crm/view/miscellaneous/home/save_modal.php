@@ -35,10 +35,10 @@ $branch_status = $sq['branch_status'];
 							</div>
 							<div id="cust_details">
 								<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
-									<input type="text" id="email_id" name="email_id" title="Email Id" placeholder="Email ID" title="Email ID" class="form-control" readonly>
+									<input type="text" id="mobile_no" name="mobile_no" title="Mobile Number" placeholder="Mobile No" title="Mobile No" class="form-control" readonly>
 								</div>
 								<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
-									<input type="text" id="mobile_no" name="mobile_no" title="Mobile Number" placeholder="Mobile No" title="Mobile No" class="form-control" readonly>
+									<input type="text" id="email_id" name="email_id" title="Email Id" placeholder="Email ID" title="Email ID" class="form-control" readonly>
 								</div>
 								<div class="col-md-3 col-sm-4 col-xs-12">
 									<input type="text" id="company_name" class="hidden form-control" name="company_name" title="Company Name" placeholder="Company Name" class="form-control" title="Company Name" readonly>
@@ -79,8 +79,8 @@ $branch_status = $sq['branch_status'];
 
 						<div class="row mg_bt_10">
 							<div class="col-xs-12 text-right text_center_xs">
-								<button type="button" class="btn btn-info btn-sm ico_left" onClick="addRow('tbl_dynamic_miscellaneous')"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-								<button type="button" class="btn btn-danger btn-sm ico_left" onClick="deleteRow('tbl_dynamic_miscellaneous')"><i class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+                                <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_miscellaneous')"><i class="fa fa-plus"></i></button>
+                                <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('tbl_dynamic_miscellaneous');"><i class="fa fa-trash"></i></button>
 							</div>
 						</div>
 
@@ -104,32 +104,60 @@ $branch_status = $sq['branch_status'];
 						<div class="row mg_bt_10">
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 								<small id="basic_show" style="color:red">&nbsp;</small>
-								<input class="form-control" type="text" id="visa_issue_amount" name="visa_issue_amount" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','true','service_charge');">
+								<input class="form-control" type="text" id="visa_issue_amount" name="visa_issue_amount" placeholder="*Basic Amount" title="Basic Amount" onchange="validate_balance(this.id);get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','true','service_charge');">
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 								<small id="service_show" style="color:red">&nbsp;</small>
 								<input class="form-control" type="text" name="service_charge" id="service_charge" placeholder="Service Charge" title="Service Charge" onchange="validate_balance(this.id);get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','false','service_charge')">
+							</div>
+							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','false','service_charge');">
+									<option value="">*Tax Apply On</option>
+									<option value="1">Basic Amount</option>
+									<option value="2">Service Charge</option>
+									<option value="3">Total</option>
+								</select>
+							</div> 
+							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','false','service_charge');">
+									<option value="">*Select Tax</option>
+									<?php get_tax_dropdown('Income') ?>
+								</select>
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_tp_10">
 								<input class="form-control" type="text" id="service_tax_subtotal" name="service_tax_subtotal" placeholder="Tax Amount" title="Tax Amount" readonly>
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 								<small id="markup_show" style="color:red">&nbsp;</small>
-								<input class="form-control" type="text" id="markup" name="markup" placeholder="Markup Cost" title="Markup Cost" onchange="get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','false','markup');">
+								<input class="form-control" type="text" id="markup" name="markup" placeholder="Markup Amount" title="Markup Amount" onchange="get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','true','markup');">
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
+								<select title="Select Markup Tax" id="markup_tax_value" name="markup_tax_value" class="form-control" onchange="get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','false','service_charge');">
+									<option value="">*Select Markup Tax</option>
+									<?php get_tax_dropdown('Income') ?>
+								</select>
+							</div>
+							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
 								<input class="form-control" type="text" id="service_tax_markup" name="service_tax_markup" placeholder="Markup Tax" title="Markup Tax" readonly>
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
 								<input class="form-control" type="text" name="roundoff" id="roundoff" class="text-right" placeholder="Round Off" title="RoundOff" readonly>
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
 								<input type="text" name="visa_total_cost" id="visa_total_cost" class="form-control amount_feild_highlight text-right" placeholder="Net Total" title="Net Total" readonly>
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
 								<input class="form-control" type="text" name="due_date" id="due_date" placeholder="Due Date" title="Due Date" value="<?= date('d-m-Y') ?>">
 							</div>
 							<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+								<small>&nbsp;</small>
 								<input class="form-control" type="text" name="balance_date" id="balance_date" value="<?= date('d-m-Y') ?>" placeholder="Booking Date" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('balance_date','visa_issue_amount','payment_mode','service_charge','markup','save','true','service_charge',true);">
 							</div>
 						</div>
@@ -149,7 +177,7 @@ $branch_status = $sq['branch_status'];
 								</select>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-								<input class="form-control" type="text" id="payment_amount" name="payment_amount" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','bank_name','transaction_id','bank_id');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges');">
+								<input class="form-control" type="text" id="payment_amount" name="payment_amount" placeholder="*Payment Amount" title="Payment Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','bank_name','transaction_id','bank_id');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges');">
 							</div>
 						</div>
 						<div class="row mg_bt_10">
@@ -170,7 +198,7 @@ $branch_status = $sq['branch_status'];
 								<input class="form-control bank_suggest" type="text" id="bank_name" name="bank_name" placeholder="Bank Name" title="Bank Name" readonly>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-								<input class="form-control" type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
+								<input class="form-control" type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12">
 								<select class="form-control" name="bank_id" id="bank_id" title="Select Bank" disabled>
@@ -210,14 +238,20 @@ $('#payment_date, #due_date,#balance_date').datetimepicker({
 });
 var date = new Date();
 var yest = date.setDate(date.getDate() - 1);
+var tom = date.setDate(date.getDate() + 1);
 
 $('#birth_date1').datetimepicker({
 	timepicker: false,
 	maxDate: yest,
 	format: 'd-m-Y'
 });
-$('#issue_date1,#expiry_date1').datetimepicker({
+$('#issue_date1').datetimepicker({
 	timepicker: false,
+	format: 'd-m-Y'
+});
+$('#appointment1,#expiry_date1').datetimepicker({
+	timepicker: false,
+	minDate: tom,
 	format: 'd-m-Y'
 });
 $('#customer_id').select2();
@@ -266,24 +300,6 @@ function business_rule_load() {
 				payment_mode: {
 					required: true
 				},
-				bank_name: {
-					required: function() {
-						if ($('#payment_mode').val() != "Cash" && $('#payment_amount').val() != '0') {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				},
-				transaction_id: {
-					required: function() {
-						if ($('#payment_mode').val() != "Cash") {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				},
 				bank_id: {
 					required: function() {
 						if ($('#payment_mode').val() != "Cash") {
@@ -293,6 +309,9 @@ function business_rule_load() {
 						}
 					}
 				},
+				tax_apply_on : { required:true},
+				tax_value : { required:true},
+				markup_tax_value : { required:true}
 			},
 			submitHandler: function(form, e) {
 				e.preventDefault();
@@ -346,12 +365,18 @@ function business_rule_load() {
 				var misc_markup = $('#misc_markup').val();
 				var misc_taxes = $('#misc_taxes').val();
 				var misc_markup_taxes = $('#misc_markup_taxes').val();
+				var tax_apply_on = $('#tax_apply_on').val();
+				var tax_value = $('#tax_value').val();
+				var markup_tax_value = $('#markup_tax_value').val();
 				var reflections = [];
 				reflections.push({
 					'misc_sc': misc_sc,
 					'misc_markup': misc_markup,
 					'misc_taxes': misc_taxes,
-					'misc_markup_taxes': misc_markup_taxes
+					'misc_markup_taxes': misc_markup_taxes,
+					'tax_apply_on':tax_apply_on,
+					'tax_value':tax_value,
+					'markup_tax_value':markup_tax_value
 				});
 				var bsmValues = [];
 				bsmValues.push({

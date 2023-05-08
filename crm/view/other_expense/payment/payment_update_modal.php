@@ -20,7 +20,7 @@ $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from bank_master where bank_i
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Payment Update</h4>
+        <h4 class="modal-title" id="myModalLabel">Update Payment</h4>
       </div>
       <div class="modal-body">
         
@@ -60,7 +60,7 @@ $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from bank_master where bank_i
                 <input type="text" id="payment_date1" name="payment_date1" class="form-control" placeholder="Date" title="Payment Date" value="<?= date('d-m-Y', strtotime($sq_payment['payment_date'])) ?>" readonly>
               </div>  
               <div class="col-md-4">
-                <input type="text" id="payment_amount1" name="payment_amount1" class="form-control" placeholder="Amount" title="Payment Amount" value="<?= $sq_payment['payment_amount'] ?>" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode12','transaction_id1','bank_name1')">
+                <input type="text" id="payment_amount1" name="payment_amount1" class="form-control" placeholder="Payment Amount" title="Payment Amount" value="<?= $sq_payment['payment_amount'] ?>" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode12','transaction_id1','bank_name1')">
               </div>             
               <div class="col-md-4">
                 <select name="payment_mode12" id="payment_mode12" class="form-control" title="Payment Mode" onchange="payment_master_toggles(this.id, 'bank_name1', 'transaction_id1', 'bank_id1')" disabled>
@@ -71,12 +71,12 @@ $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from bank_master where bank_i
             </div>
             <div class="row mg_bt_10">
               <div class="col-md-4">
-                <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="*Bank Name" title="Bank Name" value="<?= $sq_payment['bank_name'] ?>" <?= $enable ?>>
+                <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment['bank_name'] ?>" <?= $enable ?>>
               </div>
               <div class="col-md-4">
-                <input type="text" id="transaction_id1" name="transaction_id1" onchange="validate_balance(this.id);" class="form-control" placeholder="*Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
+                <input type="number" id="transaction_id1" name="transaction_id1" onchange="validate_balance(this.id);" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
               </div>
-               <div class="col-md-4">
+              <div class="col-md-4">
                 <select name="bank_id1" id="bank_id1" title="Debitor Bank" <?= $enable ?> disabled>
                   <?php 
                   if($sq_bank['bank_id'] != ''){
@@ -153,8 +153,6 @@ $(function(){
               payment_amount1 : { required: true, number:true },
               payment_date1 : { required: true },
               payment_mode12 : { required : true },
-              bank_name1 : { required : function(){  if($('#payment_mode12').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id1 : { required : function(){  if($('#payment_mode12').val()!="Cash"){ return true; }else{ return false; }  }  },     
               bank_id1 : { required : function(){  if($('#payment_mode12').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){
@@ -175,6 +173,11 @@ $(function(){
             var balance_amount = $('#balance_amount').val();
             var old_bank_id = $('#old_bank_id').val();
               
+            if(!check_updated_amount(payment_old_value,payment_amount)){
+              error_msg_alert("You can update payment to 0 only!");
+              $('#payment_update').prop('disabled',false);
+              return false;
+            }
             if(payment_mode == 'Credit Card'){
               error_msg_alert("Select other payment mode!");
               $('#payment_update').prop('disabled',false);

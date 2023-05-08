@@ -30,17 +30,24 @@ while($tourwise_details = mysqli_fetch_assoc($q1)){
 }
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-	$total_purchase += $row_purchase['net_total'];
 	//Service Tax 
 	$service_tax_amount = 0;
 	if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
 		$service_tax_subtotal1 = explode(',',$row_purchase['service_tax_subtotal']);
 		for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
-		$service_tax = explode(':',$service_tax_subtotal1[$i]);
-		$service_tax_amount +=  $service_tax[2];
+			$service_tax = explode(':',$service_tax_subtotal1[$i]);
+			$service_tax_amount +=  $service_tax[2];
 		}
+	}
+	if($row_purchase['purchase_return'] == 0){
+		$total_purchase += $row_purchase['net_total'];
+	}
+	else if($row_purchase['purchase_return'] == 2){
+		$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+		$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+		$total_purchase += $p_purchase;
 	}
 	$total_purchase -= $service_tax_amount;
 }

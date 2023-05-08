@@ -24,7 +24,7 @@ function get_auto_values(
 	if (basic_amount === '') basic_amount = 0;
 	if (markup_amount === '') markup_amount = 0;
 	if (discount_amount === '' || discount_amount === undefined) discount_amount = 0;
-	console.log(basic_amount);
+
 	if (charges_flag === 'true') {
 		var service_charge_result = rules && rules.filter((rule) => rule['rule_for'] === '1');
 		var markup_amount_result = rules && rules.filter((rule) => rule['rule_for'] === '2');
@@ -32,7 +32,6 @@ function get_auto_values(
 		/////////////////Service charge Start/////////////////
 		var rules_array = get_charges_on_conditions(service_charge_result, basic_amount, payment_mode, type);
 
-		console.log(rules_array);
 		if (parseInt(rules_array.length) === 0) {
 			if ($('#' + service_charge).val() == '') $('#' + service_charge).val(parseInt(0).toFixed(2));
 		}
@@ -58,7 +57,6 @@ function get_auto_values(
 			} else {
 				$('#' + service_charge).val(service_charge1);
 			}
-			console.log(service_charge1);
 			$('#hotel_sc').val(rules_array[0].ledger_id);
 		}
 		if (rules_array.length && rules_array[0].type === 'Automatic')
@@ -109,31 +107,65 @@ function get_auto_values(
 		/////////////////Markup End///////////////////////
 	}
 	/////////////////Tax Start///////////////////////
-	var taxes_result =
-		rules &&
-		rules.filter((rule) => {
-			var { entry_id, rule_id } = rule;
-			return entry_id !== '' && !rule_id;
-		});
+	if (type === 'save') {
+		var service_tax_subtotal = 'tour_service_tax_subtotal';
+		var tax_apply_on1 = 'tax_apply_on';
+		var tax_value1 = 'tax_value';
+	}
+	else {
+		var service_tax_subtotal = 'tour_service_tax_subtotal';
+		var tax_apply_on1 = 'atax_apply_on';
+		var tax_value1 = 'tax_value1';
+	}
+	var tax_on_amount = 0;
+	var service_tax = 0;
+	var service_tax_amount = 0;
+	var applied_taxes = '';
+	var ledger_posting = '';
+	var tax_apply_on = $('#'+tax_apply_on1).val();
+	var tax_value = $('#'+tax_value1).val();
+	var txt_hotel_expenses = $('#txt_hotel_expenses').val();
+	var subtotal1 = $('#subtotal').val();
+	var service_charge = $('#'+service_charge).val();
+	if(tax_apply_on == 3){
+		tax_on_amount = (subtotal1=='') ? 0 : subtotal1;
+	}
+	else if(tax_apply_on == 1){
+		tax_on_amount = parseFloat(basic_amount);
+	}
+	else if(tax_apply_on == 2){
+		tax_on_amount = (service_charge=='') ? 0 : service_charge;
+	}
+	else if(tax_apply_on == 4){
+		tax_on_amount = (txt_hotel_expenses=='') ? 0 : txt_hotel_expenses;
+	}
+	if(tax_apply_on!="" && tax_value!=""){
+		var service_tax_subtotal1 = tax_value.split("+");
+		for(var i=0;i<service_tax_subtotal1.length;i++){
+			var service_tax_string = service_tax_subtotal1[i].split(':');
+			if(parseInt(service_tax_string.length) > 0){
+				var service_tax_string1 = service_tax_string[1] && service_tax_string[1].split('%');
+				service_tax_string1[0] = service_tax_string1[0] && service_tax_string1[0].replace('(','');
+				service_tax = service_tax_string1[0];
+			}
 
-	var tax_service_charge = $('#' + service_charge).val();
-
-	var tax_markup = $('#' + markup).val();
-	get_tax_rules(
-		rules,
-		taxes_result,
-		basic_amount,
-		sub_total,
-		tax_markup,
-		markup,
-		tax_service_charge,
-		service_charge,
-		payment_mode,
-		type,
-		amount_type,
-		discount_amount,
-		charges_flag
-	);
+			service_tax_string[2] = service_tax_string[2].replace('(','');
+			service_tax_string[2] = service_tax_string[2].replace(')','');
+			service_tax_amount = (( parseFloat(tax_on_amount) * parseFloat(service_tax) ) / 100).toFixed(2);
+			if(applied_taxes==''){
+				applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting = service_tax_string[2];
+			}else{
+				applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+				ledger_posting += ', ' + service_tax_string[2];
+			}
+		}
+		$('#'+service_tax_subtotal).val(applied_taxes);
+		$('#hotel_taxes').val(ledger_posting);
+	}else{
+		$('#'+service_tax_subtotal).val('');
+		$('#hotel_taxes').val('');
+	}
 	/////////////////Tax End///////////////////////
 
 	if (type === 'save') {

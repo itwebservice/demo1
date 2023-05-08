@@ -14,35 +14,57 @@
   		<input type="text" id="service_charge" name="service_charge" placeholder="Service Charge" title="Service Charge" onchange="flight_quotation_cost_calculate();validate_balance(this.id);get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','true','service_charge');" value="0.00">  
   	</div>
 	<div class="col-md-2">
+		<small>Tax Apply On</small>
+		<select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','true','service_charge', true);">
+			<option value="">*Tax Apply On</option>
+			<option value="1">Basic Amount</option>
+			<option value="2">Service Charge</option>
+			<option value="3">Total</option>
+		</select>
+	</div>
+	<div class="col-md-3">
+		<small>Select Tax</small>
+		<select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','true','service_charge', true);">
+			<option value="">*Select Tax</option>
+			<?php get_tax_dropdown('Income') ?>
+		</select>
+	</div>
+	<div class="col-md-3">
 		<small>&nbsp;</small>
 		<small>Tax Amount</small>
-  		<input type="text" id="service_tax" name="service_tax" placeholder="Tax Amount" title="Tax Amount" onchange="flight_quotation_cost_calculate();validate_balance(this.id)" value="0.00" readonly>  
-  	</div>
+		<input type="text" id="service_tax" name="service_tax" placeholder="Tax Amount" title="Tax Amount" onchange="flight_quotation_cost_calculate();validate_balance(this.id)" value="0.00" readonly>  
+	</div>
+</div>
+<div class="row mg_tp_20">
 	<div class="col-md-2">
 		<small id="markup_show">&nbsp;</small>
-		<small>Markup Cost</small>
-  		<input type="text" id="markup_cost" name="markup_cost" placeholder="Markup Cost" title="Markup Cost" onchange="flight_quotation_cost_calculate();validate_balance(this.id);get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','false','service_charge');" value="0.00">  
-  	</div>
-	<div class="col-md-2">
-		<small>&nbsp;</small>
+		<small>Markup Amount</small>
+		<input type="text" id="markup_cost" name="markup_cost" placeholder="Markup Amount" title="Markup Amount" onchange="flight_quotation_cost_calculate();validate_balance(this.id);get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','false','service_charge');" value="0.00">  
+	</div>
+	<div class="col-md-3">
+		<small>Select Markup Tax</small>
+		<select title="Select Markup Tax" id="markup_tax_value" name="markup_tax_value" class="form-control" onchange="get_auto_values('quotation_date','subtotal','payment_mode','service_charge','markup_cost','save','false','service_charge');">
+			<option value="">*Select Markup Tax</option>
+			<?php get_tax_dropdown('Income') ?>
+		</select>
+	</div>
+	<div class="col-md-3">
 		<small>Tax On Markup</small>
-  		<input type="text" id="markup_cost_subtotal" name="markup_cost_subtotal" placeholder="Tax on Markup" title="Tax on Markup" onchange="flight_quotation_cost_calculate();" value="0.00" readonly>  
-  	</div>
-	  <div class="col-md-2">
+		<input type="text" id="markup_cost_subtotal" name="markup_cost_subtotal" placeholder="Tax on Markup" title="Tax on Markup" onchange="flight_quotation_cost_calculate();" value="0.00" readonly>  
+	</div>
+		<div class="col-md-2">
 		<small>&nbsp;</small>
 		<small>Round Off</small>
-  		<input type="text" id="roundoff" name="roundoff" placeholder="Round Off" title="Round Off" onchange="flight_quotation_cost_calculate();" value="0.00" readonly>  
-  	</div>
+		<input type="text" id="roundoff" name="roundoff" placeholder="Round Off" title="Round Off" onchange="flight_quotation_cost_calculate();" value="0.00" readonly>  	
+	</div>
 	<div class="col-md-2">
-		<small>&nbsp;</small>
 		<small>Quotation Cost</small>
 		<input type="text" id="total_tour_cost" class="amount_feild_highlight text-right" name="total_tour_cost" placeholder="Quotation Cost" title="Quotation Cost" value="0"  readonly>
 
 	</div>
+</div>
 
- </div>
-
-	<div class="row mg_tp_20 text-center">
+	<div class="row mg_tp_30 text-center">
 
 		<div class="col-md-12">
 
@@ -67,6 +89,9 @@ $('#frm_tab3').validate({
 
 	rules:{
 
+		tax_apply_on : { required:true},
+		tax_value : { required:true},
+		markup_tax_value : { required:true}
 	},
 
 	submitHandler:function(form,e){
@@ -83,6 +108,7 @@ $('#frm_tab3').validate({
 		var email_id = $('#email_id').val();
 
 		var mobile_no = $('#mobile_no').val();
+		var country_code = $('#country_code').val();
 
 		var quotation_date = $('#quotation_date').val();
 
@@ -96,11 +122,17 @@ $('#frm_tab3').validate({
 		var total_tour_cost = $('#total_tour_cost').val();
 		var branch_admin_id = $('#branch_admin_id1').val();
 		var financial_year_id = $('#financial_year_id').val();
+		var tax_apply_on = $('#tax_apply_on').val();
+		var tax_value = $('#tax_value').val();
+		var markup_tax_value = $('#markup_tax_value').val();
 		var bsmValues = [];
 		bsmValues.push({
 			"basic" : $('#basic_show').find('span').text(),
 			"service" : $('#service_show').find('span').text(),
-			"markup" : $('#markup_show').find('span').text()
+			"markup" : $('#markup_show').find('span').text(),
+			'tax_apply_on':tax_apply_on,
+			'tax_value':tax_value,
+			'markup_tax_value':markup_tax_value
 		});
 		var roundoff = $('#roundoff').val();
 
@@ -241,7 +273,7 @@ $('#frm_tab3').validate({
 
 			url: base_url+'controller/package_tour/quotation/flight/quotation_save.php',
 
-			data:{ enquiry_id : enquiry_id , login_id : login_id, emp_id : emp_id, customer_name : customer_name, email_id : email_id, mobile_no : mobile_no , quotation_date : quotation_date, subtotal : subtotal,markup_cost:markup_cost,markup_cost_subtotal : markup_cost_subtotal, service_tax : service_tax ,service_charge : service_charge ,total_tour_cost : total_tour_cost, from_sector_arr : from_sector_arr, to_sector_arr : to_sector_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr, from_city_id_arr : from_city_id_arr , to_city_id_arr : to_city_id_arr, branch_admin_id : branch_admin_id,financial_year_id :financial_year_id, bsmValues : bsmValues, roundoff : roundoff, enquiry_content : enquiry_content, total_adult_arr : total_adult_arr, total_child_arr : total_child_arr, total_infant_arr : total_infant_arr},
+			data:{ enquiry_id : enquiry_id , login_id : login_id, emp_id : emp_id, customer_name : customer_name, email_id : email_id, mobile_no : mobile_no ,country_code:country_code, quotation_date : quotation_date, subtotal : subtotal,markup_cost:markup_cost,markup_cost_subtotal : markup_cost_subtotal, service_tax : service_tax ,service_charge : service_charge ,total_tour_cost : total_tour_cost, from_sector_arr : from_sector_arr, to_sector_arr : to_sector_arr,airline_name_arr : airline_name_arr , plane_class_arr : plane_class_arr, arraval_arr : arraval_arr, dapart_arr : dapart_arr, from_city_id_arr : from_city_id_arr , to_city_id_arr : to_city_id_arr, branch_admin_id : branch_admin_id,financial_year_id :financial_year_id, bsmValues : bsmValues, roundoff : roundoff, enquiry_content : enquiry_content, total_adult_arr : total_adult_arr, total_child_arr : total_child_arr, total_infant_arr : total_infant_arr},
 
 			success: function(message){
 

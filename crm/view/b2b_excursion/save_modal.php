@@ -22,8 +22,7 @@ include "../../model/model.php";
                                             <div class="Normal collapsed main_block" role="button"
                                                 data-toggle="collapse" data-parent="#accordion" href="#collapse1"
                                                 aria-expanded="false" aria-controls="collapse1" id="collapsed1">
-                                                <div class="col-md-12"><span><em
-                                                            style="margin-left: 15px;"><?php echo "Activity Information"; ?></em></span>
+                                                <div class="col-md-12"><span><em style="margin-left: 15px;"><?php echo "Activity Information"; ?></em></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -95,8 +94,7 @@ include "../../model/model.php";
                                                             <input type="hidden" id="timing_tariff_url"
                                                                 name="timing_tariff_url">
                                                         </div>
-                                                        <span style="color: red;" class="note">Note : Upload CSV for
-                                                            Timing Slots.</span>
+					                                    <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note : Upload CSV for Timing Slots."><i class="fa fa-question-circle"></i></button>
                                                     </div>
                                                     <input type="hidden" id="timing_slots" />
                                                 </div>
@@ -150,8 +148,7 @@ include "../../model/model.php";
                                         <div class="Normal collapsed main_block" role="button" data-toggle="collapse"
                                             data-parent="#accordion" href="#collapse2" aria-expanded="false"
                                             aria-controls="collapse2" id="collapsed1">
-                                            <div class="col-md-12"><span><em
-                                                        style="margin-left: 15px;"><?php echo "Costing Information"; ?></em></span>
+                                            <div class="col-md-12"><span><em style="margin-left: 15px;"><?php echo "Costing Information"; ?></em></span>
                                             </div>
                                         </div>
                                     </div>
@@ -182,12 +179,8 @@ include "../../model/model.php";
                                                 <div class="row mg_bt_10">
                                                     <h5 style='border-bottom: 1px solid #e5e5e5;'>Basic Costing</h5>
                                                     <div class="row text-right mg_bt_10">
-                                                        <button type="button" class="btn btn-info btn-sm ico_left"
-                                                            onClick="addRow('table_exc_tarrif_basic')"><i
-                                                                class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-                                                        <button type="button" class="btn btn-danger btn-sm ico_left"
-                                                            onClick="deleteRow('table_exc_tarrif_basic')"><i
-                                                                class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+                                                        <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('table_exc_tarrif_basic')"><i class="fa fa-plus"></i></button>
+                                                        <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('table_exc_tarrif_basic')"><i class="fa fa-trash"></i></button>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-12">
@@ -238,22 +231,26 @@ include "../../model/model.php";
                                                                                 style="width:120px" /></td>
                                                                         <td><input type="text" id="adult_cost"
                                                                                 name="adult_cost"
-                                                                                placeholder="*Adult Cost"
-                                                                                title="Adult Cost"
+                                                                                placeholder="*Adult Ticket Cost"
+                                                                                title="Adult Ticket Cost"
                                                                                 onchange="validate_balance(this.id);"
-                                                                                style="width:120px"></td>
+                                                                                style="width:155px"></td>
                                                                         <td><input type="text" id="child_cost"
                                                                                 name="child_cost"
-                                                                                placeholder="*Child Cost"
-                                                                                title="Child Cost"
+                                                                                placeholder="*Child Ticket Cost"
+                                                                                title="Child Ticket Cost"
                                                                                 onchange="validate_balance(this.id);"
-                                                                                style="width:120px"></td>
+                                                                                style="width:155px"></td>
                                                                         <td><input type="text" id="infant_cost"
                                                                                 name="infant_cost"
-                                                                                placeholder="Infant Cost"
-                                                                                title="Infant Cost"
+                                                                                placeholder="Infant Ticket Cost"
+                                                                                title="Infant Ticket Cost"
                                                                                 onchange="validate_balance(this.id);"
-                                                                                style="width:120px"></td>
+                                                                                style="width:155px"></td>
+                                                                        <td><input type="number" id="transfer_cost"
+                                                                                name="transfer_cost"
+                                                                                placeholder="Transfer Cost"
+                                                                                title="Transfer Cost" style="width:155px"></td>
                                                                         <td><select name="markup_in" id="markup_in"
                                                                                 style="width: 125px"
                                                                                 class="form-control app_select2"
@@ -265,14 +262,13 @@ include "../../model/model.php";
                                                                             </select></td>
                                                                         <td><input type='number' id="amount"
                                                                                 name="amount"
-                                                                                placeholder="*Markup Amount"
+                                                                                placeholder="Markup Amount"
                                                                                 class="form-control"
                                                                                 title="Markup Amount"
-                                                                                style="width: 160px;"
+                                                                                style="width: 165px;"
                                                                                 onchange="validate_balance(this.id);" />
                                                                         </td>
-                                                                        <td><input type="hidden" id="entry_id"
-                                                                                name="entry_id" /></td>
+                                                                        <td><input type="hidden" id="entry_id" name="entry_id" /></td>
                                                                     </tr>
                                                                 </table>
                                                             </div>
@@ -284,12 +280,8 @@ include "../../model/model.php";
                                                 <div class="row mg_bt_10">
                                                     <h5 style='border-bottom: 1px solid #e5e5e5;'>Offers/Coupons</h5>
                                                     <div class="row text-right mg_bt_10">
-                                                        <button type="button" class="btn btn-info btn-sm ico_left"
-                                                            onClick="addRow('table_exc_tarrif_offer')"><i
-                                                                class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-                                                        <button type="button" class="btn btn-danger btn-sm ico_left"
-                                                            onClick="deleteRow('table_exc_tarrif_offer')"><i
-                                                                class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+                                                        <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('table_exc_tarrif_offer')"><i class="fa fa-plus"></i></button>
+                                                        <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('table_exc_tarrif_offer')"><i class="fa fa-trash"></i></button>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-md-12">
@@ -376,12 +368,7 @@ include "../../model/model.php";
                                 <ul id="files"></ul>
                                 <input type="hidden" id="photo_upload_url_i" name="photo_upload_url_i">
                             </div>(Upload Maximum 3 images)
-                        </div>
-                    </div>
-                    <div class="row mg_tp_10">
-                        <div class="col-sm-6">
-                            <span style="color: red;" class="note">Note : Image size should be less than 100KB,
-                                resolution : 900X450.</span>
+					        <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note: Image size should be less than 100KB,resolution : 900X450."><i class="fa fa-question-circle"></i></button>
                         </div>
                     </div>
                     <input type="hidden" name="hotel_image_path" id="hotel_image_path">
@@ -582,6 +569,7 @@ $(function() {
             var adult_cost_array = new Array();
             var child_cost_array = new Array();
             var infant_cost_array = new Array();
+            var transfer_cost_array = [];
             var markup_in_array = new Array();
             var markup_cost_array = new Array();
             var table = document.getElementById("table_exc_tarrif_basic");
@@ -597,8 +585,9 @@ $(function() {
                     var adult_cost = row.cells[5].childNodes[0].value;
                     var child_cost = row.cells[6].childNodes[0].value;
                     var infant_cost = row.cells[7].childNodes[0].value;
-                    var markup_in = row.cells[8].childNodes[0].value;
-                    var markup_cost = row.cells[9].childNodes[0].value;
+                    var transfer_cost = row.cells[8].childNodes[0].value;
+                    var markup_in = row.cells[9].childNodes[0].value;
+                    var markup_cost = row.cells[10].childNodes[0].value;
 
                     if (transfer_option == '') {
                         error_msg_alert('Select Transfer Option in Row-' + (i + 1));
@@ -613,28 +602,20 @@ $(function() {
                         return false;
                     }
                     if (adult_cost == '') {
-                        error_msg_alert('Enter Adult Cost in Row-' + (i + 1));
+                        error_msg_alert('Enter Adult Ticket Cost in Row-' + (i + 1));
                         return false;
                     }
                     if (child_cost == '') {
-                        error_msg_alert('Enter Child Cost in Row-' + (i + 1));
+                        error_msg_alert('Enter Child Ticket Cost in Row-' + (i + 1));
                         return false;
                     }
-                    if (markup_in == '') {
-                        error_msg_alert('Select Markup In in Row-' + (i + 1));
-                        return false;
-                    }
-                    if (markup_cost == '') {
-                        error_msg_alert('Enter Markup Cost in Row-' + (i + 1));
-                        return false;
-                    }
-
                     transfer_option_array.push(transfer_option);
                     bfrom_date_array.push(from_date);
                     bto_date_array.push(to_date);
                     adult_cost_array.push(adult_cost);
                     child_cost_array.push(child_cost);
                     infant_cost_array.push(infant_cost);
+                    transfer_cost_array.push(transfer_cost);
                     markup_in_array.push(markup_in);
                     markup_cost_array.push(markup_cost);
                 }
@@ -738,6 +719,7 @@ $(function() {
                     adult_cost_array: adult_cost_array,
                     child_cost_array: child_cost_array,
                     infant_cost_array: infant_cost_array,
+                    transfer_cost_array:transfer_cost_array,
                     markup_in_array: markup_in_array,
                     markup_cost_array: markup_cost_array,
                     type_array: type_array,

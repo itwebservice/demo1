@@ -87,6 +87,10 @@ function switch_to_tab3() {
 $('#frm_tour_update').validate({
 
     rules: {
+		txt_tour_cost : { required: true, number:true },
+
+		txt_child_with_cost : { required: true, number:true },
+
 
     },
 
@@ -459,86 +463,91 @@ $('#frm_tour_update').validate({
 
             }
         }
-
-        $('#btn_quotation_update').button('loading');
         var daywise_url = $('#new_image_url').val();
 
+        $('#btn_quotation_update').button('loading');
+        $("#vi_confirm_box").vi_confirm_box({
+            callback: function(result){
+                if(result=="yes"){
 
-        $.post(
+                    $.post(base_url + "controller/group_tour/tours/tour_master_update.php",
+                    {
+                        tour_id: tour_id,
+                        tour_type: tour_type,
+                        tour_name: tour_name,
+                        adult_cost: adult_cost,
+                        child_with_cost: child_with_cost,
+                        child_without_cost: child_without_cost,
+                        infant_cost: infant_cost,
+                        with_bed_cost: with_bed_cost,
+                        'from_date[]': from_date,
+                        'to_date[]': to_date,
+                        'capacity[]': capacity,
+                        tour_group_id: tour_group_id,
+                        visa_country_name: visa_country_name,
+                        company_name: company_name,
+                        active_flag: active_flag,
+                        day_program_arr: day_program_arr,
+                        special_attaraction_arr: special_attaraction_arr,
+                        overnight_stay_arr: overnight_stay_arr,
+                        meal_plan_arr: meal_plan_arr,
+                        entry_id_arr: entry_id_arr,
+                        train_from_location_arr: train_from_location_arr,
+                        train_to_location_arr: train_to_location_arr,
+                        train_class_arr: train_class_arr,
+                        train_id_arr: train_id_arr,
+                        from_city_id_arr: from_city_id_arr,
+                        to_city_id_arr: to_city_id_arr,
+                        plane_from_location_arr: plane_from_location_arr,
+                        plane_to_location_arr: plane_to_location_arr,
+                        airline_name_arr: airline_name_arr,
+                        plane_class_arr: plane_class_arr,
+                        plane_id_arr: plane_id_arr,
+                        route_arr: route_arr,
+                        cabin_arr: cabin_arr,
+                        city_name_arr,
+                        hotel_name_arr,
+                        hotel_type_arr,
+                        total_days_arr,
+                        hotel_entry_id_arr,
+                        c_entry_id_arr: c_entry_id_arr,
+                        inclusions: inclusions,
+                        exclusions: exclusions,
+                        daywise_url: daywise_url,
+                        dest_image: dest_image
+                    },
 
-            base_url + "controller/group_tour/tours/tour_master_update.php",
+                    function(data) {
 
-            {
-                tour_id: tour_id,
-                tour_type: tour_type,
-                tour_name: tour_name,
-                adult_cost: adult_cost,
-                child_with_cost: child_with_cost,
-                child_without_cost: child_without_cost,
-                infant_cost: infant_cost,
-                with_bed_cost: with_bed_cost,
-                'from_date[]': from_date,
-                'to_date[]': to_date,
-                'capacity[]': capacity,
-                tour_group_id: tour_group_id,
-                visa_country_name: visa_country_name,
-                company_name: company_name,
-                active_flag: active_flag,
-                day_program_arr: day_program_arr,
-                special_attaraction_arr: special_attaraction_arr,
-                overnight_stay_arr: overnight_stay_arr,
-                meal_plan_arr: meal_plan_arr,
-                entry_id_arr: entry_id_arr,
-                train_from_location_arr: train_from_location_arr,
-                train_to_location_arr: train_to_location_arr,
-                train_class_arr: train_class_arr,
-                train_id_arr: train_id_arr,
-                from_city_id_arr: from_city_id_arr,
-                to_city_id_arr: to_city_id_arr,
-                plane_from_location_arr: plane_from_location_arr,
-                plane_to_location_arr: plane_to_location_arr,
-                airline_name_arr: airline_name_arr,
-                plane_class_arr: plane_class_arr,
-                plane_id_arr: plane_id_arr,
-                route_arr: route_arr,
-                cabin_arr: cabin_arr,
-                city_name_arr,
-                hotel_name_arr,
-                hotel_type_arr,
-                total_days_arr,
-                hotel_entry_id_arr,
-                c_entry_id_arr: c_entry_id_arr,
-                inclusions: inclusions,
-                exclusions: exclusions,
-                daywise_url: daywise_url,
-                dest_image: dest_image
-            },
+                        var msg = data.split('--');
+                        if (msg[0] == "error") {
+                            error_msg_alert(msg[1]);
+                            $('#btn_quotation_update').prop('disabled', false);
+                            $('#btn_quotation_update').button('reset');
+                            return false;
+                        } else {
+                            $('#btn_quotation_update').button('reset');
+                            $('#vi_confirm_box').vi_confirm_box({
+                                false_btn: false,
+                                message: data,
+                                true_btn_text: 'Ok',
+                                callback: function(data1) {
+                                    if (data1 == "yes") {
+                                        $('#btn_quotation_update').prop('disabled', false);
+                                        update_b2c_cache();
+                                        window.location.href = '../index.php';
+                                    }
+                                }
+                            });
+                        }
 
-            function(data) {
-
-                var msg = data.split('--');
-                if (msg[0] == "error") {
-                    error_msg_alert(msg[1]);
+                    });
+                }else{
                     $('#btn_quotation_update').prop('disabled', false);
                     $('#btn_quotation_update').button('reset');
-                    return false;
-                } else {
-                    $('#btn_quotation_update').button('reset');
-                    $('#vi_confirm_box').vi_confirm_box({
-                        false_btn: false,
-                        message: data,
-                        true_btn_text: 'Ok',
-                        callback: function(data1) {
-                            if (data1 == "yes") {
-                                $('#btn_quotation_update').prop('disabled', false);
-                                update_b2c_cache();
-                                window.location.href = '../index.php';
-                            }
-                        }
-                    });
                 }
-
-            });
+            }
+        });
 
     }
 

@@ -3,13 +3,13 @@ include_once('../../../model/model.php');
 $role = $_SESSION['role'];
 $emp_id= $_SESSION['emp_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
+$financial_year_id = $_SESSION['financial_year_id'];
 $branch_status = $_POST['branch_status'];
-include_once('expense_save_modal.php');
 ?>
 <input type="hidden" id="branch_status" name="branch_status" value="<?= $branch_status ?>">
 <div class="row text-right"> <div class="col-xs-12">
 	<button class="btn btn-excel btn-sm mg_bt_20" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
-	<button class="btn btn-info btn-sm ico_left mg_bt_10" data-toggle="modal" data-target="#expense_save_modal"><i class="fa fa-plus"></i>&nbsp;&nbsp;New Expense</button>
+	<button class="btn btn-info btn-sm ico_left mg_bt_10" id="save_btn" onclick="save_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;New Expense</button>
 </div> </div>
 
 	
@@ -41,6 +41,16 @@ include_once('expense_save_modal.php');
 					?>
 				</select>
 			</div>
+			<div class="col-md-3 col-sm-6 mg_bt_10">
+				<select name="financial_year_id_filter" id="financial_year_id_filter" title="Select Financial Year" class="form-control">
+					<?php
+					$sq_fina = mysqli_fetch_assoc(mysqlQuery("select * from financial_year where financial_year_id='$financial_year_id'"));
+					$financial_year = get_date_user($sq_fina['from_date']).'&nbsp;&nbsp;&nbsp;To&nbsp;&nbsp;&nbsp;'.get_date_user($sq_fina['to_date']);
+					?>
+					<option value="<?= $sq_fina['financial_year_id'] ?>"><?= $financial_year  ?></option>
+					<?php echo get_financial_year_dropdown_filter($financial_year_id); ?>
+				</select>
+			</div>
 			<div class="col-md-3 col-sm-6 col-xs-12">
 				<button class="btn btn-sm btn-info ico_right" onclick="expense_estimate_list_reflect()">Proceed&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
 			</div>
@@ -49,6 +59,7 @@ include_once('expense_save_modal.php');
 
 <div id="div_expense_estimate_list" class="main_block loader_parent"></div>
 <div id="div_expense_estimate_update" class="main_block"></div>
+<div id="div_expense_estimate_save" class="main_block"></div>
 
 <script>
 $('#supplier_type1,#expense_type1').select2();
@@ -59,8 +70,9 @@ function expense_estimate_list_reflect()
 	var expense_type = $('#expense_type1').val();
 	var supplier_type = $('#supplier_type1').val();
 	var branch_status = $('#branch_status').val();
+	var financial_year_id = $('#financial_year_id_filter').val();
 
-	$.post('booking/expense_list_reflect.php', { supplier_type : supplier_type, expense_type : expense_type, branch_status : branch_status}, function(data){		
+	$.post('booking/expense_list_reflect.php', { supplier_type : supplier_type, expense_type : expense_type, branch_status : branch_status, financial_year_id : financial_year_id}, function(data){		
 		$('#div_expense_estimate_list').html(data);
 	});
 }
@@ -76,11 +88,23 @@ function excel_report()
 
 
 }
-
+function save_modal(){
+	$('#save_btn').prop('disabled',true);
+	$('#save_btn').button('loading');
+	$.post('booking/expense_save_modal.php', { }, function(data){
+		$('#save_btn').prop('disabled',false);
+		$('#save_btn').button('reset');
+		$('#div_expense_estimate_save').html(data);
+	});
+}
 function expense_update_modal(expense_id)
 {
+    $('#update_btn-'+expense_id).prop('disabled',true);
+    $('#update_btn-'+expense_id).button('loading');
 	$.post('booking/expense_update_modal.php', { expense_id : expense_id}, function(data){		
 		$('#div_expense_estimate_update').html(data);
+		$('#update_btn-'+expense_id).prop('disabled',false);
+		$('#update_btn-'+expense_id).button('reset');
 	});
 }
 function delete_entry(expense_id)

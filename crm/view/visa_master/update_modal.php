@@ -106,7 +106,7 @@ $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_crm_master where en
 
                 <div class="div-upload">
 
-                  <div id="photo_upload_visa" class="upload-button1"><span>Upload</span></div>
+                  <div id="photo_upload_visa" class="upload-button1"><span>Upload Form1</span></div>
 
                   <span id="photo_status" ></span>
 
@@ -121,7 +121,7 @@ $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_crm_master where en
 
                 <div class="div-upload">
 
-                  <div id="photo_upload2" class="upload-button2"><span>Upload</span></div>
+                  <div id="photo_upload2" class="upload-button2"><span>Upload Form2</span></div>
 
                   <span id="photo_status2" ></span>
 
@@ -132,6 +132,54 @@ $sq_visa = mysqli_fetch_assoc(mysqlQuery("select * from visa_crm_master where en
                 </div>
 
               </div> 
+            </div> 
+          <div class="row">
+              <div class="col-md-3 col-sm-6 col-xs-12 text-left mg_tp_10">
+
+                  <div class="div-upload">
+
+                      <div id="photo_upload3" class="upload-button3"><span>Upload Form3</span></div>
+
+                      <span id="photo_status3"></span>
+
+                      <ul id="files"></ul>
+
+                      <input type="hidden" id="photo_upload_url3" name="photo_upload_url3" value="<?= $sq_visa['upload_url3']?>">
+
+                  </div>
+
+              </div>
+              <div class="col-md-3 col-sm-6 col-xs-12 text-left mg_tp_10">
+
+                  <div class="div-upload">
+
+                      <div id="photo_upload4" class="upload-button4"><span>Upload Form4</span></div>
+
+                      <span id="photo_status4"></span>
+
+                      <ul id="files"></ul>
+
+                      <input type="hidden" id="photo_upload_url4" name="photo_upload_url4" value="<?= $sq_visa['upload_url4']?>">
+
+                  </div>
+
+              </div>
+              <div class="col-md-3 col-sm-6 col-xs-12 text-left mg_tp_10">
+
+                  <div class="div-upload">
+
+                      <div id="photo_upload5" class="upload-button5"><span>Upload Form5</span></div>
+
+                      <span id="photo_status5"></span>
+
+                      <ul id="files"></ul>
+
+                      <input type="hidden" id="photo_upload_url5" name="photo_upload_url5" value="<?= $sq_visa['upload_url5']?>">
+
+                  </div>
+					        <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note: Upload only PDF or Text files."><i class="fa fa-question-circle"></i></button>
+
+              </div>
 
           </div>
           <div class="row mg_tp_20">
@@ -175,7 +223,10 @@ upload_user_pic_attch();
 function upload_user_pic_attch(){
 
     var btnUpload=$('#photo_upload_visa');
-    $(btnUpload).find('span').text('Upload Form1');   
+    var file_url = $("#photo_upload_url1").val();
+    if(file_url != '') { var file_text = 'Uploaded'; }
+    else{ var file_text = 'Upload Form1'; }
+    $(btnUpload).find('span').text(file_text);   
 
     new AjaxUpload(btnUpload, {
       action: 'upload_photo_proof.php',
@@ -190,7 +241,7 @@ function upload_user_pic_attch(){
       onComplete: function(file, response){
         if(response==="error"){
           error_msg_alert("File is not uploaded.");      
-          $(btnUpload).find('span').text('Upload');
+          $(btnUpload).find('span').text('Upload Form1');
         }
         else{ 
           $(btnUpload).find('span').text('Uploaded');
@@ -204,7 +255,10 @@ upload_user_pic_attch2();
 function upload_user_pic_attch2(){
 
     var btnUpload=$('#photo_upload2');
-    $(btnUpload).find('span').text('Upload Form2');   
+    var file_url = $("#photo_upload_url2").val();
+    if(file_url != '') { var file_text = 'Uploaded'; }
+    else{ var file_text = 'Upload Form2'; }
+    $(btnUpload).find('span').text(file_text);   
 
     new AjaxUpload(btnUpload, {
       action: 'upload_photo_proof.php',
@@ -219,13 +273,103 @@ function upload_user_pic_attch2(){
       onComplete: function(file, response){
         if(response==="error"){
           error_msg_alert("File is not uploaded.");      
-          $(btnUpload).find('span').text('Upload');
+          $(btnUpload).find('span').text('Upload Form2');
         }
         else{ 
           $(btnUpload).find('span').text('Uploaded');
           $("#photo_upload_url2").val(response);
         }
       }
+    });
+}
+upload_user_pic_attch3();
+function upload_user_pic_attch3() {
+
+    var btnUpload = $('#photo_upload3');
+    var file_url = $("#photo_upload_url3").val();
+    if(file_url != '') { var file_text = 'Uploaded'; }
+    else{ var file_text = 'Upload Form3'; }
+    $(btnUpload).find('span').text(file_text);   
+
+    new AjaxUpload(btnUpload, {
+        action: 'upload_photo_proof.php',
+        name: 'uploadfile',
+        onSubmit: function(file, ext) {
+            if (!(ext && /^(pdf|txt)$/.test(ext))) {
+                error_msg_alert('Only pdf,txt files are allowed');
+                return false;
+            }
+            $(btnUpload).find('span').text('Uploading...');
+        },
+        onComplete: function(file, response) {
+            if (response === "error") {
+                error_msg_alert("File is not uploaded.");
+                $(btnUpload).find('span').text('Upload Form3');
+            } else {
+                $(btnUpload).find('span').text('Uploaded');
+                $("#photo_upload_url3").val(response);
+            }
+        }
+    });
+}
+upload_user_pic_attch4();
+function upload_user_pic_attch4() {
+
+    var btnUpload = $('#photo_upload4');
+    var file_url = $("#photo_upload_url4").val();
+    if(file_url != '') { var file_text = 'Uploaded'; }
+    else{ var file_text = 'Upload Form4'; }
+    $(btnUpload).find('span').text(file_text);   
+
+    new AjaxUpload(btnUpload, {
+        action: 'upload_photo_proof.php',
+        name: 'uploadfile',
+        onSubmit: function(file, ext) {
+            if (!(ext && /^(pdf|txt)$/.test(ext))) {
+                error_msg_alert('Only pdf,txt files are allowed');
+                return false;
+            }
+            $(btnUpload).find('span').text('Uploading...');
+        },
+        onComplete: function(file, response) {
+            if (response === "error") {
+                error_msg_alert("File is not uploaded.");
+                $(btnUpload).find('span').text('Upload Form4');
+            } else {
+                $(btnUpload).find('span').text('Uploaded');
+                $("#photo_upload_url4").val(response);
+            }
+        }
+    });
+}
+upload_user_pic_attch5();
+function upload_user_pic_attch5() {
+
+    var btnUpload = $('#photo_upload5');
+    var file_url = $("#photo_upload_url5").val();
+    if(file_url != '') { var file_text = 'Uploaded'; }
+    else{ var file_text = 'Upload Form5'; }
+    $(btnUpload).find('span').text(file_text);   
+
+    new AjaxUpload(btnUpload, {
+        action: 'upload_photo_proof.php',
+        name: 'uploadfile',
+        onSubmit: function(file, ext) {
+            if (!(ext && /^(pdf|txt)$/.test(ext))) {
+                error_msg_alert('Only pdf,txt files are allowed');
+                return false;
+            }
+            $(btnUpload).find('span').text('Uploading...');
+        },
+        onComplete: function(file, response) {
+            if (response === "error") {
+                error_msg_alert("File is not uploaded.");
+                $(btnUpload).find('span').text('Upload Form5');
+            } else {
+                $(btnUpload).find('span').text('Uploaded');
+                $("#photo_upload_url5").val(response);
+            }
+        }
     });
 }
 
@@ -250,6 +394,9 @@ $(function(){
         var time_taken = $("#time_taken1").val();
         var photo_upload_url = $('#photo_upload_url1').val();
         var photo_upload_url2 = $('#photo_upload_url2').val();
+        var photo_upload_url3 = $('#photo_upload_url3').val();
+        var photo_upload_url4 = $('#photo_upload_url4').val();
+        var photo_upload_url5 = $('#photo_upload_url5').val();
         var doc_list = $('#doc_list').val();
         var active_flag = $('#active_flag1').val();
 
@@ -258,7 +405,7 @@ $(function(){
 
               base_url+"controller/visa_master/visa_master_update.php",
 
-              { entry_id : entry_id, visa_country_name : visa_country_name, visa_type : visa_type, fees : fees, markup : markup, time_taken : time_taken, photo_upload_url : photo_upload_url,photo_upload_url2:photo_upload_url2,doc_list : doc_list,active_flag:active_flag},
+              { entry_id : entry_id, visa_country_name : visa_country_name, visa_type : visa_type, fees : fees, markup : markup, time_taken : time_taken, photo_upload_url : photo_upload_url,photo_upload_url2:photo_upload_url2,doc_list : doc_list,active_flag:active_flag,photo_upload_url3: photo_upload_url3,photo_upload_url4: photo_upload_url4,photo_upload_url5: photo_upload_url5},
 
               function(data) {
 

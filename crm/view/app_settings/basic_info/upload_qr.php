@@ -48,9 +48,8 @@ $current_dir = check_dir($current_dir , $day);
 
 $current_dir = check_dir($current_dir , $timestamp);
 
-
-
-$file = $current_dir.basename($_FILES['uploadfileQR']['name']); 
+$file_name = str_replace(' ','_',basename($_FILES['uploadfileQR']['name']));
+$file = $current_dir.$file_name; 
 
 if($_FILES['uploadfileQR']['size']<=100000){
 	if (move_uploaded_file($_FILES['uploadfileQR']['tmp_name'], $file)) { 

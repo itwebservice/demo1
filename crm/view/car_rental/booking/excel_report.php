@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -173,11 +173,12 @@ elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7')
             ->setCellValue('I'.$row_count, "CNCL_Amount")
             ->setCellValue('J'.$row_count, "Total")
             ->setCellValue('K'.$row_count, "Paid Amount")
-            ->setCellValue('L'.$row_count, "Created By");
+            ->setCellValue('L'.$row_count, "Created By")
+            ->setCellValue('M'.$row_count, "Booking Date");
 
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
     $total_sale = 0;
@@ -224,10 +225,11 @@ $paid_amount = ($paid_amount == '')?'0':$paid_amount;
         ->setCellValue('I'.$row_count, number_format($row_booking['cancel_amount'],2))
         ->setCellValue('J'.$row_count, number_format(($row_booking['total_fees'] + $credit_card_charges-$row_booking['cancel_amount']),2))
         ->setCellValue('K'.$row_count, $paid_amount)
-        ->setCellValue('L'.$row_count, $emp_name);
+        ->setCellValue('L'.$row_count, $emp_name)
+        ->setCellValue('M'.$row_count, date('d-m-Y',strtotime($row_booking['created_at'])));
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':K'.$row_count)->applyFromArray($borderArray);    
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
 
     $row_count++;
 

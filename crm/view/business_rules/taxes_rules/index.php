@@ -11,16 +11,17 @@ include "../../../model/model.php";
     <div class="row">
         <div class="col-md-3 col-sm-6">
             <select name="tax_filter" id="tax_filter" title="Select Tax" data-toggle="tooltip" onchange="t_list_reflect()" style="width:100%" class='form-control'>
-                <option value="">Select Tax</option>
-                <?php 
-                $sq = mysqlQuery("select * from tax_master");
-                while($row_taxes = mysqli_fetch_assoc($sq))
-                {
-                    $rate = ($row_taxes['rate_in'] == "Percentage") ? $row_taxes['rate'].'(%)': $row_taxes['rate'];
-                    $string = $row_taxes['name'].'-'.$rate;
+                <option value="">*Select Tax</option>
+                <?php
+                $sq_tax = mysqlQuery("SELECT * FROM `tax_master` where status='Active' and reflection='Income'");
+                while($row_tax = mysqli_fetch_assoc($sq_tax)){
+
+                    $tax_string = $row_tax['name1'].':('.$row_tax['amount1'].'%):('.$row_tax['ledger1'].')';
+                    $tax_string .= ($row_tax['name2'] != '') ? '+'.$row_tax['name2'].':('.$row_tax['amount2'].'%):('.$row_tax['ledger2'].')' : '';
                 ?>
-                <option value="<?= $row_taxes['entry_id']?>"><?= $string ?></option>
-                <?php } ?>
+                <option value="<?= $row_tax['entry_id'] ?>"><?= $tax_string ?></option>
+                <?php
+                } ?>
             </select>
         </div>
         <div class="col-md-3 col-sm-6">
@@ -34,7 +35,7 @@ include "../../../model/model.php";
 </div>
 
 <div id="div_taxes_list" class="main_block loader_parent mg_tp_20">
- <div class="table-responsive">
+    <div class="table-responsive">
         <table id="tax_rules_tab" class="table table-hover" style="margin: 20px 0 !important; width:100%;">         
         </table>
     </div>
@@ -49,7 +50,6 @@ var columns1 = [
     { title: "S_NO" },
     { title: "Tax" },
     { title: "Name" },
-    { title: "Ledger" },
     { title: "Validity" },
     { title : "Travel_Type"},
     { title: "Actions", className:"text-center" }
@@ -77,8 +77,12 @@ function save_modal(){
 }
 
 function update_modal(rule_id){
+	$('#updatet_rule-'+rule_id).button('loading');
+	$('#updatet_rule-'+rule_id).prop('disabled',true);
 	$.post('taxes_rules/update_modal.php', {rule_id : rule_id}, function(data){
 		$('#div_modal_content').html(data);
+        $('#updatet_rule-'+rule_id).button('reset');
+        $('#updatet_rule-'+rule_id).prop('disabled',false);
 	});
 }
 function copy_rule(rule_id){

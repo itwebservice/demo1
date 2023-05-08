@@ -77,8 +77,8 @@ if($from_date!='' && $to_date!=''){
 	<tfoot>
 		<tr class="active">
 			<th></th>
-			<th colspan="2" class="text-right info">Refund : <?= ($total_amount=="") ? number_format(0,2) : number_format($total_amount,2) ?></th>
-			<th colspan="2" class="text-right warning">Pending : <?= ($pending_amount=="") ? number_format(0,2) : number_format($pending_amount,2) ?></th>
+			<th colspan="2" class="text-right info">Refund Amount: <?= ($total_amount=="") ? number_format(0,2) : number_format($total_amount,2) ?></th>
+			<th colspan="2" class="text-right warning">Pending Clearance : <?= ($pending_amount=="") ? number_format(0,2) : number_format($pending_amount,2) ?></th>
 			<th class="text-right danger">Cancelled : <?= ($cancelled_amount=="") ? number_format(0,2) : number_format($cancelled_amount,2) ?></th>
 			<th class="text-right success">Total Refund : <?= number_format(($total_amount - $pending_amount - $cancelled_amount),2) ?></th>
 		</tr>

@@ -182,6 +182,22 @@ $('#frm_tab2').validate({
 });
 function copy_values(){
 	var count = $('#div_dynamic_ticket_info').attr('data-counter');
+	var currentdate = new Date(); 
+	var day = currentdate.getDate();
+	var month = currentdate.getMonth() + 1;
+	if (day < 10) {
+		day = '0' + day;
+	}
+	if (month < 10) {
+		month = '0' + month;
+	}
+	var datetime = day + "-"
+                + month + "-" 
+                + currentdate.getFullYear() + " "  
+                + currentdate.getHours() + ":"  
+                + currentdate.getMinutes();
+	$('#travel_datetime-'+count).val(datetime);
+	$('#arriving_datetime-'+count).val(datetime);
 	$('#meal_plan-'+count).val($('#meal_plan-1').val());
 	$('#luggage-'+count).val($('#luggage-1').val());
 	$('#airpf-'+count).val($('#airpt-1').val());

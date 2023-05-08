@@ -6,6 +6,18 @@ $branch_status = $_POST['branch_status'];
 $misc_id = $_POST['misc_id'];
 
 $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id='$misc_id' and delete_status='0'"));
+$reflections = json_decode($sq_visa_info['reflections']);
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <div class="modal fade" id="visa_update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
 	<div class="modal-dialog" role="document" style="min-width: 90%;">
@@ -19,6 +31,18 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 				<form id="frm_visa_update" name="frm_visa_update">
 
 					<input type="hidden" id="misc_id_hidden" name="misc_id_hidden" value="<?= $misc_id ?>">
+                <input type="hidden" id="misc_sc" name="misc_sc" value="<?php echo $reflections[0]->misc_sc ?>">
+                <input type="hidden" id="misc_markup" name="misc_markup"
+                    value="<?php echo $reflections[0]->misc_markup ?>">
+                <input type="hidden" id="misc_taxes" name="misc_taxes"
+                    value="<?php echo $reflections[0]->misc_taxes ?>">
+                <input type="hidden" id="misc_markup_taxes" name="misc_markup_taxes"
+                    value="<?php echo $reflections[0]->misc_markup_taxes ?>">
+
+                <input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+                <input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+                <input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+                <input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $reflections[0]->markup_tax_value ?>">
 
 					<div class="panel panel-default panel-body fieldset">
 						<legend>Customer Details</legend>
@@ -36,10 +60,10 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 							</select>
 						</div>
 						<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-							<input type="text" id="email_id1" name="email_id1" placeholder="Email ID" title="Email ID" readonly>
+							<input type="text" id="mobile_no1" name="mobile_no1" placeholder="Mobile No" title="Mobile No" readonly>
 						</div>
 						<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-							<input type="text" id="mobile_no1" name="mobile_no1" placeholder="Mobile No" title="Mobile No" readonly>
+							<input type="text" id="email_id1" name="email_id1" placeholder="Email ID" title="Email ID" readonly>
 						</div>
 						<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 							<input type="text" id="company_name1" class="hidden" name="company_name1" title="Company Name" placeholder="Company Name" title="Company Name" readonly>
@@ -67,7 +91,7 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 
 						<div class="row mg_bt_10">
 							<div class="col-xs-12 text-right text_center_xs">
-								<button type="button" class="btn btn-info btn-sm ico_left" onClick="addRow('tbl_dynamic_miscellaneous_update')"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                                <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_miscellaneous_update')"><i class="fa fa-plus"></i></button>
 							</div>
 						</div>
 
@@ -93,7 +117,7 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 												$count++;
 										?>
 												<tr class="<?= $bg ?>">
-													<td><input class="css-checkbox" id="chk_visa<?= $offset . $count ?>_d" type="checkbox" checked disabled><label class="css-label" for="chk_visa<?= $offset ?>"> <label></td>
+													<td><input class="css-checkbox" id="chk_visa<?= $offset . $count ?>_d" type="checkbox" checked><label class="css-label" for="chk_visa<?= $offset ?>"> <label></td>
 													<td><input maxlength="15" value="<?= $count ?>" type="text" name="username" placeholder="Sr. No." class="form-control" disabled /></td>
 													<td><input type="text" id="first_name<?= $offset . $count ?>_d" onchange="fname_validate(this.id)" name="first_name<?= $offset . $count ?>_d" placeholder="First Name" title="First Name" value="<?= $row_entry['first_name'] ?>" /></td>
 													<td><input type="text" id="middle_name<?= $offset . $count ?>_d" name="middle_name<?= $offset . $count ?>_d" onchange="fname_validate(this.id)" placeholder="Middle Name" title="Middle Name" value="<?= $row_entry['middle_name'] ?>" /></td>
@@ -106,12 +130,17 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 													<td class="hidden"><input type="text" value="<?= $row_entry['entry_id'] ?>"></td>
 												</tr>
 												<script>
+													var date = new Date();
+													var yest = date.setDate(date.getDate() - 1);
+													var tom = date.setDate(date.getDate() + 1);
 													$("#birth_date<?= $offset . $count ?>_d, #issue_date<?= $offset. $count ?>1").datetimepicker({
 														timepicker: false,
-														format: 'd-m-Y'
+														format: 'd-m-Y',
+														maxDate : yest
 													});
 													$('#expiry_date<?= $offset. $count ?>1').datetimepicker({
 														timepicker: false,
+														minDate : tom,
 														format: 'd-m-Y'
 													});
 												</script>
@@ -173,18 +202,18 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 							<div class="row">
 								<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 									<small id="basic_show1" style="color:red"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_b ?></span></small>
-									<input type="text" id="visa_issue_amount1" name="visa_issue_amount1" placeholder="Amount" title="Amount" value="<?= $visa_issue_amount ?>" onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true')">
+									<input type="text" id="visa_issue_amount1" name="visa_issue_amount1" placeholder="Basic Amount" title="Basic Amount" value="<?= $visa_issue_amount ?>" onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','basic')">
 								</div>
 								<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 									<small id="service_show1" style="color:red"><?= ($inclusive_s == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_s ?></span></small>
-									<input type="text" name="service_charge1" id="service_charge1" placeholder="Service Charge" title="Service Charge" value="<?= $service_charge; ?>" onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','false','service_charge','discount')">
+									<input type="text" name="service_charge1" id="service_charge1" placeholder="Service Charge" title="Service Charge" value="<?= $service_charge; ?>" onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','false','service_charge')">
 								</div>
 								<div class="col-md-3 col-sm-6 col-xs-12 mg_tp_10">
 									<input type="text" id="service_tax_subtotal1" name="service_tax_subtotal1" value="<?= $sq_visa_info['service_tax_subtotal'] ?>" placeholder="Tax Amount" title="Tax Amount" readonly>
 								</div>
 								<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 									<small id="markup_show1" style="color:red"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_m ?></span></small>
-									<input type="text" id="markup1" name="markup1" value="<?= $markup ?>" placeholder="Markup" title="Markup" onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','false','markup','discount');">
+									<input type="text" id="markup1" name="markup1" value="<?= $markup ?>" placeholder="Markup Amount" title="Markup Amount" onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','markup');">
 								</div>
 								<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
 									<input type="text" id="service_tax_markup1" name="service_tax_markup1" value="<?= $sq_visa_info['service_tax_markup'] ?>" placeholder="Markup Tax" title="Markup Tax" readonly>
@@ -199,7 +228,7 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 									<input type="text" name="due_date1" id="due_date1" placeholder="Due Date" title="Due Date" value="<?= get_date_user($sq_visa_info['due_date']) ?>">
 								</div>
 								<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-									<input type="text" name="balance_date1" id="balance_date1" value="<?= date('d-m-Y', strtotime($sq_visa_info['created_at'])) ?>" placeholder="Booking Date" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge',true);">
+									<input type="text" name="balance_date1" id="balance_date1" value="<?= date('d-m-Y', strtotime($sq_visa_info['created_at'])) ?>" placeholder="Booking Date" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge');">
 								</div>
 							</div>
 						</div>
@@ -232,6 +261,11 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 	$('#issue_date_u1 ,#birth_date_u1').datetimepicker({
 		timepicker: false,
 		maxDate: yest,
+		format: 'd-m-Y'
+	});
+	$('#expiry_date1').datetimepicker({
+		timepicker: false,
+		minDate: tom,
 		format: 'd-m-Y'
 	});
 
@@ -339,6 +373,11 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 				var narration = $('#narration1').val();
 				var service = $('#service1').val();
 
+				if (service == '') {
+					error_msg_alert("Enter Services in Service details!");
+					$('#misc_update').prop('disabled', false);
+					return false;
+				}
 				var first_name_arr = new Array();
 				var middle_name_arr = new Array();
 				var last_name_arr = new Array();
@@ -348,20 +387,26 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 				var issue_date_arr = new Array();
 				var expiry_date_arr = new Array();
 				var entry_id_arr = new Array();
+				var e_checkbox_arr = [];
 
 				var table = document.getElementById("tbl_dynamic_miscellaneous_update");
 				var rowCount = table.rows.length;
 
-				if (service == '') {
-					error_msg_alert("Enter Services in Service details!");
+				var checked_count = 0;
+				for (var i = 0; i < rowCount; i++) {
+					var row = table.rows[i];
+					if (row.cells[0].childNodes[0].checked) {
+						checked_count++;
+					}
+				}
+				if (checked_count == 0) {
+					error_msg_alert("Atleast one passenger details is required!");
 					$('#misc_update').prop('disabled', false);
 					return false;
 				}
 
 				for (var i = 0; i < rowCount; i++) {
 					var row = table.rows[i];
-
-					if (row.cells[0].childNodes[0].checked) {
 
 						var first_name = row.cells[2].childNodes[0].value;
 						var middle_name = row.cells[3].childNodes[0].value;
@@ -380,17 +425,19 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 
 						var msg = "";
 
-						if (first_name == "") {
-							msg += "First name is required in row:" + (i + 1) + "<br>";
-						}
-						if (passport_id != "") {
-							if (issue_date == "") {
-								msg += "Issue Date is required in row:" + (i + 1) + "<br>";
+						if (row.cells[0].childNodes[0].checked) {
+							if (first_name == "") {
+								msg += "First name is required in row:" + (i + 1) + "<br>";
 							}
-							if (expiry_date == "") {
-								msg += "Expiry Date is required in row:" + (i + 1) + "<br>";
-							}
+							if (passport_id != "") {
+								if (issue_date == "") {
+									msg += "Issue Date is required in row:" + (i + 1) + "<br>";
+								}
+								if (expiry_date == "") {
+									msg += "Expiry Date is required in row:" + (i + 1) + "<br>";
+								}
 
+							}
 						}
 
 
@@ -409,19 +456,26 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 						issue_date_arr.push(issue_date);
 						expiry_date_arr.push(expiry_date);
 						entry_id_arr.push(entry_id);
+                		e_checkbox_arr.push(row.cells[0].childNodes[0].checked);
 
-					}
 				}
 				var misc_sc = $('#misc_sc').val();
 				var misc_markup = $('#misc_markup').val();
 				var misc_taxes = $('#misc_taxes').val();
 				var misc_markup_taxes = $('#misc_markup_taxes').val();
+				var tax_apply_on = $('#atax_apply_on').val();
+				var tax_value = $('#tax_value1').val();
+				var markup_tax_value = $('#markup_tax_value1').val();
+
 				var reflections = [];
 				reflections.push({
 					'misc_sc': misc_sc,
 					'misc_markup': misc_markup,
 					'misc_taxes': misc_taxes,
-					'misc_markup_taxes': misc_markup_taxes
+					'misc_markup_taxes': misc_markup_taxes,
+					'tax_apply_on':tax_apply_on,
+					'tax_value':tax_value,
+					'markup_tax_value':markup_tax_value
 				});
 				var bsmValues = [];
 				bsmValues.push({
@@ -461,7 +515,7 @@ $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_maste
 								passport_id_arr: passport_id_arr,
 								issue_date_arr: issue_date_arr,
 								expiry_date_arr: expiry_date_arr,
-								entry_id_arr: entry_id_arr,
+								entry_id_arr: entry_id_arr,e_checkbox_arr:e_checkbox_arr,
 								due_date1: due_date1,
 								balance_date1: balance_date1,
 								service: service,

@@ -28,6 +28,14 @@ $sq_terms_cond = mysqli_fetch_assoc(mysqlQuery("select * from terms_and_conditio
 ///////////////////////////Meal plan and seat nos trip n passengerwise//////////////////////////////
 $trip_seat_arr = array();
 $trip_meal_arr = array();
+$trip_status_arr = array();
+$trip_pass_arr = array();
+$dep_city1_arr = array();$arr_city1_arr = array();
+$sq_fcity_arr = array(); $sq_tcity_arr = array();
+$dep_city_arr = array(); $arr_city_arr = array(); $op_by_arr = array(); $ticket_status_arr = array();
+$airline_img_arr = array(); $time1_arr = array(); $time2_arr = array(); $day1_arr = array(); $day2_arr = array();
+$airlines_name_arr = array(); $aircraft_type_arr = array(); $class_arr = array(); $date1_arr = array(); $date2_arr = array();
+$departure_terminal_arr = array(); $arrival_terminal_arr = array(); $flight_duration_arr = array(); $layover_time_arr = array();
 $row_passenger = mysqlQuery("select * from ticket_master_entries where ticket_id = '$ticket_id' and status!='Cancel'");
 while ($row_passenger1 = mysqli_fetch_assoc($row_passenger)) {
     
@@ -36,43 +44,73 @@ while ($row_passenger1 = mysqli_fetch_assoc($row_passenger)) {
     $i = 0;
     $sq_ticket_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE passenger_id='$row_passenger1[entry_id]'");
     while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
-        if($row_trip['status'] != 'Cancel'){
-            array_push($trip_seat_arr,$seat_nos[$i]);
-            array_push($trip_meal_arr,$meal_plans[$i]);
+
+        array_push($trip_seat_arr,$seat_nos[$i]);
+        array_push($trip_meal_arr,$meal_plans[$i]);
+        array_push($trip_status_arr,$row_trip['status']);
+        array_push($trip_pass_arr,$row_passenger1['entry_id']);
+
+        $date1 = get_datetime_user($row_trip['departure_datetime']);
+        $time1 = explode(' ', $date1);
+        $date2 = get_datetime_user($row_trip['arrival_datetime']);
+        $time2 = explode(' ', $date2);
+        array_push($time1_arr,$time1[1]);
+        array_push($time2_arr,$time2[1]);
+        array_push($date1_arr,$date1);
+        array_push($date2_arr,$date2);
+
+        $timestamp2 = strtotime($row_trip['departure_datetime']);
+        $day1 = date('D', $timestamp2);
+        $timestamp1 = strtotime($row_trip['arrival_datetime']);
+        $day2 = date('D', $timestamp1);
+        array_push($day1_arr,$day1);
+        array_push($day2_arr,$day2);
+    
+        $sq_fcity = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_trip[from_city]'"));
+        array_push($sq_fcity_arr,$sq_fcity['city_name']);
+        $sq_tcity = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_trip[to_city]'"));
+        array_push($sq_tcity_arr,$sq_tcity['city_name']);
+        $sirline_string = '';
+        $flight_no = ($row_trip['flight_no'] != '') ? strtoupper($row_trip['flight_no']) : '';
+        $op_by = ($row_trip['operating_carrier'] != '') ? $flight_no . ' (Operated By: ' . $row_trip['operating_carrier'] . ')' : $flight_no;
+        $airline_img = '';
+        if ($row_trip['airline_id'] != 0) {
+            $sq_air_img = mysqli_fetch_assoc(mysqlQuery("select image from airline_master where airline_id='$row_trip[airline_id]'"));
+            $airline_img = ($sq_air_img['image'] != '') ? $sq_air_img['image'] : '';
         }
+        array_push($dep_city_arr,$row_trip['departure_city']);
+        array_push($arr_city_arr,$row_trip['arrival_city']);
+
+        $dep_city = explode('(', $row_trip['departure_city']);
+        $arr_city = explode('(', $row_trip['arrival_city']);
+        $dep_city1 = explode(')', $dep_city[1]);
+        $arr_city1 = explode(')', $arr_city[1]);
+
+        array_push($dep_city1_arr,$dep_city1[0]);
+        array_push($arr_city1_arr,$arr_city1[0]);
+
+        array_push($airlines_name_arr,$row_trip['airlines_name']);
+        array_push($aircraft_type_arr,$row_trip['aircraft_type']);
+        array_push($class_arr,$row_trip['class']);
+        array_push($op_by_arr,$op_by);
+        array_push($ticket_status_arr,$row_trip['ticket_status']);
+        array_push($airline_img_arr,$airline_img);
+        array_push($departure_terminal_arr,$row_trip['departure_terminal']);
+        array_push($arrival_terminal_arr,$row_trip['arrival_terminal']);
+        array_push($flight_duration_arr,$row_trip['flight_duration']);
+        array_push($layover_time_arr,$row_trip['layover_time']);
+
         $i++;
     }
 }
 ///////////////////////////////////////////////////// END ///////////////////////////////////////////////////
 $trip_count = 0;
-$sq_ticket_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE ticket_id='$ticket_id' and status!='Cancel'");
+$sq_ticket_trip = mysqlQuery("SELECT * FROM ticket_trip_entries WHERE ticket_id='$ticket_id' ");
 while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
 
-    $date1 = get_datetime_user($row_trip['departure_datetime']);
-    $time1 = explode(' ', $date1);
-    $date2 = get_datetime_user($row_trip['arrival_datetime']);
-    $time2 = explode(' ', $date2);
-
-    $timestamp2 = strtotime($row_trip['departure_datetime']);
-    $day1 = date('D', $timestamp2);
-    $timestamp1 = strtotime($row_trip['arrival_datetime']);
-    $day2 = date('D', $timestamp1);
-
-    $sq_fcity = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_trip[from_city]'"));
-    $sq_tcity = mysqli_fetch_assoc(mysqlQuery("select city_name from city_master where city_id='$row_trip[to_city]'"));
-    $sirline_string = '';
-    $flight_no = ($row_trip['flight_no'] != '') ? strtoupper($row_trip['flight_no']) : '';
-    $op_by = ($row_trip['operating_carrier'] != '') ? $flight_no . ' (Operated By: ' . $row_trip['operating_carrier'] . ')' : $flight_no;
-    $airline_img = '';
-    if ($row_trip['airline_id'] != 0) {
-        $sq_air_img = mysqli_fetch_assoc(mysqlQuery("select image from airline_master where airline_id='$row_trip[airline_id]'"));
-        $airline_img = ($sq_air_img['image'] != '') ? $sq_air_img['image'] : '';
-    }
-
-    $dep_city = explode('(', $row_trip['departure_city']);
-    $arr_city = explode('(', $row_trip['arrival_city']);
-    $dep_city1 = explode(')', $dep_city[1]);
-    $arr_city1 = explode(')', $arr_city[1]);
+    if($trip_status_arr[$trip_count] != 'Cancel'){
+        $seat_no_test = ($row_trip['status'] != 'Cancel') ? $trip_seat_arr[$trip_count] : $trip_seat_arr[$trip_count+1];
+        $meal_plan_test = ($row_trip['status'] != 'Cancel') ? $trip_meal_arr[$trip_count] : $trip_meal_arr[$trip_count+1];
     ?>
     <!-- header -->
     <section class="repeat_section main_block">
@@ -119,7 +157,7 @@ while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
     <div class="container-fluid ticket_info">
         <div class="row">
             <div class="col-md-12 airport">
-                <h3>From <?= $row_trip['departure_city'] ?> to <?= $row_trip['arrival_city'] ?></h3>
+                <h3>From <?= $dep_city_arr[$trip_count] ?> to <?= $arr_city_arr[$trip_count] ?></h3>
             </div>
         </div>
     </div>
@@ -127,52 +165,52 @@ while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
     <div class="flight-info">
         <div class="row">
             <?php
-            if($airline_img != ''){ ?>
+            if($airline_img_arr[$trip_count] != ''){ ?>
             <div class="col-md-1" style="padding-right: 0px;">
-                <img src="<?= $airline_img ?>" class="img-thumbnail" width="40px" height="40px" />
+                <img src="<?= $airline_img_arr[$trip_count] ?>" class="img-thumbnail" width="40px" height="40px" />
             </div>
             <?php } ?>
             <div class="col-md-7">
-                <h4><?= $row_trip['airlines_name'] ?></h4>
-                <p><?= $op_by ?></p>
+                <h4><?= $airlines_name_arr[$trip_count] ?></h4>
+                <p><?= $op_by_arr[$trip_count] ?></p>
             </div>
             <?php
-                if ($row_trip['aircraft_type'] != '') { ?>
+                if ($aircraft_type_arr[$trip_count] != '') { ?>
             <div class="col-md-2">
                 <h4>Aircraft</h4>
-                <p><?= $row_trip['aircraft_type'] ?></p>
+                <p><?= $aircraft_type_arr[$trip_count] ?></p>
             </div>
             <?php }
-                if ($row_trip['class'] != '') { ?>
+                if ($class_arr[$trip_count] != '') { ?>
             <div class="col-md-2">
                 <h4>Travel class</h4>
-                <p><?= $row_trip['class'] ?></p>
+                <p><?= $class_arr[$trip_count] ?></p>
             </div>
             <?php } ?>
         </div>
         <div class="row">
             <div class="col-md-5" id="depart">
-                <h4><?= $time1[1] ?></h4>
-                <p><?= $day1 . ' : ' . get_date_user($row_trip['departure_datetime']) ?></p>
-                <p><?= $sq_fcity['city_name'] ?></p>
-                <p><?= $row_trip['departure_terminal'] ?></p>
+                <h4><?= $time1_arr[$trip_count] ?></h4>
+                <p><?= $day1_arr[$trip_count] . ' : ' . $date1_arr[$trip_count] ?></p>
+                <p><?= $sq_fcity_arr[$trip_count] ?></p>
+                <p><?= $departure_terminal_arr[$trip_count] ?></p>
             </div>
             <div class="col-md-2" id="travel-time">
-                <h4><?= $row_trip['flight_duration'] ?></h4>
+                <h4><?= $flight_duration_arr[$trip_count] ?></h4>
                 <p>----------<i class="fa fa-plane" aria-hidden="true"></i></p>
             </div>
             <div class="col-md-5" id="arrival">
-                <h4><?= $time2[1] ?></h4>
-                <p><?= $day2 . ' : ' . get_date_user($row_trip['arrival_datetime']) ?></p>
-                <p><?= $sq_tcity['city_name'] ?></p>
-                <p><?= $row_trip['arrival_terminal'] ?></p>
+                <h4><?= $time2_arr[$trip_count] ?></h4>
+                <p><?= $day2_arr[$trip_count] . ' : ' . $date2_arr[$trip_count] ?></p>
+                <p><?= $sq_tcity_arr[$trip_count] ?></p>
+                <p><?= $arrival_terminal_arr[$trip_count] ?></p>
             </div>
         </div>
         <?php
-        if($row_trip['layover_time']!=''){ ?>
+        if($layover_time_arr[$trip_count]!=''){ ?>
         <!--layover-->
         <div class="layover_section">
-            <span>Change of planes | <?= $row_trip['layover_time'] ?> layover in <?=$arr_city1[0]?></span>
+            <span>Change of planes | <?= $layover_time_arr[$trip_count] ?> layover in <?=$arr_city1_arr[$trip_count]?></span>
         </div>
         <!--layover-->
         <?php } ?>
@@ -196,7 +234,7 @@ while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
                             </thead>
                             <tbody>
                                 <?php
-                                $row_passenger = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where entry_id = '$row_trip[passenger_id]' and status!='Cancel'"));
+                                $row_passenger = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master_entries where entry_id = '$trip_pass_arr[$trip_count]' and status!='Cancel'"));
                                 $count = 1;
                                 $main_ticket = ($row_passenger['main_ticket'] != '') ? strtoupper($row_passenger['main_ticket']):'NA';
                                 ?>
@@ -207,9 +245,9 @@ while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
                                     <td><?php echo ($row_passenger['ticket_no'] != '') ? strtoupper($row_passenger['ticket_no']) : 'NA'; ?></td>
                                     <?php if($sq_visa_info['ticket_reissue']==1){ echo '<td>' . $main_ticket . '</td>'; } ?>
                                     <td><?php echo ($row_passenger['baggage_info'] != '') ? $row_passenger['baggage_info'] : 'NA'; ?></td>
-                                    <td><?php echo ($trip_seat_arr[$trip_count] != '') ? $trip_seat_arr[$trip_count].' (' .$dep_city1[0].'-'.$arr_city1[0].')' : 'NA'; ?></td>
-                                    <td><?php echo ($trip_meal_arr[$trip_count] != '') ? $trip_meal_arr[$trip_count].' (' .$dep_city1[0].'-'.$arr_city1[0].')' : 'NA'; ?></td>
-                                    <td style="color: green !important;"><?php echo ($row_trip['ticket_status'] != '') ? $row_trip['ticket_status'] : 'NA'; ?></td>
+                                    <td><?php echo ($seat_no_test != '') ? $seat_no_test.' (' .$dep_city1_arr[$trip_count].'-'.$arr_city1_arr[$trip_count].')' : 'NA'; ?></td>
+                                    <td><?php echo ($meal_plan_test != '') ? $meal_plan_test.' (' .$dep_city1_arr[$trip_count].'-'.$arr_city1_arr[$trip_count].')' : 'NA'; ?></td>
+                                    <td style="color: green !important;"><?php echo ($ticket_status_arr[$trip_count] != '') ? $ticket_status_arr[$trip_count] : 'NA'; ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -220,7 +258,9 @@ while ($row_trip = mysqli_fetch_assoc($sq_ticket_trip)) {
     </div>
     <!--End New ticket design-->
     <?php
-    $trip_count++;
+        
+        }
+        $trip_count++;
 } ?>
 </section>
 

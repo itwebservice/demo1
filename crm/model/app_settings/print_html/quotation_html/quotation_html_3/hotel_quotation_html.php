@@ -2,7 +2,7 @@
 //Generic Files
 include "../../../../model.php"; 
 include "printFunction.php";
-global $app_quot_img,$similar_text,$qout_note,$currency;
+global $app_quot_img,$similar_text,$qout_note,$currency,$tcs_note;
 
 $role = $_SESSION['role'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
@@ -52,8 +52,8 @@ if($costDetails['tax_amount'] !== 0.00 && ($costDetails['tax_amount']) !== ''){
 }
 $service_tax_amount_show = currency_conversion($currency,$sq_quotation['currency_code'],$service_tax_amount);
 
-$basic_cost1 = $costDetails['hotel_cost'];
-$service_charge = $costDetails['service_charge'];
+$basic_cost1 = floatval($costDetails['hotel_cost']);
+$service_charge = floatval($costDetails['service_charge']);
 ////////////////////Markup Rules
 $markupservice_tax_amount = 0;
 if($costDetails['markup_tax'] !== 0.00 && $costDetails['markup_tax'] !== ""){
@@ -67,22 +67,22 @@ $markupservice_tax_amount_show = currency_conversion($currency,$sq_quotation['cu
 
 if(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '')  && $bsmValues[0]->markup != ''){
   $tax_show = '';
-  $newBasic = $basic_cost1 + $costDetails['markup_cost'] + $markupservice_tax_amount + $service_charge + $service_tax_amount;
+  $newBasic = $basic_cost1 + floatval($costDetails['markup_cost']) + $markupservice_tax_amount + $service_charge + $service_tax_amount;
 }
 elseif(($bsmValues[0]->service == '' || $bsmValues[0]->basic == '')  && $bsmValues[0]->markup == ''){
   $tax_show = $percent.' '. ($markupservice_tax_amount + $service_tax_amount);
-  $newBasic = $basic_cost1 + $costDetails['markup_cost'] + $service_charge;
+  $newBasic = $basic_cost1 + floatval($costDetails['markup_cost']) + $service_charge;
 }
 elseif(($bsmValues[0]->service != '' || $bsmValues[0]->basic != '') && $bsmValues[0]->markup == ''){
   $tax_show = $percent.' '. ($markupservice_tax_amount);
-  $newBasic = $basic_cost1 + $costDetails['markup_cost'] + $service_charge + $service_tax_amount;
+  $newBasic = $basic_cost1 + floatval($costDetails['markup_cost']) + $service_charge + $service_tax_amount;
 }
 else{
   $tax_show = $percent.' '. ($service_tax_amount);
-  $newBasic = $basic_cost1 + $costDetails['markup_cost'] + $service_charge + $markupservice_tax_amount;
+  $newBasic = $basic_cost1 + floatval($costDetails['markup_cost']) + $service_charge + $markupservice_tax_amount;
 }
 ////////////////Currency conversion ////////////
-$currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code'],$costDetails['total_amount']);
+$currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code'],floatval($costDetails['total_amount']));
 ?>
 
     <!-- landingPage -->
@@ -180,10 +180,14 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                       </tr>
                     </thead>
                     <tbody>
-                    <?php 
+                    <?php
+                    $int_flag = '';
                     foreach($hotelDetails as $values){
                         $cityName = mysqli_fetch_assoc(mysqlQuery("SELECT `city_name` FROM `city_master` WHERE `city_id`=".$values['city_id']));
-                        $hotelName = mysqli_fetch_assoc(mysqlQuery("SELECT `hotel_name` FROM `hotel_master` WHERE `hotel_id`=".$values['hotel_id']));
+                        $hotelName = mysqli_fetch_assoc(mysqlQuery("SELECT `hotel_name`,`state_id` FROM `hotel_master` WHERE `hotel_id`=".$values['hotel_id']));
+                        if($values['tour_type'] == 'International' && $int_flag == ''){
+                          $int_flag = true;
+                        }
                       ?>
                       <tr>
                           <td><?php echo $cityName['city_name']; ?></td>
@@ -246,7 +250,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
         <div class="col-md-4 constingBankingPanel endPageLeft fullHeightLand">
               <h3 class="costBankTitle text-right">COSTING Details</h3>
               <?php
-              $total_fare = currency_conversion($currency,$sq_quotation['currency_code'],$newBasic + $costDetails['roundoff']);
+              $total_fare = currency_conversion($currency,$sq_quotation['currency_code'],$newBasic);
               $service_tax_amount_show = explode(' ',$service_tax_amount_show);
               $service_tax_amount_show1 = str_replace(',','',$service_tax_amount_show[1]);
               $markupservice_tax_amount_show = explode(' ',$markupservice_tax_amount_show);
@@ -260,7 +264,7 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
               </div>
               <div class="col-md-12 text-right mg_bt_20">
                 <div class="icon main_block"><img src="<?= BASE_URL ?>images/quotation/p4/tax.png" class="img-responsive"></div>
-                <h4 class="no-marg"><?= str_replace(',','',$name).$service_tax_amount_show[0].' '.number_format($service_tax_amount_show1 + $markupservice_tax_amount_show1,2) ?></h4>
+                <h4 class="no-marg"><?= str_replace(',','',$name).$service_tax_amount_show[0].' '.number_format($service_tax_amount_show1 + $markupservice_tax_amount_show1 + $costDetails['roundoff'],2) ?></h4>
                 <p>TAX</p>
               </div>
               <div class="col-md-12 text-right mg_bt_20">
@@ -268,13 +272,19 @@ $currency_amount1 = currency_conversion($currency,$sq_quotation['currency_code']
                 <h4 class="no-marg"><?= $currency_amount1 ?></h4>
                 <p>QUOTATION COST</p>
               </div>
+              <?php
+              $tcs_note_show = ($int_flag == true) ? $tcs_note : '';
+              if ($tcs_note_show != '') { ?>
+                <div class="col-md-12 text-right" style="margin-top:10px; ">
+                  <h5 class="text-right"><?= $tcs_note_show ?></h5></div>
+              <?php } ?>
               <?php 
               if(check_qr()) { ?>
               <div class="col-md-12 text-right" style="margin-top:20px; margin-bottom:20px;">
                         <?= get_qr('Landscape Creative') ?>
-                        <br>
-                        <h4 class="no-marg">Scan & Pay </h4>
-          </div>
+                <br>
+                <h4 class="no-marg">Scan & Pay </h4>
+              </div>
               <?php } ?>
         </div>
         

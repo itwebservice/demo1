@@ -196,7 +196,7 @@ class ticket_save{
 			}
 		}
 		//Get Particular
-		$particular = $this->get_particular($customer_id,$pax,$sector,$train_no_arr[0],$ticket_number_arr[0],$class_arr[0]);
+		$particular = $this->get_particular($customer_id,$pax,$sector,$train_no_arr[0],$ticket_number_arr[0],$class_arr[0],$train_ticket_id);
 
 			//Finance save                
 			$this->finance_save($train_ticket_id, $payment_id, $row_spec, $branch_admin_id,$particular);
@@ -271,7 +271,7 @@ class ticket_save{
 		$ticket_no = $sq_trip_ticket['train_no'];
 		$ticket_number = $sq_ticket['ticket_number'];
 		$class = $sq_trip_ticket['class'];
-		$particular = $this->get_particular($customer_id,$sq_pax,$sector,$ticket_no,$ticket_number,$class);
+		$particular = $this->get_particular($customer_id,$sq_pax,$sector,$ticket_no,$ticket_number,$class,$train_ticket_id);
 
 		$particular = $particular;
 		$delete_master->delete_master_entries('Invoice','Train Ticket',$train_ticket_id,get_train_ticket_booking_id($train_ticket_id,$year),$cust_name,$row_ticket['net_total']);
@@ -372,10 +372,17 @@ class ticket_save{
 		}
 	}
 
-	function get_particular($customer_id,$pax,$sector,$train_no,$ticket_number,$class){
+	function get_particular($customer_id,$pax,$sector,$train_no,$ticket_number,$class,$train_ticket_id){
+
+		$sq_train = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$train_ticket_id'"));
+		$booking_date = $sq_train['created_at'];
+		$yr = explode("-", $booking_date);
+		$year = $yr[0];
+		$sq_pass = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master_entries where train_ticket_id='$sq_train[train_ticket_id]' and status!='Cancel'"));
+
 		$sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
 		$cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-		return 'Towards the tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
+		return get_train_ticket_booking_id($train_ticket_id,$year).' and towards the train tkt of '.$cust_name. '('.$sq_pass['first_name'].' '.$sq_pass['last_name'].') * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
 	}
 
 	public function finance_save($train_ticket_id, $payment_id, $row_spec, $branch_admin_id,$particular)
@@ -599,7 +606,7 @@ class ticket_save{
 			$transaction_id = $transaction_id1;
 			$payment_amount = $payment_amount1;
 			$payment_date = $payment_date1;
-			$payment_particular = $particular;
+			$payment_particular = get_sales_paid_particular(get_train_ticket_booking_id($train_ticket_id,$yr1), $payment_date1, $payment_amount1, $customer_id, $payment_mode, get_train_ticket_booking_id($train_ticket_id,$yr1),$bank_id1,$transaction_id1);
 			$ledger_particular = get_ledger_particular('By','Cash/Bank');
 			$gl_id = $pay_gl;
 			$payment_side = "Debit";

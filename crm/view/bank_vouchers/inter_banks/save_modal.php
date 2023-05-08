@@ -38,7 +38,7 @@ $branch_status = $_POST['branch_status'];
                 <input type="text" id="f_name" name="f_name" onchange="fname_validate(this.id)" placeholder="Favouring Name" class="form-control" title="Favouring Name" >
               </div>
               <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="ins_no" name="ins_no" placeholder="*Instrument Number" onchange="validate_spaces(this.id); validate_specialChar(this.id);" title="Instrument Number" class="form-control" >
+                <input type="text" id="ins_no" name="ins_no" placeholder="Instrument Number" onchange="validate_spaces(this.id); validate_specialChar(this.id);" title="Instrument Number" class="form-control" >
               </div>
             </div>
             <div class="row">
@@ -62,8 +62,8 @@ $branch_status = $_POST['branch_status'];
           </div>
           <div class="row">              
               <div class="col-md-12 col-sm-9">
-               <span style="color: red;line-height: 35px;" data-original-title="" title="" class="note"><?= 'Please make sure Date, Amount, Debitor bank,Creditor bank,Transaction type entered properly.' ?></span>
-             </div>
+                <span style="color: red;line-height: 35px;" data-original-title="" title="" class="note"><?= 'Please make sure Date, Amount, Debitor bank,Creditor bank,Transaction type entered properly.' ?></span>
+              </div>
             </div>
 
             <div class="row text-center mg_tp_20">
@@ -90,7 +90,6 @@ $('#frm_save').validate({
           trans_type : { required: true },
           payment_amount : { required: true, number: true },
           payment_date : { required: true },
-          ins_no : { required: true },
           ins_date : { required: true },
   },
   submitHandler:function(form){
@@ -119,20 +118,30 @@ $('#frm_save').validate({
 
           $('#btn_save').button('loading');
 
-          $.ajax({
-            type:'post',
-            url:base_url+'controller/bank_vouchers/bank_transfer_save.php',
-            data: { from_bank_id : from_bank_id,to_bank_id : to_bank_id, payment_amount : payment_amount, payment_date : payment_date,f_name : f_name,trans_type : trans_type,ins_no : ins_no,ins_date : ins_date,lapse_date : lapse_date, branch_admin_id : branch_admin_id,emp_id : emp_id },
-            success:function(result){        
-              msg_alert(result);
-              var msg = result.split('--');
+          $("#vi_confirm_box").vi_confirm_box({
+          callback: function(result){
+            if(result=="yes"){
+
+              $.ajax({
+                type:'post',
+                url:base_url+'controller/bank_vouchers/bank_transfer_save.php',
+                data: { from_bank_id : from_bank_id,to_bank_id : to_bank_id, payment_amount : payment_amount, payment_date : payment_date,f_name : f_name,trans_type : trans_type,ins_no : ins_no,ins_date : ins_date,lapse_date : lapse_date, branch_admin_id : branch_admin_id,emp_id : emp_id },
+                success:function(result){        
+                  msg_alert(result);
+                  var msg = result.split('--');
+                  $('#btn_save').prop('disabled',false);
+                  if(msg[0]!="error"){
+                    $('#save_modal').modal('hide');
+                    list_reflect();
+                  }
+                }
+              });
+            }else{
               $('#btn_save').prop('disabled',false);
-              if(msg[0]!="error"){
-                $('#save_modal').modal('hide');
-                list_reflect();
-              }
+              $('#btn_save').button('reset');
             }
-          });
+          }
+        });
       }
     });
 

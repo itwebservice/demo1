@@ -97,6 +97,9 @@ var columns = [{
         "bSortable": false
     },
     {
+        title: "Receipt_ID"
+    },
+    {
         title: "Booking_ID"
     },
     {
@@ -142,14 +145,16 @@ $(document).ready(function() {
 });
 
 function update_modal(payment_id) {
-    $('#update_button-').button('loading');
+    $('#update_button-'+payment_id).prop('disabled',true);
+    $('#update_button-'+payment_id).button('loading');
     var branch_status = $('#branch_status').val();
     $.post('../payments/update_modal.php', {
         payment_id: payment_id,
         branch_status: branch_status
     }, function(data) {
         $('#div_modal').html(data);
-        $('#update_button-').button('reset');
+        $('#update_button-'+payment_id).button('reset');
+        $('#update_button-'+payment_id).prop('disabled',false);
     });
 }
 

@@ -5,7 +5,7 @@ $query = mysqli_fetch_assoc(mysqlQuery("SELECT gallery FROM `b2c_settings` where
 $gallery = $query['gallery'];
 ?>
 <form id="section_gallery">
-    <legend>Define Destination wise Gallery Image</legend>
+    <legend>Upload Destination wise Gallery Image</legend>
 
     <input type="hidden" value='<?= $gallery ?>' id="gallery" />
     <div class="row mg_bt_20">

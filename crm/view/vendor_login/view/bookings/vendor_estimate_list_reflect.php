@@ -27,6 +27,7 @@ $query .= " and vendor_type_id='$user_id'";
 					<?php 
 					$total_estimate_amt = 0;
 					$count = 0;
+					$actual_purchase = 0;
 					$sq_estimate = mysqlQuery($query);
 					while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
 
@@ -35,9 +36,9 @@ $query .= " and vendor_type_id='$user_id'";
 						$estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
 						$vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
 
-						$purchase_amount=$row_estimate['net_total']-$row_estimate['refund_net_total'];
-
-						$bg = ($row_estimate['status']=="Cancel") ? "danger" : "";
+						if($row_estimate['purchase_return']==1){ $bg = "danger"; }
+						else if($row_estimate['purchase_return']==2) { $bg = 'warning'; } 
+						else{ $bg = ''; }
 
 						$newUrl = $row_estimate['invoice_proof_url'];
 						if($newUrl!=""){
@@ -45,12 +46,20 @@ $query .= " and vendor_type_id='$user_id'";
 							$newUrl_arr = explode('uploads/', $newUrl);
 							$newUrl = BASE_URL.'uploads/'.$newUrl_arr[1];	
 						}
+						if($row_estimate['purchase_return'] == 0){
+							$actual_purchase = $row_estimate['net_total'];
+						}
+						else if($row_estimate['purchase_return'] == 2){
+							$cancel_estimate = json_decode($row_estimate['cancel_estimate']);
+							$p_purchase = ($row_estimate['net_total'] - floatval($cancel_estimate[0]->net_total));
+							$actual_purchase = $p_purchase;
+						}
 						?>
 						<tr class="<?= $bg ?>">
 							<td><?= ++$count ?></td>
 							<td><?= $row_estimate['estimate_type'] ?></td>
 							<td><?= $estimate_type_val ?></td>
-							<td><?= $row_estimate['net_total'] ?></td>
+							<td><?= $actual_purchase ?></td>
 							<td><?= $row_estimate['remark'] ?></td>
 							<td>
 								<?php if($newUrl!=""){ ?>

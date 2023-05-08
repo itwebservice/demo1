@@ -34,7 +34,7 @@
 				<input type="text" id="bank_name" name="bank_name" class="bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-				<input type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id);" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+				<input type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id);" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
 			</div>
 			<div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
 		        <select name="bank_id" id="bank_id" title="Select Bank" disabled>
@@ -80,11 +80,7 @@ $('#frm_tab4').validate({
 
 		payment_amount : { required : true, number: true },
 
-		payment_mode : { required : true },
-
-		bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-
-        transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+		payment_mode : { required : true },  
 
         bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },  
 
@@ -262,13 +258,19 @@ $('#frm_tab4').validate({
 		var quotation_id = 0;
 		var guest_name = $('#guest_name').val();
 		var canc_policy = $('#canc_policy').val();
+		var tax_apply_on = $('#tax_apply_on').val();
+		var tax_value = $('#tax_value').val();
+		var markup_tax_value = $('#markup_tax_value').val();
         var reflections = [];
         reflections.push({
 			'flight_sc':flight_sc,
 			'flight_markup':flight_markup,
 			'flight_taxes':flight_taxes,
 			'flight_markup_taxes':flight_markup_taxes,
-			'flight_tds':flight_tds
+			'flight_tds':flight_tds,
+			'tax_apply_on':tax_apply_on,
+			'tax_value':tax_value,
+			'markup_tax_value':markup_tax_value
 		});
 		var bsmValues = [];
 		bsmValues.push({

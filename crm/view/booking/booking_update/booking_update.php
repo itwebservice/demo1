@@ -24,6 +24,15 @@ $year =$yr[0];
 
 $sq_tcs = mysqli_fetch_assoc(mysqlQuery("select * from tcs_master where entry_id='1'"));
 $tcs_readonly = ($sq_tcs['apply'] == '0' || $tour_name_sq['tour_type']=='Domestic' || $sq_tcs['calc'] == '0') ? 'readonly' : '';
+
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Tour Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Basic Amount';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <input type="hidden" id="cmb_tour_name" name="cmb_tour_name" value="<?php echo $tour_id; ?>">
 <input type="hidden" id="txt_tourwise_id" name="txt_tourwise_id" value="<?php echo $tourwise_id; ?>">
@@ -34,6 +43,9 @@ $tcs_readonly = ($sq_tcs['apply'] == '0' || $tour_name_sq['tour_type']=='Domesti
 <input type="hidden" id="tcs" name="tcs" value="<?= $sq_tcs['tax_amount'] ?>">
 <input type="hidden" id="tcs_apply" name="tcs_apply" value="<?= $sq_tcs['apply'] ?>">
 <input type="hidden" id="tcs_calc" name="tcs_calc" value="<?= $sq_tcs['calc'] ?>">
+<input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+<input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+
 <div class="bk_tab_head bg_light">
     <ul>
         <li>

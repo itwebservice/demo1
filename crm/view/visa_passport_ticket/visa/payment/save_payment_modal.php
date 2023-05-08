@@ -2,6 +2,7 @@
 include "../../../../model/model.php";
 $role = $_SESSION['role']; 
 $role_id = $_SESSION['role_id'];
+$emp_id = $_SESSION['emp_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='visa_passport_ticket/visa/index.php'"));
 $branch_status = $sq['branch_status'];
@@ -28,8 +29,9 @@ $branch_status = $sq['branch_status'];
                 if($customer_id !=''){
                   $query .= " and customer_id='$customer_id'";
                 }
-                include "../../../model/app_settings/branchwise_filteration.php";
+                include "../../../../model/app_settings/branchwise_filteration.php";
                 $query .= " order by visa_id desc";
+              echo $query;
                 $sq_visa = mysqlQuery($query);
                 while($row_visa = mysqli_fetch_assoc($sq_visa)){
                   $sq_entries = mysqli_num_rows(mysqlQuery("select * from visa_master_entries where visa_id ='$row_visa[visa_id]'"));
@@ -67,29 +69,29 @@ $branch_status = $sq['branch_status'];
               <input type="text" id="payment_amount" name="payment_amount" class="form-control" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','transaction_id','bank_name','bank_id');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges');">
             </div>
           </div>
-          <div class="row mg_tp_10">
+          <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="hidden form-control" type="text" id="credit_charges" name="credit_charges" title="Credit card charges" disabled>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <select class="hidden form-control" id="identifier" onchange="get_credit_card_data('identifier','payment_mode','credit_card_details')" title="Identifier(4 digit)" required
+              ><option value=''>*Select Identifier</option></select>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="hidden form-control" type="text" id="credit_card_details" name="credit_card_details" title="Credit card details" disabled>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
               <input type="text" id="bank_name" name="bank_name"   placeholder="Bank Name" title="Bank Name" class="bank_suggest form-control" readonly>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-              <input type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+              <input type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12">
               <select name="bank_id" id="bank_id" title="Creditor Bank" class="form-control" disabled>
                 <?php get_bank_dropdown(); ?>
               </select>
-            </div>
-          </div>
-          <div class="row mg_tp_10">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <input class="hidden form-control" type="text" id="credit_charges" name="credit_charges" title="Credit card charges" disabled>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <select class="hidden form-control" id="identifier" onchange="get_credit_card_data('identifier','payment_mode','credit_card_details')" title="Identifier(4 digit)" required
-              ><option value=''>*Select Identifier</option></select>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <input class="hidden form-control" type="text" id="credit_card_details" name="credit_card_details" title="Credit card details" disabled>
             </div>
           </div>
           <div class="row mg_tp_10">
@@ -124,9 +126,7 @@ $('#frm_visa_payment_save').validate({
     visa_id : { required : true },
     payment_date : { required : true },
     payment_amount : { required : true, number: true },
-    payment_mode : { required : true },
-    bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-    transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+    payment_mode : { required : true },    
     bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
   },
   submitHandler:function(form){

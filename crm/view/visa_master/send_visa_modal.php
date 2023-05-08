@@ -90,30 +90,39 @@ $(function(){
         return false;
       }
       var msg = '';
-      if(mail === true){
+    $('#vi_confirm_box').vi_confirm_box({
+      callback: function(data1){
+        if(data1=="yes"){
+          if(mail === true){
 
-        $('#btn_visa_send').prop('disabled', true);
-        $('#btn_visa_send').button('loading');
-        $.ajax({
-          type:'post',
-          url: base_url+'controller/visa_master/visa_email_send.php',
-          data:{ entry_id : entry_id, email_id : email_id},
-          success: function(message){
-            msg_alert(message);
-            $('#btn_visa_send').button('reset'); 
-            $('#btn_visa_send').prop('disabled', false);
-            $('#visa_send_modal').modal('hide');
-          }  
-        });
+            $('#btn_visa_send').prop('disabled', true);
+            $('#btn_visa_send').button('loading');
+            $.ajax({
+              type:'post',
+              url: base_url+'controller/visa_master/visa_email_send.php',
+              data:{ entry_id : entry_id, email_id : email_id},
+              success: function(message){
+                msg_alert(message);
+                $('#btn_visa_send').button('reset'); 
+                $('#btn_visa_send').prop('disabled', false);
+                $('#visa_send_modal').modal('hide');
+              }  
+            });
+          }
+          if(whatsapp === true){
+            $('#btn_visa_send').prop('disabled', true);
+            $('#btn_visa_send').button('loading');
+            var wcontact_no = country_code+contact_no;
+            whatsapp_send(wcontact_no,entry_id,'visa_send_modal');
+            $('#btn_visa_send').button('reset');
+            $('#btn_visa_send').prop('disabled', false); 
+          }
+        }else{
+          $('#btn_visa_send').button('reset'); 
+          $('#btn_visa_send').prop('disabled', false);
+        }
       }
-      if(whatsapp === true){
-			  $('#btn_visa_send').prop('disabled', true);
-        $('#btn_visa_send').button('loading');
-        var wcontact_no = country_code+contact_no;
-        whatsapp_send(wcontact_no,entry_id,'visa_send_modal');
-        $('#btn_visa_send').button('reset');
-			  $('#btn_visa_send').prop('disabled', false); 
-      }
+    });
     }
   });
 });

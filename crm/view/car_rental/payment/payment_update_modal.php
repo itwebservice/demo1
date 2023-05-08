@@ -65,7 +65,7 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
               <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment['bank_name'] ?>" <?= $enable ?> />
             </div>
             <div class="col-md-4">
-              <input type="text" id="transaction_id1" name="transaction_id1" onchange="validate_specialChar(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?> />
+              <input type="number" id="transaction_id1" name="transaction_id1" onchange="validate_specialChar(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?> />
             </div>
           </div>
           <div class="row mg_bt_20">
@@ -128,24 +128,6 @@ $enable = ($sq_payment['payment_mode'] == "Cash" || $sq_payment['payment_mode'] 
         },
         payment_mode1: {
           required: true
-        },
-        bank_name1: {
-          required: function() {
-            if ($('#payment_mode1').val() != "Cash") {
-              return true;
-            } else {
-              return false;
-            }
-          }
-        },
-        transaction_id1: {
-          required: function() {
-            if ($('#payment_mode1').val() != "Cash") {
-              return true;
-            } else {
-              return false;
-            }
-          }
         },
         bank_id1: {
           required: function() {

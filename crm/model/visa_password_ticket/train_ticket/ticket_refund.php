@@ -135,7 +135,7 @@ public function finance_save($refund_id)
 	}else{
 	  $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
 	}
-	$particular = 'Payment through '.$refund_mode.' '.get_train_ticket_booking_id($train_ticket_id,$yr).' for tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;	
+	$particular = 'Payment through '.$refund_mode.' '.get_train_ticket_booking_id($train_ticket_id,$yr).' for train tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;	
 
   	//Getting cash/Bank Ledger
     if($refund_mode == 'Cash') {  $pay_gl = 20; $type='CASH PAYMENT'; }
@@ -228,7 +228,7 @@ public function bank_cash_book_save($refund_id)
 	}else{
 	  $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
 	}
-	$particular = 'Payment through '.$refund_mode.' '.get_train_ticket_booking_id($train_ticket_id,$yr).' for tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
+	$particular = 'Payment through '.$refund_mode.' '.get_train_ticket_booking_id($train_ticket_id,$yr).' for train tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
 
 	$module_name = "Train Ticket Booking Refund Paid";
 	$module_entry_id = $refund_id;

@@ -1,10 +1,15 @@
 <?php
 include "model/model.php";
-if(isset($_SESSION['username'])){ session_destroy(); } 
+
+$tokenUser = md5(uniqid(mt_rand(), true));
+if(isset($_SESSION['username'])){ 
+      destroy_all();
+      recreate($tokenUser);  
+}
 global $app_version;
-
-
+$_SESSION['token'] =$tokenUser; 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +20,6 @@ global $app_version;
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,500" rel="stylesheet">
-  
   <link rel="stylesheet" href="<?php echo BASE_URL ?>css/font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="<?php echo BASE_URL ?>css/bootstrap.min.css">
   <link rel="stylesheet" href="<?php echo BASE_URL ?>css/vi.alert.css">
@@ -25,7 +29,6 @@ global $app_version;
   <script src="<?php echo BASE_URL ?>js/jquery-3.1.0.min.js"></script>
   <script src="<?php echo BASE_URL ?>js/bootstrap.min.js"></script>
   <script src="<?php echo BASE_URL ?>js/jquery.validate.min.js"></script>
-  <!-- <script src="<?php echo BASE_URL ?>js/jquery-ui.min.js"></script> -->
   <script src="<?php echo BASE_URL ?>js/vi.alert.js"></script>
   <script src="<?php echo BASE_URL ?>js/script.js"></script>
 
@@ -47,9 +50,8 @@ global $app_version;
       <div class="login_wrap">
         
         <div class="logo-wrap"> <img src="<?= $circle_logo_url ?>" /> </div>
-        <h3>Login to your account</h3>
-      <?php  $_SESSION['token'] = md5(uniqid(mt_rand(), true)); ?>
-        <input type="hidden" name="token" id="token" value="<?php echo ($_SESSION['token']) ? $_SESSION['token'] : '';   ?>">
+        <h3>Login to your account </h3>
+        <input type="hidden" name="token" id="token" value="<?php echo $tokenUser;   ?>">
         <div class="login_wrap_inner">
           <div class="row">
             <div class="col-md-12">
@@ -95,8 +97,21 @@ global $app_version;
   $(function () {
     $('[data-toggle="tooltip"]').tooltip()
   });
-
+  
 </script>
   
 </body>
 </html>
+<?php 
+  function destroy_all()
+  {
+    session_destroy();
+  }
+  function recreate($tokenUser)
+    {
+      
+      session_start();
+      $_SESSION['token'] =$tokenUser;       
+    }
+
+?>

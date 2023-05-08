@@ -32,13 +32,13 @@ $branch_status = $sq['branch_status'];
 	        				<?php get_new_customer_dropdown($role,$branch_admin_id,$branch_status); ?>
 	        			</select>
 	        		</div>
-	        		<div id="cust_details">	        
+	        		<div id="cust_details">	  
+	        		<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
+	                	<input class="form-control" type="text" id="mobile_no" name="mobile_no" title="Mobile Number" placeholder="Mobile No" title="Mobile No" readonly>
+	                </div>        
 	        		<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
 	                	<input class="form-control" type="text" id="email_id" name="email_id" title="Email Id" placeholder="Email ID" title="Email ID" readonly>
 	                </div>		
-	        		<div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_sm_xs">
-	                	<input class="form-control" type="text" id="mobile_no" name="mobile_no" title="Mobile Number" placeholder="Mobile No" title="Mobile No" readonly>
-	                </div>  
 	                <div class="col-md-3 col-sm-4 col-xs-12">
 	                	<input class="form-control hidden" type="text" id="company_name" name="company_name" title="Company Name" placeholder="Company Name" title="Company Name" readonly>
 	                </div> 
@@ -56,8 +56,8 @@ $branch_status = $sq['branch_status'];
 				
 				<div class="row mg_bt_10">
 	                <div class="col-xs-12 text-right text_center_xs">
-	                    <button type="button" class="btn btn-info btn-sm ico_left" onClick="addRow('tbl_dynamic_exc_booking');city_lzloading('.city_name_exc');"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
-	                    <button type="button" class="btn btn-danger btn-sm ico_left" onClick="deleteRow('tbl_dynamic_exc_booking');calculate_exc_expense('tbl_dynamic_exc_booking')"><i class="fa fa-times"></i>&nbsp;&nbsp;Delete</button>
+						<button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_exc_booking');city_lzloading('.city_name_exc');"><i class="fa fa-plus"></i></button>
+						<button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('tbl_dynamic_exc_booking');calculate_exc_expense('tbl_dynamic_exc_booking')"><i class="fa fa-trash"></i></button>
 	                </div>
 	            </div>    	            
 	            <div class="row">
@@ -83,32 +83,61 @@ $branch_status = $sq['branch_status'];
 		        	</div>
 		        	<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 					<small id="service_show" style="color:red">&nbsp;</small>
-		        		<input class="form-control" type="text" name="service_charge" id="service_charge" placeholder="Service Charge" title="Service Charge" onchange="validate_balance(this.id);get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge',true);">
+		        		<input class="form-control" type="text" name="service_charge" id="service_charge" placeholder="Service Charge" title="Service Charge" onchange="validate_balance(this.id);get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge','basic');">
 		        	</div>	
+					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
+						<select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge','basic');">
+							<option value="">*Tax Apply On</option>
+							<option value="1">Basic Amount</option>
+							<option value="2">Service Charge</option>
+							<option value="3">Total</option>
+						</select>
+					</div> 
+					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
+						<select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge','basic');">
+							<option value="">*Select Tax</option>
+							<?php get_tax_dropdown('Income') ?>
+						</select>
+					</div>
 	        		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-					<small>&nbsp;</small>
+						<small>&nbsp;</small>
 				        <input class="form-control" type="text" id="service_tax_subtotal" name="service_tax_subtotal" placeholder="Tax Amount" title="Tax Amount" readonly>
 	        		</div>
 					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
 						<small id="markup_show" style="color:red">&nbsp;</small>
-        				<input class="form-control" type="text" id="markup" name="markup" placeholder="Markup Cost" title="Markup Cost" onchange="get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','false','markup', true);validate_balance(this.id)">
+        				<input class="form-control" type="text" id="markup" name="markup" placeholder="Markup Amount" title="Markup Amount" onchange="get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','markup','basic');validate_balance(this.id)">
             		</div>
-					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
+					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
+						<select title="Select Markup Tax" id="markup_tax_value" name="markup_tax_value" class="form-control" onchange="get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge','basic');">
+							<option value="">*Select Markup Tax</option>
+							<?php get_tax_dropdown('Income') ?>
+						</select>
+					</div>
+					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
                 		<input class="form-control" type="text" id="service_tax_markup" name="service_tax_markup" placeholder="Tax on Markup" title="Tax on Markup" readonly>
             		</div>
 					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
 						<input class="form-control" type="text" name="roundoff" id="roundoff" class="text-right" placeholder="Round Off" title="RoundOff" readonly>
 					</div> 
-	        		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
+	        		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
 	        			<input class="form-control amount_feild_highlight text-right" type="text" name="exc_total_cost" id="exc_total_cost" placeholder="Net Total" title="Net Total" readonly>
 	        		</div>
 	        		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
 	        			<input class="form-control" type="text" name="due_date" id="due_date" placeholder="Due Date" title="Due Date" value="<?= date('d-m-Y') ?>">
 	        		</div>
-	        		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-	        			<input class="form-control" type="text" name="balance_date" id="balance_date" value="<?= date('d-m-Y') ?>" placeholder="Booking Date" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge',true);">
+	        		<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
+	        			<input class="form-control" type="text" name="balance_date" id="balance_date" value="<?= date('d-m-Y') ?>" placeholder="Booking Date" title="Booking Date" onchange="check_valid_date(this.id);get_auto_values('balance_date','exc_issue_amount','payment_mode','service_charge','markup','save','true','service_charge','basic');">
 	        		</div>
-					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
+					<div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+						<small>&nbsp;</small>
 						<select class="form-control" name="currency_code" id="acurrency_code" title="Currency" style="width:100%" data-toggle="tooltip" required>
 							<?php
 							$sq_app_setting = mysqli_fetch_assoc(mysqlQuery("select currency from app_settings"));
@@ -162,7 +191,7 @@ $branch_status = $sq['branch_status'];
 						<input class="form-control bank_suggest" type="text" id="bank_name" name="bank_name" onchange="fname_validate(this.id)" placeholder="Bank Name" title="Bank Name" readonly>
 					</div>
 					<div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-						<input class="form-control" type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
+						<input class="form-control" type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" readonly>
 					</div>
 					<div class="col-md-4 col-sm-6 col-xs-12">
 			            <select class="form-control" name="bank_id" id="bank_id" title="Select Bank" disabled>
@@ -215,12 +244,12 @@ $('#frm_exc_save').validate({
 			payment_date : { required : true },
 			payment_amount : { required : true },
 			payment_mode : { required : true },
-			bank_name : { required : function(){  if($('#payment_mode').val()!="Cash" && $('#payment_amount').val() != '0'){ return true; }else{ return false; }  }  },
 			country_code : { required : function(){  if($('#customer_id').val()=='0'){ return true; }else{ return false; }  }  },
-
-            transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
             bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },  
             //due_date : { required : true },   
+			tax_apply_on : { required:true},
+			tax_value : { required:true},
+			markup_tax_value : { required:true}
 	},
 	submitHandler:function(form){
 		$('#btn_exc_master_save').prop('disabled',true);
@@ -279,6 +308,10 @@ $('#frm_exc_save').validate({
 		var adult_cost_arr = new Array();
 		var child_cost_arr = new Array();
 		var total_amt_arr = new Array();
+		var total_infant_arr = [];
+		var infant_cost_arr = [];
+		var total_vehicle_arr = [];
+		var transfer_cost_arr = [];
 
 		if(payment_mode=="Advance"){
 			error_msg_alert("Please select another payment mode.");
@@ -291,71 +324,72 @@ $('#frm_exc_save').validate({
 				error_msg_alert("Credit Note Balance is not available"); $('#btn_exc_master_save').prop('disabled',false); return false;
 			}
 	        if(parseFloat(payment_amount)>parseFloat(exc_total_cost)){
-			error_msg_alert("Payment amount cannot be greater than selling amount.");
-			$('#btn_exc_master_save').prop('disabled',false);
-			return false;
+				error_msg_alert("Payment amount cannot be greater than selling amount.");
+				$('#btn_exc_master_save').prop('disabled',false);
+				return false;
 			}
 	        var table = document.getElementById("tbl_dynamic_exc_booking");
 	        var rowCount = table.rows.length;
 			var checked_count = 0;
 			for (var i = 0; i < rowCount; i++) {
-			var row = table.rows[i];
-			if (row.cells[0].childNodes[0].checked) {
-				checked_count++;
-			}
+				var row = table.rows[i];
+				if (row.cells[0].childNodes[0].checked) {
+					checked_count++;
+				}
 			}
 			if(checked_count==0){
-			error_msg_alert("Atleast one Activity is required!");
+				error_msg_alert("Atleast one Activity is required!");
 				$('#btn_exc_master_save').prop('disabled', false);
 				return false;
 			}
 	        for(var i=0; i<rowCount; i++)
 	        {
-	          var row = table.rows[i];
-	        //    if(rowCount == 1){
-	        //     if(!row.cells[0].childNodes[0].checked){
-	        //    		error_msg_alert("Atleast one Activity is required!");
-			// 		$('#btn_exc_master_save').prop('disabled',false);
-	        //    		return false;
-	        //     }
-	        //   } 
-	          if(row.cells[0].childNodes[0].checked)
-	          {
-				  var exc_date = row.cells[2].childNodes[0].value;
-				  var city_id = row.cells[3].childNodes[0].value;
-				  var exc_name = row.cells[4].childNodes[0].value;
-				  var transfer_option = row.cells[5].childNodes[0].value;
-				  var total_adult = row.cells[6].childNodes[0].value;
-				  var total_child = row.cells[7].childNodes[0].value;
-				  var adult_cost = row.cells[8].childNodes[0].value;
-				  var child_cost = row.cells[9].childNodes[0].value;
-				  var total_amt = row.cells[10].childNodes[0].value;
+				var row = table.rows[i];
+				if(row.cells[0].childNodes[0].checked){
 
-	              var msg = "";
+					var exc_date = row.cells[2].childNodes[0].value;
+					var city_id = row.cells[3].childNodes[0].value;
+					var exc_name = row.cells[4].childNodes[0].value;
+					var transfer_option = row.cells[5].childNodes[0].value;
+					var total_adult = row.cells[6].childNodes[0].value;
+					var total_child = row.cells[7].childNodes[0].value;
+					var total_infant = row.cells[8].childNodes[0].value;
+					var adult_cost = row.cells[9].childNodes[0].value;
+					var child_cost = row.cells[10].childNodes[0].value;
+					var infant_cost = row.cells[11].childNodes[0].value;
+					var total_vehicle = row.cells[12].childNodes[0].value;
+					var transfer_cost = row.cells[13].childNodes[0].value;
+					var total_amt = row.cells[14].childNodes[0].value;
 
-				  if(exc_date==""){ msg +="Activity Date is required in row:"+(i+1)+"<br>"; }
-				  if(city_id==""){ msg +="City name is required in row:"+(i+1)+"<br>"; }
-				  if(exc_name==""){ msg +="Activity Name is required in row:"+(i+1)+"<br>"; }
-				  if(transfer_option==""){ msg +="Transfer option is required in row:"+(i+1)+"<br>"; }
-				  if(total_adult==""){ msg +="Total Adult(s) is required in row:"+(i+1)+"<br>"; }
-				  if(total_child==""){ msg +="Total Child(ren) is required in row:"+(i+1)+"<br>"; }
+					var msg = "";
 
-	              if(msg!=""){
-	                error_msg_alert(msg);
-					$('#btn_exc_master_save').prop('disabled',false);
-	                return false;
-	              }
+					if(exc_date==""){ msg +="Activity Date is required in row:"+(i+1)+"<br>"; }
+					if(city_id==""){ msg +="City name is required in row:"+(i+1)+"<br>"; }
+					if(exc_name==""){ msg +="Activity Name is required in row:"+(i+1)+"<br>"; }
+					if(transfer_option==""){ msg +="Transfer option is required in row:"+(i+1)+"<br>"; }
+					if(total_adult==""){ msg +="Total Adult(s) is required in row:"+(i+1)+"<br>"; }
+					if(total_child==""){ msg +="Total Child(ren) is required in row:"+(i+1)+"<br>"; }
 
-				  exc_date_arr.push(exc_date);
-				  city_id_arr.push(city_id);
-				  exc_name_arr.push(exc_name);
-				  total_adult_arr.push(total_adult);
-				  total_child_arr.push(total_child);
-				  adult_cost_arr.push(adult_cost);
-				  child_cost_arr.push(child_cost);
-				  total_amt_arr.push(total_amt);             
-				  transfer_arr.push(transfer_option);
-	          }      
+					if(msg!=""){
+						error_msg_alert(msg);
+						$('#btn_exc_master_save').prop('disabled',false);
+						return false;
+					}
+
+					exc_date_arr.push(exc_date);
+					city_id_arr.push(city_id);
+					exc_name_arr.push(exc_name);
+					total_adult_arr.push(total_adult);
+					total_child_arr.push(total_child);
+					adult_cost_arr.push(adult_cost);
+					child_cost_arr.push(child_cost);
+					total_amt_arr.push(total_amt);             
+					transfer_arr.push(transfer_option);
+					total_infant_arr.push(total_infant);
+					infant_cost_arr.push(infant_cost);
+					total_vehicle_arr.push(total_vehicle);
+					transfer_cost_arr.push(transfer_cost);
+				}
 	        }
 			//Validation for booking and payment date in login financial year
 			var act_sc = $('#act_sc').val();
@@ -363,13 +397,20 @@ $('#frm_exc_save').validate({
 			var act_taxes = $('#act_taxes').val();
 			var act_markup_taxes = $('#act_markup_taxes').val();
 			var act_tds = $('#act_tds').val();
+			var tax_apply_on = $('#tax_apply_on').val();
+			var tax_value = $('#tax_value').val();
+			var markup_tax_value = $('#markup_tax_value').val();
+
 			var reflections = [];
 			reflections.push({
 			'act_sc':act_sc,
 			'act_markup':act_markup,
 			'act_taxes':act_taxes,
 			'act_markup_taxes':act_markup_taxes,
-			'act_tds':act_tds
+			'act_tds':act_tds,
+			'tax_apply_on':tax_apply_on,
+			'tax_value':tax_value,
+			'markup_tax_value':markup_tax_value
 			});
 			var bsmValues = [];
 			bsmValues.push({
@@ -426,7 +467,7 @@ $('#frm_exc_save').validate({
 								$.ajax({
 									type: 'post',
 									url: base_url+'controller/excursion/exc_master_save.php',
-									data:{ emp_id : emp_id, customer_id : customer_id, exc_issue_amount : exc_issue_amount, service_charge : service_charge, service_tax_subtotal : service_tax_subtotal, exc_total_cost : exc_total_cost, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, due_date : due_date,balance_date : balance_date,exc_date_arr : exc_date_arr,city_id_arr : city_id_arr,exc_name_arr : exc_name_arr, total_adult_arr : total_adult_arr,total_child_arr : total_child_arr,adult_cost_arr : adult_cost_arr,child_cost_arr : child_cost_arr,total_amt_arr : total_amt_arr,transfer_arr:transfer_arr, branch_admin_id : branch_admin_id, markup : markup, service_tax_markup : service_tax_markup, reflections : reflections,roundoff:roundoff,bsmValues:bsmValues,credit_charges:credit_charges,credit_card_details:credit_card_details,currency_code:currency_code },
+									data:{ emp_id : emp_id, customer_id : customer_id, exc_issue_amount : exc_issue_amount, service_charge : service_charge, service_tax_subtotal : service_tax_subtotal, exc_total_cost : exc_total_cost, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id, due_date : due_date,balance_date : balance_date,exc_date_arr : exc_date_arr,city_id_arr : city_id_arr,exc_name_arr : exc_name_arr, total_adult_arr : total_adult_arr,total_child_arr : total_child_arr,adult_cost_arr : adult_cost_arr,child_cost_arr : child_cost_arr,total_amt_arr : total_amt_arr,total_infant_arr:total_infant_arr,infant_cost_arr:infant_cost_arr,total_vehicle_arr:total_vehicle_arr,transfer_cost_arr:transfer_cost_arr,transfer_arr:transfer_arr, branch_admin_id : branch_admin_id, markup : markup, service_tax_markup : service_tax_markup, reflections : reflections,roundoff:roundoff,bsmValues:bsmValues,credit_charges:credit_charges,credit_card_details:credit_card_details,currency_code:currency_code },
 									success: function(result){
 										$('#btn_exc_master_save').button('reset');
 										var msg = result.split('-');

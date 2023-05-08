@@ -232,7 +232,7 @@ class exc_payment_master
 	
 		$bank_cash_book_master->bank_cash_book_master_update($module_name, $payment_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 		
-		$sq_delete = mysqlQuery("update exc_payment_master set payment_amount = '0', delete_status='1' where payment_id='$payment_id'");
+		$sq_delete = mysqlQuery("update exc_payment_master set payment_amount = '0', delete_status='1',credit_charges='0' where payment_id='$payment_id'");
 		if($sq_delete){
 			echo 'Entry deleted successfully!';
 			exit;
@@ -443,7 +443,7 @@ class exc_payment_master
 
 		$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from exc_payment_master where payment_id='$payment_id'"));
 
-		$clearance_status = ($sq_payment_info['payment_mode'] == 'Cash' && $payment_mode != "Cash") ? "Pending" : $sq_payment_info['clearance_status'];
+		$clearance_status = $sq_payment_info['clearance_status'];
 		if ($payment_mode == "Cash") {
 			$clearance_status = "";
 		}
@@ -691,7 +691,7 @@ class exc_payment_master
 		$sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from excursion_master_entries where exc_id ='$exc_id' and status='Cancel'"));
 		if($sq_entries == $sq_entries_cancel){
 			$canc_amount = $sq_exc_info['cancel_amount'];
-			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + floatval($credit_card_amount);
 		}else{
 			$outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 		}
@@ -764,7 +764,7 @@ class exc_payment_master
 		$sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from excursion_master_entries where exc_id ='$booking_id' and status='Cancel'"));
 		if($sq_entries == $sq_entries_cancel){
 			$canc_amount = $sq_ticket_info['cancel_amount'];
-			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + floatval($sq_pay['sumc']);
 		}else{
 			$outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 		}

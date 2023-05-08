@@ -179,6 +179,9 @@ var columns = [{
         title: " "
     },
     {
+        title: "Receipt_ID"
+    },
+    {
         title: "Booking_ID"
     },
     {
@@ -230,12 +233,16 @@ function save_modal()
 function update_modal(payment_id)
 
 {
+    $('#updater-'+payment_id).prop('disabled',true);
+    $('#updater-'+payment_id).button('loading');
     var base_url = $('#base_url').val();
     $.post(base_url + '/view/group_tour/payment/update_modal.php', {
         payment_id: payment_id
     }, function(data) {
 
         $('#div_modal').html(data);
+        $('#updater-'+payment_id).prop('disabled',false);
+        $('#updater-'+payment_id).button('reset');
 
     });
 

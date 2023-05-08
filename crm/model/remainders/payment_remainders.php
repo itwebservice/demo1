@@ -7,7 +7,7 @@ $sq_tour = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details w
 		while($row_tour = mysqli_fetch_assoc($sq_tour_details)){
 
 			$booking_id = $row_tour['id'];
-			$date = $row_hotel['form_date'];
+			$date = $row_tour['form_date'];
 			$yr = explode("-", $date);
 			$year = $yr[0];
 			$booking_id1 = get_group_booking_id($booking_id,$year);
@@ -32,7 +32,7 @@ $sq_tour = mysqli_num_rows(mysqlQuery("select * from tourwise_traveler_details w
 				while($row_cust = mysqli_fetch_assoc($sq_cust)){
 					$email_id = $row_cust['email_id'];
 					$t_id = $row_cust['tourwise_traveler_id'];
-					$c_id = mysqli_fetch_assoc(mysqlQuery("select customer_id from tourwise_traveler_details"));
+					$c_id = mysqli_fetch_assoc(mysqlQuery("select customer_id from tourwise_traveler_details where id='$booking_id'"));
 					$name = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$c_id[customer_id]'"));  
 					if($name['type'] == 'Corporate'||$name['type'] == 'B2B'){
 						$customer_name = $name['company_name'];

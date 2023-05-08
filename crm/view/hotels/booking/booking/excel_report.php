@@ -298,15 +298,14 @@ $objPHPExcel->setActiveSheetIndex(0)
 
         ->setCellValue('D'.$row_count, "Customer Name")
 
-        ->setCellValue('E'.$row_count, "Booking Date")
+        ->setCellValue('E'.$row_count, "Booking Amount")
 
-        ->setCellValue('F'.$row_count, "Booking Amount")
+        ->setCellValue('F'.$row_count, "Cancellation Amount")
 
-        ->setCellValue('G'.$row_count, "Cancellation Amount")
-
-        ->setCellValue('H'.$row_count, "Total Amount")
-        ->setCellValue('I'.$row_count, "Paid Amount")
-        ->setCellValue('J'.$row_count, "Created By");
+        ->setCellValue('G'.$row_count, "Total Amount")
+        ->setCellValue('H'.$row_count, "Paid Amount")
+        ->setCellValue('I'.$row_count, "Created By")
+        ->setCellValue('J'.$row_count, "Booking Date");
 
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($borderArray);    
@@ -377,15 +376,14 @@ $paid_amount = ($paid_amount == '')?'0':$paid_amount;
 
         ->setCellValue('D'.$row_count, $customer_name)
 
-        ->setCellValue('E'.$row_count, date('d-m-Y', strtotime($row_booking['created_at'])))
+        ->setCellValue('E'.$row_count, number_format($row_booking['total_fee'] + $credit_card_charges,2))
 
-        ->setCellValue('F'.$row_count, number_format($row_booking['total_fee'] + $credit_card_charges,2))
+        ->setCellValue('F'.$row_count, number_format($canc_amount,2))
 
-        ->setCellValue('G'.$row_count, number_format($canc_amount,2))
-
-        ->setCellValue('H'.$row_count, number_format($total_amount,2).$currency_amount)
-        ->setCellValue('I'.$row_count,$paid_amount)
-        ->setCellValue('J'.$row_count,$emp_name);
+        ->setCellValue('G'.$row_count, number_format($total_amount,2).$currency_amount)
+        ->setCellValue('H'.$row_count,$paid_amount)
+        ->setCellValue('I'.$row_count,$emp_name)
+        ->setCellValue('J'.$row_count, date('d-m-Y', strtotime($row_booking['created_at'])));
 
 
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':J'.$row_count)->applyFromArray($content_style_Array);

@@ -2,13 +2,13 @@
 	<div class="row">
 		<div class="col-md-3 col-sm-6">
 			<select style="width:100%" id="sale_type" name="sale_type" class="form-control" title="Select Sale" onchange="tour_expense_save_reflect();get_widget();"> 
+		    	<option value="Hotel">Hotel</option>    
+		    	<option value="Flight Ticket">Flight</option> 
 		    	<option value="Visa">Visa</option>     
-		    	<option value="Flight Ticket">Flight</option>
-		    	<option value="Train Ticket">Train</option>
-		    	<option value="Hotel">Hotel</option>     
-		    	<option value="Bus">Bus</option>
 		    	<option value="Car Rental">Car Rental</option>
 		    	<option value="Excursion">Activity</option>
+		    	<option value="Train Ticket">Train</option>
+		    	<option value="Bus">Bus</option>
 		    	<option value="Miscellaneous">Miscellaneous</option>		    	
 		    </select>
 		</div>
@@ -40,12 +40,13 @@ $('#sale_type').select2();
 	{ title : "S_No."},
 	{ title : "Booking_ID"},
 	{ title : "Booking_date"},
-	{ title : "User_Name"},
+	{ title : "Customer_Name"},
 	{ title : "Sale_amount"},
 	{ title : "Supplier_type"},
 	{ title : "Supplier_name"},
 	{ title : "Purchases"},
-	{ title : "Profit/Loss(%)"}	
+	{ title : "Profit/Loss(%)"},
+	{ title : "User_Name"}
 ];
 
 	function tour_expense_save_reflect(){
@@ -79,9 +80,13 @@ $('#sale_type').select2();
 	
 	function purchases_display_modal(estimate_type,estimate_type_id){
 
+		$('#supplierv_btn-'+estimate_type_id).prop('disabled',true);
 		var base_url = $('#base_url').val();
+		$('#supplierv_btn-'+estimate_type_id).button('loading');
 		$.post(base_url+'view/reports/business_reports/report_reflect/revenue_expenses/other_sale/purchases_display.php', { estimate_type : estimate_type,estimate_type_id:estimate_type_id }, function(data){
 			$('#purchases_display').html(data);
+			$('#supplierv_btn-'+estimate_type_id).prop('disabled',false);
+			$('#supplierv_btn-'+estimate_type_id).button('reset');
 		});
 	}
 </script>

@@ -7,6 +7,17 @@ $branch_status = $_POST['branch_status'];
 
 $sq_ticket = mysqli_fetch_assoc(mysqlQuery("select * from ticket_master where ticket_id='$ticket_id' and delete_status='0'"));
 $reflections = json_decode($sq_ticket['reflections']);
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <input type="hidden" id="ticket_id" name="ticket_id" value="<?= $sq_ticket['ticket_id'] ?>">
 <input type="hidden" id="booking_id" name="booking_id" value="<?= $ticket_id ?>">
@@ -15,6 +26,10 @@ $reflections = json_decode($sq_ticket['reflections']);
 <input type="hidden" id="flight_taxes" name="flight_taxes" value="<?php echo $reflections[0]->flight_taxes ?>">
 <input type="hidden" id="flight_markup_taxes" name="flight_markup_taxes" value="<?php echo $reflections[0]->flight_markup_taxes ?>">
 <input type="hidden" id="flight_tds" name="flight_tds" value="<?php echo $reflections[0]->flight_tds ?>">
+<input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+<input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+<input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+<input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $reflections[0]->markup_tax_value ?>">
 
 <div class="bk_tab_head bg_light">
     <ul> 

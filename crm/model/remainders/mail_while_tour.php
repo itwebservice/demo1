@@ -62,6 +62,7 @@ function journey_mail($tour_name,$booking_id,$cust_id,$tour_type)
 {
 		global $app_email_id, $app_name, $app_contact_no, $admin_logo_url, $app_website,$secret_key,$encrypt_decrypt;
 		$sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$cust_id'"));
+		$cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 		
 		$email_id = $encrypt_decrypt->fnDecrypt($sq_customer['email_id'], $secret_key); 
 		$content = '
@@ -106,7 +107,7 @@ function journey_mail($tour_name,$booking_id,$cust_id,$tour_type)
 		$subject = 'Happy Journey';
 		global $model;
 
-		$model->app_email_send('74',$sq_customer['first_name'],$email_id, $content,$subject,'1');
+		$model->app_email_send('74',$cust_name,$email_id, $content,$subject,'1');
 }
 function employee_sign_up_sms($mobile_no,$tour_name,$cust_id)
 {

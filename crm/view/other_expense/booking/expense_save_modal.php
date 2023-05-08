@@ -1,3 +1,6 @@
+<?php 
+include_once('../../../model/model.php');
+?>
 <form id="frm_vendor_expense_save">
 <div class="modal fade" id="expense_save_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
   <div class="modal-dialog modal-lg" role="document">
@@ -43,41 +46,40 @@
       <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_30">
           <legend>Payment Details</legend>
           <div class="row">
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <input type="text" id="sub_total" name="sub_total" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);total_fun();">
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input type="text" class="form-control" id="sub_total" name="sub_total" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);total_fun();">
             </div>
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" id="service_tax_subtotal" name="service_tax_subtotal" placeholder="Tax Amount" title="Tax Amount" onchange="validate_balance(this.id);total_fun();">
-            </div>
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <select name="ledger_ids[]" id="ledger_ids" title="Select Ledger for posting" size="3" class="form-control" style="width:100%" multiple>
-                <?php
-                $sq = mysqlQuery("select * from ledger_master where group_sub_id in('99','106') order by ledger_name");
-                ?>
-                <option value="">*Select Ledger</option>
-                <?php while($row = mysqli_fetch_assoc($sq)){ ?>
-                  <option value="<?= $row['ledger_id'] ?>"><?= $row['ledger_name'] ?></option>
-                <?php } ?>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="total_fun();">
+                <option value="">*Select Tax</option>
+                <?php get_tax_dropdown('Expense') ?>
               </select>
             </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="form-control" type="text" id="service_tax_subtotals" name="service_tax_subtotals" placeholder="Tax Amount" title="Tax Amount" readonly>
+              <input type="hidden" id="service_tax_subtotal" name="service_tax_subtotal">
+              <input type="hidden" id="ledger_ids" name="ledger_ids">
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="form-control" type="text" id="tds" name="tds" placeholder="TDS" title="TDS" onchange="validate_balance(this.id);total_fun();">
+            </div>
           </div>
-          <div class="row mg_tp_10">
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <input type="text" id="tds" name="tds" placeholder="TDS" title="TDS" onchange="validate_balance(this.id);total_fun();">
-            </div>            
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" name="total_fee" id="total_fee" class="amount_feild_highlight text-right" placeholder="*Net Total" title="Net Total" readonly>
-             </div>                        
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <input type="text" name="due_date" id="due_date" id="due_date" value="<?= date('d-m-Y') ?>" placeholder="Due Date" title="Due Date">
+          <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                <input type="text" name="total_fee" id="total_fee" class="amount_feild_highlight text-right form-control" placeholder="*Net Total" title="Net Total" readonly>
+            </div>                        
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="form-control" type="text" name="due_date" id="due_date" id="due_date" value="<?= date('d-m-Y') ?>" placeholder="Due Date" title="Due Date">
             </div>                     
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <input type="text" name="booking_date" id="booking_date" placeholder="Booking Date" value="<?= date('d-m-Y') ?>" title="Booking Date" onchange="check_valid_date(this.id)">
-            </div>         
-            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                <input type="text" name="invoice_no" id="invoice_no" placeholder="Invoice No" title="Invoice No">
-            </div> 
-    				<div class="col-md-4">
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="form-control" type="text" name="booking_date" id="booking_date" placeholder="Booking Date" value="<?= date('d-m-Y') ?>" title="Booking Date" onchange="check_valid_date(this.id)">
+            </div>    
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                <input class="form-control" type="text" name="invoice_no" id="invoice_no" placeholder="Invoice No" title="Invoice No">
+            </div>   
+          </div>
+          <div class="row">   
+    				<div class="col-md-3 col-sm-6 col-xs-12">
     			          <div class="div-upload">
     			            <div id="id_upload_btn" class="upload-button1"><span>Upload Invoice</span></div>
     			            <span id="id_proof_status" ></span>
@@ -106,13 +108,13 @@
                <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
             </div>
             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-              <input type="text" id="transaction_id" name="transaction_id" class="form-control" onchange="validate_balance(this.id);" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+              <input type="number" id="transaction_id" name="transaction_id" class="form-control" onchange="validate_balance(this.id);" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
             </div>  
             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-             <select name="bank_id" id="bank_id" title="Select Bank" disabled>
-              <?php get_bank_dropdown('Debitor Bank'); ?>
-            </select>
-          </div>
+              <select name="bank_id" id="bank_id" title="Select Bank" class="form-control" disabled>
+                <?php get_bank_dropdown('Debitor Bank'); ?>
+              </select>
+            </div>
         </div>
         <div class="row">     
             <div class="col-md-3 mg_bt_10_sm_xs">
@@ -144,9 +146,10 @@
 </div>
 </form>
 <script src="<?= BASE_URL ?>js/ajaxupload.3.5.js"></script>
+<script src="<?php echo BASE_URL ?>js/app/footer_scripts.js"></script>
 <script>
-
-$('#expense_type,#supplier_type,#ledger_ids').select2();
+$('#expense_save_modal').modal('show');
+$('#expense_type,#supplier_type').select2();
 $('#payment_date,#due_date,#booking_date').datetimepicker({ timepicker:false, format:'d-m-Y' });
 //Payment Evidence  Upload
 function payment_evidance_upload()
@@ -215,16 +218,60 @@ upload_invoice_pic_attch();
 
 function total_fun(){
 
-    var service_tax = $('#service_tax').val();
-    var service_tax_subtotal = $('#service_tax_subtotal').val();   
     var sub_total = $('#sub_total').val();   
     var tds = $('#tds').val();
 
     if(sub_total==""){ sub_total = 0; }
-    if(service_tax_subtotal==""){ service_tax_subtotal = 0; }
     if(tds==""){ tds = 0; }
+
+    var service_tax = 0;
+    var service_tax_amount = 0;
+    var applied_taxes = '';
+    var ledger_posting = '';
+    var tax_value = $('#tax_value').val();
+
+    if(tax_value!=""){
+      var service_tax_subtotal1 = tax_value.split("+");
+      for(var i=0;i<service_tax_subtotal1.length;i++){
+        var service_tax_string = service_tax_subtotal1[i].split(':');
+        if(parseInt(service_tax_string.length) > 0){
+          var service_tax_string1 = service_tax_string[1] && service_tax_string[1].split('%');
+          service_tax_string1[0] = service_tax_string1[0] && service_tax_string1[0].replace('(','');
+          service_tax = service_tax_string1[0];
+        }
+
+        service_tax_string[2] = service_tax_string[2].replace('(','');
+        service_tax_string[2] = service_tax_string[2].replace(')','');
+        service_tax_amount = (( parseFloat(sub_total) * parseFloat(service_tax) ) / 100).toFixed(2);
+        if(applied_taxes==''){
+          applied_taxes = service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+          ledger_posting = service_tax_string[2];
+        }else{
+          applied_taxes += ', ' + service_tax_string[0] +':'+ service_tax_string[1] + ':' + service_tax_amount;
+          ledger_posting += ', ' + service_tax_string[2];
+        }
+      }
+      $('#service_tax_subtotals').val(applied_taxes);
+      $('#ledger_ids').val(ledger_posting);
+    }else{
+      $('#service_tax_subtotals').val('');
+      $('#ledger_ids').val('');
+    }
     
-    var total_amount = parseFloat(sub_total) + parseFloat(service_tax_subtotal) - parseFloat(tds);
+    var service_tax_subtotal = $('#service_tax_subtotals').val();   
+    if(service_tax_subtotal==""){ service_tax_subtotal = 0; }
+		var service_tax_amount = 0;
+		if (parseFloat(service_tax_subtotal) !== 0.00 && (service_tax_subtotal) !== '') {
+
+			var service_tax_subtotal1 = service_tax_subtotal.split(",");
+			for (var i = 0; i < service_tax_subtotal1.length; i++) {
+				var service_tax = service_tax_subtotal1[i].split(':');
+				service_tax_amount = parseFloat(service_tax_amount) + parseFloat(service_tax[2]);
+			}
+		}
+    $('#service_tax_subtotal').val(service_tax_amount);
+
+    var total_amount = parseFloat(sub_total) + parseFloat(service_tax_amount) - parseFloat(tds);
     var total=total_amount.toFixed(2);
     $('#total_fee').val(total);
 }
@@ -237,9 +284,8 @@ $(function(){
         payment_amount: { required : true }, 
         payment_mode : { required : true }, 
         payment_date : { required : true }, 
-        bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-        transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-        bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },   
+        bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  }, 
+        tax_value : { required:true}  
 		},
 		submitHandler:function(form){
       
@@ -250,16 +296,8 @@ $(function(){
 				var supplier_type = $('#supplier_type').val();
 				var sub_total = $('#sub_total').val();
         var service_tax_subtotal = $('#service_tax_subtotal').val();
+        var service_tax_subtotals = $('#service_tax_subtotals').val();
         var ledger_ids = $('#ledger_ids').val();
-        if(service_tax_subtotal !== '' && ledger_ids.length < 1){
-          error_msg_alert('Please select ledger for posting!');
-          $('#btn_save_expense').prop('disabled',false); return false;
-        }
-        if(ledger_ids.length > 2){
-          error_msg_alert('You can select max 2 ledgers!');
-          $('#btn_save_expense').prop('disabled',false); return false;
-        }
-        ledger_ids = ledger_ids.toString();
 
 				var tds = $('#tds').val();
 				var net_total = $('#total_fee').val();
@@ -302,7 +340,7 @@ $(function(){
               $.ajax({
                 type:'post',
                 url: base_url+'controller/other_expense/expense_booking_save.php',
-                data:{ expense_type : expense_type, supplier_type : supplier_type, sub_total : sub_total, ledger_ids : ledger_ids, service_tax_subtotal : service_tax_subtotal, tds : tds, net_total : net_total, due_date : due_date, booking_date : booking_date, invoice_no : invoice_no,id_upload_url : id_upload_url, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id,branch_admin_id : branch_admin_id, payment_evidence_url : payment_evidence_url, emp_id : emp_id},
+                data:{ expense_type : expense_type, supplier_type : supplier_type, sub_total : sub_total, ledger_ids : ledger_ids, service_tax_subtotal : service_tax_subtotal,service_tax_subtotals:service_tax_subtotals, tds : tds, net_total : net_total, due_date : due_date, booking_date : booking_date, invoice_no : invoice_no,id_upload_url : id_upload_url, payment_date : payment_date, payment_amount : payment_amount, payment_mode : payment_mode, bank_name : bank_name, transaction_id : transaction_id, bank_id : bank_id,branch_admin_id : branch_admin_id, payment_evidence_url : payment_evidence_url, emp_id : emp_id},
                 success:function(result){
                   $('#btn_save_expense').button('reset');
                   $('#btn_save_expense').prop('disabled',false);

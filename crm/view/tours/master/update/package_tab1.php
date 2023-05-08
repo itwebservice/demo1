@@ -92,12 +92,9 @@
                 <div class="panel panel-default panel-body app_panel_style mg_tp_20 mg_bt_20">
                     <div class="row">
                         <div class="col-md-12 text-right mg_bt_10">
-                            <button type="button" class="btn btn-info ico_left"
-                                onClick="addRow('tbl_dynamic_tour_group')"><i
-                                    class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                            <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_tour_group')"><i class="fa fa-plus"></i></button>
                         </div>
                     </div>
-
 
                     <div class="row">
                         <div class="col-md-12">
@@ -119,12 +116,12 @@
                                                 id="txt_from_date<?php echo $count . "m" ?>"
                                                 name="txt_from_date<?php echo $count . "m" ?>"
                                                 value="<?php echo date("d-m-Y", strtotime($row['from_date'])) ?>"
-                                                title="From Date" placeholder="*From Date" disabled /></td>
+                                                title="From Date" placeholder="*From Date" onchange="get_to_date('txt_from_date<?php echo $count . 'm' ?>','txt_to_date<?php echo $count . 'm' ?>');" /></td>
                                         <td><input class="form-control" type="text"
                                                 id="txt_to_date<?php echo $count . "m" ?>"
                                                 name="txt_to_date<?php echo $count . "m" ?>"
                                                 value="<?php echo date("d-m-Y", strtotime($row['to_date'])) ?>"
-                                                title="To Date" placeholder="*To Date" disabled /></td>
+                                                title="To Date" placeholder="*To Date" onchange="validate_validDate('txt_from_date<?php echo $count . 'm' ?>','txt_to_date<?php echo $count . 'm' ?>');" /></td>
                                         <td><input class="form-control" onchange="validate_balance(this.id);"
                                                 type="text" id="txt_capacity<?php echo $count . "m" ?>"
                                                 name="txt_capacity<?php echo $count . "m" ?>"

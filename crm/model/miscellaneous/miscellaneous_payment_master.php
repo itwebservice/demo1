@@ -229,7 +229,7 @@ class miscellaneous_payment_master
 	
 		$bank_cash_book_master->bank_cash_book_master_update($module_name, $payment_id, $payment_date, $payment_amount, $payment_mode, $bank_name, $transaction_id, $bank_id, $particular, $clearance_status, $payment_side, $payment_type);
 		
-		$sq_delete = mysqlQuery("update miscellaneous_payment_master set payment_amount = '0', delete_status='1' where payment_id='$payment_id'");
+		$sq_delete = mysqlQuery("update miscellaneous_payment_master set payment_amount = '0', delete_status='1',credit_charges='0' where payment_id='$payment_id'");
 		if($sq_delete){
 			echo 'Entry deleted successfully!';
 			exit;
@@ -442,7 +442,7 @@ class miscellaneous_payment_master
 
 		$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_payment_master where payment_id='$payment_id'"));
 
-		$clearance_status = ($sq_payment_info['payment_mode'] == 'Cash' && $payment_mode != "Cash") ? "Pending" : $sq_payment_info['clearance_status'];
+		$clearance_status = $sq_payment_info['clearance_status'];
 		if ($payment_mode == "Cash") {
 			$clearance_status = "";
 		}
@@ -691,7 +691,7 @@ class miscellaneous_payment_master
 		$sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id ='$misc_id' and status='Cancel'"));
 		if($sq_entries == $sq_entries_cancel){
 			$canc_amount = $sq_visa_info['cancel_amount'];
-			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $credit_card_amount;
 		}else{
 			$outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 		}
@@ -761,7 +761,7 @@ class miscellaneous_payment_master
 		$payment_amount = $_POST['payment_amount'];
 		$sq_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from miscellaneous_master where misc_id=" . $_POST['booking_id']));
 
-		$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from miscellaneous_payment_master where clearance_status!='Cancelled' and clearance_status!='Pending' and misc_id='$booking_id'"));
+		$sq_pay = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum,sum(credit_charges) as sumc from miscellaneous_payment_master where clearance_status!='Cancelled' and misc_id='$booking_id'"));
 		$credit_card_amount = $sq_pay['sumc'];
 		$total_amount = intval($sq_ticket_info['misc_total_cost']) + intval($credit_card_amount);
 		$total_pay_amt = intval($sq_pay['sum']) + intval($credit_card_amount);
@@ -770,7 +770,7 @@ class miscellaneous_payment_master
 		$sq_entries_cancel = mysqli_num_rows(mysqlQuery("select * from miscellaneous_master_entries where misc_id ='$booking_id' and status='Cancel'"));
 		if($sq_entries == $sq_entries_cancel){
 			$canc_amount = $sq_ticket_info['cancel_amount'];
-			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt);
+			$outstanding = ($total_pay_amt > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_pay_amt) + $credit_card_amount;
 		}else{
 			$outstanding =  floatval($total_amount) - floatval($total_pay_amt);
 		}
@@ -786,7 +786,6 @@ class miscellaneous_payment_master
 		$mobile_no = $encrypt_decrypt->fnDecrypt($sq_customer['contact_no'], $secret_key);
 		$customer_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
 
-		if($total_pay_amt!=0){
 		$whatsapp_msg = rawurlencode('Dear ' . $customer_name . ',
 Hope you are doing great. This is to inform you that we have received your payment. We look forward to provide you a great experience.
 *Total Amount* : ' . $currency_logo . ' ' . number_format($total_amount, 2) . '
@@ -797,6 +796,5 @@ Please do not hesitate to call us on ' . $contact . ' if you have any concern.
 Thank you. ');
 		$link = 'https://web.whatsapp.com/send?phone=' . $mobile_no . '&text=' . $whatsapp_msg;
 		echo $link;
-		}
 	}
 }

@@ -60,31 +60,85 @@ $offset = $_POST['dynamic_estimate_count'];
 
     <div class="row">
 
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
 
-            <input type="number" id="basic_cost_s-<?= $offset ?>" name="basic_cost_s" placeholder="*Basic Cost"
-                title="Basic Cost"
+            <input type="number" id="basic_cost_s-<?= $offset ?>" name="basic_cost_s" placeholder="*Basic Amount"
+                title="Basic Amount"
                 onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'true','basic')">
 
         </div>
 
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="number" id="service_charge_s-<?= $offset ?>" name="service_charge_s"
+                placeholder="Service Charge" title="Service Charge" onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'false','service_charge')">
+
+        </div>
+
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+            <select title="Tax Apply On" id="tax_apply_on-<?= $offset ?>" name="tax_apply_on" class="form-control" onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'false','service_charge')">
+                <option value="">*Tax Apply On</option>
+                <option value="1">Basic Amount</option>
+                <option value="2">Service Charge</option>
+                <option value="3">Total</option>
+            </select>
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+            <select title="Select Tax" id="tax_value-<?= $offset ?>" name="tax_value" class="form-control" onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'true','basic')">
+                <option value="">*Select Tax</option>
+                <?php get_tax_dropdown('Expense') ?>
+            </select>
+        </div>
+
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="text" id="service_tax_subtotal_s-<?= $offset ?>" name="service_tax_subtotal_s"
+                placeholder="Tax Subtotal" title="Tax Subtotal" readonly>
+
+        </div>
+
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="text" id="roundoff_s-<?= $offset ?>" class="text-right" name="roundoff_s"
+                placeholder="Round Off" title="Round Off" readonly>
+
+        </div>
+
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="text" id="net_total_s-<?= $offset ?>" class="amount_feild_highlight text-right"
+                name="net_total_s" placeholder="*Net Total" title="Net Total" readonly>
+
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="text" placeholder="Invoice ID" onchange="validate_spaces(this.id)" title="Invoice ID"
+                id="invoice_id_s-<?= $offset ?>" name="invoice_id">
+
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="text" placeholder="Purchase date" title="Purchase Date" id="purchase_date_s-<?= $offset ?>"
+                name="purchase_date_s" value="<?= date('d-m-Y') ?>"
+                onchange="check_valid_date(this.id);brule_for_one(this.id,'true','service_charge');">
+
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10">
+
+            <input type="text" placeholder="Due date" title="Due Date"
+                onchange="validate_validDate('purchase_date_s-<?= $offset ?>','payment_due_date_s-<?= $offset ?>')"
+                id="payment_due_date_s-<?= $offset ?>" name="payment_due_date_s" value="<?= date('d-m-Y') ?>">
+
+        </div>
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 
             <input type="number" id="non_recoverable_taxes_s-<?= $offset ?>" name="non_recoverable_taxes_s"
                 placeholder="Non Recoverable Taxes" title="Non Recoverable Taxes"
                 onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'false','service_charge')">
 
         </div>
-
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="number" id="service_charge_s-<?= $offset ?>" name="service_charge_s"
-                placeholder="Service Charge" title="Service Charge" style="width:150px;"
-                onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'false','service_charge')">
-
-        </div>
-
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 
             <input type="number" id="other_charges_s-<?= $offset ?>" name="other_charges_s" placeholder="Other Charges"
                 title="Other Charges"
@@ -92,21 +146,13 @@ $offset = $_POST['dynamic_estimate_count'];
 
         </div>
 
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
+        <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10 hidden">
 
             <input type="number" id="discount_s-<?= $offset ?>" name="discount_s" placeholder="Discount"
                 title="Discount"
                 onchange="calculate_estimate_amount('_s-<?= $offset ?>');brule_for_one(this.id,'true','discount')">
 
         </div>
-
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="text" id="service_tax_subtotal_s-<?= $offset ?>" name="service_tax_subtotal_s"
-                placeholder="Tax Subtotal" title="Tax Subtotal" readonly>
-
-        </div>
-
         <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10 hidden">
 
             <input type="number" id="our_commission_s-<?= $offset ?>" name="our_commission_s"
@@ -122,49 +168,12 @@ $offset = $_POST['dynamic_estimate_count'];
 
         </div>
 
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="text" id="roundoff_s-<?= $offset ?>" class="text-right" name="roundoff_s"
-                placeholder="Round Off" title="Round Off" readonly>
-
-        </div>
-
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="text" id="net_total_s-<?= $offset ?>" class="amount_feild_highlight text-right"
-                name="net_total_s" placeholder="*Net Total" title="Net Total" readonly>
-
-        </div>
-
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
+        <div class="col-md-6 col-sm-4 col-xs-12 mg_bt_10">
 
             <textarea name="remark_s" id="remark_s-<?= $offset ?>" placeholder="Remark" title="Remark"
-                rows="1"></textarea>
+                rows="1" class="form-control"></textarea>
 
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="text" placeholder="Invoice ID" onchange="validate_spaces(this.id)" title="Invoice ID"
-                id="invoice_id_s-<?= $offset ?>" name="invoice_id">
-
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="text" placeholder="Purchase date" title="Purchase Date" id="purchase_date_s-<?= $offset ?>"
-                name="purchase_date_s" value="<?= date('d-m-Y') ?>"
-                onchange="check_valid_date(this.id);brule_for_one(this.id,'true','service_charge');">
-
-        </div>
-        <div class="col-md-2 col-sm-4 col-xs-12 mg_bt_10">
-
-            <input type="text" placeholder="Due date" title="Due Date"
-                onchange="validate_validDate('purchase_date_s-<?= $offset ?>','payment_due_date_s-<?= $offset ?>')"
-                id="payment_due_date_s-<?= $offset ?>" name="payment_due_date_s" value="<?= date('d-m-Y') ?>">
-
-        </div>
-
     </div>
 
 

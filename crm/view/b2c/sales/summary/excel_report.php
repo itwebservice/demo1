@@ -148,7 +148,7 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, "Sr. No")
         ->setCellValue('C'.$row_count, "Booking ID")
         ->setCellValue('D'.$row_count, "Customer_Name")
-        ->setCellValue('E'.$row_count, "Contact")
+        ->setCellValue('E'.$row_count, "Mobile")
         ->setCellValue('F'.$row_count, "EMAIL_ID")
         ->setCellValue('G'.$row_count, "Service")
         ->setCellValue('H'.$row_count, "Booking_Date")
@@ -185,7 +185,7 @@ while($row_booking = mysqli_fetch_assoc($sq_exc)){
 	$yr = explode("-", $date);
 	$year = $yr[0];
 	$sq_customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$row_booking[customer_id]'"));
-	$contact_no = $sq_customer_info['country_code'].$encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
+	$contact_no = $encrypt_decrypt->fnDecrypt($sq_customer_info['contact_no'], $secret_key);
 	$email_id = $encrypt_decrypt->fnDecrypt($sq_customer_info['email_id'], $secret_key);
 
 	$customer_name = $sq_customer_info['first_name'].' '.$sq_customer_info['last_name'];

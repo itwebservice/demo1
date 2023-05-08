@@ -138,12 +138,53 @@ include "../../model/model.php";
                             </div>
 
                         </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 text-left">
 
-                    </div>
-                    <div class="row mg_bt_10">
-                        <div class="col-md-6 col-md-offset-3">
-                            <span class="note">Note : Upload only PDF or Text files.</span>
+                            <div class="div-upload">
+
+                                <div id="photo_upload3" class="upload-button3"><span>Upload</span></div>
+
+                                <span id="photo_status3"></span>
+
+                                <ul id="files"></ul>
+
+                                <input type="hidden" id="photo_upload_url3" name="photo_upload_url3">
+
+                            </div>
+
                         </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 text-left mg_tp_10">
+
+                            <div class="div-upload">
+
+                                <div id="photo_upload4" class="upload-button4"><span>Upload</span></div>
+
+                                <span id="photo_status4"></span>
+
+                                <ul id="files"></ul>
+
+                                <input type="hidden" id="photo_upload_url4" name="photo_upload_url4">
+
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 text-left mg_tp_10">
+
+                            <div class="div-upload">
+
+                                <div id="photo_upload5" class="upload-button5"><span>Upload</span></div>
+
+                                <span id="photo_status5"></span>
+
+                                <ul id="files"></ul>
+
+                                <input type="hidden" id="photo_upload_url5" name="photo_upload_url5">
+
+                            </div>
+					        <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note: Upload only PDF or Text files."><i class="fa fa-question-circle"></i></button>
+
+                        </div>
+
                     </div>
                     <div class="row mg_tp_20">
                         <div class="col-xs-12 mg_bt_10">
@@ -215,7 +256,6 @@ function upload_user_pic_attch() {
 
 
 upload_user_pic_attch2();
-
 function upload_user_pic_attch2() {
 
     var btnUpload = $('#photo_upload2');
@@ -239,6 +279,90 @@ function upload_user_pic_attch2() {
             } else {
                 $(btnUpload).find('span').text('Uploaded');
                 $("#photo_upload_url2").val(response);
+            }
+        }
+    });
+}
+upload_user_pic_attch3();
+function upload_user_pic_attch3() {
+
+    var btnUpload = $('#photo_upload3');
+    $(btnUpload).find('span').text('Upload Form3');
+    $("#photo_upload_url3").val('');
+
+    new AjaxUpload(btnUpload, {
+        action: 'upload_photo_proof.php',
+        name: 'uploadfile',
+        onSubmit: function(file, ext) {
+            if (!(ext && /^(pdf|txt)$/.test(ext))) {
+                error_msg_alert('Only pdf,txt files are allowed');
+                return false;
+            }
+            $(btnUpload).find('span').text('Uploading...');
+        },
+        onComplete: function(file, response) {
+            if (response === "error") {
+                error_msg_alert("File is not uploaded.");
+                $(btnUpload).find('span').text('Upload');
+            } else {
+                $(btnUpload).find('span').text('Uploaded');
+                $("#photo_upload_url3").val(response);
+            }
+        }
+    });
+}
+upload_user_pic_attch4();
+function upload_user_pic_attch4() {
+
+    var btnUpload = $('#photo_upload4');
+    $(btnUpload).find('span').text('Upload Form4');
+    $("#photo_upload_url4").val('');
+
+    new AjaxUpload(btnUpload, {
+        action: 'upload_photo_proof.php',
+        name: 'uploadfile',
+        onSubmit: function(file, ext) {
+            if (!(ext && /^(pdf|txt)$/.test(ext))) {
+                error_msg_alert('Only pdf,txt files are allowed');
+                return false;
+            }
+            $(btnUpload).find('span').text('Uploading...');
+        },
+        onComplete: function(file, response) {
+            if (response === "error") {
+                error_msg_alert("File is not uploaded.");
+                $(btnUpload).find('span').text('Upload');
+            } else {
+                $(btnUpload).find('span').text('Uploaded');
+                $("#photo_upload_url4").val(response);
+            }
+        }
+    });
+}
+upload_user_pic_attch5();
+function upload_user_pic_attch5() {
+
+    var btnUpload = $('#photo_upload5');
+    $(btnUpload).find('span').text('Upload Form5');
+    $("#photo_upload_url5").val('');
+
+    new AjaxUpload(btnUpload, {
+        action: 'upload_photo_proof.php',
+        name: 'uploadfile',
+        onSubmit: function(file, ext) {
+            if (!(ext && /^(pdf|txt)$/.test(ext))) {
+                error_msg_alert('Only pdf,txt files are allowed');
+                return false;
+            }
+            $(btnUpload).find('span').text('Uploading...');
+        },
+        onComplete: function(file, response) {
+            if (response === "error") {
+                error_msg_alert("File is not uploaded.");
+                $(btnUpload).find('span').text('Upload');
+            } else {
+                $(btnUpload).find('span').text('Uploaded');
+                $("#photo_upload_url5").val(response);
             }
         }
     });
@@ -275,6 +399,9 @@ $(function() {
 
             var photo_upload_url = $('#photo_upload_url1').val();
             var photo_upload_url2 = $('#photo_upload_url2').val();
+            var photo_upload_url3 = $('#photo_upload_url3').val();
+            var photo_upload_url4 = $('#photo_upload_url4').val();
+            var photo_upload_url5 = $('#photo_upload_url5').val();
 
             var doc_list = $('#doc_list').val();
 
@@ -290,6 +417,9 @@ $(function() {
                     time_taken: time_taken,
                     photo_upload_url: photo_upload_url,
                     photo_upload_url2: photo_upload_url2,
+                    photo_upload_url3: photo_upload_url3,
+                    photo_upload_url4: photo_upload_url4,
+                    photo_upload_url5: photo_upload_url5,
                     doc_list: doc_list
                 },
 

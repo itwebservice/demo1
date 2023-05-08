@@ -136,13 +136,9 @@ public function finance_save($payment_id,$ledger_id,$vendor_name,$branch_admin_i
 {
 	$row_spec = 'purchase advance';
 	$vendor_type = $_POST['vendor_type'];
-	$vendor_type_id = $_POST['vendor_type_id'];
-	$estimate_type = $_POST['estimate_type'];
-	$estimate_type_id = $_POST['estimate_type_id'];
 	$payment_date1 = $_POST['payment_date'];
 	$payment_amount1 = $_POST['payment_amount'];
 	$payment_mode = $_POST['payment_mode'];
-	$bank_name = $_POST['bank_name'];
 	$transaction_id1 = $_POST['transaction_id'];	
 	$bank_id = $_POST['bank_id'];
 
@@ -277,11 +273,8 @@ public function finance_update($sq_payment_info, $clearance_status1,$vendor_name
 	$row_spec ='purchase advance';
 	$payment_id = $_POST['payment_id'];
 	$vendor_type = $_POST['vendor_type'];
-	$vendor_type_id = $_POST['vendor_type_id'];
 	$payment_date = $_POST['payment_date'];
-	$payment_amount1 = $_POST['payment_amount'];
 	$payment_mode = $_POST['payment_mode'];
-	$bank_name = $_POST['bank_name'];
 	$transaction_id1 = $_POST['transaction_id'];
 	$bank_id = $_POST['bank_id'];
 	$ledger_id = $_POST['ledger_id'];
@@ -299,96 +292,32 @@ public function finance_update($sq_payment_info, $clearance_status1,$vendor_name
 	    $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from ledger_master where customer_id='$bank_id' and user_type='bank'"));
 	    $pay_gl = $sq_bank['ledger_id'];
 		$type='BANK PAYMENT';
-     } 
+    } 
+	//////Payment Amount///////
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$transaction_id = $transaction_id1;
+	$payment_amount = $payment_old_value;
+	$payment_date = $payment_date;
+	$payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$gl_id = $pay_gl;
+	$payment_side = "Debit";
+	$clearance_status = ($payment_mode!="Cash") ? "Pending" : "";
+	$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
 
-    
-    if($payment_amount1 > $payment_old_value)
-	{
-		$balance_amount = $payment_amount1 - $payment_old_value;
-		//////Payment Amount///////
-	    $module_name = $vendor_type;
-	    $module_entry_id = $payment_id;
-	    $transaction_id = $transaction_id1;
-	    $payment_amount = $payment_amount1;
-	    $payment_date = $payment_date;
-	    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
-		$ledger_particular = get_ledger_particular('By','Cash/Bank');
-	    $gl_id = $pay_gl;
-	    $payment_side = "Credit";
-	    $clearance_status = ($payment_mode!="Cash") ? "Pending" : "";
-	    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
-
-	    ////////Balance Amount//////
-	    $module_name = $vendor_type;
-	    $module_entry_id = $payment_id;
-	    $transaction_id = $transaction_id1;
-	    $payment_amount = $balance_amount;
-	    $payment_date = $payment_date;
-	    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
-			$ledger_particular = get_ledger_particular('By','Cash/Bank');
-	    $gl_id = $ledger_id;
-	    $payment_side = "Debit";
-	    $clearance_status = "";
-	    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'' ,$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
-
-	    //Reverse first payment amount
-		$module_name = $vendor_type;
-	    $module_entry_id = $payment_id;
-	    $transaction_id = $transaction_id1;
-	    $payment_amount = $payment_old_value;
-	    $payment_date = $payment_date;
-	    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
-			$ledger_particular = get_ledger_particular('By','Cash/Bank');
-	    $gl_id = $pay_gl;
-	    $payment_side = "Debit";
-	    $clearance_status = ($payment_mode!="Cash") ? "Pending" : "";
-	    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
-	}
-	else if($payment_amount1 < $payment_old_value)
-	{
-		$balance_amount = $payment_old_value - $payment_amount1;
-		//////Payment Amount///////
-	    $module_name = $vendor_type;
-	    $module_entry_id = $payment_id;
-	    $transaction_id = $transaction_id1;
-	    $payment_amount = $payment_amount1;
-	    $payment_date = $payment_date;
-	    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
-			$ledger_particular = get_ledger_particular('By','Cash/Bank');
-	    $gl_id = $pay_gl;
-	    $payment_side = "Credit";
-	    $clearance_status = ($payment_mode!="Cash") ? "Pending" : "";
-	    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id, '',$payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
-
-	    ////////Balance Amount//////
-	    $module_name = $vendor_type;
-	    $module_entry_id = $payment_id;
-	    $transaction_id = $transaction_id1;
-	    $payment_amount = $balance_amount;
-	    $payment_date = $payment_date;
-	    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
-			$ledger_particular = get_ledger_particular('By','Cash/Bank');
-	    $gl_id = $ledger_id;
-	    $payment_side = "Credit";
-	    $clearance_status = "";
-	    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);  
-	    
-	    //Reverse first payment amount
-		$module_name = $vendor_type;
-	    $module_entry_id = $payment_id;
-	    $transaction_id = $transaction_id1;
-	    $payment_amount = $payment_old_value;
-	    $payment_date = $payment_date;
-	    $payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
-			$ledger_particular = get_ledger_particular('By','Cash/Bank');
-	    $gl_id = $pay_gl;
-	    $payment_side = "Debit";
-	    $clearance_status = ($payment_mode!="Cash") ? "Pending" : "";
-	    $transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);
-	} 
-	else{
-      //Do nothing
-	}
+	// ////////Balance Amount//////
+	$module_name = $vendor_type;
+	$module_entry_id = $payment_id;
+	$transaction_id = $transaction_id1;
+	$payment_amount = $payment_old_value;
+	$payment_date = $payment_date;
+	$payment_particular = get_advance_purchase_particular($vendor_name,$payment_mode,$payment_date,$bank_id,$transaction_id);
+	$ledger_particular = get_ledger_particular('By','Cash/Bank');
+	$gl_id = $ledger_id;
+	$payment_side = "Credit";
+	$clearance_status = "";
+	$transaction_master->transaction_save($module_name, $module_entry_id, $transaction_id, $payment_amount, $payment_date, $payment_particular, $gl_id,'', $payment_side, $clearance_status, $row_spec,$branch_admin_id,$ledger_particular,$type);  
 
 }
 

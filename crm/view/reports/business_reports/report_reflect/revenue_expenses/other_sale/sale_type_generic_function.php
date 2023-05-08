@@ -41,9 +41,16 @@ function get_sale_purchase($sale_type)
 		}
 
 		//Purchase
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Visa Booking' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Visa Booking' and status!='Cancel' and delete_status='0'");
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -93,9 +100,16 @@ function get_sale_purchase($sale_type)
 		}
 
 		//Purchase
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Excursion Booking' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Excursion Booking' and status!='Cancel' and delete_status='0'");
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -143,9 +157,17 @@ function get_sale_purchase($sale_type)
 		}
 
 		//Purchase
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Bus Booking' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Bus Booking' and status!='Cancel' and delete_status='0'");
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -191,11 +213,11 @@ function get_sale_purchase($sale_type)
 			$sq_exc_cancel = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_exc[booking_id]' and status = 'Cancel'"));
 			if($sq_exc_entry != $sq_exc_cancel){ 		
 				$total_sale += $row_exc['total_fee'] - $service_tax_amount - $markupservice_tax_amount + $credit_charges;
-			}	
+			}
 		}
 
 		//Purchase
-		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Hotel Booking' and status!='Cancel' and delete_status='0'");
+		$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Hotel Booking' and status!='Cancel' and delete_status='0'");
 		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
 			//Service Tax 
 			$service_tax_amount = 0;
@@ -205,8 +227,16 @@ function get_sale_purchase($sale_type)
 				$service_tax = explode(':',$service_tax_subtotal1[$i]);
 				$service_tax_amount +=  $service_tax[2];
 				}
+			}	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
 			}
-			$total_purchase += $row_purchase['net_total'] - $service_tax_amount;
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
+			$total_purchase -= $service_tax_amount;
 		}
 	}///Hotel End
 	///Car Start
@@ -240,8 +270,15 @@ function get_sale_purchase($sale_type)
 
 		//Purchase
 		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Car Rental' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -272,8 +309,8 @@ function get_sale_purchase($sale_type)
 				}
 			}
 			$markupservice_tax_amount = 0;
-			if($row_exc['markup_tax'] !== 0.00 && $row_exc['markup_tax'] !== ""){
-				$service_tax_markup1 = explode(',',$row_exc['markup_tax']);
+			if($row_exc['service_tax_markup'] !== 0.00 && $row_exc['service_tax_markup'] !== ""){
+				$service_tax_markup1 = explode(',',$row_exc['service_tax_markup']);
 				for($i=0;$i<sizeof($service_tax_markup1);$i++){
 				$service_tax = explode(':',$service_tax_markup1[$i]);
 				$markupservice_tax_amount += $service_tax[2];
@@ -283,16 +320,28 @@ function get_sale_purchase($sale_type)
 			
 			$sq_paid_amount = mysqli_fetch_assoc(mysqlQuery("SELECT sum(credit_charges) as sumc from ticket_payment_master where ticket_id='$row_exc[ticket_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
 			$credit_card_charges = $sq_paid_amount['sumc'];
-			
+			if($row_exc['cancel_type'] == '2'||$row_exc['cancel_type'] == '3'){
+				$cancel_estimate = json_decode($row_exc['cancel_estimate']);
+				$sale_amount = ($row_exc['ticket_total_cost'] - floatval($cancel_estimate[0]->ticket_total_cost) - floatval($cancel_estimate[0]->service_tax_subtotal) - floatval($cancel_estimate[0]->service_tax_markup));
+			}else{
+				$sale_amount = ($row_exc['ticket_total_cost']);
+			}
 			if($sq_exc_entry != $sq_exc_cancel){
-				$total_sale += $row_exc['ticket_total_cost'] - $service_tax_amount - $markupservice_tax_amount + $credit_card_charges;
+				$total_sale += $sale_amount - $service_tax_amount - $markupservice_tax_amount + $credit_card_charges;
 			}	
 		}
 
 		//Purchase
 		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Ticket Booking' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -333,8 +382,15 @@ function get_sale_purchase($sale_type)
 
 		//Purchase
 		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Train Ticket Booking' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
@@ -383,8 +439,15 @@ function get_sale_purchase($sale_type)
 
 		//Purchase
 		$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Miscellaneous Booking' and status!='Cancel' and delete_status='0'");
-		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-			$total_purchase += $row_purchase['net_total'];
+		while($row_purchase = mysqli_fetch_assoc($sq_purchase)){	
+			if($row_purchase['purchase_return'] == 0){
+				$total_purchase += $row_purchase['net_total'];
+			}
+			else if($row_purchase['purchase_return'] == 2){
+				$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+				$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+				$total_purchase += $p_purchase;
+			}
 			//Service Tax 
 			$service_tax_amount = 0;
 			if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){

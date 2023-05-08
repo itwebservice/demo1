@@ -49,6 +49,9 @@ public function traveler_cancelation_mail_send($tourwise_id, $traveler_id_arr){
   $sq_tour = mysqli_fetch_assoc(mysqlQuery("select * from tour_master where tour_id='$sq_tourwise[tour_id]'"));
   $sq_tour_group = mysqli_fetch_assoc(mysqlQuery("select * from tour_groups where group_id='$sq_tourwise[tour_group_id]'"));
 
+  $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_tourwise[customer_id]'"));
+  $cust_name = ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') ? $sq_customer['company_name'] : $sq_customer['first_name'].' '.$sq_customer['last_name'];
+
   $sq_traveler = mysqli_fetch_assoc(mysqlQuery("select * from travelers_details where traveler_group_id='$sq_tourwise[traveler_group_id]'"));
 
   $tour_group = date('d-m-Y', strtotime($sq_tour_group['from_date'])).' To '.date('d-m-Y', strtotime($sq_tour_group['to_date']));
@@ -90,7 +93,7 @@ public function traveler_cancelation_mail_send($tourwise_id, $traveler_id_arr){
   ';
   $subject = 'Tour Cancellation Confirmation ('.get_group_booking_id($tourwise_id,$year).' ,'.$sq_tour['tour_name'].' )';
   global $model;
-  $model->app_email_send('26',$sq_traveler['first_name'],$sq_personal_info['email_id'], $content, $subject);
+  $model->app_email_send('26',$cust_name,$sq_personal_info['email_id'], $content, $subject);
 
 }
 ///////////////////////////////////////Traveler Cancelation mail send end/////////////////////////////////////////////////////////////////////////////////////////

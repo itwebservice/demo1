@@ -193,7 +193,7 @@ $enquiry_content_arr1 = json_decode($enquiry_content, true);
 
 								                  <i class="fa fa-angle-double-right cost_arrow" aria-hidden="true"></i>
 
-								                  <?php echo "<label>Specification <em>:</em></label> ".$sq_enq_info['enquiry_specification']; ?>
+								                  <?php echo "<label>Other Specification <em>:</em></label> ".$sq_enq_info['enquiry_specification']; ?>
 
 								                </span>
 

@@ -9,10 +9,42 @@ function payment_for_data_load(estimate_type, for_id, offset='', estimate_type_i
 function get_supplier_costing(estimate_type_id,estimate_type,for_id)
 {
     var base_url = $('#base_url').val();
-    $.post(base_url+'view/vendor/inc/costing_check.php', { estimate_type : estimate_type, estimate_type_id : estimate_type_id }, function(data){    
+    $.post(base_url+'view/vendor/inc/costing_check.php', { estimate_type : estimate_type, estimate_type_id : estimate_type_id },  function(data){    
     $('#'+for_id).val(data);
   });
 }
+function get_basic_costing(estimate_type_id,estimate_type){
+
+    var base_url = $('#base_url').val();
+    var dynamic_estimate_count = $('#dynamic_estimate_count').val();
+    var estimate_type_id = $('#'+estimate_type_id).val();
+
+    $.post(base_url+'view/vendor/inc/costing_fetch.php', { estimate_type : estimate_type, estimate_type_id : estimate_type_id         
+    },function(data){
+      for(var i = 1; i <= dynamic_estimate_count; i++){
+        $('#basic_cost_s-'+i).val(parseFloat(data));
+        calculate_estimate_amount('_s-'+dynamic_estimate_count);
+        brule_for_one('basic_cost_s-'+dynamic_estimate_count,'true','basic');
+      }
+    });
+}
+function get_payment_outstanding(estimate_id){
+
+  var base_url = $('#base_url').val();
+  var estimate_id1 = $('#'+estimate_id).val();
+  $.post(base_url+'view/vendor/inc/get_payment_outstanding.php', { estimate_id : estimate_id1 },function(data){
+    data = data.split('=');
+    if(data[0] == ""){
+      $('#outstanding').val(parseFloat(0));
+      $('#canc_status').val(parseFloat(0));
+    }else{
+      $('#outstanding').val(data[0]);
+      $('#canc_status').val(data[1]);
+    }
+  });
+
+}
+
 function vendor_type_data_load(vendor_type, for_id, offset='', vendor_type_id='',page='other')
 {
   var base_url = $('#base_url').val();

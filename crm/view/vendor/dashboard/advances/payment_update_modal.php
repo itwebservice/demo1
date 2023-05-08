@@ -69,9 +69,9 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
                 <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment['bank_name'] ?>" <?= $enable ?>>
               </div>
               <div class="col-md-4">
-                <input type="text" id="transaction_id1" onchange="validate_balance(this.id)" name="transaction_id1" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
+                <input type="number" id="transaction_id1" onchange="validate_balance(this.id)" name="transaction_id1" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
               </div>
-               <div class="col-md-4">
+              <div class="col-md-4">
                 <select name="bank_id1" id="bank_id1" title="Debitor Bank" <?= $enable ?> disabled>
                   <?php 
                   $sq_bank = mysqli_fetch_assoc(mysqlQuery("select * from bank_master where bank_id='$sq_payment[bank_id]'"));
@@ -151,8 +151,6 @@ $(function(){
               payment_amount1 : { required: true, number:true },
               payment_date1 : { required: true },
               payment_mode1 : { required : true },
-              bank_name1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },     
               bank_id1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){
@@ -174,6 +172,12 @@ $(function(){
               var payment_old_value = $('#payment_old_value').val();
               var payment_evidence_url = $('#payment_evidence_url1').val();
 
+              if(!check_updated_amount(payment_old_value,payment_amount)){
+                $('#payment_update').prop('disabled',false);
+                error_msg_alert("You can update payment to 0 only!");
+                return false;
+              }
+              
               if(payment_mode == 'Credit Note'){
                 $('#payment_update').prop('disabled',false);
                 error_msg_alert("Please select other payment mode!");

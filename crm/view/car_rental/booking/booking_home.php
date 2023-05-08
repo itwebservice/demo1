@@ -4,6 +4,7 @@ include "../../../model/model.php";
 // require_once('../../layouts/admin_header.php');
 $emp_id = $_SESSION['emp_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
+$financial_year_id = $_SESSION['financial_year_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='car_rental/booking/index.php'"));
 $branch_status = $sq['branch_status'];
 $role = $_SESSION['role'];
@@ -18,7 +19,7 @@ $role_id = $_SESSION['role_id'];
         <div class="col-xs-12">
             <button class="btn btn-excel btn-sm mg_bt_10" onclick="excel_report()" data-toggle="tooltip"
                 title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>
-            <button class="btn btn-info btn-sm ico_left mg_bt_10" onclick="save_modal()"><i
+            <button class="btn btn-info btn-sm ico_left mg_bt_10" id="car_save_btn" onclick="save_modal()"><i
                     class="fa fa-plus"></i>&nbsp;&nbsp;Booking</button>
         </div>
     </div>
@@ -50,6 +51,16 @@ $role_id = $_SESSION['role_id'];
                 <input type="text" id="traveling_date_to_filter" name="traveling_date_to_filter" placeholder="To Date"
                     title="To Date"
                     onchange="validate_validDate('traveling_date_from_filter','traveling_date_to_filter');">
+            </div>
+            <div class="col-md-3 col-sm-6 mg_bt_10">
+                <select name="financial_year_id_filter" id="financial_year_id_filter" title="Select Financial Year">
+                    <?php
+                    $sq_fina = mysqli_fetch_assoc(mysqlQuery("select * from financial_year where financial_year_id='$financial_year_id'"));
+                    $financial_year = get_date_user($sq_fina['from_date']).'&nbsp;&nbsp;&nbsp;To&nbsp;&nbsp;&nbsp;'.get_date_user($sq_fina['to_date']);
+                    ?>
+                    <option value="<?= $sq_fina['financial_year_id'] ?>"><?= $financial_year  ?></option>
+                    <?php echo get_financial_year_dropdown_filter($financial_year_id); ?>
+                </select>
             </div>
             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                 <button class="btn btn-sm btn-info ico_right" onclick="booking_list_reflect()">Proceed&nbsp;&nbsp;<i
@@ -112,6 +123,9 @@ var columns = [{
         title: "Created_by"
     },
     {
+        title: "Booking_date"
+    },
+    {
         title: "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
         className: "text-center action_width",
         "width": "20% !important"
@@ -137,6 +151,7 @@ function booking_list_reflect() {
     var cust_type = $('#cust_type_filter').val();
     var company_name = $('#company_filter').val();
     var branch_status = $('#branch_status').val();
+    var financial_year_id_filter = $('#financial_year_id_filter').val();
     $.post('booking_list_reflect.php', {
         customer_id: customer_id,
         traveling_date_from: traveling_date_from,
@@ -144,7 +159,7 @@ function booking_list_reflect() {
         cust_type: cust_type,
         booking_id: booking_id,
         company_name: company_name,
-        branch_status: branch_status
+        branch_status: branch_status,financial_year_id:financial_year_id_filter
     }, function(data) {
         // $('#div_booking_list').html(data);
         pagination_load(data, columns, true, true, 10, 'car_rental_book',true);
@@ -154,11 +169,15 @@ function booking_list_reflect() {
 booking_list_reflect();
 
 function save_modal() {
+    $('#car_save_btn').prop('disabled',true);
+    $('#car_save_btn').button('loading');
     var branch_status = $('#branch_status').val();
     $.post('booking_save_modal.php', {
         branch_status: branch_status
     }, function(data) {
         $('#div_car_content_display').html(data);
+        $('#car_save_btn').prop('disabled',false);
+        $('#car_save_btn').button('reset');
     });
 
 }
@@ -216,12 +235,17 @@ function customer_info_load(offset = '') {
 }
 
 function booking_update_modal(booking_id) {
+
+    $('#editc-'+booking_id).prop('disabled',true);
+    $('#edit-'+booking_id).button('loading');
     var branch_status = $('#branch_status').val();
     $.post('booking_update_modal.php', {
         booking_id: booking_id,
         branch_status: branch_status
     }, function(data) {
+        $('#editc-'+booking_id).prop('disabled',false);
         $('#div_booking_update').html(data);
+        $('#editc-'+booking_id).button('reset');
     });
 }
 
@@ -325,6 +349,11 @@ function get_enquiry_details(offset) {
                 $('#total_hrs' + offset).val(result[0].total_hrs);
                 $('#total_km' + offset).val(result[0].total_km);
                 $('#traveling_date' + offset).val(result[0].traveling_date);
+                console.log(result[0].tax_apply_on);
+                $('#tax_apply_on' + offset).val(result[0].tax_apply_on);
+                $('#tax_value' + offset).val(result[0].tax_value);
+                $('#markup_cost' + offset).val(result[0].markup_cost);
+                $('#markup_tax_value' + offset).val(result[0].markup_tax_value);
 
                 $('#rate' + offset).val(result[0].rate);
                 $('#total_max_km' + offset).val(result[0].total_max_km);
@@ -581,12 +610,13 @@ function dynamic_customer_load(cust_type, company_name) {
     });
 }
 
-
 function car_display_modal(booking_id) {
-    $.post('view/index.php', {
-        booking_id: booking_id
-    }, function(data) {
+    $('#viewc-'+booking_id).prop('disabled',true);
+    $('#viewc-'+booking_id).button('loading');
+    $.post('view/index.php', { booking_id: booking_id }, function(data) {
         $('#div_car_content_display').html(data);
+        $('#viewc-'+booking_id).prop('disabled',false);
+        $('#viewc-'+booking_id).button('reset');
     });
 }
 

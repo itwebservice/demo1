@@ -89,7 +89,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
 
 		        <div class="col-md-4">
 
-		          <input type="text" id="txt_transaction_id" onchange="validate_balance(this.id);" name="txt_transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No / ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?> />
+		          <input type="number" id="txt_transaction_id" onchange="validate_balance(this.id);" name="txt_transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No / ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?> />
 
 		        </div>	      
 
@@ -213,8 +213,6 @@ $(function(){
       txt_amount : { required : true },
       cmb_payment_of_type : { required : true },
       cmb_travel_of_type : { required : true },
-      txt_bank_name : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-      txt_transaction_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
       bank_id : { required : function(){  if($('#cmb_payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
     },
 

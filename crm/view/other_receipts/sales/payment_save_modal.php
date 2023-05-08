@@ -74,7 +74,7 @@ $role = $_SESSION['role'];
                   <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
                 </div>
                 <div class="col-md-4">
-                  <input type="text" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+                  <input type="number" id="transaction_id" name="transaction_id" onchange="validate_balance(this.id)" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
                 </div>
                 <div class="col-md-4">
                   <select name="bank_id" id="bank_id" title="Creditor Bank" class="form-control" disabled>
@@ -137,8 +137,6 @@ $(function(){
         payment_amount : { required: true, number:true },
         payment_date : { required: true },
         payment_mode : { required : true },
-        bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-        transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
         bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){
@@ -207,9 +205,7 @@ $(function(){
             error_msg_alert("Amount to be nullify should be less or equal to the Total Purchase");
             return false; 
           }
-          console.log(payment_mode);
           if(payment_mode=='Advance' && parseFloat(advance_nullify) <= 0 ){
-            console.log(payment_mode);
             $('#payment_save').prop('disabled',false);
             error_msg_alert("Please select another payment mode");
             return false;

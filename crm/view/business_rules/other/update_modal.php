@@ -37,7 +37,6 @@ else $value = '';
                   <?php 
                   $sq_other = mysqli_fetch_assoc(mysqlQuery("select * from other_charges_master where entry_id='$sq_rules[rule_for]'")); ?>
                   <option value="<?= $sq_other['entry_id']?>"><?= $sq_other['name'] ?></option>
-                  <?php echo get_other_charges(); ?>
                 </select>
             </div>
           </div>
@@ -90,22 +89,20 @@ else $value = '';
                   </select>
               </div>
               <div class="col-md-3">
-                  <select name="travel_type1" id="travel_type1" data-toggle="tooltip" class="form-control" title="Travel Type" style="width:100%" onchange="generate_app_on(this.id)" required>
+                  <select name="travel_type1" id="travel_type1" data-toggle="tooltip" class="form-control" title="Travel Type" style="width:100%" required>
                       <option value="<?= $sq_rules['travel_type'] ?>"><?= $sq_rules['travel_type'] ?></option>
                       <option value="">*Travel Type</option>
                       <option value="All">All</option>
-                      <option value="Group Tour">Group Tour</option>
                       <option value="Package Tour">Package Tour</option>
+                      <option value="Group Tour">Group Tour</option>
                       <option value="Hotel">Hotel</option>
                       <option value="Flight">Flight</option>
-                      <option value="Train">Train</option>
                       <option value="Visa">Visa</option>
-                      <option value="Bus">Bus</option>
                       <option value="Car Rental">Car Rental</option>
                       <option value="Activity">Activity</option>
+                      <option value="Train">Train</option>
+                      <option value="Bus">Bus</option>
                       <option value="Miscellaneous">Miscellaneous</option>
-                      <option value="Forex">Forex</option>
-                      <option value="Passport">Passport</option>
                   </select>
               </div>
               <div class="col-md-3">
@@ -117,9 +114,6 @@ else $value = '';
           </div>
           <div class="row mg_tp_10">
               <div class="col-md-3">
-                  <input type="number" placeholder="*Amount" min="0" title="Amount" id="amounts" value="<?= $sq_rules['fee'] ?>" class="form-control" required />
-              </div>
-              <div class="col-md-3">
                   <select name="amount_in" id="amount_in" data-toggle="tooltip" class="form-control" title="Amount In" onchange="check_amount(this.id);" required>
                       <option value="<?= $sq_rules['fee_type'] ?>"><?= $sq_rules['fee_type'] ?></option>
                       <option value="">*Amount In</option>
@@ -128,12 +122,12 @@ else $value = '';
                   </select>
               </div>
               <div class="col-md-3">
+                  <input type="number" placeholder="*Amount" min="0" title="Amount" id="amounts" value="<?= $sq_rules['fee'] ?>" class="form-control" required />
+              </div>
+              <div class="col-md-3">
                   <select name="target_amount" id="target_amount" data-toggle="tooltip" class="form-control" title="Target Amount" required>
                       <option value="<?= $sq_rules['target_amount'] ?>"><?= $sq_rules['target_amount'] ?></option>
                       <option value="">*Target Amount</option>
-                      <option value="Basic">Basic</option>
-                      <option value="Total">Total</option>
-                      <option value="Commission">Commission</option>
                   </select>
               </div>
               <div class="col-md-3">

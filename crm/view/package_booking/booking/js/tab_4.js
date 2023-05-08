@@ -9,15 +9,15 @@ function package_tour_booking_tab4_validate() {
   var payment_mode1 = $("#cmb_payment_mode1").val();
   var payment_mode2 = $("#cmb_payment_mode2").val();
 
-  if (payment_mode1 != "Cash" && payment_mode1 != "Credit Note" && payment_mode1 != "" && payment_mode1 != "Credit Card" && payment_mode1 != "Advance") {
-    validate_empty_fields('txt_bank_name1');
-    validate_empty_fields('txt_transaction_id1');
-  }
+  // if (payment_mode1 != "Cash" && payment_mode1 != "Credit Note" && payment_mode1 != "" && payment_mode1 != "Credit Card" && payment_mode1 != "Advance") {
+  //   validate_empty_fields('txt_bank_name1');
+  //   validate_empty_fields('txt_transaction_id1');
+  // }
 
-  if (payment_mode2 != "Cash" && payment_mode2 != "Credit Note" && payment_mode2 != "") {
-    validate_empty_fields('txt_bank_name2');
-    validate_empty_fields('txt_transaction_id2');
-  }
+  // if (payment_mode2 != "Cash" && payment_mode2 != "Credit Note" && payment_mode2 != "") {
+  //   validate_empty_fields('txt_bank_name2');
+  //   validate_empty_fields('txt_transaction_id2');
+  // }
 
   if (g_validate_status == false) { return false; }
 

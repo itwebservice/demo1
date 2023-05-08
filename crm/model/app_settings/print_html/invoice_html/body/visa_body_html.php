@@ -25,6 +25,7 @@ $bg = $_GET['bg'];
 $canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges!='') ? $credit_card_charges : 0 ;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 
 $basic_cost = number_format($basic_cost1,2);
 $sq_hotel = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id' and delete_status='0'"));
@@ -84,7 +85,7 @@ $net_amount1 = 0;
 $net_amount1 =  $basic_cost1 + $service_charge  + $sq_hotel['markup'] + $markupservice_tax_amount + $service_tax_amount;
 
 if($bg != ''){
-  $due = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid);
+  $due = ($total_paid > $canc_amount) ? 0 : floatval($canc_amount) - floatval($total_paid) + floatval($credit_card_charges);
 }else{
   
   $due = (floatval($net_amount1) + floatval($sq_hotel['roundoff'])+ floatval($credit_card_charges)) - floatval($total_paid);

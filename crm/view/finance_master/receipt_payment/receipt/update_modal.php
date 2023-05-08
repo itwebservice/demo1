@@ -70,7 +70,7 @@ $enable = ($sq_rp['payment_mode']=="Cash" || $sq_rp['payment_mode']=="Credit Not
 								<input type="text" id="bank_name1" name="bank_name" placeholder="Bank Name" class="bank_suggest" title="Bank Name" value="<?= $sq_rp['bank_name'] ?>" <?=$enable?>>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12">
-								<input type="text" id="transaction_id1" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_rp['transaction_id'] ?>" <?=$enable?>>
+								<input type="number" id="transaction_id1" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_rp['transaction_id'] ?>" <?=$enable?>>
 							</div>
 							<div class="col-md-4 col-sm-6 col-xs-12">
 								<select name="bank_id" id="bank_id1" title="Select Bank" class='form-control' style="width:100%" <?=$enable?> disabled>
@@ -92,16 +92,14 @@ $enable = ($sq_rp['payment_mode']=="Cash" || $sq_rp['payment_mode']=="Credit Not
                 <div class="col-md-6">
                     <textarea id="narration1" name="narration" class="form-control" placeholder="*Narration" title="Narration" rows="1" required><?= $sq_rp['narration'] ?></textarea>
 						    </div>
-                <div class="col-md-2">
+                <div class="col-md-4">
                   <div class="div-upload pull-left" id="div_upload_button">
                       <div id="payment_evidence_upload1" class="upload-button1"><span>Payment Evidence</span></div>
                       <span id="payment_evidence_status" ></span>
                       <ul id="files" ></ul>
                       <input type="hidden" value="<?=$sq_rp['url']?>" id="payment_evidence_url1" name="payment_evidence_url">
-                  </div>
-                </div>
-                <div class="col-xs-4"> 
-                  <div style="color: red;">Note : Upload : JPG, JPEG, PNG or PDF.</div>
+                  </div>&nbsp;&nbsp;
+                  <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Upload JPG, JPEG, PNG or PDF only."><i class="fa fa-question-circle"></i></button>
                 </div>
             </div>
 
@@ -162,24 +160,6 @@ $('#rpfrm_update').validate({
         payment_mode: {
           required: true
         },
-        bank_name: {
-					required: function() {
-						if ($('#payment_mode').val() != "Cash" && $('#payment_amount').val() != '0') {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				},
-				transaction_id: {
-					required: function() {
-						if ($('#payment_mode').val() != "Cash") {
-							return true;
-						} else {
-							return false;
-						}
-					}
-				},
 				bank_id: {
 					required: function() {
 						if ($('#payment_mode').val() != "Cash") {

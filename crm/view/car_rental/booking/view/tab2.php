@@ -1,4 +1,4 @@
-<?php 
+<?php
 //Sale
 $sale_total_amount=$sq_booking['total_fees'];
 if($sale_total_amount==""){  $sale_total_amount = 0 ;  }
@@ -18,7 +18,7 @@ if($sq_booking['status'] == 'Cancel'){
 			if($paid_amount > $cancel_amount){
 				$balance_amount = 0;
 			}else{
-				$balance_amount = $cancel_amount - $paid_amount;
+				$balance_amount = $cancel_amount - $paid_amount + $query['sumc'];
 			}
 		}else{
 			$balance_amount = 0;

@@ -7,6 +7,17 @@ $visa_id = $_POST['visa_id'];
 
 $sq_visa_info = mysqli_fetch_assoc(mysqlQuery("select * from visa_master where visa_id='$visa_id' and delete_status='0'"));
 $reflections = json_decode($sq_visa_info['reflections']);
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <div class="modal fade" id="visa_update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static"
     data-keyboard="false">
@@ -28,6 +39,10 @@ $reflections = json_decode($sq_visa_info['reflections']);
                     value="<?php echo $reflections[0]->hotel_markup_taxes ?>">
                 <input type="hidden" id="hotel_tds" name="hotel_tds" value="<?php echo $reflections[0]->hotel_tds ?>">
 
+                <input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+                <input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+                <input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+                <input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $reflections[0]->markup_tax_value ?>">
                 <form id="frm_visa_update" name="frm_visa_save">
 
                     <input type="hidden" id="visa_id_hidden" name="visa_id_hidden" value="<?= $visa_id ?>">
@@ -53,12 +68,12 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-                                <input type="text" id="email_id1" name="email_id1" placeholder="Email ID"
-                                    title="Email ID" readonly>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
                                 <input type="text" id="mobile_no1" name="mobile_no1" placeholder="Mobile No"
                                     title="Mobile No" readonly>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
+                                <input type="text" id="email_id1" name="email_id1" placeholder="Email ID"
+                                    title="Email ID" readonly>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
                                 <input type="text" id="company_name1" class="hidden" name="company_name1"
@@ -76,18 +91,16 @@ $reflections = json_decode($sq_visa_info['reflections']);
 
                         <div class="row mg_bt_10">
                             <div class="col-xs-12 text-right text_center_xs">
-                                <button type="button" class="btn btn-info btn-sm ico_left"
-                                    onClick="addRow('tbl_dynamic_visa_update')"><i
-                                        class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                                <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_visa_update')"><i class="fa fa-plus"></i></button>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-xs-12">
-                                <div class="table-responsive" style="height: 150px;">
+                                <div class="table-responsive">
                                     <?php $offset = ""; ?>
                                     <table id="tbl_dynamic_visa_update" name="tbl_dynamic_visa_update"
-                                        class="table table-bordered no-marg" style="width:1685px">
+                                        class="table table-bordered no-marg pd_bt_51" style="width:1685px">
                                         <?php
                                         $offset = "_u";
                                         $sq_entry_count = mysqli_num_rows(mysqlQuery("select * from visa_master_entries where visa_id='$visa_id'"));
@@ -107,7 +120,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                         ?>
                                         <tr class="<?= $bg ?>">
                                             <td><input class="css-checkbox" id="chk_visa<?= $offset . $count ?>_d"
-                                                    type="checkbox" checked disabled><label class="css-label"
+                                                    type="checkbox" checked><label class="css-label"
                                                     for="chk_visa<?= $offset ?>"> <label></td>
                                             <td><input maxlength="15" value="<?= $count ?>" type="text" name="username"
                                                     placeholder="Sr. No." class="form-control" disabled /></td>
@@ -174,26 +187,25 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                             </td>
                                             <td><input type="text" id="passport_id<?= $offset . $count ?>_d"
                                                     name="passport_id<?= $offset . $count ?>_d"
-                                                    placeholder="*Passport ID" title="Passport ID"
+                                                    placeholder="Passport ID" title="Passport ID"
                                                     value="<?= $row_entry['passport_id'] ?>"
                                                     onchange="validate_passport(this.id);"
-                                                    style="text-transform: uppercase;width:150px;" class="form-control"
-                                                    required /></td>
+                                                    style="text-transform: uppercase;width:150px;" class="form-control"/></td>
                                             <td><input type="text" id="issue_date<?= $offset ?>1"
                                                     name="issue_date<?= $offset ?>1" class="form-control app_datepicker"
                                                     placeholder="Issue Date" title="Issue Date"
                                                     value="<?= get_date_user($row_entry['issue_date']) ?>"
-                                                    onchange="checkPassportDate(this.id);" style="width:100px;" /></td>
+                                                    onchange="checkPassportDate(this.id);" style="width:110px;" /></td>
                                             <td><input type="text" id="expiry_date<?= $offset ?>1"
                                                     name="expiry_date<?= $offset ?>1"
                                                     class="form-control app_datepicker" placeholder="Expiry Date"
                                                     title="Expiry Date"
                                                     value="<?= get_date_user($row_entry['expiry_date']) ?>"
                                                     onchange="validate_issueDate('issue_date<?= $offset ?>1',this.id)"
-                                                    style="width:100px;"></td>
+                                                    style="width:110px;"></td>
                                             <td><input type="text" id="nationality<?= $offset ?>1"
                                                     name="nationality<?= $offset ?>1" onchange="validate_city(this.id)"
-                                                    placeholder="Nationality" title="Nationality"
+                                                    placeholder="*Nationality" title="Nationality"
                                                     value="<?= $row_entry['nationality'] ?>" class="form-control"
                                                     style="width:150px;" /></td>
                                             <td><input type="text" id="appointment<?= $offset ?>1"
@@ -213,8 +225,16 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                                 timepicker: false,
                                                 format: 'd-m-Y'
                                             });
-                                        $('#expiry_date<?= $offset ?>1,#appointment<?= $offset ?>1').datetimepicker({
+                                        $('#expiry_date<?= $offset ?>1').datetimepicker({
                                             timepicker: false,
+                                            format: 'd-m-Y'
+                                        });
+                                        var date = new Date();
+                                        var yest = date.setDate(date.getDate() - 1);
+                                        var tom = date.setDate(date.getDate() + 1);
+                                        $('#appointment<?= $offset ?>1').datetimepicker({
+                                            timepicker: false,
+                                            minDate: tom,
                                             format: 'd-m-Y'
                                         });
                                         $('#visa_country_name<?= $offset ?>1').select2();
@@ -278,7 +298,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                             <div class="col-md-3 col-sm-6 col-xs-12">
                                 <small id="basic_show1"
                                     style="color:red"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_b ?></span></small>
-                                <input type="text" id="visa_issue_amount1" name="visa_issue_amount1"
+                                <input type="number" id="visa_issue_amount1" name="visa_issue_amount1"
                                     placeholder="Basic Amount" title="Basic Amount" value="<?= $visa_issue_amount ?>"
                                     onchange="get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge','discount1');validate_balance(this.id);calculate_total_amount('1')">
                             </div>
@@ -287,7 +307,7 @@ $reflections = json_decode($sq_visa_info['reflections']);
                                     style="color:red"><?= ($inclusive_s == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_s ?></span></small>
                                 <input type="text" name="service_charge1" id="service_charge1"
                                     placeholder="Service Charge" title="Service Charge" value="<?= $service_charge ?>"
-                                    onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','false','service_charge','discount')">
+                                    onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','service_charge','discount')">
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small>&nbsp;</small>
@@ -299,8 +319,8 @@ $reflections = json_decode($sq_visa_info['reflections']);
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="markup_show1"
                                     style="color:red"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_m ?></span></small>
-                                <input type="text" id="markup1" name="markup1" placeholder="Markup " title="Markup"
-                                    onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','false','markup','discount1');"
+                                <input type="text" id="markup1" name="markup1" placeholder="Markup Amount" title="Markup Amount"
+                                    onchange="validate_balance(this.id);get_auto_values('balance_date1','visa_issue_amount1','payment_mode','service_charge1','markup1','update','true','markup','discount1');"
                                     value="<?= $markup ?>">
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
@@ -496,23 +516,27 @@ $(function() {
             var issue_date_arr = new Array();
             var expiry_date_arr = new Array();
             var nationality_arr = new Array();
-            //	var received_documents_arr = new Array();
+			var e_checkbox_arr = [];
             var appointment_date_arr = new Array();
             var entry_id_arr = new Array();
 
             var table = document.getElementById("tbl_dynamic_visa_update");
             var rowCount = table.rows.length;
+            var checked_count = 0;
+            for (var i = 0; i < rowCount; i++) {
+                var row = table.rows[i];
+                if (row.cells[0].childNodes[0].checked) {
+                    checked_count++;
+                }
+            }
+            if (checked_count == 0) {
+                error_msg_alert("Atleast one passenger details is required!");
+                $('#visa_update').prop('disabled', false);
+                return false;
+            }
 
             for (var i = 0; i < rowCount; i++) {
                 var row = table.rows[i];
-                if (rowCount == 1) {
-                    if (!row.cells[0].childNodes[0].checked) {
-                        error_msg_alert("Atleast one passenger is required!");
-                        $('#visa_update').prop('disabled', false);
-                        return false;
-                    }
-                }
-                if (row.cells[0].childNodes[0].checked) {
                     var first_name = row.cells[2].childNodes[0].value;
                     var middle_name = row.cells[3].childNodes[0].value;
                     var last_name = row.cells[4].childNodes[0].value;
@@ -524,9 +548,6 @@ $(function() {
                     var issue_date = row.cells[10].childNodes[0].value;
                     var expiry_date = row.cells[11].childNodes[0].value;
                     var nationality = row.cells[12].childNodes[0].value;
-                    //var received_documents = "";
-                    // $(row.cells[13]).find('option:selected').each(function(){ received_documents += $(this).attr('value')+','; });
-                    // received_documents = received_documents.trimChars(",");
                     var apointment = row.cells[13].childNodes[0].value;
                     if (row.cells[14]) {
                         var entry_id = row.cells[14].childNodes[0].value;
@@ -536,23 +557,19 @@ $(function() {
 
                     var msg = "";
 
-                    if (first_name == "") {
-                        msg += "First name is required in row:" + (i + 1) + "<br>";
-                    }
-                    if (visa_country_name == "") {
-                        msg += "Visa Country name is required in row:" + (i + 1) + "<br>";
-                    }
-                    if (passport_id == "") {
-                        msg += "Passport no is required in row:" + (i + 1) + "<br>";
-                    }
-                    if (visa_type == "") {
-                        msg += "Visa Type is required in row:" + (i + 1) + "<br>";
-                    }
-                    if (nationality == "") {
-                        msg += "Nationality is required in row:" + (i + 1) + "<br>";
-                    }
-                    if (expiry_date == "") {
-                        msg += "Passport Expiry Date is required in row:" + (i + 1) + "<br>";
+                    if (row.cells[0].childNodes[0].checked) {
+                        if (first_name == "") {
+                            msg += "First name is required in row:" + (i + 1) + "<br>";
+                        }
+                        if (visa_country_name == "") {
+                            msg += "Visa Country name is required in row:" + (i + 1) + "<br>";
+                        }
+                        if (visa_type == "") {
+                            msg += "Visa Type is required in row:" + (i + 1) + "<br>";
+                        }
+                        if (nationality == "") {
+                            msg += "Nationality is required in row:" + (i + 1) + "<br>";
+                        }
                     }
 
                     if (msg != "") {
@@ -572,10 +589,9 @@ $(function() {
                     issue_date_arr.push(issue_date);
                     expiry_date_arr.push(expiry_date);
                     nationality_arr.push(nationality);
-                    //	received_documents_arr.push(received_documents);
                     entry_id_arr.push(entry_id);
                     appointment_date_arr.push(apointment);
-                }
+                	e_checkbox_arr.push(row.cells[0].childNodes[0].checked);
             }
 
             var hotel_sc = $('#hotel_sc').val();
@@ -583,13 +599,19 @@ $(function() {
             var hotel_taxes = $('#hotel_taxes').val();
             var hotel_markup_taxes = $('#hotel_markup_taxes').val();
             var hotel_tds = $('#hotel_tds').val();
+            var tax_apply_on = $('#atax_apply_on').val();
+            var tax_value = $('#tax_value1').val();
+            var markup_tax_value = $('#markup_tax_value1').val();
             var reflections = [];
             reflections.push({
                 'hotel_sc': hotel_sc,
                 'hotel_markup': hotel_markup,
                 'hotel_taxes': hotel_taxes,
                 'hotel_markup_taxes': hotel_markup_taxes,
-                'hotel_tds': hotel_tds
+                'hotel_tds': hotel_tds,
+                'tax_apply_on':tax_apply_on,
+                'tax_value':tax_value,
+                'markup_tax_value':markup_tax_value
             });
             var bsmValues = [];
             bsmValues.push({
@@ -637,7 +659,7 @@ $(function() {
                             due_date1: due_date1,
                             balance_date1: balance_date1,
                             nationality_arr: nationality_arr,
-                            appointment_date_arr: appointment_date_arr,
+                            appointment_date_arr: appointment_date_arr,e_checkbox_arr:e_checkbox_arr,
                             markup: markup,
                             service_tax_markup: service_tax_markup,
                             reflections: reflections,

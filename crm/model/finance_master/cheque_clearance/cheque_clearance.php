@@ -177,7 +177,7 @@ public function status_update($type){
 		}
 
 		//Office Expense
-		if($module_name=="Other Expense Booking Payment"){ 
+		if($module_name=="Other Expense Booking Payment" || $module_name=="Other Expense Booking"){ 
 			$table_name = 'other_expense_payment_master';
 			$id_name = 'payment_id';
 			$date_field = 'payment_date';

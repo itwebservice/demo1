@@ -87,6 +87,7 @@ $query .= " order by misc_id desc";
 	var columns = [
 		{ title : "S_No"},
 		{ title : " "},
+		{ title : "Receipt_ID"},
 		{ title : "Booking_ID"},
 		{ title : "Customer_Name"},
 		{ title : "Receipt_Date"},
@@ -117,9 +118,13 @@ $query .= " order by misc_id desc";
 
 	function visa_payment_update_modal(payment_id)
 	{	
+		$('#updatemr_btn-'+payment_id).prop('disabled',true);
+		$('#updatemr_btn-'+payment_id).button('loading');
 		var branch_status = $('#branch_status').val();
 		$.post('payment/visa_payment_update_modal.php', { payment_id : payment_id, branch_status : branch_status  }, function(data){
 			$('#div_visa_payment_update').html(data);
+			$('#updatemr_btn-'+payment_id).prop('disabled',false);
+			$('#updatemr_btn-'+payment_id).button('reset');
 		});
 	}
 	function excel_report()
@@ -145,6 +150,7 @@ $query .= " order by misc_id desc";
 	}
 	function whatsapp_send_r(booking_id, payment_amount, base_url){
 		$.post(base_url+'controller/miscellaneous/receipt_whatsapp_send.php',{booking_id:booking_id, payment_amount:payment_amount}, function(data){
+			console.log(data);
 			window.open(data);
 		});
 	}

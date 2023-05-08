@@ -109,7 +109,7 @@ public function finance_save($train_ticket_id,$row_spec){
 
   $sq_ct = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
   $cust_name = $sq_ct['first_name'].' '.$sq_ct['last_name'];
-  $particular = 'Against Invoice no '.get_train_ticket_booking_id($train_ticket_id,$yr2).' for tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
+  $particular = 'Against Invoice no '.get_train_ticket_booking_id($train_ticket_id,$yr2).' for train tkt of '.$cust_name.' * '.$pax.' traveling for '.$sector.' against ticket no '.$ticket_number.' by '.$train_no.'/'.$class;
 
   global $transaction_master;
     //////////Sales/////////////

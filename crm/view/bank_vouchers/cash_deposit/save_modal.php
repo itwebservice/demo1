@@ -121,20 +121,29 @@ $('#frm_save').validate({
     else{
         $('#btn_cash_save').button('loading');
 
-        $.ajax({
-          type:'post',
-          url:base_url+'controller/bank_vouchers/cash_deposit_save.php',
-          data: { bank_id : bank_id, payment_amount : payment_amount, payment_date : payment_date,payment_evidence_url : payment_evidence_url, branch_admin_id : branch_admin_id,emp_id : emp_id },
-          success:function(result){        
-            msg_alert(result);
-            var msg = result.split('--');
-            $('#btn_cash_save').prop('disabled',false);
-            if(msg[0]!="error"){
-              $('#save_modal').modal('hide');
-              list_reflect();
-            }
-          }    
-        });
+        $("#vi_confirm_box").vi_confirm_box({
+        callback: function(result){
+          if(result=="yes"){
+            $.ajax({
+              type:'post',
+              url:base_url+'controller/bank_vouchers/cash_deposit_save.php',
+              data: { bank_id : bank_id, payment_amount : payment_amount, payment_date : payment_date,payment_evidence_url : payment_evidence_url, branch_admin_id : branch_admin_id,emp_id : emp_id },
+              success:function(result){        
+                msg_alert(result);
+                var msg = result.split('--');
+                $('#btn_cash_save').prop('disabled',false);
+                if(msg[0]!="error"){
+                  $('#save_modal').modal('hide');
+                  list_reflect();
+                }
+              }    
+            });
+          }else{
+                $('#btn_cash_save').prop('disabled',false);
+                $('#btn_cash_save').button('reset');
+          }
+        }
+      });
     }
     });
 

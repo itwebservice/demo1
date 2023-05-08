@@ -138,40 +138,6 @@ $objPHPExcel->getActiveSheet()->getStyle('B5:C5')->applyFromArray($borderArray);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($header_style_Array);
 $objPHPExcel->getActiveSheet()->getStyle('B6:C6')->applyFromArray($borderArray);
 
-$query = "select * from vendor_estimate where financial_year_id='$financial_year_id' and delete_status='0' ";
-if($estimate_type!=""){
-    $query .= "and estimate_type='$estimate_type'";
-}
-if($vendor_type!=""){
-    $query .= "and vendor_type='$vendor_type'";
-}
-if($estimate_type_id!=""){
-    $query .= "and estimate_type_id='$estimate_type_id'";
-}
-if($vendor_type_id!=""){
-    $query .= "and vendor_type_id='$vendor_type_id'";
-}
-
-if($branch_status=='yes' && $role!='Admin'){
-    $query .= " and branch_admin_id = '$branch_admin_id'";
-}
-elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
-$query .= " and emp_id='$emp_id'";
-}
-
-$sq_paid_amount_query = "select sum(payment_amount) as sum from vendor_payment_master where clearance_status!='Pending' AND clearance_status!='Cancelled'";
-if($vendor_type!=""){
-    $sq_paid_amount_query .= " and vendor_type='$vendor_type'";
-}
-if($vendor_type_id!=""){
-    $sq_paid_amount_query .= " and vendor_type_id='$vendor_type_id'";
-}
-if($estimate_type!=""){
-    $sq_paid_amount_query .= " and estimate_type='$estimate_type' ";
-}
-if($estimate_type_id!=""){
-    $sq_paid_amount_query .= " and estimate_type_id='$estimate_type_id' ";
-} 
 $row_count = 8;
 
 $objPHPExcel->setActiveSheetIndex(0)
@@ -191,50 +157,76 @@ $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyF
 $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
-$total_balance = 0;
 $total_estimate_amt = 0;
+$total_balance = 0;
 $count = 0;
+$query = "select * from vendor_estimate where financial_year_id='$financial_year_id' and delete_status='0'";
+if($estimate_type!=""){
+	$query .= "and estimate_type='$estimate_type'";
+}
+if($vendor_type!=""){
+	$query .= "and vendor_type='$vendor_type'";
+}
+if($estimate_type_id!=""){
+	$query .= "and estimate_type_id='$estimate_type_id'";
+}
+if($vendor_type_id!=""){
+	$query .= "and vendor_type_id='$vendor_type_id'";
+}
+
+if($branch_status=='yes' && $role!='Admin'){
+    $query .= " and branch_admin_id = '$branch_admin_id'";
+}
+elseif($role!='Admin' && $role!='Branch Admin' && $role_id!='7' && $role_id<'7'){
+$query .= " and emp_id='$emp_id'";
+}
 $sq_estimate = mysqlQuery($query);
 while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
-    $sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_estimate[emp_id]'"));
-    $emp_name = ($row_estimate['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
+    
+	$sq_emp =  mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id = '$row_estimate[emp_id]'"));
+	$emp_name = ($row_estimate['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
+	$date = $row_estimate['purchase_date'];
+	$yr = explode("-", $date);
+	$year = $yr[0];
+	$total_cancel_amt += $row_estimate['cancel_amount'];
+	$total_estimate_amt += $row_estimate['net_total'];
 
-    $total_estimate_amt = $total_estimate_amt + $row_estimate['net_total'];
-    $total_cancel_amt += $row_estimate['cancel_amount'];
+	$estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
+	$vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
 
-    $estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
-    $vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
+	$purchase_amount = $row_estimate['net_total'] - $row_estimate['cancel_amount'];
+	$total_purchase_amt += $purchase_amount;
 
-    $purchase_amount=$row_estimate['net_total']-$row_estimate['cancel_amount'];
-    $total_purchase_amt += $purchase_amount;
+	$sq_paid_amount_query = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where estimate_id='$row_estimate[estimate_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+	$paid_amount = $sq_paid_amount_query['sum'];
+	$total_paid_amt += $paid_amount;
+	if($total_paid_amt==""){ $total_paid_amt = 0; }
 
-    $sq_paid_amount_query = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where vendor_type='$row_estimate[vendor_type]' and vendor_type_id='$row_estimate[vendor_type_id]' and estimate_type='$row_estimate[estimate_type]' and estimate_type_id='$row_estimate[estimate_type_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
-    $paid_amount = $sq_paid_amount_query['sum'];
-    $total_paid_amt += $paid_amount;
-    if($total_paid_amt==""){ $total_paid_amt = 0; }
+	$cancel_amount = $row_estimate['cancel_amount'];
+	if($row_estimate['purchase_return'] == '1'){
+		if($paid_amount > 0){
+			if($cancel_amount >0){
+				if($paid_amount > $cancel_amount){
+					$balance_amount = 0;
+				}else{
+					$balance_amount = $cancel_amount - $paid_amount;
+				}
+			}else{
+				$balance_amount = 0;
+			}
+		}
+		else{
+			$balance_amount = $cancel_amount;
+		}
+	}else if($row_estimate['purchase_return'] == '2'){
+		$cancel_estimate = json_decode($row_estimate['cancel_estimate']);
+		$balance_amount = (($row_estimate['net_total'] - floatval($cancel_estimate[0]->net_total)) + $cancel_amount) - $paid_amount;
+	}
+	else{
+		$balance_amount = $row_estimate['net_total'] - $paid_amount;
+	}
 
-    $cancel_amount = $row_estimate['cancel_amount'];
-    if($row_estimate['status']=="Cancel"){
-        if($paid_amount > 0){
-            if($cancel_amount >0){
-                if($paid_amount > $cancel_amount){
-                    $balance_amount = 0;
-                }else{
-                    $balance_amount = $cancel_amount - $paid_amount;
-                }
-            }else{
-                $balance_amount = 0;
-            }
-        }
-        else{
-            $balance_amount = $cancel_amount;
-        }
-    }
-    else{
-        $balance_amount = $row_estimate['net_total'] - $paid_amount;
-    }
-
-    $total_balance += $balance_amount;
+	$total_balance += $balance_amount;
     $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $row_estimate['estimate_id'])
         ->setCellValue('C'.$row_count, get_date_user($row_estimate['purchase_date']))
@@ -246,7 +238,7 @@ while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
         ->setCellValue('I'.$row_count, number_format($row_estimate['net_total'],2))
         ->setCellValue('J'.$row_count, ($row_estimate['cancel_amount']=="") ? 0 : number_format($row_estimate['cancel_amount'],2))
         ->setCellValue('K'.$row_count,  number_format($purchase_amount,2))
-        ->setCellValue('L'.$row_count,$emp_name);
+        ->setCellValue('L'.$row_count, $emp_name);
 	
 
     $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($content_style_Array);

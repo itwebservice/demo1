@@ -27,6 +27,7 @@ $bg = $_GET['bg'];
 $canc_amount = $_GET['canc_amount'];
 
 $charge = ($credit_card_charges != '') ? $credit_card_charges : 0;
+$balance_amount = ($balance_amount < 0) ? 0 : $balance_amount;
 
 $basic_cost = number_format($basic_cost1, 2);
 $sq_exc = mysqli_fetch_assoc(mysqlQuery("select * from excursion_master where exc_id='$booking_id' and delete_status='0'"));
@@ -116,6 +117,7 @@ if ($app_invoice_format == "Advance") {
                             <th>Transfer_Option</th>
                             <th>Adult</th>
                             <th>Child</th>
+                            <th>Infant</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -135,6 +137,7 @@ if ($app_invoice_format == "Advance") {
                               <td><?= $row_vehicle['transfer_option'] ?></td>
                               <td><?php echo $row_vehicle['total_adult']; ?></td>
                               <td><?= $row_vehicle['total_child'] ?></td>
+                              <td><?= $row_vehicle['total_infant'] ?></td>
                           </tr>
                           <?php
                           $count++;

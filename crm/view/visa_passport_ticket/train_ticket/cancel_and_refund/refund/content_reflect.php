@@ -93,11 +93,11 @@ $booking_id_formatted = get_train_ticket_booking_id($train_ticket_id, $year);
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
                         <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest"
-                            placeholder="*Bank Name" title="Bank Name" disabled />
+                            placeholder="Bank Name" title="Bank Name" disabled />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="transaction_id" onchange="validate_balance(this.id);"
-                            name="transaction_id" class="form-control" placeholder="*Cheque No / ID"
+                        <input type="number" id="transaction_id" onchange="validate_balance(this.id);"
+                            name="transaction_id" class="form-control" placeholder="Cheque No / ID"
                             title="Cheque No / ID" disabled />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
@@ -157,7 +157,7 @@ $booking_id_formatted = get_train_ticket_booking_id($train_ticket_id, $year);
 							$count++;
 							$total_refund = $total_refund + $row_train_ticket_refund['refund_amount'];
 
-							$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_train_ticket_refund[train_ticket_id]' and delete_status='0'"));
+							$sq_train_ticket_info = mysqli_fetch_assoc(mysqlQuery("select * from train_ticket_master where train_ticket_id='$row_train_ticket_refund[train_ticket_id]'"));
 							$date = $sq_train_ticket_info['created_at'];
 							$yr = explode("-", $date);
 							$year = $yr[0];
@@ -201,8 +201,7 @@ $booking_id_formatted = get_train_ticket_booking_id($train_ticket_id, $year);
                             <td><?= $row_train_ticket_refund['refund_mode'] ?></td>
                             <td><?= $row_train_ticket_refund['bank_name'] ?></td>
                             <td><?= $row_train_ticket_refund['transaction_id'] ?></td>
-                            <td><a href="<?= $url ?>" class="btn btn-danger btn-sm" target="_blank" title="Voucher"><i
-                                        class="fa fa-file-pdf-o"></i></a></td>
+                            <td><a href="<?= $url ?>" class="btn btn-danger btn-sm" target="_blank" title="Voucher"><i class="fa fa-file-pdf-o"></i></a></td>
                         </tr>
                         <?php
 						}
@@ -265,24 +264,6 @@ $(function() {
             },
             refund_mode: {
                 required: true
-            },
-            bank_name: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            transaction_id: {
-                required: function() {
-                    if ($('#refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
             },
             bank_id: {
                 required: function() {

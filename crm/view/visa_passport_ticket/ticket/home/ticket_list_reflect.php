@@ -4,7 +4,7 @@ $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $branch_status = $_POST['branch_status'];
 $customer_id = $_POST['customer_id'];
 $from_date = $_POST['from_date'];
@@ -95,7 +95,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 	
 	$total_sale = $total_sale + $row_ticket['ticket_total_cost']+ $credit_card_charges;
 	$total_cancelation_amount = $total_cancelation_amount + $cancel_amt;
-	$total_balance = $total_balance + $sale_amount;
+	$total_balance = $total_balance + $sale_amount - $cancel_amt;
 
 	if($row_ticket['cancel_type'] == '1'){
 		if($paid_amount > 0){
@@ -103,7 +103,7 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 				if($paid_amount > $cancel_amt){
 					$bal_amount = 0;
 				}else{
-					$bal_amount = $cancel_amt - $paid_amount;
+					$bal_amount = $cancel_amt - $paid_amount + $credit_card_charges;
 				}
 			}else{
 				$bal_amount = 0;
@@ -164,15 +164,16 @@ while($row_ticket = mysqli_fetch_assoc($sq_ticket)){
 		get_ticket_booking_id($row_ticket['ticket_id'],$year),
 		$customer_name,
 		$contact_no,
-		number_format($row_ticket['ticket_total_cost']+ $credit_card_charges,2),
+		number_format($row_ticket['ticket_total_cost'] + $credit_card_charges,2),
 		$cancel_amt,
 		number_format(($row_ticket['ticket_total_cost'] - $cancel_amt + $credit_card_charges), 2),
 		$emp_name,
+		$invoice_date,
 		$btn_eticket.
 		'
 		<a style="display:inline-block" onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print"></i></a>
 		'.$update_btn.'
-		<button data-toggle="tooltip" style="display:inline-block" class="btn btn-info btn-sm" onclick="ticket_display_modal('.$row_ticket['ticket_id'] .')" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>'.$delete_btn
+		<button data-toggle="tooltip" style="display:inline-block" class="btn btn-info btn-sm" onclick="ticket_display_modal('.$row_ticket['ticket_id'] .')" id="display_ticket-'.$row_ticket['ticket_id'] .'" title="View Details"><i class="fa fa-eye" aria-hidden="true"></i></button>'.$delete_btn
 		), "bg" =>$bg );
 		array_push($array_s,$temp_arr);
 	$count++;

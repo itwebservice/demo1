@@ -10,17 +10,20 @@ $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
 $branch_status = $_POST['branch_status'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $branch_id = $_POST['branch_id'];
 $status = $_POST['status'];
 
 global $app_quot_format,$currency;
 if($status != ''){
 
-	$query = "select * from package_tour_quotation_master where financial_year_id='$financial_year_id' and status='$status'";
+	$query = "select * from package_tour_quotation_master where status='$status'";
 }else{
 
-	$query = "select * from package_tour_quotation_master where financial_year_id='$financial_year_id' and status='1' ";
+	$query = "select * from package_tour_quotation_master where status='1' ";
+}
+if($financial_year_id!=""){
+	$query .=" and financial_year_id='$financial_year_id'";
 }
 
 if($from_date!='' && $to_date!=""){
@@ -155,11 +158,53 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		$url1 = BASE_URL."model/app_settings/print_html/quotation_html/quotation_html_1/fit_quotation_html.php?quotation_id=$quotation_id";
 	}
 	$whatsapp_tooltip_change = ($whatsapp_switch == "on") ? 'Email and What\'sApp Quotation to Customer' : "Email Quotation to Customer";
+		
+	$sq_h_count = mysqli_num_rows(mysqlQuery("select * from package_tour_quotation_hotel_entries where quotation_id='$row_quotation[quotation_id]'"));
+	$avail_count = 0;$not_avail_count = 0;$req_count = 0;
+	$sq_hotel = mysqlQuery("select * from package_tour_quotation_hotel_entries where quotation_id='$row_quotation[quotation_id]'");
+	while($row_hotel = mysqli_fetch_assoc($sq_hotel))
+	{
+		if($row_hotel['request_sent'] == '0') {
+			$req_count++;
+		}else{
+			$avail = json_decode($row_hotel['availability']);
+			if($avail->availability == 'Available' || $avail->availability == 'NA'){
+				$avail_count++;
+			}else{
+				$hotel_options = !empty($avail->option_hotel_arr) && $avail->option_hotel_arr != "null" ? $avail->option_hotel_arr : [];
+				if(!empty($hotel_options) && $hotel_options != "null"){
+					for($j = 0;$j < sizeof($hotel_options);$j++){
+						if($hotel_options[$j]->availability == 'Available' || $hotel_options[$j]->availability == 'NA'){
+							$avail_count++;
+						}else{
+							$not_avail_count++;
+						}
+					}
+				}
+				else{
+					$not_avail_count++;
+				}
+			}
+		}
+	}
+	if($req_count > 0){
+		$req_btn_class = 'btn-info';
+		$title = "Send Hotel Availability Request";
+	}else if($sq_h_count == $avail_count || $sq_h_count <= $avail_count){
+		$req_btn_class = 'btn-warning';
+		$title = "Hotel Availability Request(All hotels are available)";
+	}else{
+		$req_btn_class = 'btn-danger';
+		$title = "Hotel Availability Request(Request is in process)";
+	}
+
 	if($row_quotation['status'] == '0') {
 		$bg = 'danger';
 		$pdf_show = '';
 		$whatsapp_show = '';
 		$email_show = '';
+		$email_show1 = '';
+		$hotel_request1 = '';
 		$copy_btn = '';
 	}else{
 		if($row_quotation['clone'] == 'yes'){
@@ -169,10 +214,10 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		}
 		$pdf_show = '<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url1.'\')" class="btn btn-info btn-sm" title="Download Quotation PDF"><i class="fa fa-print"></i></a>';
 		$whatsapp_show = '<button class="btn btn-info btn-sm" onclick="quotation_whatsapp('.$row_quotation['quotation_id'].')" title="What\'sApp Quotation to customer" data-toggle="tooltip"><i class="fa fa-whatsapp"></i></button>';
-		$email_show = '<a data-toggle="tooltip"  href="javascript:void(0)" id="btn_email_'.$count.'" class="btn btn-info btn-sm" onclick="quotation_email_send(this.id, '.$row_quotation['quotation_id'].',\''.$row_quotation['email_id'] .'\',\''.$row_quotation['mobile_no'].'\')" title="'.$whatsapp_tooltip_change.'"><i class="fa fa-envelope-o"></i></a>'.'
-
-		<a href="javascript:void(0)" id="btn_email1_'.$count.'" title="Email Quotation to Backoffice" class="btn btn-info btn-sm" onclick="quotation_email_send_backoffice_modal('.$row_quotation['quotation_id'].')"><i class="fa fa-paper-plane-o"></i></a>';
-		$copy_btn = '<button data-toggle="tooltip" style="display:inline-block" class="btn btn-warning btn-sm" onclick="quotation_clone('. $row_quotation['quotation_id'] .')" title="Create Copy of this Quotation"><i class="fa fa-files-o"></i></button>';
+		$email_show = '<a data-toggle="tooltip"  href="javascript:void(0)" id="btn_email_'.$count.'" class="btn btn-info btn-sm" onclick="quotation_email_send(this.id, '.$row_quotation['quotation_id'].',\''.$row_quotation['email_id'] .'\',\''.$row_quotation['mobile_no'].'\')" title="'.$whatsapp_tooltip_change.'"><i class="fa fa-envelope-o"></i></a>';
+		$email_show1 = '<a href="javascript:void(0)" id="btn_email1_'.$count.'" title="Email Quotation to Backoffice" class="btn btn-info btn-sm" onclick="quotation_email_send_backoffice_modal('.$row_quotation['quotation_id'].');btnDisableEnable(this.id)" id="email_backoffice_btn-'.$row_quotation['quotation_id'].'"><i class="fa fa-paper-plane-o"></i></a>';
+		$hotel_request1 = '<button data-toggle="tooltip" style="display:inline-block" class="btn '.$req_btn_class .' btn-sm" onclick="view_request('. $row_quotation['quotation_id'] .')" id="view_req'. $row_quotation['quotation_id'] .'" title="'.$title.'"><i class="fa fa-paper-plane-o"></i></button>';
+		$copy_btn = '<button data-toggle="tooltip" style="display:inline-block" class="btn btn-info btn-sm" onclick="quotation_clone('. $row_quotation['quotation_id'] .')" title="Create Copy of this Quotation"><i class="fa fa-files-o"></i></button>';
 	}
 	
 	
@@ -184,17 +229,13 @@ while($row_quotation = mysqli_fetch_assoc($row_quotation1)){
 		get_date_user($row_quotation['quotation_date']),
 		number_format($quotation_cost,2).$currency_amount,
 		$emp_name,
-		$pdf_show.$email_show.$copy_btn.'
-
+		$pdf_show.$email_show.'
 		<form  style="display:inline-block" action="update/index.php" id="frm_booking_'.$count.'" method="POST">
 		<input  style="display:inline-block" type="hidden" id="quotation_id" name="quotation_id" value="'.$row_quotation['quotation_id'].'">
 		<input data-toggle="tooltip" style="display:inline-block" type="hidden" id="package_id" name="package_id" value="'.$row_quotation['package_id'].'">
-
-		<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>
-		</form>
-
+		<button data-toggle="tooltip"  style="display:inline-block" class="btn btn-info btn-sm" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>
+		</form>'.$copy_btn.$hotel_request1.$email_show1.'
 		<a data-toggle="tooltip" style="display:inline-block" href="quotation_view.php?quotation_id='.$row_quotation['quotation_id'].'" target="_BLANK" class="btn btn-info btn-sm" title="View Details"><i class="fa fa-eye"></i></a>'
-	
 	), "bg" =>$bg);
 	array_push($array_s,$temp_arr); 
 }

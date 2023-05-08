@@ -67,7 +67,7 @@ $branch_status = $_POST['branch_status'];
 				</div>
 				<div class="col-sm-8 col-xs-12 text-right">
                 <span style="color: red;line-height: 35px;" data-original-title="" title="" class="note">Please add multiple seat number of multi trip using '/' in between like S1/D3/NA. And similar for Meal plan field.</span>
-					<button type="button" class="btn btn-info btn-sm ico_left" onClick="addRow('tbl_dynamic_ticket_master')"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                    <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_dynamic_ticket_master')"><i class="fa fa-plus"></i></button>
 				</div>
 			</div>    
 
@@ -153,6 +153,10 @@ $('#frm_tab1').validate({
 			var row = table.rows[i];
 			if(row.cells[0].childNodes[0].checked)
 			{
+				var basic_fare_total = 0;
+				var basic_fare_arr = [];
+				var trip_data_check_arr = [];
+				var cancel_status_arr = [];
 				var first_name = row.cells[2].childNodes[0].value;
 				var middle_name = row.cells[3].childNodes[0].value;
 				var last_name = row.cells[4].childNodes[0].value;
@@ -173,19 +177,16 @@ $('#frm_tab1').validate({
 					return false;
 				}
 
-				var basic_fare_total = 0;
-				var basic_fare_arr = [];
-				var trip_data_check_arr = [];
-				var cancel_status_arr = [];
-				basic_fare_arr = JSON.parse(trip_details)[0]['basic_fare_arr'];
-				trip_data_check_arr = JSON.parse(trip_details)[0]['trip_data_check_arr'];
-				cancel_status_arr = (JSON.parse(trip_details)[0]['cancel_status_arr'] === undefined) ? [] : JSON.parse(trip_details)[0]['cancel_status_arr'];
-				console.log(cancel_status_arr);
+				var flight_arr = JSON.parse(trip_details)[0];
+				basic_fare_arr = flight_arr['basic_fare_arr'];
+				trip_data_check_arr = flight_arr['trip_data_check_arr'];
+				cancel_status_arr = (flight_arr['cancel_status_arr'] === undefined) ? [] : flight_arr['cancel_status_arr'];
 				for(var t = 0; t < (basic_fare_arr).length ; t++){
 
 					if(basic_fare_arr[t]==''){basic_fare_arr[t] = 0;}
 					if(cancel_status_arr[t]==''){cancel_status_arr[t] = 0;}
-					if(trip_data_check_arr[t] == true && cancel_status_arr[t] != 'Cancel'){
+					if(trip_data_check_arr[t] == true && (cancel_status_arr[t] == '' || cancel_status_arr[t] == '0')){
+						
 						basic_fare_total += parseFloat(basic_fare_arr[t]);
 					}
 				}

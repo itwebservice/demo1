@@ -51,7 +51,7 @@ function checkPassportDate(id){
   function validate_issueDate (from, to) {
 	  var from_date = $('#'+from).val(); 
     var to_date = $('#'+to).val(); 
-
+    console.log(from_date);
     var parts = from_date.split('-');
     var date = new Date();
     var new_month = parseInt(parts[1])-1;

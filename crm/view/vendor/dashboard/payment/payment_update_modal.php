@@ -1,12 +1,45 @@
 <?php 
 include_once('../../../../model/model.php');
+include_once('../../inc/vendor_generic_functions.php');
 $payment_id = $_POST['payment_id'];
 $sq_payment = mysqli_fetch_assoc(mysqlQuery("select * from vendor_payment_master where payment_id='$payment_id'"));
 
-$sq_est = mysqli_fetch_assoc(mysqlQuery("select sum(net_total) as net_total from vendor_estimate where vendor_type='$sq_payment[vendor_type]' and vendor_type_id='$sq_payment[vendor_type_id]' and estimate_type='$sq_payment[estimate_type]' and estimate_type_id='$sq_payment[estimate_type_id]'"));
+$sq_est = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id='$sq_payment[estimate_id]'"));
 
-$sq_paid = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from vendor_payment_master where vendor_type='$sq_payment[vendor_type]' and vendor_type_id='$sq_payment[vendor_type_id]' and estimate_type='$sq_payment[estimate_type]' and estimate_type_id='$sq_payment[estimate_type_id]'"));
-$balance_amount = $sq_est['net_total'] - $sq_paid['payment_amount'];
+$sq_paid = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as payment_amount from vendor_payment_master where  estimate_id='$sq_payment[estimate_id]'"));
+$total_paid = $sq_paid['payment_amount'];
+$cancel_est = $sq_est['cancel_amount'];
+
+$row_estimate = mysqli_fetch_assoc(mysqlQuery("select * from vendor_estimate where estimate_id = '$sq_payment[estimate_id]'"));
+$vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
+$estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
+$date = $row_estimate['purchase_date'];
+$yr = explode("-", $date);
+$year = $yr[0];
+$estimate_id = get_vendor_estimate_id($row_estimate['estimate_id'],$year)." : ".$vendor_type_val."(".$row_estimate['vendor_type'].") : ".$estimate_type_val;
+
+if($sq_est['purchase_return'] == '1'){
+  if($total_paid > 0){
+    if($cancel_est >0){
+      if($total_paid > $cancel_est){
+        $balance_amount += 0;
+      }else{
+        $balance_amount += $cancel_est - $total_paid;
+      }
+    }else{
+      $balance_amount += 0;
+    }
+  }
+  else{
+    $balance_amount += $cancel_est;
+  }
+}else if($sq_est['purchase_return'] == '2'){
+  $cancel_estimate = json_decode($sq_est['cancel_estimate']);
+  $balance_amount += (($sq_est['net_total'] - floatval($cancel_estimate[0]->net_total)) + $cancel_est) - $total_paid;
+}
+else{
+  $balance_amount += $sq_est['net_total'] - $total_paid;
+}
 $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="Credit Card" || $sq_payment['payment_mode']=="Debit Note" || $sq_payment['payment_mode']=="Advance") ? "disabled" : "";
 ?>
 <div class="modal fade" id="payment_update_modal" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
@@ -27,8 +60,13 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
         <input type="hidden" id="balance_amount" name="balance_amount" value="<?= $balance_amount ?>">
 
           <div class="panel panel-default panel-body app_panel_style mg_tp_20 feildset-panel">
-          <legend>Select Sale</legend>
+          <legend>Purchase Details</legend>
 
+          <div class="row mg_bt_10">
+              <div class="col-md-6">
+                <input type="text" value="<?= $estimate_id ?>" readonly/>
+              </div>
+            </div>
             <div class="row">
               <div class="col-md-3">
                 <select name="vendor_type1" id="vendor_type1" title="Supplier Type" onchange="vendor_type_data_load(this.value, 'div_vendor_type_content1', '1')" disabled>
@@ -52,7 +90,7 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
                     <option value="<?= $sq_payment['estimate_type'] ?>"><?= $sq_payment['estimate_type'] ?></option>
                     <option value="">Purchase Type</option>
                     <?php 
-                    $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by estimate_type");
+                    $sq_estimate_type = mysqlQuery("select * from estimate_type_master order by id");
                     while($row_estimate = mysqli_fetch_assoc($sq_estimate_type)){
                       ?>
                       <option value="<?= $row_estimate['estimate_type'] ?>"><?= $row_estimate['estimate_type'] ?></option>
@@ -102,7 +140,7 @@ $enable = ($sq_payment['payment_mode']=="Cash" || $sq_payment['payment_mode']=="
                 <input type="text" id="bank_name1" name="bank_name1" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment['bank_name'] ?>" <?= $enable ?>>
               </div>
               <div class="col-md-4">
-                <input type="text" id="transaction_id1" onchange="validate_balance(this.id);" name="transaction_id1" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
+                <input type="number" id="transaction_id1" onchange="validate_balance(this.id);" name="transaction_id1" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment['transaction_id'] ?>" <?= $enable ?>>
               </div>
                <div class="col-md-4">
                 <select name="bank_id1" id="bank_id1" title="Debitor Bank" <?= $enable ?> disabled>
@@ -188,9 +226,7 @@ $(function(){
       rules:{
               payment_amount1 : { required: true, number:true },
               payment_date1 : { required: true },
-              payment_mode1 : { required : true },
-              bank_name1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },
-              transaction_id1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },     
+              payment_mode1 : { required : true }, 
               bank_id1 : { required : function(){  if($('#payment_mode1').val()!="Cash"){ return true; }else{ return false; }  }  },     
       },
       submitHandler:function(form){
@@ -214,6 +250,12 @@ $(function(){
               var payment_old_value = $('#payment_old_value').val();
               var payment_old_mode = $('#payment_old_mode').val();
               var balance_amount = $('#balance_amount').val();
+
+              if(!check_updated_amount(payment_old_value,payment_amount)){
+                $('#btn_update').prop('disabled',false);
+                error_msg_alert("You can update payment to 0 only!");
+                return false;
+              }
 
               if(payment_amount > payment_old_value){
                 var balance_paying = parseFloat(payment_amount) - parseFloat(payment_old_value);

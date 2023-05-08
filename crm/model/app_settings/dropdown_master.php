@@ -1,4 +1,4 @@
-<?php 
+<?php
 function get_b2c_booking_dropdown(){
   $query = "select * from b2c_sale where 1";
   $sq_booking = mysqlQuery($query);
@@ -139,13 +139,6 @@ function get_hotel_booking_dropdown($role, $branch_admin_id, $branch_status,$emp
 
       while($row_booking = mysqli_fetch_assoc($sq_booking))
       {
-          if(!$showCancelled){
-            $pass_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]'"));
-			      $cancel_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$row_booking[booking_id]' and status='Cancel'"));
-          }
-          if($pass_count==$cancel_count){
-            continue;
-          }
             $date = $row_booking['created_at'];
             $yr = explode("-", $date);
             $year =$yr[0];
@@ -199,7 +192,7 @@ function get_car_booking_dropdown($role, $branch_admin_id, $branch_status,$emp_i
     <option value="">*Booking ID</option>
     <?php
     $query = "select * from car_rental_booking where 1 and delete_status='0' ";
-    $query .= " and status!='Cancel'";
+    // $query .= " and status!='Cancel'";
     include "branchwise_filteration.php";
     $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."' order by booking_id desc";
     $sq_booking = mysqlQuery($query);
@@ -588,6 +581,17 @@ function get_financial_year_dropdown($all=true){
     <?php
   }
 }
+//Financial year dropdown
+function get_financial_year_dropdown_filter($financial_year_id){
+
+  $sq_finacial_year = mysqlQuery("select * from financial_year where active_flag!='Inactive' and financial_year_id!='$financial_year_id' order by financial_year_id desc");
+  while($row_financial_year = mysqli_fetch_assoc($sq_finacial_year)){
+  $financial_year = get_date_user($row_financial_year['from_date']).'&nbsp;&nbsp;&nbsp;To&nbsp;&nbsp;&nbsp;'.get_date_user($row_financial_year['to_date']);
+  ?>
+  <option value="<?= $row_financial_year['financial_year_id'] ?>"><?= $financial_year  ?></option>
+  <?php
+  }
+}
 
 //Airport Name dropdown
 function get_airport_name_dropdown(){
@@ -763,6 +767,19 @@ function get_train_class_dropdown()
 <?php
 
 }
+//Get Train Class dropdown
+function get_flight_class_dropdown()
+{ ?>
+
+<option value="">Class</option>
+<option value="First Class">First Class</option>
+<option value="Economy">Economy</option>
+<option value="Premium Economy">Premium Economy</option>
+<option value="Business">Business</option>
+<option value="Other">Other</option>
+
+<?php
+} 
 
 //Get app settings Tax Name
 
@@ -953,11 +970,11 @@ function get_tax_conditions(){
 function get_other_charges(){
   $sq_cond = mysqlQuery("select * from other_charges_master where 1");?>
   
-  <option value="">*Rule For</option>
   <?php while($row_cond= mysqli_fetch_assoc($sq_cond)){ ?>
     <option value="<?= $row_cond['entry_id'] ?>"><?= $row_cond['name'] ?></option>
-  <?php }
-}
+  <?php } ?>
+  <option value="">*Rule For</option>
+<?php }
 
 function get_other_charges_conditions(){
   
@@ -1016,6 +1033,19 @@ function get_bike_types(){
   while($row = mysqli_fetch_assoc($sq_bike)){
 ?>
   <option value="<?= $row['entry_id'] ?>"><?= $row['bike_type'] ?></option>
+  <?php
+  }
+}
+function get_tax_dropdown($reflection){
+  ?>
+<?php
+  $sq_tax = mysqlQuery("SELECT * FROM `tax_master` where status='Active' and reflection='$reflection'");
+  while($row_tax = mysqli_fetch_assoc($sq_tax)){
+
+    $tax_string = $row_tax['name1'].':('.$row_tax['amount1'].'%):('.$row_tax['ledger1'].')';
+    $tax_string .= ($row_tax['name2'] != '') ? '+'.$row_tax['name2'].':('.$row_tax['amount2'].'%):('.$row_tax['ledger2'].')' : '';
+?>
+  <option value="<?= $tax_string ?>"><?= $tax_string ?></option>
   <?php
   }
 }

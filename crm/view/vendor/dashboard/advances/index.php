@@ -5,7 +5,7 @@ $branch_status = $_POST['branch_status'];
 <div class="row text-right mg_bt_20">
 	<div class="col-md-12">
 		<button class="btn btn-excel btn-sm" onclick="excel_report()" data-toggle="tooltip" title="Generate Excel"><i class="fa fa-file-excel-o"></i></button>&nbsp;&nbsp;
-		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Supplier Advance</button>
+		<button class="btn btn-info btn-sm ico_left" onclick="save_modal()" id="advance_save"><i class="fa fa-plus"></i>&nbsp;&nbsp;Supplier Advance</button>
 	</div>
 </div>
 
@@ -77,15 +77,23 @@ function payment_list_reflect()
 payment_list_reflect();
 
 function save_modal(){
+	$('#advance_save').prop('disabled',true);
 	var branch_status = $('#branch_status').val();
+	$('#advance_save').button('loading');
 	$.post('advances/payment_save_modal.php', {  branch_status : branch_status }, function(data){
 		$('#save_modal_div').html(data);
+		$('#advance_save').prop('disabled',false);
+		$('#advance_save').button('reset');
 	});
 }
 
 function payment_update_modal(payment_id){
+    $('#updatea_btn-'+payment_id).button('loading');
+    $('#updatea_btn-'+payment_id).prop('disabled',true);
 	$.post('advances/payment_update_modal.php', { payment_id : payment_id }, function(data){
 		$('#div_payment_update_content').html(data);
+		$('#updatea_btn-'+payment_id).button('reset');
+		$('#updatea_btn-'+payment_id).prop('disabled',false);
 	});
 }
 function excel_report()

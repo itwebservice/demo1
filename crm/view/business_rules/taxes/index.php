@@ -38,12 +38,11 @@ include "../../../model/model.php";
 <script src="<?= BASE_URL ?>js/app/field_validation.js"></script>
 <script>
 var columns= [
-          { title: "S_NO" },
-          { title: "Code" },
-          { title: "Name" },
-          { title: "Rate" },
-          { title: "Actions", className:"text-center" }
-      ];
+    { title: "S_NO" },
+    { title: "Reflection" },
+    { title: "Tax Name(Amount%)" },
+    { title: "Actions", className:"text-center" }
+];
 function list_reflect(){
 
     $('#div_taxes_list').append('<div class="loader"></div>');
@@ -58,16 +57,22 @@ function list_reflect(){
 list_reflect();
 
 function save_modal(){
+    $('#btn_save_modal').prop('disabled',true);
 	$('#btn_save_modal').button('loading');
 	$.post('taxes/save_modal.php', {type:''}, function(data){
 		$('#btn_save_modal').button('reset');
 		$('#div_modal_content').html(data);
+        $('#btn_save_modal').prop('disabled',false);
 	});
 }
 
 function update_modal(entry_id){
+    $('#tupdate'+entry_id).prop('disabled',true);
+	$('#tupdate'+entry_id).button('loading');
 	$.post('taxes/update_modal.php', {entry_id : entry_id}, function(data){
 		$('#div_modal_content').html(data);
+    $('#tupdate'+entry_id).prop('disabled',false);
+	$('#tupdate'+entry_id).button('reset');
 	});
 }
 function update_rulemodal(entry_id){

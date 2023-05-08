@@ -58,7 +58,7 @@ else{
 	</div>
     <div class="row">
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label>Quotation Date</label> : <?= date('d/m/Y', strtotime($sq_quotation['quotation_date'])) ?> </div>
-		<div class="col-md-3 mg_bt_10_xs" style="border-right: 1px solid #ddd;"> <div class="highlighted_cost"><label>Quotation Cost</label> : <?= number_format($costDetails['total_amount'], 2) ?> </div></div>
+		<div class="col-md-3 mg_bt_10_xs" style="border-right: 1px solid #ddd;"> <div class="highlighted_cost"><label>Quotation Cost</label> : <?= number_format(floatval($costDetails['total_amount']), 2) ?> </div></div>
 		<div class="col-md-3" style="border-right: 1px solid #ddd;"> <div class="highlighted_cost"><label>Created By</label> : <?= $emp_name ?> </div></div>
 		<div class="col-md-3 mg_bt_10" style="border-right: 1px solid #ddd;"> <label class="highlighted_cost">Quotation ID : <?= get_quotation_id($sq_quotation['quotation_id'],$year) ?> </label></div>
 	</div>
@@ -69,11 +69,15 @@ else{
 </div>
 
 <div class="main_block mg_tp_30"></div>
-<h3 class="editor_title main_block">Hotel Details</h3>
-<table class="table table-bordered" style="width:100%;">
-	<thead>
+<div class="row mg_tp_30">
+<div class="col-md-12">
+<h3 class="editor_title">Hotel Details</h3>
+	<div class="table-responsive">
+	<table class="table table-hover table-bordered no-marg">
+
 		<tr class="table-heading-row">
 			<th>S_No.</th>
+			<th>Tour_Type</th>
 			<th>City_Name</th>
 			<th>Hotel_Name</th>
 			<th>R_Category</th>
@@ -95,6 +99,7 @@ else{
 			?>
 			<tr>
 				<td><?= ++$count ?></td>
+				<td><?= $values['tour_type'] ?></td>
 				<td><?= $cityName['city_name'] ?></td>
 				<td><?= $hotelName['hotel_name'] ?></pre></td>
 				<td><?= $values['hotel_cat'] ?></td>
@@ -111,31 +116,42 @@ else{
 		?>
 	</tbody>
 </table>
+	</div>
+	</div>
+	</div>
 
 
-<h3 class="editor_title main_block">Costing Details</h3>
-<table class="table table-bordered">
-	<thead>
+	<div class="main_block mg_tp_30"></div>
+<div class="row mg_tp_30">
+<div class="col-md-12">
+<h3 class="editor_title">Costing Details</h3>
+	<div class="table-responsive">
+	<table class="table table-hover table-bordered no-marg">
+
 		<tr class="table-heading-row">
-			<th>Hotel_Cost</th>
+			<th>Basic_Cost</th>
 			<th>Service_Charge</th>
 			<th>Tax_Amount</th>
-			<th>Markup_Cost</th>
+			<th>Markup_Amount</th>
             <th>Markup_Tax</th>
             <th>Quotation_Cost</th>
 		</tr>
 	</thead>
 	<tbody>
 			<tr>
-				<td><?= number_format($costDetails['hotel_cost'],2) ?></td>
-				<td><?= number_format($costDetails['service_charge'],2) ?></pre></td>
+				<td><?= number_format(floatval($costDetails['hotel_cost']),2) ?></td>
+				<td><?= number_format(floatval($costDetails['service_charge']),2) ?></pre></td>
 				<td><?= ($costDetails['tax_amount'] == '') ? 0.00 : $costDetails['tax_amount']  ?></td>
-				<td><?= number_format($costDetails['markup_cost'],2) ?></td>
+				<td><?= number_format(floatval($costDetails['markup_cost']),2) ?></td>
                 <td><?= ($costDetails['markup_tax'] == '') ? 0.00 : $costDetails['markup_tax'] ?></td>
-                <td><?= number_format($costDetails['total_amount'],2) ?></td>
+                <td><?= number_format(floatval($costDetails['total_amount']),2) ?></td>
 			</tr>
 	</tbody>
 </table>
+	</div>
+	</div>
+	</div>
+
 
 
 </div>

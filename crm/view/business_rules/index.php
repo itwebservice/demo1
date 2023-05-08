@@ -5,26 +5,26 @@ require_once('../layouts/admin_header.php');
 ?>
 
 <?= begin_panel('Business Rules','') ?>
-    <div class="header_bottom">
-        <div class="row text-center">
-            <label for="rd_taxes" class="app_dual_button active" data-id="1">
-		        <input type="radio" id="rd_taxes" name="rd_rules" checked onchange="business_rules_reflect()">
-		        &nbsp;&nbsp;Taxes
-		    </label>    
-		    <label for="rd_tax_rules" class="app_dual_button" data-id="2">
-		        <input type="radio" id="rd_tax_rules" name="rd_rules" onchange="business_rules_reflect()">
-		        &nbsp;&nbsp;Tax Rule
-		    </label>
-		    <label for="rd_other_rules" class="app_dual_button" data-id="3">
-		        <input type="radio" id="rd_other_rules" name="rd_rules" onchange="business_rules_reflect()">
-		        &nbsp;&nbsp;Other Rules
-		    </label>
-		    <label for="rd_tcs" class="app_dual_button" data-id="3">
-		        <input type="radio" id="rd_tcs" name="rd_rules" onchange="business_rules_reflect()">
-		        &nbsp;&nbsp;TCS
-		    </label>
-        </div>
-    </div> 
+<div class="header_bottom">
+	<div class="row text-center">
+		<label for="rd_taxes" class="app_dual_button active" data-id="1">
+			<input type="radio" id="rd_taxes" name="rd_rules" checked onchange="business_rules_reflect()">
+			&nbsp;&nbsp;Taxes
+		</label>    
+		<label for="rd_tax_rules" class="app_dual_button" data-id="2">
+			<input type="radio" id="rd_tax_rules" name="rd_rules" onchange="business_rules_reflect()">
+			&nbsp;&nbsp;Tax Rule
+		</label>
+		<label for="rd_other_rules" class="app_dual_button" data-id="3">
+			<input type="radio" id="rd_other_rules" name="rd_rules" onchange="business_rules_reflect()">
+			&nbsp;&nbsp;Other Rules
+		</label>
+		<label for="rd_tcs" class="app_dual_button" data-id="3">
+			<input type="radio" id="rd_tcs" name="rd_rules" onchange="business_rules_reflect()">
+			&nbsp;&nbsp;TCS
+		</label>
+	</div>
+</div> 
 
 <!--=======Header panel end======-->
 <div id="div_rules"></div>

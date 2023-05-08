@@ -1,6 +1,7 @@
 <?php
 $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
+$role_id = $_SESSION['role_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $branch_status = $_POST['branch_status']
 ?>
@@ -21,8 +22,8 @@ $branch_status = $_POST['branch_status']
                 <option value="">*Select Booking ID</option>
                 <?php
                   $query = "select * from excursion_master where 1 and delete_status='0' ";
-                  include "branchwise_filteration.php";
-                  $query .= " and financial_year_id = '".$_SESSION['financial_year_id']."'  order by exc_id desc";
+                  include "../../../model/app_settings/branchwise_filteration.php";
+                  $query .= " order by exc_id desc";
                   $sq_booking = mysqlQuery($query);
 
                   while($row_booking = mysqli_fetch_assoc($sq_booking)){
@@ -68,29 +69,31 @@ $branch_status = $_POST['branch_status']
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
             <input type="text" id="payment_amount" name="payment_amount" class="form-control" placeholder="*Amount" title="Amount" onchange="validate_balance(this.id);payment_amount_validate(this.id,'payment_mode','transaction_id','bank_name','bank_id');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges');">
           </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="hidden form-control" type="text" id="credit_charges" name="credit_charges" title="Credit card charges" disabled>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <select class="hidden form-control" id="identifier" onchange="get_credit_card_data('identifier','payment_mode','credit_card_details')" title="Identifier(4 digit)" required
+              ><option value=''>Select Identifier</option></select>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+              <input class="hidden form-control" type="text" id="credit_card_details" name="credit_card_details" title="Credit card details" disabled>
+            </div>
+          </div>
+          <div class="row">
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
             <input type="text" id="bank_name" name="bank_name" class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" disabled>
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
-            <input type="text" id="transaction_id" onchange="validate_alphanumeric(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+            <input type="number" id="transaction_id" onchange="validate_alphanumeric(this.id);" name="transaction_id" class="form-control" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
             <select name="bank_id" id="bank_id" title="Creditor Bank" disabled>
               <?php get_bank_dropdown(); ?>
             </select>
           </div>
-          </div>
-          <div class="row mg_tp_10">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <input class="hidden form-control" type="text" id="credit_charges" name="credit_charges" title="Credit card charges" disabled>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <select class="hidden form-control" id="identifier" onchange="get_credit_card_data('identifier','payment_mode','credit_card_details')" title="Identifier(4 digit)" required
-              ><option value=''>Select Identifier</option></select>
-            </div>
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              <input class="hidden form-control" type="text" id="credit_card_details" name="credit_card_details" title="Credit card details" disabled>
-            </div>
           </div>
           <div class="row mg_tp_10">
           <div class="col-md-3 col-sm-3">
@@ -126,9 +129,7 @@ $('#frm_exc_payment_save1').validate({
     exc_id : { required : true },
     payment_date : { required : true },
     payment_amount : { required : true, number: true },
-    payment_mode : { required : true },
-    bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-    transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+    payment_mode : { required : true }, 
     bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
   },
   submitHandler:function(form){

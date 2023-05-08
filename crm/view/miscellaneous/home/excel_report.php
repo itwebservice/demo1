@@ -164,9 +164,10 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('I'.$row_count, "Cancel Amount")
         ->setCellValue('J'.$row_count, "Total Amount")
         ->setCellValue('K'.$row_count, "Paid Amount")
-        ->setCellValue('L'.$row_count, "Created By");
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('L'.$row_count, "Created By")
+        ->setCellValue('M'.$row_count, "Booking Date");
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
 $query = "select * from  miscellaneous_master where financial_year_id='$financial_year_id' and delete_status='0' ";
@@ -249,9 +250,10 @@ while($row_visa = mysqli_fetch_assoc($sq_visa)){
         ->setCellValue('I'.$row_count, number_format($cancel_amount,2))
         ->setCellValue('J'.$row_count, number_format($total_visa_amount,2))
         ->setCellValue('K'.$row_count,$paid_amount)
-        ->setCellValue('L'.$row_count,$emp_name);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($content_style_Array);
-	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('L'.$row_count,$emp_name)
+        ->setCellValue('M'.$row_count,date('d-m-Y',strtotime($row_visa['created_at'])));
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($content_style_Array);
+	$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
 
 
 
@@ -268,10 +270,11 @@ while($row_visa = mysqli_fetch_assoc($sq_visa)){
         ->setCellValue('I'.$row_count, number_format($cancelled_amount,2))
         ->setCellValue('J'.$row_count, number_format($total_amount,2))
         ->setCellValue('K'.$row_count, "")
-        ->setCellValue('L'.$row_count, "");
+        ->setCellValue('L'.$row_count, "")
+        ->setCellValue('M'.$row_count, "");
 
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':L'.$row_count)->applyFromArray($borderArray);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);
 
 
 }

@@ -231,7 +231,7 @@ $count = 0;
         ->setCellValue('F'.$row_count, "")
         ->setCellValue('G'.$row_count, "")
         ->setCellValue('H'.$row_count, "Total Paid : ".number_format($total_payment, 2))
-        ->setCellValue('I'.$row_count, "Total Pending : ".number_format($sq_pending_amount, 2))
+        ->setCellValue('I'.$row_count, "Pending Clearance : ".number_format($sq_pending_amount, 2))
         ->setCellValue('J'.$row_count, "Total Cancel : ".number_format($sq_cancel_amount, 2))
         ->setCellValue('K'.$row_count, "Total Payment : ".number_format(($total_payment - $sq_pending_amount - $sq_cancel_amount), 2));
 

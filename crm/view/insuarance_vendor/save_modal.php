@@ -25,12 +25,12 @@ include "../../model/model.php";
             <input type="text" class="form-control" onchange="mobile_validate(this.id);" id="landline_no" name="landline_no" placeholder="Landline Number" title="Landline Number">
           </div>
           <div class="col-md-3 col-sm-6 mg_bt_10">
-    			 <input type="text" id="email_id" name="email_id" placeholder="Email ID" title="Email ID">
+    			  <input type="text" id="email_id" name="email_id" placeholder="Email ID" title="Email ID">
     		  </div> 
     		</div>
     		<div class="row">
     			<div class="col-md-3 col-sm-6 mg_bt_10">
-    				<input type="text" id="concern_person_name" name="concern_person_name" placeholder="Concern Person" title="Concern Person">
+    				<input type="text" id="concern_person_name" name="concern_person_name" placeholder="Contact Person Name" title="Contact Person Name">
     			</div>
     			<div class="col-md-3 col-sm-6 mg_bt_10">
             <input type="text" id="immergency_contact_no" name="immergency_contact_no" onchange="mobile_validate(this.id);" placeholder="Emergency Contact No" title="Emergency Contact No">
@@ -79,7 +79,7 @@ include "../../model/model.php";
             <input type="text" name="service_tax_no" id="service_tax_no" onchange="validate_alphanumeric(this.id)" placeholder="Tax No" title="Tax No" style="text-transform: uppercase;">
           </div>
           <div class="col-md-3 col-sm-6 mg_bt_10">
-            <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" placeholder="PAN/TAN No" title="PAN/TAN No" style="text-transform: uppercase;">
+            <input type="text" id="supp_pan" name="supp_pan" onchange="validate_alphanumeric(this.id)" placeholder="Personal Identification No(PIN)" title="Personal Identification No(PIN)" style="text-transform: uppercase;">
           </div>
           <div class="col-md-3 col-sm-6 mg_bt_10">
             <input type="number" id="opening_balance" value="0" name="opening_balance" placeholder="*Opening Balance" title="Opening Balance">

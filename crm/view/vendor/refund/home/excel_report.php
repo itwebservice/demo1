@@ -183,8 +183,8 @@ $row_count++;
         ->setCellValue('B'.$row_count, "")
         ->setCellValue('C'.$row_count, "")
         ->setCellValue('D'.$row_count, "")
-        ->setCellValue('E'.$row_count, "Refund : ".(number_format($total_amount,2)))
-        ->setCellValue('F'.$row_count, "Pending : ".(number_format($pending_amount,2)))
+        ->setCellValue('E'.$row_count, "Refund Amount: ".(number_format($total_amount,2)))
+        ->setCellValue('F'.$row_count, "Pending Clearance: ".(number_format($pending_amount,2)))
         ->setCellValue('G'.$row_count, "Cancelled : ".(number_format($cancelled_amount,2)))
         ->setCellValue('H'.$row_count, "Total Refund: ".(number_format(($total_amount - $pending_amount - $cancelled_amount),2)));
 

@@ -78,6 +78,9 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 	$date = $sq_visa_info['created_at'];
 	$yr = explode("-", $date);
 	$year = $yr[0];
+	$date1 = $row_visa_payment['payment_date'];
+	$yr1 = explode("-", $date1);
+	$year1 = $yr1[0];
 
 	$customer_info = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_visa_info[customer_id]'"));
 	if($customer_info['type']=='Corporate'||$customer_info['type'] == 'B2B'){
@@ -100,7 +103,7 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 	$sq_paid_amount = $sq_paid_amount + $row_visa_payment['payment_amount'] + $row_visa_payment['credit_charges'];
 
 	$payment_id_name = " Miscellaneous Payment ID";
-	$payment_id = get_misc_booking_payment_id($row_visa_payment['payment_id'],$year);
+	$payment_id = get_misc_booking_payment_id($row_visa_payment['payment_id'],$year1);
 	$receipt_date = date('d-m-Y');
 	$booking_id = get_misc_booking_id($row_visa_payment['misc_id'],$year);
 	$customer_id = $sq_visa_info['customer_id'];
@@ -130,12 +133,13 @@ while($row_visa_payment = mysqli_fetch_assoc($sq_visa_payment)){
 		$edit_btn = '';
 		$delete_btn = '';
 	}else{
-		$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='visa_payment_update_modal(".$row_visa_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+		$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='visa_payment_update_modal(".$row_visa_payment['payment_id'].")' title='Update Details' id='updatemr_btn-". $row_visa_payment['payment_id'] ."'><i class='fa fa-pencil-square-o'></i></button>";
 		$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_visa_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 	}
 	$temp_arr = array( "data" => array(
 		(int)($count),
 		$checshow,
+		$payment_id,
 		get_misc_booking_id($row_visa_payment['misc_id'],$year),
 		$customer_name,
 		date('d/m/Y', strtotime($row_visa_payment['payment_date'])),

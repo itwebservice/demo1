@@ -28,7 +28,24 @@
             }
         }
         $readonly = ($inclusive_d != '') ? 'readonly' : '';
+        $reflections = json_decode($sq_booking_info['reflections']);
+        if($reflections[0]->tax_apply_on == '3') { 
+            $tax_apply_on = 'Tour Amount';
+        }
+        else if($reflections[0]->tax_apply_on == '1') { 
+            $tax_apply_on = 'Basic Amount';
+        }
+        else if($reflections[0]->tax_apply_on == '2') { 
+            $tax_apply_on = 'Service Charge';
+        }
+        else if($reflections[0]->tax_apply_on == '4') { 
+            $tax_apply_on = 'Total';
+        }else{
+            $tax_apply_on = '';
+        }
         ?>
+        <input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+        <input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
         <div class="container-fluid mg_tp_10">
             <div class="app_panel_content no-pad">
                     <div class="row">
@@ -41,7 +58,7 @@
                                         <input type="text" id="txt_hotel_expenses" name="txt_hotel_expenses"
                                             placeholder="Tour Amount" title="Tour Amount"
                                             value="<?php echo $sq_booking_info['total_hotel_expense']; ?>"
-                                            onchange="validate_balance(this.id);calculate_tour_cost(this.id);get_auto_values('booking_date','total_basic_amt','payment_mode','service_charge','markup','update','true','basic','basic',true);">
+                                            onchange="validate_balance(this.id);calculate_tour_cost(this.id);get_auto_values('booking_date','total_basic_amt','payment_mode','service_charge','markup','update','true','basic','basic',);">
                                     </div>
                                     <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10_xs">
                                         <label for="txt_travel_total_expense1">Travel Amount</label>

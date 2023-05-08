@@ -82,12 +82,12 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                             </div>
                             <div id="cust_details">
                                 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-                                    <input type="text" id="email_id" name="email_id" title="Email Id"
-                                        placeholder="Email ID" title="Email ID" readonly>
-                                </div>
-                                <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                     <input type="text" id="mobile_no" name="mobile_no" title="Mobile Number"
                                         placeholder="Mobile No" title="Mobile No" readonly>
+                                </div>
+                                <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                    <input type="text" id="email_id" name="email_id" title="Email Id"
+                                        placeholder="Email ID" title="Email ID" readonly>
                                 </div>
                                 <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                     <input type="text" id="company_name" class="hidden" name="company_name"
@@ -126,12 +126,8 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                         <legend>Hotel Details</legend>
                         <div class="row text-right mg_bt_10">
                             <div class="col-xs-12">
-                                <button type="button" class="btn btn-info btn-sm ico_left"
-                                    onClick="addRow('tbl_hotel_booking')"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add
-                                </button>
-                                <button type="button" class="btn btn-danger btn-sm ico_left"
-                                    onClick="deleteRow('tbl_hotel_booking')"><i
-                                        class="fa fa-times"></i>&nbsp;&nbsp;Delete </button>
+                                <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_hotel_booking')"><i class="fa fa-plus"></i></button>
+                                <button type="button" class="btn btn-pdf btn-sm" title="Delete Row" onclick="deleteRow('tbl_hotel_booking');"><i class="fa fa-trash"></i></button>
                             </div>
                         </div>
                         <div class="row">
@@ -151,71 +147,104 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                     <div class="panel panel-default panel-body app_panel_style feildset-panel mg_tp_30">
                         <legend>Costing Details</legend>
                         <div class="row">
-                            <div class="col-md-4 col-sm-6 col-xs-12">
+                            <div class="col-md-3 col-sm-6 col-xs-12">
                                 <small id="basic_show" style="color:red">&nbsp;</small>
                                 <input type="text" id="sub_total" name="sub_total" placeholder="*Basic Amount"
                                     title="Basic Amount"
-                                    onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','basic','discount',true);validate_balance(this.id)">
+                                    onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','basic','discount');validate_balance(this.id)">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 ">
+                            <div class="col-md-3 col-sm-6 col-xs-12 ">
                                 <small id="service_show" style="color:red">&nbsp;</small>
                                 <input type="text" id="service_charge" name="service_charge"
                                     placeholder="Service Charge" title="Service Charge"
                                     onchange="total_fun();validate_balance(this.id);get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','service_charge','discount')">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 ">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
+                                <select title="Tax Apply On" id="tax_apply_on" name="tax_apply_on" class="form-control" onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','basic','discount');">
+                                    <option value="">*Tax Apply On</option>
+                                    <option value="1">Basic Amount</option>
+                                    <option value="2">Service Charge</option>
+                                    <option value="3">Total</option>
+                                </select>
+                            </div> 
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
+                                <select title="Select Tax" id="tax_value" name="tax_value" class="form-control" onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','basic','discount');">
+                                    <option value="">*Select Tax</option>
+                                    <?php get_tax_dropdown('Income') ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small>&nbsp;</small>
                                 <input type="text" id="service_tax_subtotal" name="service_tax_subtotal"
                                     placeholder="Tax Amount" title="Tax Amount" readonly>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="markup_show" style="color:red">&nbsp;</small>
-                                <input type="text" id="markup" name="markup" placeholder="Markup Cost"
-                                    title="Markup Cost"
+                                <input type="text" id="markup" name="markup" placeholder="Markup Amount"
+                                    title="Markup Amount"
                                     onchange="total_fun();get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','markup','discount');validate_balance(this.id)">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
+                                <select title="Select Markup Tax" id="markup_tax_value" name="markup_tax_value" class="form-control" onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','basic','discount');">
+                                    <option value="">*Select Markup Tax</option>
+                                    <?php get_tax_dropdown('Income') ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small>&nbsp;</small>
                                 <input type="text" id="service_tax_markup" name="service_tax_markup"
                                     placeholder="Tax on Markup" title="Tax on Markup" readonly>
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="discount_show" style="color:red">&nbsp;</small>
                                 <input type="text" id="discount" name="discount" placeholder="Discount "
                                     title="Discount"
-                                    onchange="total_fun();get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','discount','discount',true);validate_balance(this.id)">
+                                    onchange="total_fun();get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','discount','discount');validate_balance(this.id)">
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="text" id="tds" name="tds" placeholder="TDS" title="TDS"
                                     onchange="total_fun();validate_balance(this.id)">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="number" name="tcs_tax" id="tcs_tax" placeholder="TCS" title="TCS"
                                     onchange="total_fun();" <?= $tcs_readonly ?> />
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="text" name="roundoff" id="roundoff" placeholder="Round Off"
                                     title="RoundOff" readonly>
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="text" name="total_fee" id="total_fee"
                                     class="amount_feild_highlight text-right" placeholder="Net Total" title="Net Total"
                                     readonly>
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="text" name="due_date" id="due_date" placeholder="Due Date" title="Due Date"
                                     value="<?= date('d-m-Y') ?>">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <small>&nbsp;</small>
                                 <input type="text" name="booking_date" id="booking_date" placeholder="Booking Date"
                                     value="<?= date('d-m-Y') ?>" title="Booking Date"
-                                    onchange="check_valid_date(this.id);get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','service_charge','discount',true);">
+                                    onchange="check_valid_date(this.id);get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','service_charge','discount');">
                             </div>
-                            <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10" id="currency_div">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10 mg_tp_10" id="currency_div">
                             </div>
                         </div>
                     </div>
@@ -230,7 +259,7 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
 
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                                 <select name="payment_mode" id="payment_mode" class="form-control" title="Mode"
-                                    onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','service_charge','discount',true);payment_master_toggles(this.id, 'bank_name', 'transaction_id', 'bank_id');get_identifier_block('identifier','payment_mode','credit_card_details','credit_charges');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges')">
+                                    onchange="get_auto_values('booking_date','sub_total','payment_mode','service_charge','markup','save','true','service_charge','discount');payment_master_toggles(this.id, 'bank_name', 'transaction_id', 'bank_id');get_identifier_block('identifier','payment_mode','credit_card_details','credit_charges');get_credit_card_charges('identifier','payment_mode','payment_amount','credit_card_details','credit_charges')">
                                     <?php echo get_payment_mode_dropdown(); ?>
                                 </select>
                             </div>
@@ -263,7 +292,7 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                     placeholder="Bank Name" title="Bank Name" disabled>
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
-                                <input type="text" id="transaction_id" name="transaction_id"
+                                <input type="number" id="transaction_id" name="transaction_id"
                                     onchange="validate_specialChar(this.id)" class="form-control"
                                     placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
                             </div>
@@ -372,45 +401,42 @@ function total_fun() {
     var total = total_amount.toFixed(2);
 
     var hotel_id_arr = [];
+    var tour_type_arr = [];
     var table = document.getElementById("tbl_hotel_booking");
     var rowCount = table.rows.length;
     for (var i = 0; i < rowCount; i++) {
         var row = table.rows[i];
-
         if (row.cells[0].childNodes[0].checked) {
-            var hotel_id = row.cells[3].childNodes[0].value;
+            var tour_type = row.cells[2].childNodes[0].value;
+            var hotel_id = row.cells[4].childNodes[0].value;
             hotel_id_arr.push(hotel_id);
+            tour_type_arr.push(tour_type);
         }
     }
-    $.post(base_url + 'view/hotels/booking/inc/get_hotel_type.php', {
-        hotel_id_arr: hotel_id_arr
-    }, function(data) {
-        var tour_type = parseInt(data);
-        if (tour_type === 1 && parseInt(tcs_apply) == 1) {
-            if (parseInt(tcs_calc) == 0) {
-                var net_total = parseFloat(total);
-                var tsc_tax = parseFloat(net_total) * (parseFloat(tcs) / 100);
-                $('#tcs_tax').val(tsc_tax.toFixed(2));
-                document.getElementById("tcs_tax").readOnly = true;
-            } else {
-                var tsc_tax = $('#tcs_tax').val();
-                if (tsc_tax == '') {
-                    tsc_tax = 0;
-                }
-                document.getElementById("tcs_tax").readOnly = false;
-            }
-        } else if (tour_type === 0 || parseInt(tcs_apply) == 0) {
-            var tsc_tax = 0;
+    if (tour_type_arr.includes("International") && parseInt(tcs_apply) == 1) {
+        if (parseInt(tcs_calc) == 0) {
+            var net_total = parseFloat(total);
+            var tsc_tax = parseFloat(net_total) * (parseFloat(tcs) / 100);
             $('#tcs_tax').val(tsc_tax.toFixed(2));
             document.getElementById("tcs_tax").readOnly = true;
+        } else {
+            var tsc_tax = $('#tcs_tax').val();
+            if (tsc_tax == '') {
+                tsc_tax = 0;
+            }
+            document.getElementById("tcs_tax").readOnly = false;
         }
+    } else if (!tour_type_arr.includes("International") || parseInt(tcs_apply) == 0) {
+        var tsc_tax = 0;
+        $('#tcs_tax').val(tsc_tax.toFixed(2));
+        document.getElementById("tcs_tax").readOnly = true;
+    }
 
-        total = parseFloat(total) + parseFloat(tsc_tax);
-        var roundoff = Math.round(total) - total;
+    total = parseFloat(total) + parseFloat(tsc_tax);
+    var roundoff = Math.round(total) - total;
 
-        $('#roundoff').val(roundoff.toFixed(2));
-        $('#total_fee').val(parseFloat(total) + parseFloat(roundoff));
-    });
+    $('#roundoff').val(roundoff.toFixed(2));
+    $('#total_fee').val(parseFloat(total) + parseFloat(roundoff));
 }
 
 function business_rule_load() {
@@ -448,24 +474,6 @@ $(function() {
             payment_mode: {
                 required: true
             },
-            bank_name: {
-                required: function() {
-                    if ($('#payment_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            transaction_id: {
-                required: function() {
-                    if ($('#payment_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
             bank_id: {
                 required: function() {
                     if ($('#payment_mode').val() != "Cash") {
@@ -475,6 +483,9 @@ $(function() {
                     }
                 }
             },
+            tax_apply_on : { required:true},
+            tax_value : { required:true},
+            markup_tax_value : { required:true}
         },
         submitHandler: function(form) {
 
@@ -543,6 +554,7 @@ $(function() {
             var extra_beds_arr = new Array();
             var meal_plan_arr = new Array();
             var conf_no_arr = new Array();
+            var tour_type_arr = [];
 
             if (parseFloat(discount) > (parseFloat(service_charge) + parseFloat(markup))) {
                 error_msg_alert("Discount can't be greater than service charge + markup !");
@@ -591,18 +603,19 @@ $(function() {
                 var row = table.rows[i];
                 if (row.cells[0].childNodes[0].checked) {
 
-                    var city_id = row.cells[2].childNodes[0].value;
-                    var hotel_id = row.cells[3].childNodes[0].value;
-                    var check_in = row.cells[4].childNodes[0].value;
-                    var check_out = row.cells[5].childNodes[0].value;
-                    var no_of_nights = row.cells[6].childNodes[0].value;
-                    var rooms = row.cells[7].childNodes[0].value;
-                    var room_type = row.cells[8].childNodes[0].value;
-                    var category = row.cells[9].childNodes[0].value;
-                    var accomodation_type = row.cells[10].childNodes[0].value;
-                    var extra_beds = row.cells[11].childNodes[0].value;
-                    var meal_plan = row.cells[12].childNodes[0].value;
-                    var conf_no = row.cells[13].childNodes[0].value;
+                    var tour_type = row.cells[2].childNodes[0].value;
+                    var city_id = row.cells[3].childNodes[0].value;
+                    var hotel_id = row.cells[4].childNodes[0].value;
+                    var check_in = row.cells[5].childNodes[0].value;
+                    var check_out = row.cells[6].childNodes[0].value;
+                    var no_of_nights = row.cells[7].childNodes[0].value;
+                    var rooms = row.cells[8].childNodes[0].value;
+                    var room_type = row.cells[9].childNodes[0].value;
+                    var category = row.cells[10].childNodes[0].value;
+                    var accomodation_type = row.cells[11].childNodes[0].value;
+                    var extra_beds = row.cells[12].childNodes[0].value;
+                    var meal_plan = row.cells[13].childNodes[0].value;
+                    var conf_no = row.cells[14].childNodes[0].value;
 
                     var msg = "";
                     if (city_id == "") {
@@ -620,9 +633,6 @@ $(function() {
                     if (rooms == "") {
                         msg += "No of Rooms is required in row:" + (i + 1) + '<br>';
                     }
-                    if (extra_beds == "") {
-                        msg += "Extra beds is required in row:" + (i + 1) + '<br>';
-                    }
                     if (no_of_nights == "") {
                         msg += "No of Nights is required in row:" + (i + 1) + '<br>';
                     }
@@ -633,6 +643,7 @@ $(function() {
                         return false;
                     }
 
+                    tour_type_arr.push(tour_type);
                     city_id_arr.push(city_id);
                     hotel_id_arr.push(hotel_id);
                     check_in_arr.push(check_in);
@@ -655,6 +666,9 @@ $(function() {
             var hotel_tds = $('#hotel_tds').val();
             var tcs_per = $('#tcs').val();
             var tcs_tax = $('#tcs_tax').val();
+			var tax_apply_on = $('#tax_apply_on').val();
+			var tax_value = $('#tax_value').val();
+			var markup_tax_value = $('#markup_tax_value').val();
 
             var reflections = [];
             reflections.push({
@@ -662,7 +676,10 @@ $(function() {
                 'hotel_markup': hotel_markup,
                 'hotel_taxes': hotel_taxes,
                 'hotel_markup_taxes': hotel_markup_taxes,
-                'hotel_tds': hotel_tds
+                'hotel_tds': hotel_tds,
+                'tax_apply_on':tax_apply_on,
+                'tax_value':tax_value,
+                'markup_tax_value':markup_tax_value
             });
             var bsmValues = [];
             bsmValues.push({
@@ -803,6 +820,7 @@ $(function() {
                                         bank_name: bank_name,
                                         transaction_id: transaction_id,
                                         bank_id: bank_id,
+                                        tour_type_arr:tour_type_arr,
                                         city_id_arr: city_id_arr,
                                         hotel_id_arr: hotel_id_arr,
                                         check_in_arr: check_in_arr,

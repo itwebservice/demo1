@@ -208,9 +208,9 @@ $(function () {
 			txt_child_with_bed: { number: true },
 			txt_child_without_bed: { number: true },
 			txt_contact_person_name: { required: true },
-			txt_m_passport_no1: { required: function () { if ($('#tour_type').val() == "International") { return true; } else { return false; } } },
-			txt_m_passport_issue_date1: { required: function () { if ($('#tour_type').val() == "International") { return true; } else { return false; } } },
-			txt_m_passport_expiry_date1: { required: function () { if ($('#tour_type').val() == "International") { return true; } else { return false; } } },
+			// txt_m_passport_no1: { required: function () { if ($('#tour_type').val() == "International") { return true; } else { return false; } } },
+			// txt_m_passport_issue_date1: { required: function () { if ($('#tour_type').val() == "International") { return true; } else { return false; } } },
+			// txt_m_passport_expiry_date1: { required: function () { if ($('#tour_type').val() == "International") { return true; } else { return false; } } },
 
 		},
 		submitHandler: function (form) {
@@ -240,30 +240,11 @@ $(function () {
 				for (var i = 0; i < rowCount; i++) {
 					var row = table.rows[i];
 					if (row.cells[0].childNodes[0].checked) {
-						if (row.cells[2].childNodes[0].value == '') {
-							error_msg_alert('Special Attraction is mandatory in row-' + (i + 1) + '<br>');
-							return false;
-						}
 						if (row.cells[3].childNodes[0].value == '') {
 							error_msg_alert('Daywise Program is mandatory in row-' + (i + 1) + '<br>');
 							return false;
 						}
-						if (row.cells[4].childNodes[0].value == '') {
-							error_msg_alert('Overnight Stay is mandatory in row-' + (i + 1) + '<br>');
-							return false;
-						}
-						// var flag1 = validate_spattration(row.cells[2].childNodes[0].id);
-						// var flag2 = validate_dayprogram(row.cells[3].childNodes[0].id);
-						// var flag3 = validate_onstay(row.cells[4].childNodes[0].id);
-						// if (!flag1 || !flag2 || !flag3) {
-						// 	return false;
-						// }
-						checkedRowCount++;
 					}
-				}
-				if (checkedRowCount < 1) {
-					error_msg_alert('Atleast one day program is required!');
-					return false;
 				}
 				//Hotel info
 				var table = document.getElementById('tbl_package_hotel_infomration');
@@ -364,17 +345,17 @@ function package_tour_booking_tab1_validate() {
 	}
 	for (var i = 0; i < rowCount; i++) {
 		var row = table.rows[i];
-		if (row.cells[0].childNodes[0].checked && tour_type == 'International') {
-			if (row.cells[10].childNodes[0].value == '') {
-				validate_message += 'Enter traveller Passport no in row-' + (i + 1) + '<br>';
-			}
-			if (row.cells[11].childNodes[0].value == '') {
-				validate_message += 'Enter traveller Passport issue date in row-' + (i + 1) + '<br>';
-			}
-			if (row.cells[12].childNodes[0].value == '') {
-				validate_message += 'Enter traveller Passport expiry date in row-' + (i + 1) + '<br>';
-			}
-		}
+		// if (row.cells[0].childNodes[0].checked && tour_type == 'International') {
+		// 	if (row.cells[10].childNodes[0].value == '') {
+		// 		validate_message += 'Enter traveller Passport no in row-' + (i + 1) + '<br>';
+		// 	}
+		// 	if (row.cells[11].childNodes[0].value == '') {
+		// 		validate_message += 'Enter traveller Passport issue date in row-' + (i + 1) + '<br>';
+		// 	}
+		// 	if (row.cells[12].childNodes[0].value == '') {
+		// 		validate_message += 'Enter traveller Passport expiry date in row-' + (i + 1) + '<br>';
+		// 	}
+		// }
 		if (row.cells[0].childNodes[0].checked) {
 			validate_dynamic_empty_fields(row.cells[3].childNodes[0]);
 			validate_dynamic_empty_fields(row.cells[8].childNodes[0]);
@@ -413,6 +394,22 @@ function package_tour_booking_tab1_validate() {
 			if (row.cells[8].childNodes[0].value == '') {
 				validate_message += 'Enter traveller age in row-' + (i + 1) + '<br>';
 			}
+			var tour_type_main = $('#tour_type').val();
+			// if(tour_type_main == "International")
+			// {
+			// 	if (row.cells[10].childNodes[0].value == '') {
+			// 		validate_message += "Enter Passport No. in row -" + (i + 1) + '<br>';
+						
+			// 	}
+			// 	if (row.cells[11].childNodes[0].value == '') {
+			// 		validate_message +="Enter Issue Date in row -" + (i + 1), + '<br>';
+						
+			// 	}
+			// 	if (row.cells[12].childNodes[0].value == '') {
+			// 		validate_message +="Enter Expiry Date in row -" + (i + 1), + '<br>';
+						
+			// 	}
+			// }
 		}
 	}
 
@@ -456,8 +453,8 @@ function quotation_info_load() {
 				$('#tour_type').val(response.booking_type);
 				$('#txt_tour_total_days').val(response.total_days);
 				$('#txt_child_without_bed').val(response.children_without_bed);
-				$('#txt_child_with_bed').val(response.children_with_bed);
-
+				$('#tax_apply_on').val(response.tax_apply_on);
+				$('#tax_value').val(response.tax_value);
 				//Passenger Rows
 				var table = document.getElementById('tbl_package_tour_member');
 				if (table.rows.length == 1) {

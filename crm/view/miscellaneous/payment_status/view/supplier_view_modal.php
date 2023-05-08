@@ -29,21 +29,28 @@ $misc_id = $_POST['misc_id'];
                        $count = 0;
                        $sq_query = mysqlQuery("SELECT * FROM vendor_estimate WHERE status!='Cancel' and estimate_type LIKE  'miscellaneous Booking' AND estimate_type_id = '$misc_id' and delete_status='0'");
 
-                       while($row_entry = mysqli_fetch_assoc($sq_query))
-                       {
+                      while($row_entry = mysqli_fetch_assoc($sq_query))
+                      {
                           $Supplier_name = get_vendor_name_report($row_entry['vendor_type'] ,$row_entry['vendor_type_id']);
                           $bg = ($row_entry['status']=="Cancel") ? "danger" : "";
 
-                           $count++;
-                            ?>
-                           <tr>
+                          if($row_entry['purchase_return'] == 0){
+                            $total_purchase = $row_entry['net_total'];
+                          }
+                          else if($row_entry['purchase_return'] == 2){
+                            $cancel_estimate = json_decode($row_entry['cancel_estimate']);
+                            $p_purchase = ($row_entry['net_total'] - floatval($cancel_estimate[0]->net_total));
+                            $total_purchase = $p_purchase;
+                          }
+                          $count++;
+                          ?>
+                          <tr>
                               <td><?php echo $count; ?></td>
                               <td><?php echo get_date_user($row_entry['purchase_date']); ?></td>
                               <td><?php echo $row_entry['vendor_type']; ?></td>
                               <td><?php echo $Supplier_name; ?></td>
-                              <td><?php echo $row_entry['net_total']; ?></td>
-                           
-                          </tr>  
+                              <td><?php echo number_format($total_purchase,2); ?></td>
+                          </tr>
                           <?php
 
                         }

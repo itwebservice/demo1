@@ -422,7 +422,7 @@ if($sq_trans_count>0){
 
             <div class="single_accomodation_hotel mg_bt_10_xs">
 
-              <div class="acco_hotel_image" style="display: block;cursor: pointer;" onclick="display_gallery('<?php echo $row_hotel['hotel_name']; ?>')">
+              <div class="acco_hotel_image" style="display: block;cursor: pointer;" id="hotel_img<?php echo $row_hotel['hotel_name']; ?>" onclick="display_gallery('<?php echo $row_hotel['hotel_name']; ?>','hotel_img')">
 
                 <img src="<?php echo $newUrl; ?>" style="width: 100%;height: 135px;" class="img-responsive">
 
@@ -446,7 +446,7 @@ if($sq_trans_count>0){
 
               <div class="acco_hotel_btn text-center mg_tp_20">
 
-                <button type="button" data-toggle="modal" onclick="display_gallery('<?php echo $row_hotel['hotel_name']; ?>')" title="View Gallery">Hotel Gallery</button>
+                <button type="button" data-toggle="modal" id="hotel_img_btn<?php echo $row_hotel['hotel_name']; ?>" onclick="display_gallery('<?php echo $row_hotel['hotel_name']; ?>','hotel_img_btn')" title="View Gallery">Hotel Gallery</button>
 
               </div>
 
@@ -482,8 +482,8 @@ if($sq_trans_count>0){
 
           <!-- Nav tabs -->
             <ul class="nav nav-tabs responsive" role="tablist">
-              <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Inclusion</a></li>
-              <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Exclusion</a></li>
+              <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Inclusions</a></li>
+              <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Exclusions</a></li>
               <li role="presentation"><a href="#terms" aria-controls="terms" role="tab" data-toggle="tab">Terms & conditions</a></li>
               <li role="presentation"><a href="#note" aria-controls="note" role="tab" data-toggle="tab">Note</a></li>
             </ul>
@@ -757,13 +757,16 @@ if($sq_trans_count>0){
 
 
 
-    function display_gallery(hotel_name)
-    {
+    function display_gallery(hotel_name,btn_id){
 
+        $('#'+btn_id+hotel_name).prop('disabled',true);
+        $('#'+btn_id+hotel_name).button('loading');
         $.post('../package_tour/quotation/display_hotel_gallery.php', { hotel_name : hotel_name}, function(data){
-        $('#div_quotation_form').html(data);
-        });
 
+          $('#div_quotation_form').html(data);
+          $('#'+btn_id+hotel_name).prop('disabled',false);
+          $('#'+btn_id+hotel_name).button('reset');
+        });
     }
     </script>
 

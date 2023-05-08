@@ -113,7 +113,7 @@ if ($traveler_group_id != '' && $tour_id != '' && $tour_group_id != '') {
                     <tr>
                         <td class="text-left"><strong>Refund Date</strong></td>
                         <td>
-                            <input type="text" id="refund_date" name="refund_date" placeholder="*Date" title="Date"
+                            <input type="text" id="refund_date" name="refund_date" placeholder="*Refund Date" title="Refund Date"
                                 value="<?= date('d-m-Y') ?>">
                         </td>
                     </tr>
@@ -137,7 +137,7 @@ if ($traveler_group_id != '' && $tour_id != '' && $tour_group_id != '') {
                     <tr>
                         <td class="text-left"><strong>Cheque No / ID</strong></td>
                         <td>
-                            <input type="text" id="transaction_id" onchange="validate_balance(this.id)"
+                            <input type="number" id="transaction_id" onchange="validate_balance(this.id)"
                                 name="transaction_id" placeholder="Cheque No / ID" title="Cheque No / ID" disabled>
                         </td>
                     </tr>
@@ -205,6 +205,8 @@ if ($traveler_group_id != '' && $tour_id != '' && $tour_group_id != '') {
                                 } else if ($row['clearance_status'] == "Cancelled") {
                                     $bg = "danger";
                                     $cancel_amt = $cancel_amt + $row['refund_amount'];
+                                } else if ($row['clearance_status'] == "Cleared") {
+                                    $bg = "success";
                                 } else {
                                     $bg = "";
                                 }
@@ -280,24 +282,6 @@ $('#frm_refund').validate({
         },
         cmb_refund_mode: {
             required: true
-        },
-        bank_name: {
-            required: function() {
-                if ($('#cmb_refund_mode').val() != "Cash") {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        },
-        transaction_id: {
-            required: function() {
-                if ($('#cmb_refund_mode').val() != "Cash") {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
         },
         bank_id: {
             required: function() {

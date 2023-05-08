@@ -24,17 +24,15 @@ include_once("../../../model/model.php");
                             <textarea name="desc" placeholder="*Description" title="Description" class="form-control feature_editor" id="desc" rows="5" required></textarea>
                         </div>
                     </div>
-                    <div class="row mg_bt_20">
-                        <div class="col-md-1">          
+                    <div class="row mg_bt_10">
+                        <div class="col-md-3">          
                             <div class="div-upload">
                                 <div id="id_upload_btn" class="upload-button1"><span>Upload</span></div>
                                 <span id="id_proof_status" ></span>
                                 <ul id="files"></ul>
                                 <input type="hidden" id="image_upload_url" name="image_upload_url">
                             </div>
-                        </div>
-                        <div class="col-md-11">
-                            <div style="color: red; padding-left:25px;">Note :Upload Image below 200KB, resolution :900X450, Format:JPEG, JPG, PNG</div>
+                            <button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note: Upload Image size below 1MB, resolution : 1800*700, Format : JPEG,JPG."><i class="fa fa-question-circle"></i></button>
                         </div>
                     </div>
                     <div class="row mg_tp_20">

@@ -9,6 +9,17 @@ $sq_booking = mysqli_fetch_assoc(mysqlQuery("select * from hotel_booking_master 
 $reflections = json_decode($sq_booking['reflections']);
 $sq_tcs = mysqli_fetch_assoc(mysqlQuery("select * from tcs_master where entry_id='3'"));
 $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
+if($reflections[0]->tax_apply_on == '1') { 
+    $tax_apply_on = 'Basic Amount';
+}
+else if($reflections[0]->tax_apply_on == '2') { 
+    $tax_apply_on = 'Service Charge';
+}
+else if($reflections[0]->tax_apply_on == '3') { 
+    $tax_apply_on = 'Total';
+}else{
+    $tax_apply_on = '';
+}
 ?>
 <form id="frm_hotel_booking_update">
 
@@ -35,6 +46,10 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                     <input type="hidden" id="tcs1" name="tcs" value="<?= $sq_tcs['tax_amount'] ?>">
                     <input type="hidden" id="tcs_apply1" name="tcs_apply" value="<?= $sq_tcs['apply'] ?>">
                     <input type="hidden" id="tcs_calc1" name="tcs_calc" value="<?= $sq_tcs['calc'] ?>">
+                    <input type="hidden" id="tax_apply_on" name="tax_apply_on" value="<?php echo $tax_apply_on ?>">
+                    <input type="hidden" id="atax_apply_on" name="atax_apply_on" value="<?php echo $reflections[0]->tax_apply_on ?>">
+                    <input type="hidden" id="tax_value1" name="tax_value1" value="<?php echo $reflections[0]->tax_value ?>">
+                    <input type="hidden" id="markup_tax_value1" name="markup_tax_value1" value="<?php echo $reflections[0]->markup_tax_value ?>">
 
                     <div class="panel panel-default panel-body app_panel_style feildset-panel">
                         <legend>Personal Information</legend>
@@ -43,9 +58,9 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                 <select name="customer_id1" id="customer_id1" style="width: 100%"
                                     onchange="customer_info_load('1')" disabled>
                                     <?php
-                  $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
-                  if ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') {
-                  ?>
+                                    $sq_customer = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$sq_booking[customer_id]'"));
+                                    if ($sq_customer['type'] == 'Corporate' || $sq_customer['type'] == 'B2B') {
+                                    ?>
                                     <option value="<?= $sq_customer['customer_id'] ?>">
                                         <?= $sq_customer['company_name'] ?></option>
                                     <?php } else { ?>
@@ -56,12 +71,12 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
-                                <input type="text" id="email_id1" name="email_id1" title="Email Id"
-                                    placeholder="Email ID" title="Email ID" readonly>
-                            </div>
-                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <input type="text" id="mobile_no1" name="mobile_no1" title="Mobile Number"
                                     placeholder="Mobile No" title="Mobile No" readonly>
+                            </div>
+                            <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
+                                <input type="text" id="email_id1" name="email_id1" title="Email Id"
+                                    placeholder="Email ID" title="Email ID" readonly>
                             </div>
                             <div class="col-md-3 col-sm-6 col-xs-12 mg_bt_10">
                                 <input type="text" id="company_name1" class="hidden" name="company_name1"
@@ -98,9 +113,7 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
 
                         <div class="row text-right mg_bt_10">
                             <div class="col-xs-12">
-                                <button type="button" class="btn btn-info btn-sm ico_left"
-                                    onClick="addRow('tbl_hotel_booking_update')"><i
-                                        class="fa fa-plus"></i>&nbsp;&nbsp;Add</button>
+                                <button type="button" class="btn btn-excel" title="Add Row" onclick="addRow('tbl_hotel_booking_update')"><i class="fa fa-plus"></i></button>
                             </div>
                         </div>
 
@@ -112,28 +125,38 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                         class="table table-bordered table-hover table-striped no-marg pd_bt_51"
                                         style="width: 1685px;">
                                         <?php
-                    $sq_entry_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id'"));
-                    if ($sq_entry_count == 0) {
-                      include_once('hotel_booking_dynamic_tbl.php');
-                    } else {
-                      $count = 0;
-                      $sq_entry = mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id'");
-                      while ($row_entry = mysqli_fetch_assoc($sq_entry)) {
-                        $bg = ($row_entry['status'] == "Cancel") ? "danger" : "";
-                        $count++;
-                    ?>
+                                        $sq_entry_count = mysqli_num_rows(mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id'"));
+                                        if ($sq_entry_count == 0) {
+                                        include_once('hotel_booking_dynamic_tbl.php');
+                                        } else {
+                                        $count = 0;
+                                        $sq_entry = mysqlQuery("select * from hotel_booking_entries where booking_id='$booking_id'");
+                                        while ($row_entry = mysqli_fetch_assoc($sq_entry)) {
+                                            $bg = ($row_entry['status'] == "Cancel") ? "danger" : "";
+                                            $count++;
+                                        ?>
                                         <tr class="<?= $bg ?>">
                                             <td><input id="chk_hotel_<?= $prefix . $count ?>_f" type="checkbox"
-                                                    onchange="total_fun1();" checked disabled></td>
+                                                    onchange="total_fun1();" checked></td>
                                             <td><input maxlength="15" type="text" name="username" value="<?= $count ?>"
                                                     placeholder="Sr. No." disabled /></td>
+                                            <td><select id="tour_type<?= $prefix . $count ?>_f" style="width:125px" name="tour_type<?= $prefix . $count ?>_f" title="Tour Type" data-toggle="tooltip" style="width:100%" onchange="get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','service_charge','discount1',true);">
+                                                <option value="<?php echo $row_entry['tour_type'] ?>"><?php echo $row_entry['tour_type'] ?></option>
+                                                <?php if($row_entry['tour_type'] != 'Domestic'){ ?>
+                                                    <option value="Domestic">Domestic</option>
+                                                <?php }
+                                                if($row_entry['tour_type'] != 'International'){ ?>
+                                                    <option value="International">International</option>
+                                                <?php } ?>
+                                                </select>
+                                            </td>
                                             <td><select id="city_id<?= $prefix . $count ?>_f" style="width:150px"
                                                     class="city_id_u" name="city_id<?= $prefix . $count ?>_f"
                                                     title="City" onchange="hotel_name_list_load(this.id)"
                                                     class="app_select2" style="width:100%">
                                                     <?php
-                              $sq_city = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_entry[city_id]'"));
-                              ?>
+                                                    $sq_city = mysqli_fetch_assoc(mysqlQuery("select * from city_master where city_id='$row_entry[city_id]'"));
+                                                    ?>
                                                     <option value="<?php echo $sq_city['city_id'] ?>">
                                                         <?php echo $sq_city['city_name'] ?></option>
                                                 </select>
@@ -168,10 +191,10 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                                     placeholder="*No Of Nights" title="No Of Nights"
                                                     onchange="validate_balance(this.id)"
                                                     value="<?= $row_entry['no_of_nights'] ?>"></td>
-                                            <td><input type="text" style="width:100px;"
+                                            <td><input type="text" style="width:125px;"
                                                     id="rooms<?= $prefix . $count ?>_f"
-                                                    name="rooms<?= $prefix . $count ?>_f" placeholder="*Rooms"
-                                                    title="Rooms" onchange="validate_balance(this.id)"
+                                                    name="rooms<?= $prefix . $count ?>_f" placeholder="*No Of Rooms"
+                                                    title="No Of Rooms" onchange="validate_balance(this.id)"
                                                     value="<?= $row_entry['rooms'] ?>"></td>
                                             <td><select name="room_type<?= $prefix . $count ?>_f" style="width:120px;"
                                                     id="room_type<?= $prefix . $count ?>_f" title="Room Type">
@@ -297,7 +320,7 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                 <small id="basic_show1"
                                     style="color:red"><?= ($inclusive_b == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_b ?></span></small>
                                 <input type="text" id="sub_total1" name="sub_total1" placeholder="Basic Amount" title="Basic Amount"
-                                    onchange="get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','service_charge','discount1',true);total_fun1();validate_balance(this.id)"
+                                    onchange="get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','service_charge','discount1');total_fun1();validate_balance(this.id)"
                                     value="<?= $sub_total ?>">
                             </div>
                             <div class="col-md-4 col-sm-6 col-xs-12">
@@ -319,8 +342,8 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10">
                                 <small id="markup_show1"
                                     style="color:red"><?= ($inclusive_m == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_m ?></span></small>
-                                <input type="text" id="markup1" name="markup1" placeholder="Markup Cost"
-                                    title="Markup Cost"
+                                <input type="text" id="markup1" name="markup1" placeholder="Markup Amount"
+                                    title="Markup Amount"
                                     onchange="total_fun1();get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','markup','discount1');validate_balance(this.id)"
                                     value="<?= $markup ?>">
                             </div>
@@ -335,7 +358,7 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                                     style="color:red"><?= ($inclusive_d == '') ? '&nbsp;' : 'Inclusive Amount : <span>' . $inclusive_d ?></span></small>
                                 <input type="text" id="discount1" name="discount1" placeholder="Discount"
                                     title="Discount"
-                                    onchange="total_fun1();get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','discount','discount1',true);validate_balance(this.id)"
+                                    onchange="total_fun1();get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','discount','discount1');validate_balance(this.id)"
                                     value="<?= $sq_booking['discount'] ?>">
                             </div>
                         </div>
@@ -367,7 +390,7 @@ $tcs_readonly = ($sq_tcs['calc'] == '0') ? 'readonly' : '';
                             <div class="col-md-4 col-sm-6 col-xs-12 mg_bt_10_xs">
                                 <input type="text" name="booking_date1" id="booking_date1" placeholder="Booking Date"
                                     value="<?= get_date_user($sq_booking['created_at']) ?>" title="Booking Date"
-                                    onchange="check_valid_date(this.id);get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','service_charge','discount1',true);">
+                                    onchange="check_valid_date(this.id);get_auto_values('booking_date1','sub_total1','payment_mode','service_charge1','markup1','update','true','service_charge','discount1');">
                             </div>
                         </div>
                         <div class="row">
@@ -497,44 +520,42 @@ function total_fun1() {
     var total = total_amount.toFixed(2);
 
     var hotel_id_arr = [];
+    var tour_type_arr = [];
     var table = document.getElementById("tbl_hotel_booking_update");
     var rowCount = table.rows.length;
     for (var i = 0; i < rowCount; i++) {
         var row = table.rows[i];
 
         if (row.cells[0].childNodes[0].checked) {
-            var hotel_id = row.cells[3].childNodes[0].value;
+            var tour_type = row.cells[2].childNodes[0].value;
+            var hotel_id = row.cells[4].childNodes[0].value;
+            tour_type_arr.push(tour_type);
             hotel_id_arr.push(hotel_id);
         }
     }
-    $.post(base_url + 'view/hotels/booking/inc/get_hotel_type.php', {
-        hotel_id_arr: hotel_id_arr
-    }, function(data) {
-        var tour_type = parseInt(data);
-        if (tour_type === 1 && parseInt(tcs_apply) == 1) {
-            if (parseInt(tcs_calc) == 0) {
-                var net_total = parseFloat(total);
-                var tsc_tax = parseFloat(net_total) * (parseFloat(tcs) / 100);
-                $('#tcs_tax1').val(tsc_tax.toFixed(2));
-                document.getElementById("tcs_tax1").readOnly = true;
-            } else {
-                var tsc_tax = $('#tcs_tax1').val();
-                if (tsc_tax == '') {
-                    tsc_tax = 0;
-                }
-                document.getElementById("tcs_tax1").readOnly = false;
-            }
-        } else if (tour_type === 0 || parseInt(tcs_apply) == 0) {
-            var tsc_tax = 0;
+    if (tour_type_arr.includes("International") && parseInt(tcs_apply) == 1) {
+        if (parseInt(tcs_calc) == 0) {
+            var net_total = parseFloat(total);
+            var tsc_tax = parseFloat(net_total) * (parseFloat(tcs) / 100);
             $('#tcs_tax1').val(tsc_tax.toFixed(2));
             document.getElementById("tcs_tax1").readOnly = true;
+        } else {
+            var tsc_tax = $('#tcs_tax1').val();
+            if (tsc_tax == '') {
+                tsc_tax = 0;
+            }
+            document.getElementById("tcs_tax1").readOnly = false;
         }
-        total = parseFloat(total) + parseFloat(tsc_tax);
-        var roundoff = Math.round(total) - total;
+    } else if (!tour_type_arr.includes("International") || parseInt(tcs_apply) == 0) {
+        var tsc_tax = 0;
+        $('#tcs_tax1').val(tsc_tax.toFixed(2));
+        document.getElementById("tcs_tax1").readOnly = true;
+    }
+    total = parseFloat(total) + parseFloat(tsc_tax);
+    var roundoff = Math.round(total) - total;
 
-        $('#roundoff1').val(roundoff.toFixed(2));
-        $('#total_fee1').val(parseFloat(total) + parseFloat(roundoff));
-    });
+    $('#roundoff1').val(roundoff.toFixed(2));
+    $('#total_fee1').val(parseFloat(total) + parseFloat(roundoff));
 }
 total_fun1();
 
@@ -588,6 +609,7 @@ $(function() {
                 $('#update_btn').prop('disabled', false);
                 return false;
             }
+            var tour_type_arr = new Array();
             var city_id_arr = new Array();
             var hotel_id_arr = new Array();
             var check_in_arr = new Array();
@@ -601,6 +623,7 @@ $(function() {
             var meal_plan_arr = new Array();
             var conf_no_arr = new Array();
             var entry_id_arr = new Array();
+			var e_checkbox_arr = [];
 
             var table = document.getElementById("tbl_hotel_booking_update");
             var rowCount = table.rows.length;
@@ -619,28 +642,28 @@ $(function() {
             for (var i = 0; i < rowCount; i++) {
 
                 var row = table.rows[i];
+                var tour_type = row.cells[2].childNodes[0].value;
+                var city_id = row.cells[3].childNodes[0].value;
+                var hotel_id = row.cells[4].childNodes[0].value;
+                var check_in = row.cells[5].childNodes[0].value;
+                var check_out = row.cells[6].childNodes[0].value;
+                var no_of_nights = row.cells[7].childNodes[0].value;
+                var rooms = row.cells[8].childNodes[0].value;
+                var room_type = row.cells[9].childNodes[0].value;
+                var category = row.cells[10].childNodes[0].value;
+                var accomodation_type = row.cells[11].childNodes[0].value;
+                var extra_beds = row.cells[12].childNodes[0].value;
+                var meal_plan = row.cells[13].childNodes[0].value;
+                var conf_no = row.cells[14].childNodes[0].value;
+
+                if (row.cells[15]) {
+                    var entry_id = row.cells[15].childNodes[0].value;
+                } else {
+                    var entry_id = "";
+                }
+                var msg = "";
                 if (row.cells[0].childNodes[0].checked) {
 
-                    var city_id = row.cells[2].childNodes[0].value;
-                    var hotel_id = row.cells[3].childNodes[0].value;
-                    var check_in = row.cells[4].childNodes[0].value;
-                    var check_out = row.cells[5].childNodes[0].value;
-                    var no_of_nights = row.cells[6].childNodes[0].value;
-                    var rooms = row.cells[7].childNodes[0].value;
-                    var room_type = row.cells[8].childNodes[0].value;
-                    var category = row.cells[9].childNodes[0].value;
-                    var accomodation_type = row.cells[10].childNodes[0].value;
-                    var extra_beds = row.cells[11].childNodes[0].value;
-                    var meal_plan = row.cells[12].childNodes[0].value;
-                    var conf_no = row.cells[13].childNodes[0].value;
-
-                    if (row.cells[14]) {
-                        var entry_id = row.cells[14].childNodes[0].value;
-                    } else {
-                        var entry_id = "";
-                    }
-
-                    var msg = "";
                     if (city_id == "") {
                         msg += "City is required in row:" + (i + 1) + '<br>';
                     }
@@ -653,36 +676,33 @@ $(function() {
                     if (check_out == "") {
                         msg += "Check-Out is required in row:" + (i + 1) + '<br>';
                     }
-                    if (extra_beds == "") {
-                        msg += "Extra beds is required in row:" + (i + 1) + '<br>';
-                    }
                     if (rooms == "") {
                         msg += "Rooms is required in row:" + (i + 1) + '<br>';
                     }
                     if (no_of_nights == "") {
                         msg += "No of Nights is required in row:" + (i + 1) + '<br>';
                     }
-
-                    if (msg != "") {
-                        error_msg_alert(msg);
-                        $('#update_btn').prop('disabled', false);
-                        return false;
-                    }
-
-                    city_id_arr.push(city_id);
-                    hotel_id_arr.push(hotel_id);
-                    check_in_arr.push(check_in);
-                    check_out_arr.push(check_out);
-                    no_of_nights_arr.push(no_of_nights);
-                    rooms_arr.push(rooms);
-                    room_type_arr.push(room_type);
-                    category_arr.push(category);
-                    accomodation_type_arr.push(accomodation_type);
-                    extra_beds_arr.push(extra_beds);
-                    meal_plan_arr.push(meal_plan);
-                    conf_no_arr.push(conf_no);
-                    entry_id_arr.push(entry_id);
                 }
+                if (msg != "") {
+                    error_msg_alert(msg);
+                    $('#update_btn').prop('disabled', false);
+                    return false;
+                }
+                tour_type_arr.push(tour_type);
+                city_id_arr.push(city_id);
+                hotel_id_arr.push(hotel_id);
+                check_in_arr.push(check_in);
+                check_out_arr.push(check_out);
+                no_of_nights_arr.push(no_of_nights);
+                rooms_arr.push(rooms);
+                room_type_arr.push(room_type);
+                category_arr.push(category);
+                accomodation_type_arr.push(accomodation_type);
+                extra_beds_arr.push(extra_beds);
+                meal_plan_arr.push(meal_plan);
+                conf_no_arr.push(conf_no);
+                entry_id_arr.push(entry_id);
+                e_checkbox_arr.push(row.cells[0].childNodes[0].checked);
             }
 
             var hotel_sc = $('#hotel_sc').val();
@@ -690,13 +710,19 @@ $(function() {
             var hotel_taxes = $('#hotel_taxes').val();
             var hotel_markup_taxes = $('#hotel_markup_taxes').val();
             var hotel_tds = $('#hotel_tds').val();
+            var tax_apply_on = $('#atax_apply_on').val();
+            var tax_value = $('#tax_value1').val();
+            var markup_tax_value = $('#markup_tax_value1').val();
             var reflections = [];
             reflections.push({
                 'hotel_sc': hotel_sc,
                 'hotel_markup': hotel_markup,
                 'hotel_taxes': hotel_taxes,
                 'hotel_markup_taxes': hotel_markup_taxes,
-                'hotel_tds': hotel_tds
+                'hotel_tds': hotel_tds,
+                'tax_apply_on':tax_apply_on,
+                'tax_value':tax_value,
+                'markup_tax_value':markup_tax_value
             });
             var bsmValues = [];
             bsmValues.push({
@@ -738,6 +764,7 @@ $(function() {
                             discount: discount,
                             tds: tds,
                             total_fee: total_fee,
+                            tour_type_arr:tour_type_arr,
                             city_id_arr: city_id_arr,
                             hotel_id_arr: hotel_id_arr,
                             check_in_arr: check_in_arr,
@@ -750,7 +777,7 @@ $(function() {
                             extra_beds_arr: extra_beds_arr,
                             meal_plan_arr: meal_plan_arr,
                             conf_no_arr: conf_no_arr,
-                            entry_id_arr: entry_id_arr,
+                            entry_id_arr: entry_id_arr,e_checkbox_arr:e_checkbox_arr,
                             due_date1: due_date1,
                             booking_date1: booking_date1,
                             reflections: reflections,

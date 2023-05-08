@@ -36,7 +36,7 @@
 
 		<div class="col-md-4 col-sm-4 col-xs-12 mg_bt_10">
 
-			<input type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
+			<input type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" disabled>
 
 		</div>
 
@@ -99,10 +99,6 @@ $('#frm_tab4').validate({
 
 			payment_mode : { required : true },
 
-			bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-
-	        transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
-
 	        bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },  
 
 	},
@@ -161,14 +157,19 @@ $('#frm_tab4').validate({
 		var hotel_markup_taxes = $('#hotel_markup_taxes').val();
 		var hotel_tds = $('#hotel_tds').val();
         var roundoff = $('#roundoff').val();
+		var tax_apply_on = $('#tax_apply_on').val();
+		var tax_value = $('#tax_value').val();
+
 		var reflections = [];
-          reflections.push({
-            'train_sc':hotel_sc,
-            'train_markup':hotel_markup,
-            'train_taxes':hotel_taxes,
-            'train_markup_taxes':hotel_markup_taxes,
-            'train_tds':hotel_tds
-		  });
+		reflections.push({
+		'train_sc':hotel_sc,
+		'train_markup':hotel_markup,
+		'train_taxes':hotel_taxes,
+		'train_markup_taxes':hotel_markup_taxes,
+		'train_tds':hotel_tds,
+		'tax_apply_on':tax_apply_on,
+		'tax_value':tax_value
+		});
 		var bsmValues = [];
 		bsmValues.push({
 		"basic" : $('#basic_show').find('span').text(),

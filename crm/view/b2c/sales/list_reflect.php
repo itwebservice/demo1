@@ -38,13 +38,14 @@ while($row_sale = mysqli_fetch_assoc($row_sale1)){
 	$year = $yr[0];
 	$booking_id = get_b2c_booking_id($row_sale['booking_id'],$year);
 
+	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(`credit_charges`) as sumc from b2c_payment_master where booking_id='$row_sale[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+	$credit_card_charges = $sq_payment_info['sumc'];
+	$paid_amount = $sq_payment_info['sum'];
+	
 	$costing_data = json_decode($row_sale['costing_data']);
 	$enq_data = json_decode($row_sale['enq_data']);
 	$net_total = $costing_data[0]->net_total;
 
-	$sq_payment_info = mysqli_fetch_assoc(mysqlQuery("SELECT sum(payment_amount) as sum,sum(`credit_charges`) as sumc from b2c_payment_master where booking_id='$row_sale[booking_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
-	$paid_amount = $sq_payment_info['sum'];
-	$credit_card_charges = $sq_payment_info['sumc'];
 
 	$cancel_amount = $row_sale['cancel_amount'];
 	$total_cost1 = $net_total - $cancel_amount;
@@ -66,13 +67,13 @@ while($row_sale = mysqli_fetch_assoc($row_sale1)){
 	$f_paid_amount += $paid_amount;
 	$f_balance_amount += $balance_amount;
 
+	$sq_cust = mysqli_fetch_assoc(mysqlQuery("select * from customer_master where customer_id='$customer_id'"));
+	$cust_name = $sq_cust['first_name'].' '.$sq_cust['last_name'];
 	// Invoice
-	// if($row_sale['service'] == 'Holiday'){
-		$tour_name = $enq_data[0]->package_name;
-	// }
+	$tour_name = $enq_data[0]->package_name;
 	$service_sac = ($row_sale['service'] == 'Holiday') ? "Package Tour" : "Group Tour";
 	$total_pax = intval($enq_data[0]->adults)+intval($enq_data[0]->chwob)+intval($enq_data[0]->chwb)+intval($enq_data[0]->infant)+intval($enq_data[0]->extra_bed);
-	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='$service_sac'"));   
+	$sq_sac = mysqli_fetch_assoc(mysqlQuery("select * from sac_master where service_name='$service_sac'")); 
 	$sac_code = $sq_sac['hsn_sac_code'];
 	// Costing on invoice
     $total_cost = $costing_data[0]->total_cost;
@@ -92,38 +93,46 @@ while($row_sale = mysqli_fetch_assoc($row_sale1)){
 	$tax = $tax_string;
 	$sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2b_sale/index.php'"));
 	$branch_status = $sq['branch_status'];
-	// Invoice PDF
-	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2c_invoice.php?invoice_no=$booking_id&invoice_date=$booking_date&customer_id=$customer_id&service_name=$service_name&sac_code=$sac_code&tour_name=$tour_name&booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&total_cost=$total_cost&tax_amount=$tax_amount&grand_total=$grand_total&coupon_amount=$coupon_amount&net_total=$net_total&tax=$tax&paid_amount=$paid_amount&total_pax=$total_pax&branch_status=$branch_status";
-	// Booking Form
-	if($row_sale['service'] == 'Holiday'||$row_sale['service'] == 'Group Tour'){
-		$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/b2c_package_tour.php?booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&branch_status=$branch_status";
-	}
 	// Receipt
 	$receipt_type = "B2C Sale Receipt";
 	$url = BASE_URL."model/app_settings/print_html/receipt_html/b2c_receipt_html.php?booking_id=$row_sale[booking_id]&customer_id=$customer_id&confirm_by=$app_name&receipt_type=$receipt_type&branch_status=$branch_status";
-	// Voucher
-	if($row_sale['service'] == 'Holiday'){
-		$voucher_modal = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_modal('.$row_sale['booking_id'].')" ><i class="fa fa-print" data-toggle="tooltip"></i></button>';
+	
+	$conf_btn = '';
+	$voucher_modal = '';
+	if($row_sale['status'] != 'Cancel'){
+		// Booking Form
+		if($row_sale['service'] == 'Holiday'||$row_sale['service'] == 'Group Tour'){
+			$b_url = BASE_URL."model/app_settings/print_html/booking_form_html/b2c_package_tour.php?booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&branch_status=$branch_status";
+			$conf_btn = '<a data-toggle="tooltip" style="display:inline-block" onclick="loadOtherPage(\''. $b_url .'\')" class="btn btn-info btn-sm" title="Download Confirmation Form" ><i class="fa fa-print"></i></a>';
+		}else{
+			$conf_btn = '';
+		}
+		// Voucher
+		if($row_sale['service'] == 'Holiday'){
+			$voucher_modal = '<button data-toggle="tooltip" title="Download Service Voucher" class="btn btn-info btn-sm" onclick="voucher_modal('.$row_sale['booking_id'].')" ><i class="fa fa-print" data-toggle="tooltip"></i></button>';
+		}
+		else{
+			$voucher_modal = '';
+		}
 	}
-	else{
-		$voucher_modal = '';
-	}
+	$cancel_amt = $row_sale['cancel_amount'];
+	// Invoice PDF
+	$url1 = BASE_URL."model/app_settings/print_html/invoice_html/body/b2c_invoice.php?invoice_no=$booking_id&invoice_date=$booking_date&customer_id=$customer_id&service_name=$service_name&sac_code=$sac_code&tour_name=$tour_name&booking_id=$row_sale[booking_id]&credit_card_charges=$credit_card_charges&total_cost=$total_cost&tax_amount=$tax_amount&grand_total=$grand_total&coupon_amount=$coupon_amount&net_total=$net_total&tax=$tax&paid_amount=$paid_amount&total_pax=$total_pax&branch_status=$branch_status&bal_amount=$balance_amount&canc_amount=$cancel_amt&bg=$bg";
+
 	$temp_arr = array( "data" => array(
 		(int)(++$count),
 		$booking_id,
 		$row_sale['service'],
-		$row_sale['name'],
+		$cust_name,
 		get_date_user($row_sale['created_at']),
 		number_format($net_total,2),
 		number_format($cancel_amount,2),
 		number_format($total_cost1,2),
 		number_format($paid_amount,2),
 		number_format($balance_amount,2),
-		'<a data-toggle="tooltip" style="display:inline-block" onclick="loadOtherPage(\''. $b_url .'\')" class="btn btn-info btn-sm" title="Download Confirmation Form" ><i class="fa fa-print"></i></a>
+		$conf_btn.'<a data-toggle="tooltip" onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print" data-toggle="tooltip"></i></a>'.$voucher_modal.'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>		
 
-		<a data-toggle="tooltip" onclick="loadOtherPage(\''. $url1 .'\')" class="btn btn-info btn-sm" title="Download Invoice"><i class="fa fa-print" data-toggle="tooltip"></i></a>'.$voucher_modal.'<a data-toggle="tooltip" onclick="loadOtherPage(\''.$url .'\')" class="btn btn-info btn-sm" title="Download Receipt"><i class="fa fa-print"></i></a>		
-
-		<button style="display:inline-block" class="btn btn-info btn-sm" onclick="package_view_modal('.$row_sale['booking_id'] .')" title="View Details" data-toggle="tooltip"><i class="fa fa-eye" aria-hidden="true"></i></button>
+		<button style="display:inline-block" class="btn btn-info btn-sm" onclick="package_view_modal('.$row_sale['booking_id'] .')" title="View Details" id="view_btn-'.$row_sale['booking_id'] .'" data-toggle="tooltip"><i class="fa fa-eye" aria-hidden="true"></i></button>
 		'
 	
 	), "bg" =>$bg);

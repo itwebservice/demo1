@@ -4,11 +4,10 @@ include_once('../../inc/vendor_generic_functions.php');
 
 $estimate_id = $_POST['estimate_id'];
 
-$query = "select * from vendor_estimate where status='Cancel' and delete_status='0' ";
+$query = "select * from vendor_estimate where delete_status='0' ";
 if($estimate_id!=""){
 	$query .=" and estimate_id='$estimate_id'";
 }
-// $query .=" order by estimate_id desc ";
 ?>
 
 
@@ -24,7 +23,7 @@ if($estimate_id!=""){
 			<th>Supplier_Type</th>
 			<th>Supplier_Name</th>
 			<th>Total_Refund</th>
-			<th>Refund</th>
+			<th>Estimate</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -51,12 +50,12 @@ if($estimate_id!=""){
 				<td><?= $row_estimate['total_refund_amount'] ?></td>		
 				<?php if($row_estimate['cancel_est_flag'] == '0'){ ?>				
 					<td>
-						<button class="btn btn-info btn-sm" class="from-control" title="Calculate Refund Estimate" onclick="save_modal(<?= $row_estimate['estimate_id'] ?>)"><i class="fa fa-pencil-square-o"></i></button>
+						<button class="btn btn-info btn-sm" class="from-control" title="Calculate Refund Estimate" onclick="save_modal(<?= $row_estimate['estimate_id'] ?>)" id="update_estimate-<?= $row_estimate['estimate_id'] ?>"><i class="fa fa-pencil-square-o"></i></button>
 					</td>
 				<?php }
 				else{ ?>
 					<td>
-						<button class="btn btn-info btn-sm" class="from-control" title="View Refund Estimate" onclick="save_modal(<?= $row_estimate['estimate_id'] ?>)"><i class="fa fa-eye"></i></button>
+						<button class="btn btn-info btn-sm" class="from-control" title="View Cancellation Estimate" onclick="save_modal(<?= $row_estimate['estimate_id'] ?>)" id="update_estimate-<?= $row_estimate['estimate_id'] ?>"><i class="fa fa-eye"></i></button>
 					</td>
 				<?php } ?>			
 			</tr>

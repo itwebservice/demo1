@@ -13,7 +13,7 @@ $branch_status = $sq['branch_status'];
 <div class="row mg_bt_20">
   <input type="hidden" name="branch_status_req" id="branch_status_req" value="<?= $branch_status ?>">
   <div class="col-sm-12 text-right text_left_sm_xs">
-      <button class="btn btn-info btn-sm ico_left" onclick="save_modal()"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New Request</button>
+      <button class="btn btn-info btn-sm ico_left" id="lreq_btn" onclick="save_modal()"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New Request</button>
   </div>
 </div>
 <?php } ?>
@@ -54,9 +54,11 @@ list_reflect();
 
 function save_modal(){
 
-  $('#btn_save_modal').button('loading');
+  $('#lreq_btn').prop('disabled',true);
+  $('#lreq_btn').button('loading');
   $.post('leave_request/save_modal.php', {}, function(data){
-    $('#btn_save_modal').button('reset');
+    $('#lreq_btn').prop('disabled',false);
+    $('#lreq_btn').button('reset');
     $('#div_modal').html(data);
   });
 } 

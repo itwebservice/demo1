@@ -227,7 +227,7 @@ public function refund_mail_send($booking_id,$refund_amount,$refund_date,$refund
 	$content .= '</tr>';
 	$subject = 'B2C Cancellation Refund ( '.get_b2c_booking_id($booking_id,$year).' )';
 	global $model;
-	$model->app_email_send('39',$cust_email['first_name'],$email_id, $content,$subject);
+	$model->app_email_send('39',$sq_b2c_info['name'],$email_id, $content,$subject);
 	}
 }
 ?>

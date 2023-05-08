@@ -8,10 +8,12 @@ $role = $_SESSION['role'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='b2c/sales/index.php'"));
 $branch_status = $sq['branch_status'];
+$branch_admin_id = ($branch_admin_id != '') ? $branch_admin_id : '1';
 $branch_details = mysqli_fetch_assoc(mysqlQuery("select * from branches where branch_id='$branch_admin_id'"));
 
 $quotation_id = $_GET['quotation_id'];
 $emp_id = $_SESSION['emp_id'];
+$emp_id = ($emp_id != '') ? $emp_id : '1';
 $sq_emp = mysqli_fetch_assoc(mysqlQuery("select * from emp_master where emp_id='$emp_id'"));
 $emp_name = $sq_emp['first_name'].' '.$sq_emp['last_name'];
 
@@ -89,7 +91,7 @@ if($type == '1'){
                 </div>
                 <div class="detailBlockContent">
                   <h3 class="contentValue"><?= $pax ?></h3>
-                  <span class="contentLabel">TOTAL GUEST</span>
+                  <span class="contentLabel">TOTAL GUEST(S)</span>
                 </div>
               </div>
 
@@ -108,7 +110,7 @@ if($type == '1'){
             <h3 class="customerFrom">PREPARED FOR</h3>
             <span class="customerName"><em><i class="fa fa-user"></i></em> : <?= $sq_quotation['name'] ?></span><br>
             <span class="customerMail"><em><i class="fa fa-envelope"></i></em> : <?= $sq_quotation['email'] ?></span><br>
-            <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['phone'] ?></span>
+            <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['phone'] ?></span><br>
           </div>
         </div>
       </section>
@@ -340,7 +342,7 @@ if($type == '1'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Inclusions</h3>
+                      <h3 class="incexTitle">INCLUSIONS</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_pckg['inclusions'] ?></pre>      
                       </div>
@@ -365,7 +367,7 @@ if($type == '1'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Exclusions</h3>
+                      <h3 class="incexTitle">EXCLUSIONS</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_pckg['exclusions'] ?></pre>      
                       </div>
@@ -378,7 +380,7 @@ if($type == '1'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Note</h3>
+                      <h3 class="incexTitle">NOTE</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_pckg['note'] ?></pre>      
                       </div>
@@ -489,7 +491,7 @@ else if($type == '2'){
                 </div>
                 <div class="detailBlockContent">
                   <h3 class="contentValue"><?= $pax ?></h3>
-                  <span class="contentLabel">TOTAL GUEST</span>
+                  <span class="contentLabel">TOTAL GUEST(S)</span>
                 </div>
               </div>
 
@@ -508,7 +510,7 @@ else if($type == '2'){
             <h3 class="customerFrom">PREPARED FOR</h3>
             <span class="customerName"><em><i class="fa fa-user"></i></em> : <?= $sq_quotation['name'] ?></span><br>
             <span class="customerMail"><em><i class="fa fa-envelope"></i></em> : <?= $sq_quotation['email'] ?></span><br>
-            <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['phone'] ?></span>
+            <span class="customerMobile"><em><i class="fa fa-phone"></i></em> : <?= $sq_quotation['phone'] ?></span><br>
           </div>
         </div>
       </section>
@@ -525,12 +527,6 @@ else if($type == '2'){
           if($daywise_image == ''){
             $daywise_image = 'http://itourscloud.com/quotation_format_images/dummy-image.jpg';
           }
-          // for($count1 = 0; $count1<sizeof($day_url1);$count1++){
-          //     $day_url2 = explode('=',$day_url1[$count1]);
-          //     if($day_url2[1]==$row_itinarary['day_count'] && $day_url2[0]==$row_itinarary['package_id']){
-          //       $daywise_image = $day_url2[2];
-          //     }
-          // }
           if($checkPageEnd%2==0 || $checkPageEnd==0){
             $go = $checkPageEnd + 2;
             $flag = 0;
@@ -695,8 +691,8 @@ else if($type == '2'){
                       <table class="table tableTrnasp no-marg" id="tbl_emp_list">
                       <thead>
                           <tr class="table-heading-row">
-                            <th>From_Location</th>
-                            <th>To_Location</th>
+                            <th>From_Sector</th>
+                            <th>To_Sector</th>
                             <th>Airline</th>
                             <th>Class</th>
                           </tr>
@@ -782,7 +778,7 @@ else if($type == '2'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Inclusions</h3>
+                      <h3 class="incexTitle">INCLUSIONS</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_pckg['inclusions'] ?></pre>      
                       </div>
@@ -807,7 +803,7 @@ else if($type == '2'){
               <div class="row">
                 <div class="col-md-12 mg_tp_30 mg_bt_30">
                   <div class="incluExcluTermsTabPanel exclusions main_block">
-                      <h3 class="incexTitle">Exclusions</h3>
+                      <h3 class="incexTitle">EXCLUSIONS</h3>
                       <div class="tabContent">
                           <pre class="real_text"><?= $sq_pckg['exclusions'] ?></pre>      
                       </div>
@@ -854,7 +850,7 @@ else if($type == '2'){
       
       <!-- Guest Detail -->
       <div class="col-md-12 passengerPanel endPagecenter mg_bt_30">
-        <h3 class="endingPageTitle text-center">Total Guest</h3>
+        <h3 class="endingPageTitle text-center">TOTAL GUEST</h3>
         <div class="col-md-3 text-center mg_bt_30">
           <div class="iconPassengerBlock">
             <div class="iconPassengerSide leftSide"></div>
@@ -901,14 +897,14 @@ else if($type == '2'){
       </div>
     </div>
     <div class="col-md-12 passengerPanel endPagecenter">
-      <h3 class="endingPageTitle text-center">Enquiry Details</h3>
+      <h3 class="endingPageTitle text-center">ENQUIRY DETAILS</h3>
       <div class="travsportInfoBlock1">
         <div class="transportDetails_costing">
         <div class="table-responsive">
           <table class="table table-bordered tableTrnasp no-marg" style="width:100% !important;" id="tbl_emp_list">
             <tr><td style="text-align:left;border: 1px solid #888888;font"><b>Package Type</b></td>   <td style="text-align:left;border: 1px solid #888888;"><?= $sq_quotation['package_type'] ?></td></tr>
             <tr><td style="text-align:left;border: 1px solid #888888;"><b>Travel Date</b></td>   <td style="text-align:left;border: 1px solid #888888;"><?= get_date_user($sq_quotation['travel_from_date']).' To '.get_date_user($sq_quotation['travel_to_date']) ?></td></tr>
-            <tr><td style="text-align:left;border: 1px solid #888888;"><b>Specification</b></td>   <td style="text-align:left;border: 1px solid #888888;"><?= ($sq_quotation['specification']!='') ? $sq_quotation['specification'] : 'NA' ?></td></tr>
+            <tr><td style="text-align:left;border: 1px solid #888888;"><b>Other Specification</b></td>   <td style="text-align:left;border: 1px solid #888888;"><?= ($sq_quotation['specification']!='') ? $sq_quotation['specification'] : 'NA' ?></td></tr>
           </table>
         </div>
         </div>
@@ -921,7 +917,7 @@ else if($type == '2'){
     <?php } ?>
     <!-- Bank Detail -->
     <div class="col-md-12 passengerPanel endPagecenter mg_bt_30">
-      <h3 class="endingPageTitle text-center">Bank Details</h3>
+      <h3 class="endingPageTitle text-center">BANK DETAILS</h3>
       <div class="travsportInfoBlock1">
         <div class="transportDetails_costing">
         <div class="table-responsive">
@@ -932,18 +928,19 @@ else if($type == '2'){
                 <th>BRANCH NAME</th>
                 <th>A/C TYPE</th>
                 <th>A/C NO</th>
-                <th>IFSC</th>
+                <th>Bank A/C NAME</th>
                 <th>SWIFT CODE</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><?= ($bank_name_setting != '') ? $bank_name_setting : 'NA' ?></td>
-                <td><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA' ?></td>
+                <td><?= ($bank_branch_name!= '') ? $bank_branch_name : 'NA'?><?=($bank_ifsc_code != '') ? ' ('.strtoupper($bank_ifsc_code).')' : '('.'NA'.' )'?></td>
+                <!--  ($bank_ifsc_code != '') ? ' ('.strtoupper($bank_ifsc_code).')' : '('.'NA'.' )'  -->
                 <td><?= ($acc_name != '') ? $acc_name : 'NA' ?></td>
                 <td><?= ($bank_acc_no != '') ? $bank_acc_no : 'NA' ?></td>
-                <td><?= ($bank_ifsc_code != '') ? $bank_ifsc_code : 'NA' ?></td>
-                <td><?= ($bank_swift_code != '') ? $bank_swift_code : 'NA' ?></td>
+                <td><?= ($bank_account_name != '') ? $bank_account_name : 'NA' ?></td>
+                <td><?= ($bank_swift_code != '') ? strtoupper($bank_swift_code) : 'NA' ?></td>
               </tr>
             </tbody>
           </table>

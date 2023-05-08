@@ -20,10 +20,10 @@ class book_master{
                         $sq_tours_package = mysqli_fetch_assoc(mysqlQuery("select currency_id,package_name from custom_package_master where `package_id`='$package_id'"));
                         $h_currency_id = $sq_tours_package['currency_id'];
                         $travel_from = get_date_db($travel_from);
-                        $sq_count = mysqli_num_rows(mysqlQuery("select * from custom_package_tariff where (`from_date` <= '$travel_from' and `to_date` >= '$travel_from') and (`min_pax` <= '$pax' and `max_pax` >= '$pax') and `package_id`='$package_id'"));
+                        $sq_count = mysqli_num_rows(mysqlQuery("select * from custom_package_tariff where (`from_date` <= '$travel_from' and `to_date` >= '$travel_from') and (`min_pax` <= '$pax' and `max_pax` >= '$pax') and `package_id`='$package_id' and hotel_type='$package_typef'"));
                         if($sq_count > 0){
 
-                                $sq_tariff = mysqli_fetch_assoc(mysqlQuery("select * from custom_package_tariff where (`from_date` <= '$travel_from' and `to_date` >= '$travel_from') and (`min_pax` <= '$pax' and `max_pax` >= '$pax') and `package_id`='$package_id'"));
+                                $sq_tariff = mysqli_fetch_assoc(mysqlQuery("select * from custom_package_tariff where (`from_date` <= '$travel_from' and `to_date` >= '$travel_from') and (`min_pax` <= '$pax' and `max_pax` >= '$pax') and `package_id`='$package_id' and hotel_type='$package_typef'"));
                                 $total_cost1 = ($adults*floatval($sq_tariff['cadult'])) + ($chwob*floatval($sq_tariff['ccwob'])) + ($chwb*floatval($sq_tariff['ccwb'])) + ($infant*floatval($sq_tariff['cinfant'])) + ($extra_bed*floatval($sq_tariff['cextra']));
                                 $total_cost1 = currency_conversion($h_currency_id,$currency,$total_cost1);
                                 $total_cost1 = explode(' ',$total_cost1);
@@ -135,7 +135,7 @@ class book_master{
                 $email_id = $_SESSION['email_id'];
                 $city_place = $_SESSION['city_place'];
                 $country_code = $_SESSION['country_code'];
-                $phone = $_SESSION['phone'];
+                $phone = $country_code.$_SESSION['phone'];
                 $enq_data_arr = $_SESSION['enq_data_arr'];
                 $guest_arr = $_SESSION['guest_arr'];
                 $costing_arr = $_SESSION['costing_arr'];
@@ -148,7 +148,7 @@ class book_master{
                 $tax_ledger = $costing_arr[0]['tax_ledger'];
                 $coupon_amount = $costing_arr[0]['coupon_amount'];
                 $net_total = $costing_arr[0]['net_total'];
-
+                
                 // Customer and ledger creation
                 global $encrypt_decrypt, $secret_key;
                 $contact_no = $encrypt_decrypt->fnEncrypt($phone, $secret_key);
@@ -177,7 +177,7 @@ class book_master{
                 if($sq_ledger){
                         // Booking
                         $created_at = date('Y-m-d H:i');
-                        $phone_no = $country_code.$phone;
+                        $phone_no = $country_code.$_SESSION['phone'];
                         $sq_max = mysqli_fetch_assoc(mysqlQuery("select max(booking_id) as max from b2c_sale"));
                         $booking_id = $sq_max['max'] + 1;
                         $module_name = ($type == '1') ? 'Holiday' : 'Group Tour';

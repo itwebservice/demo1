@@ -40,18 +40,14 @@ foreach ($gallery as $struct) {
 </div>
 
 <div class="row">
-    <div class="col-md-2 mg_bt_10 col-sm-6">
+    <div class="col-md-4 mg_bt_10 col-sm-6">
         <div class="div-upload">
             <div id="id_upload_btn1" class="upload-button1"><span>Upload</span></div>
             <span id="id_proof_status"></span>
             <ul id="files"></ul>
             <input type="hidden" id="image_upload_url1" name="image_upload_url1">
         </div>
-    </div>
-</div>
-<div class="row mg_bt_20">
-    <div class="col-md-12">
-        <div class="note">Note : Upload Image size below 100KB, resolution : 600*300, Format : JPEG,JPG,PNG.</div>
+    		<button type="button" data-toggle="tooltip" class="btn btn-excel" title="Note : Upload Image size below 100KB, resolution : 600*300, Format : JPEG,JPG,PNG."><i class="fa fa-question-circle"></i></button>
     </div>
 </div>
 <script type="text/javascript">

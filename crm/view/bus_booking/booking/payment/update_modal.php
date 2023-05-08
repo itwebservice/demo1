@@ -74,7 +74,7 @@ $enable = ($sq_payment_info['payment_mode']=="Cash" || $sq_payment_info['payment
             <input type="text" id="bank_name" name="bank_name"  class="form-control bank_suggest" placeholder="Bank Name" title="Bank Name" value="<?= $sq_payment_info['bank_name'] ?>" <?= $enable ?>>
           </div>
           <div class="col-md-3">
-            <input type="text" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment_info['transaction_id'] ?>" <?= $enable ?>>
+            <input type="number" id="transaction_id" name="transaction_id" onchange="validate_specialChar(this.id)" placeholder="Cheque No/ID" title="Cheque No/ID" value="<?= $sq_payment_info['transaction_id'] ?>" <?= $enable ?>>
           </div>
           <div class="col-md-3">
             <select name="bank_id" id="bank_id" title="Creditor Bank" <?= $enable ?> disabled>
@@ -125,9 +125,7 @@ $('#frm_update').validate({
     booking_id : { required : true },
     payment_date : { required : true },
     payment_amount : { required : true, number: true },
-    payment_mode : { required : true },
-    bank_name : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },
-    transaction_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
+    payment_mode : { required : true },  
     bank_id : { required : function(){  if($('#payment_mode').val()!="Cash"){ return true; }else{ return false; }  }  },     
   },
   submitHandler:function(form){

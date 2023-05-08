@@ -5,6 +5,7 @@ require_once('../layouts/admin_header.php');
 $emp_id = $_SESSION['emp_id'];
 $role = $_SESSION['role'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
+$financial_year_id = $_SESSION['financial_year_id'];
 $sq = mysqli_fetch_assoc(mysqlQuery("select * from branch_assign where link='hotel_quotation/index.php'"));
 $branch_status = $sq['branch_status'];
 ?>
@@ -33,16 +34,15 @@ $branch_status = $sq['branch_status'];
                         <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_xs">
                             <input type="text" id="from_date_filter" name="from_date_filter" placeholder="From Date"
                                 title="From Date"
-                                onchange="validate_validDate('from_date_filter','to_date_filter');get_to_date(this.id,'to_date_filter');quotation_list_reflect()">
+                                onchange="validate_validDate('from_date_filter','to_date_filter');get_to_date(this.id,'to_date_filter');">
                         </div>
                         <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_xs">
                             <input type="text" id="to_date_filter" name="to_date_filter" placeholder="To Date"
                                 title="To Date"
-                                onchange="quotation_list_reflect();validate_validDate('from_date_filter', 'to_date_filter')">
+                                onchange="validate_validDate('from_date_filter', 'to_date_filter')">
                         </div>
                         <div class="col-md-3 col-sm-4 col-xs-12 mg_bt_10_xs">
-                            <select name="quotation_id" id="quotation_id" title="Select Quotation"
-                                onchange="quotation_list_reflect()" style="width:100%">
+                            <select name="quotation_id" id="quotation_id" title="Select Quotation" style="width:100%">
                                 <option value="">Select Quotation</option>
                                 <?php
                                 $query = "select * from hotel_quotation_master where 1 and status='1'";
@@ -73,12 +73,24 @@ $branch_status = $sq['branch_status'];
                             </select>
                         </div>
                         <div class="col-md-3 col-sm-6 col-xs-12">
-                            <select name="status" id="status" title="Status" style="width:100%"
-                                onchange="quotation_list_reflect()">
+                            <select name="status" id="status" title="Status" style="width:100%">
                                 <option value="">Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mg_tp_10">
+                            <select name="financial_year_id_filter" id="financial_year_id_filter" title="Select Financial Year">
+                                <?php
+                                $sq_fina = mysqli_fetch_assoc(mysqlQuery("select * from financial_year where financial_year_id='$financial_year_id'"));
+                                $financial_year = get_date_user($sq_fina['from_date']).'&nbsp;&nbsp;&nbsp;To&nbsp;&nbsp;&nbsp;'.get_date_user($sq_fina['to_date']);
+                                ?>
+                                <option value="<?= $sq_fina['financial_year_id'] ?>"><?= $financial_year  ?></option>
+                                <?php echo get_financial_year_dropdown_filter($financial_year_id); ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-6 col-xs-12 mg_tp_10">
+                            <button class="btn btn-sm btn-info ico_right" onclick="quotation_list_reflect()">Proceed&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -143,13 +155,15 @@ function quotation_list_reflect() {
     var quotation_id = $('#quotation_id').val();
     var branch_status = $('#branch_status').val();
     var status = $('#status').val();
+    var financial_year_id_filter = $('#financial_year_id_filter').val();
 
     $.post('list_reflect.php', {
         from_date: from_date,
         to_date: to_date,
         quotation_id: quotation_id,
         branch_status: branch_status,
-        status: status
+        status: status,
+        financial_year_id:financial_year_id_filter
     }, function(data) {
         pagination_load(data, columns, true, false, 20, 'hotel_quotation_table');
         $('.loader').remove();
@@ -169,32 +183,45 @@ function save_modal() {
 }
 
 function update_modal(quotation_id) {
+
+	$('#edit-'+quotation_id).prop('disabled',true);
     var branch_status = $('#branch_status').val();
+	$('#edit-'+quotation_id).button('loading');
     $.post('update/index.php', {
         quotation_id: quotation_id,
         branch_status: branch_status
     }, function(data) {
         $('#div_quotation_form').html(data);
+	    $('#edit-'+quotation_id).prop('disabled',false);
+	    $('#edit-'+quotation_id).button('reset');
     });
 }
 
 function quotation_whatsapp(quotation_id) {
+	$('#whatsapp-'+quotation_id).prop('disabled',true);
     var base_url = $('#base_url').val();
+	$('#whatsapp-'+quotation_id).button('loading');
     $.post(base_url + 'controller/hotel/quotation/quotation_whatsapp.php', {
         quotation_id: quotation_id
     }, function(data) {
+	    $('#whatsapp-'+quotation_id).prop('disabled',false);
+	    $('#whatsapp-'+quotation_id).button('reset');
         window.open(data)
     });
 }
 
-function send_mail(email_id) {
+function send_mail(email_id,quotation_id) {
+	$('#email-'+quotation_id).prop('disabled',true);
     var base_url = $('#base_url').val();
     var branch_status = $('#branch_status').val();
+	$('#email-'+quotation_id).button('loading');
     $.get(base_url + 'view/hotel_quotation/send_quotation.php', {
         branch_status: branch_status,
         email_id: email_id
     }, function(data) {
         $('#div_quotation_form').html(data);
+	    $('#email-'+quotation_id).prop('disabled',false);
+	    $('#email-'+quotation_id).button('reset');
     });
 }
 

@@ -25,6 +25,7 @@ $count = 1;
 $sq_query = mysqlQuery($query);
 while($row_query = mysqli_fetch_assoc($sq_query))
 {
+	$bg = ($row_query['purchase_return'] == '2') ? 'warning' : '';
 	$estimate_type_val = get_estimate_type_name($row_query['estimate_type'], $row_query['estimate_type_id']);
 	$vendor_name = get_vendor_name($row_query['vendor_type'],$row_query['vendor_type_id']);
 	$vendor_info = get_vendor_info($row_query['vendor_type'], $row_query['vendor_type_id']);

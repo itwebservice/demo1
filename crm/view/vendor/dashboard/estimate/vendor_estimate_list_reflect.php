@@ -8,7 +8,7 @@ $estimate_type_id = $_POST['estimate_type_id'];
 $vendor_type_id = $_POST['vendor_type_id'];
 $emp_id = $_SESSION['emp_id'];
 $branch_admin_id = $_SESSION['branch_admin_id'];
-$financial_year_id = $_SESSION['financial_year_id'];
+$financial_year_id = $_POST['financial_year_id'];
 $branch_status = $_POST['branch_status']; 
 $role = $_SESSION['role'];
 $role_id = $_SESSION['role_id'];
@@ -41,23 +41,23 @@ while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
 	$emp_name = ($row_estimate['emp_id'] != 0) ? $sq_emp['first_name'].' '.$sq_emp['last_name'] : 'Admin';
 	$date = $row_estimate['purchase_date'];
 	$yr = explode("-", $date);
-	$year =$yr[0];
-	$total_estimate_amt = $total_estimate_amt + $row_estimate['net_total'];
+	$year = $yr[0];
 	$total_cancel_amt += $row_estimate['cancel_amount'];
+	$total_estimate_amt += $row_estimate['net_total'];
 
 	$estimate_type_val = get_estimate_type_name($row_estimate['estimate_type'], $row_estimate['estimate_type_id']);
 	$vendor_type_val = get_vendor_name($row_estimate['vendor_type'], $row_estimate['vendor_type_id']);
 
-	$purchase_amount=$row_estimate['net_total']-$row_estimate['cancel_amount'];
+	$purchase_amount = $row_estimate['net_total'] - $row_estimate['cancel_amount'];
 	$total_purchase_amt += $purchase_amount;
 
-	$sq_paid_amount_query = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where vendor_type='$row_estimate[vendor_type]' and vendor_type_id='$row_estimate[vendor_type_id]' and estimate_type='$row_estimate[estimate_type]' and estimate_type_id='$row_estimate[estimate_type_id]' and clearance_status!='Pending' and clearance_status!='Cancelled'"));
+	$sq_paid_amount_query = mysqli_fetch_assoc(mysqlQuery("select sum(payment_amount) as sum from vendor_payment_master where estimate_id='$row_estimate[estimate_id]' and clearance_status!='Pending' and clearance_status!='Cancelled' and delete_status='0'"));
 	$paid_amount = $sq_paid_amount_query['sum'];
 	$total_paid_amt += $paid_amount;
 	if($total_paid_amt==""){ $total_paid_amt = 0; }
 
 	$cancel_amount = $row_estimate['cancel_amount'];
-	if($row_estimate['status']=="Cancel"){
+	if($row_estimate['purchase_return'] == '1'){
 		if($paid_amount > 0){
 			if($cancel_amount >0){
 				if($paid_amount > $cancel_amount){
@@ -72,21 +72,27 @@ while($row_estimate = mysqli_fetch_assoc($sq_estimate)){
 		else{
 			$balance_amount = $cancel_amount;
 		}
+	}else if($row_estimate['purchase_return'] == '2'){
+		$cancel_estimate = json_decode($row_estimate['cancel_estimate']);
+		$balance_amount = (($row_estimate['net_total'] - floatval($cancel_estimate[0]->net_total)) + $cancel_amount) - $paid_amount;
 	}
 	else{
 		$balance_amount = $row_estimate['net_total'] - $paid_amount;
 	}
 
 	$total_balance += $balance_amount;
+	if($row_estimate['purchase_return']==1){ $bg = "danger"; }
+	else if($row_estimate['purchase_return']==2) { $bg = 'warning'; } 
+	else{ $bg = ''; }
+
 	if($row_estimate['status']=="Cancel") {
-		$bg = "danger";
+		
 		$cancel_button = '';
 		$update_btn = '';
 		$removeDeleteBtn = null;
 	}else{
-		$bg = '';
-		$cancel_button = '<button class="btn btn-danger btn-sm" onclick="vendor_estimate_cancel('.$row_estimate['estimate_id'] .')" data-toggle="tooltip" title="Cancel this Purchase"><i class="fa fa-ban"></i></button>';
-		$update_btn = '<button class="btn btn-info btn-sm" onclick="vendor_estimate_update_modal('. $row_estimate['estimate_id'] .')" data-toggle="tooltip" title="Edit Details"><i class="fa fa-pencil-square-o"></i></button>';
+		$cancel_button = '';
+		$update_btn = '<button class="btn btn-info btn-sm" onclick="vendor_estimate_update_modal('. $row_estimate['estimate_id'] .')" data-toggle="tooltip" id="update_btn-'. $row_estimate['estimate_id'] .'" title="Update Details"><i class="fa fa-pencil-square-o"></i></button>';
 		$removeDeleteBtn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="purchase_delete_entry('.$row_estimate['estimate_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 
 	}
@@ -128,7 +134,7 @@ $footer_data = array("footer_data" => array(
 
 	'foot1' => number_format($total_estimate_amt, 2),
 	'col1' => 1,
-	'class1' =>"text-right info",
+	'class1' =>"text-left info",
 
 	'foot2' => number_format($total_cancel_amt, 2),
 	'col2' => 1,
@@ -142,7 +148,7 @@ $footer_data = array("footer_data" => array(
 	'col4' => 1,
 	'class4' =>"success",
 
-	'foot5' => number_format($total_balance, 2),
+	'foot5' => 'Balance: '.number_format($total_balance, 2),
 	'col5' => 1,
 	'class5' =>"warning"
 	)

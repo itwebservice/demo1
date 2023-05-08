@@ -1,5 +1,4 @@
 <?php
-
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -30,18 +29,18 @@ $localIP = getHostByName(getHostName());
 $servername = "localhost";
 $username = "root";
 $password = "";
-$db_name = "v9";
+$db_name = "v12";
 global $conn;
 $conn = new mysqli($servername, $username, $password, $db_name);
 
-define('BASE_URL', 'http://localhost/demo1/crm/');
+define('BASE_URL', 'http://localhost/tours/V12/');
 
 mysqli_query($conn, "SET SESSION sql_mode = ''");
 $b2b_index_url = BASE_URL . 'Tours_B2B/view/index.php';
 
 define('CSV_READ_URL', __DIR__ . '/../');
 
-global $secret_key, $fbappId, $similar_text;
+global $secret_key, $fbappId, $similar_text,$tcs_note;
 $secret_key = "secret_key_for_iTours";
 $appIdFB = "992136897992262";
 $appSecretFB = "027a7dc4307802ae05e10f556ed9b20c";
@@ -59,23 +58,14 @@ $sidebar_strip = BASE_URL . 'images/sidebar-strip.jpg';
 $voucher_id_proof = BASE_URL . 'images/voucher_id_proof.jpg';
 $quotation_icon = BASE_URL . 'images/quotation-icon.png';
 
-//Sale and Purchase transaction feild detail's Note 
-$txn_feild_note = "Please make sure Date, Amount, Mode, Creditor bank entered properly.";
-
-//Sale and Purchase transaction feild detail's Note Debitor
-$txn_feild_dnote = "Please make sure Date, Amount, Mode, Debitor bank entered properly.";
-
-//Cancel feild note
-$cancel_feild_note = "Note : Kindly take new booking who will travel from partially cancellation.";
-
-//simliar hotel and transports
-$similar_text = ' / Similar';
-
-//Quot_note
-$quot_note = 'Note : This is only a quotation. No booking is made yet. The costing may differ as per availability.';
+$txn_feild_note = "Please make sure Date, Amount, Mode, Creditor bank entered properly."; //Sale and Purchase transaction feild detail's Note 
+$txn_feild_dnote = "Please make sure Date, Amount, Mode, Debitor bank entered properly."; //Sale and Purchase transaction feild detail's Note Debitor
+$cancel_feild_note = "Note : Kindly take new booking who will travel from partially cancellation."; //Cancel feild note
+$similar_text = ' / Similar'; //simliar hotel and transports
+$tcs_note = 'TCS(5%) extra will be applicable on total.';
+$quot_note = 'Note : This is only a quotation. No booking is made yet. The costing may differ as per availability.';//Quot_note
 
 //**********App Settings Global Variables start**************//
-
 $sq_app_tax = mysqli_fetch_assoc(mysqli_query($conn, "select * from generic_count_master where id='1'"));
 $setup_country_id = $sq_app_tax['setup_country_id'];
 $app_invoice_format = $sq_app_tax['invoice_format'];
@@ -399,7 +389,6 @@ class model extends email_hf
       $mail->Subject  = $subject;
       $mail->AltBody  = "To view the message, please use an HTML compatible email viewer!";
       $mail->MsgHTML($body);
-
       if (!$mail->Send()) {
         //echo "Mailer Error: ". $mail->ErrorInfo;
         echo 'Please enter valid email credentials!';
@@ -738,3 +727,12 @@ function get_dates_for_tour_itineary($quotation_id)
   }
   return $dates;
 }
+
+
+global $dbMain;
+$dbMain = array(
+  'user' => $username,
+  'pass' => $password,
+  'db'   => $db_name,
+  'host' => $servername
+);

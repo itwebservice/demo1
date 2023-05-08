@@ -49,6 +49,9 @@ $total_paid_amt=0;
 				$date = $sq_booking['created_at'];
 				$yr = explode("-", $date);
 				$year =$yr[0];
+				$date1 = $row_payment['payment_date'];
+				$yr1 = explode("-", $date1);
+				$year1 =$yr1[0];
 				
 				if($sq_customer['type']=='Corporate'||$sq_customer['type'] == 'B2B'){
 					$customer_name = $sq_customer['company_name'];
@@ -70,7 +73,7 @@ $total_paid_amt=0;
 				}
 
 				$payment_id_name = "Car Rental Payment ID";
-				$payment_id = get_car_rental_booking_payment_id($row_payment['payment_id'],$year);
+				$payment_id = get_car_rental_booking_payment_id($row_payment['payment_id'],$year1);
 				$receipt_date = date('d-m-Y');
 				$booking_id = get_car_rental_booking_id($row_payment['booking_id'],$year);
 				$customer_id = $sq_booking['customer_id'];
@@ -98,13 +101,14 @@ $total_paid_amt=0;
 					$edit_btn = '';
 					$delete_btn = '';
 				}else{
-					$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='payment_update_modal(".$row_payment['payment_id'].")' title='Update Details'><i class='fa fa-pencil-square-o'></i></button>";
+					$edit_btn = "<button class='btn btn-info btn-sm' data-toggle='tooltip' onclick='payment_update_modal(".$row_payment['payment_id'].")' title='Update Details' id='edit-".$row_payment['payment_id']."'><i class='fa fa-pencil-square-o'></i></button>";
 					$delete_btn = '<button class="'.$delete_flag.' btn btn-danger btn-sm" onclick="p_delete_entry('.$row_payment['payment_id'].')" title="Delete Entry"><i class="fa fa-trash"></i></button>';
 				}
 
 				$temp_arr = array( "data" => array(
 					(int)($count),
 					$checshow,
+					$payment_id,
 					get_car_rental_booking_id($row_payment['booking_id'],$year),
 					$customer_name,
 					$row_payment['payment_mode'],

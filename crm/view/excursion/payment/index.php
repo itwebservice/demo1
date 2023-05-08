@@ -85,6 +85,9 @@ var columns = [{
         title: " "
     },
     {
+        title: "Receipt_ID"
+    },
+    {
         title: "Booking_ID"
     },
     {
@@ -138,11 +141,15 @@ function exc_payment_list_reflect() {
 exc_payment_list_reflect();
 
 function exc_payment_update_modal(payment_id) {
+    $('#editr-'+payment_id).prop('disabled',true);
+    $('#editr-'+payment_id).button('loading');
     var branch_status = $('#branch_status').val();
     $.post('payment/exc_payment_update_modal.php', {
         payment_id: payment_id,
         branch_status: branch_status
     }, function(data) {
+        $('#editr-'+payment_id).prop('disabled',false);
+        $('#editr-'+payment_id).button('reset');
         $('#div_exc_payment_update').html(data);
     });
 }

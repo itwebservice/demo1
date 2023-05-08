@@ -20,7 +20,7 @@ function cellColor($cells,$color){
     $objPHPExcel->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
         'type' => PHPExcel_Style_Fill::FILL_SOLID,
         'startcolor' => array(
-             'rgb' => $color
+        'rgb' => $color
         )
     ));
 }
@@ -186,9 +186,10 @@ $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('J'.$row_count, "Cancellation Amount")
         ->setCellValue('K'.$row_count, "Total Amount")
         ->setCellValue('L'.$row_count, "Paid Amount")
-        ->setCellValue('M'.$row_count, "Created By");
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
-$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('M'.$row_count, "Created By")
+        ->setCellValue('N'.$row_count, "Booking Date");
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($header_style_Array);
+$objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($borderArray);    
 
 $row_count++;
  $sq_ticket = mysqlQuery($query);
@@ -224,6 +225,7 @@ $paid_amount = ($paid_amount == '') ? '0' : $paid_amount;
     $total_cancelation_amount = $total_cancelation_amount + $cancel_amt;
     $total_balance = $total_balance+$sale_amount+$credit_card_charges;	
 
+	$invoice_date = date('d-m-Y',strtotime($row_ticket['created_at']));
     $objPHPExcel->setActiveSheetIndex(0)
         ->setCellValue('B'.$row_count, $row_ticket['invoice_pr_id'])
         ->setCellValue('C'.$row_count, get_train_ticket_booking_id($row_ticket['train_ticket_id'],$year))
@@ -236,9 +238,10 @@ $paid_amount = ($paid_amount == '') ? '0' : $paid_amount;
         ->setCellValue('J'.$row_count, number_format($cancel_amt,2))
         ->setCellValue('K'.$row_count, number_format($row_ticket['net_total']-$row_ticket['cancel_amount']+$credit_card_charges,2))
         ->setCellValue('L'.$row_count,$paid_amount)
-        ->setCellValue('M'.$row_count,$emp_name);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($content_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);    
+        ->setCellValue('M'.$row_count,$emp_name)
+        ->setCellValue('N'.$row_count,$invoice_date);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($content_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($borderArray);    
 
 
     $row_count++;
@@ -255,10 +258,11 @@ $paid_amount = ($paid_amount == '') ? '0' : $paid_amount;
     ->setCellValue('J'.$row_count, number_format($total_cancelation_amount,2))
     ->setCellValue('K'.$row_count, number_format($total_balance,2))
     ->setCellValue('L'.$row_count, "")
-    ->setCellValue('M'.$row_count, "");
+    ->setCellValue('M'.$row_count, "")
+    ->setCellValue('N'.$row_count, "");
 
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($header_style_Array);
-    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':M'.$row_count)->applyFromArray($borderArray);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($header_style_Array);
+    $objPHPExcel->getActiveSheet()->getStyle('B'.$row_count.':N'.$row_count)->applyFromArray($borderArray);
 }
 	
 //////////////////////////****************Content End**************////////////////////////////////

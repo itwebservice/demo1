@@ -31,17 +31,24 @@ while($tourwise_details = mysqli_fetch_assoc($q1)){
 }
 
 // Purchase
-$sq_purchase = mysqlQuery("select * from vendor_estimate where status!='Cancel' and estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
+$sq_purchase = mysqlQuery("select * from vendor_estimate where estimate_type='Group Tour' and estimate_type_id ='$tour_group_id' and status!='Cancel' and delete_status='0'");
 while($row_purchase = mysqli_fetch_assoc($sq_purchase)){
-	$total_purchase += $row_purchase['net_total'] ;
 	//Service Tax 
 	$service_tax_amount = 0;
 	if($row_purchase['service_tax_subtotal'] !== 0.00 && ($row_purchase['service_tax_subtotal']) !== ''){
-	  $service_tax_subtotal1 = explode(',',$row_purchase['service_tax_subtotal']);
-	  for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
-	  $service_tax = explode(':',$service_tax_subtotal1[$i]);
-	  $service_tax_amount +=  $service_tax[2];
-	  }
+		$service_tax_subtotal1 = explode(',',$row_purchase['service_tax_subtotal']);
+		for($i=0;$i<sizeof($service_tax_subtotal1);$i++){
+			$service_tax = explode(':',$service_tax_subtotal1[$i]);
+			$service_tax_amount +=  $service_tax[2];
+		}
+	}
+	if($row_purchase['purchase_return'] == 0){
+		$total_purchase += $row_purchase['net_total'];
+	}
+	else if($row_purchase['purchase_return'] == 2){
+		$cancel_estimate = json_decode($row_purchase['cancel_estimate']);
+		$p_purchase = ($row_purchase['net_total'] - floatval($cancel_estimate[0]->net_total) - floatval($cancel_estimate[0]->service_tax_subtotal));
+		$total_purchase += $p_purchase;
 	}
 	$total_purchase -= $service_tax_amount;
 }
@@ -94,9 +101,9 @@ while($tourwise_details = mysqli_fetch_assoc($q1)){
 		get_group_booking_id($tourwise_details['id'],$year),
 		get_date_user($tourwise_details['form_date']),
 		number_format($sale_amount,2),
-		$emp_name,
-		'<button class="btn btn-info btn-sm" onclick="view_purchase_modal('. $tour_id .','.$tour_group_id.')" data-toggle="tooltip" title="View Purchase"><i class="fa fa-eye"></i></button>',
-		'<button class="btn btn-info btn-sm" onclick="other_expnse_modal('. $tour_id .','.$tour_group_id .')" data-toggle="tooltip" title="Add Other expense amount"><i class="fa fa-plus"></i></button>'
+		'<button class="btn btn-info btn-sm" onclick="view_purchase_modal('. $tour_id .','.$tour_group_id.')" data-toggle="tooltip" title="View Details" id="supplierv_btn-'. $tour_id.$tour_group_id.'"><i class="fa fa-eye"></i></button>',
+		'<button class="btn btn-info btn-sm" id="suppliere_btn-'. $tour_id.$tour_group_id.'" onclick="other_expnse_modal('. $tour_id .','.$tour_group_id .')" data-toggle="tooltip" title="Add Other expense amount"><i class="fa fa-plus"></i></button>',
+		$emp_name
 	), "bg" =>$bg);
 	array_push($array_s,$temp_arr);
 }

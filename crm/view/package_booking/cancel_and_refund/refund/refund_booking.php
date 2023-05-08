@@ -85,8 +85,8 @@ $remaining = $refund_amount - $sq_total_ref_paid_amount['sum'];
                             class="form-control" />
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="refund_date" name="refund_date" placeholder="*Payment Date"
-                            title="Payment Date" value="<?= date('d-m-Y') ?>" class="form-control">
+                        <input type="text" id="refund_date" name="refund_date" placeholder="*Refund Date"
+                            title="Refund Date" value="<?= date('d-m-Y') ?>" class="form-control">
                     </div>
                 </div>
 
@@ -98,14 +98,14 @@ $remaining = $refund_amount - $sq_total_ref_paid_amount['sum'];
                         </select>
                     </div>
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="bank_name" name="bank_name" placeholder="*Bank Name" title="Bank Name"
+                        <input type="text" id="bank_name" name="bank_name" placeholder="Bank Name" title="Bank Name"
                             class="bank_suggest form-control" disabled>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-xs-12 mg_bt_10">
-                        <input type="text" id="transaction_id" onchange="validate_balance(this.id)"
-                            name="transaction_id" class="form-control" placeholder="*Cheque No / ID"
+                        <input type="number" id="transaction_id" onchange="validate_balance(this.id)"
+                            name="transaction_id" class="form-control" placeholder="Cheque No / ID"
                             title="Cheque No / ID" disabled>
                     </div>
 
@@ -170,24 +170,6 @@ $(function() {
             },
             refund_date: {
                 required: true
-            },
-            bank_name: {
-                required: function() {
-                    if ($('#cmb_refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            },
-            transaction_id: {
-                required: function() {
-                    if ($('#cmb_refund_mode').val() != "Cash") {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
             },
             bank_id: {
                 required: function() {
