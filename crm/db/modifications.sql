@@ -1,1 +1,2 @@
 ALTER TABLE `app_settings` ADD `facebook_appid` VARCHAR(100) NULL DEFAULT NULL AFTER `bank_account_name`, ADD `facebook_appsecret` TEXT NULL DEFAULT NULL AFTER `facebook_appid`, ADD `facebook_callback` TEXT NULL DEFAULT NULL AFTER `facebook_appsecret`;
+ALTER TABLE `app_settings` ADD `menu_option` TEXT NULL DEFAULT NULL AFTER `facebook_callback`;

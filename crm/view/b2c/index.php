@@ -17,6 +17,12 @@ if ($b2c_flag == '1') { ?>
         </li>
         <li role="presentation" class="dropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+                aria-expanded="false" onclick="reflect_data('24')">
+                <i class="fa fa-image" aria-hidden="true"></i>Header Menus
+            </a>
+        </li>
+        <li role="presentation" class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
                 aria-expanded="false" onclick="reflect_data('1')">
                 <i class="fa fa-image" aria-hidden="true"></i>Banner Images
             </a>
@@ -272,6 +278,11 @@ function reflect_data(section, dest_id1 = '') {
     }
     if (section === '23') {
         $.post('group_tours/index.php', {}, function(data) {
+            $('#section_data_form').html(data);
+        });
+    }
+    if (section === '24') {
+        $.post('menus/index.php', {}, function(data) {
             $('#section_data_form').html(data);
         });
     }

@@ -21,7 +21,7 @@ $localIP = getHostByName(getHostName());
 $servername = "localhost";
 $username = "root";
 $password = "";
-$db_name = "v9";
+$db_name = "v12";
 global $connection;
 $connection = new mysqli($servername, $username, $password, $db_name);
 
