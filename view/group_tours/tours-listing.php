@@ -975,6 +975,7 @@ $total_pax = intval($adults_count) + intval($child_wocount) + intval($cwb_count)
                 'infant_count'=>intval($infant_count),
 
                 'adult_cost'=>floatval($adult_cost_total),
+                'sp_cost_total'=>floatval($sp_cost_total),
 
                 'child_wo_cost'=>floatval($child_without_cost_total),
 

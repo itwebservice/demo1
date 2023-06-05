@@ -13,8 +13,10 @@ if (sizeof($tours_result_array) > 0) {
     $extra_bed_count = $tours_result_array[$i]['extra_bed_count'];
     $infant_count = $tours_result_array[$i]['infant_count'];
     $travel_date = $tours_result_array[$i]['travel_date'];
+    $sp_cost = $tours_result_array[$i]['sp_cost_total'];
 
     $total_pax = intval($adult_count) + intval($child_wocount) + intval($child_wicount) + intval($extra_bed_count) + intval($infant_count);
+    $adult_cost = ($total_pax > 1 ) ? floatval($tours_result_array[$i]['adult_cost']) : $sp_cost;
 ?>
     <input type="hidden" id="tour_id-<?= $tours_result_array[$i]['tour_id'] ?>" value="<?= $tours_result_array[$i]['tour_id'] ?>">
     <input type="hidden" id="group_id-<?= $tours_result_array[$i]['tour_id'] ?>" value="<?= $tours_result_array[$i]['group_id'] ?>">
@@ -112,7 +114,7 @@ if (sizeof($tours_result_array) > 0) {
 
                         <div class="f_card">
                           <span class="currency_icon currency-icon"></span>
-                          <span class="currency_amount adult_cost-currency-price"><?= floatval($tours_result_array[$i]['adult_cost']) / intval($adult_count) ?></span>
+                          <span class="currency_amount adult_cost-currency-price"><?= floatval($adult_cost) / intval($adult_count) ?></span>
                           <span class="c-hide adult-currency-id"><?= $h_currency_id ?></span>
                           <span class="currency_for">For Adult (PP)</span>
                         </div>
